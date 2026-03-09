@@ -1,16 +1,88 @@
-<DOCTYPE>
+<!DOCTYPE html>
 <html>
 <head>
-  <title> Coin-Flip | Pergamon Atlas </title>
+  <title>Coin Flip | Pergamon Atlas</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      text-align: center;
+      padding: 60px 20px;
+    }
 
-  
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 40px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background: black;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      color: black;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
+<body>
 
-  
+  <div class="container">
+    <h1>Coin Flip</h1>
+    <p>Flip a virtual coin and get heads or tails instantly.</p>
+
+    <button onclick="flipCoin()">Flip Coin</button>
+
+    <div class="result" id="result">Heads or Tails?</div>
+
+    <a class="back-link" href="/">← Back to Pergamon Atlas</a>
+  </div>
+
+  <script>
+    function flipCoin() {
+      const result = Math.random() < 0.5 ? "Heads" : "Tails";
+      document.getElementById("result").textContent = result;
+    }
+  </script>
+
+</body>
 </html>
-
-  
-</DOCTYPE>
