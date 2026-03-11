@@ -21,39 +21,25 @@
     padding: 0;
   }
 
-  navigation {
-  list-style-type: none;
-  background-color: #000000;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #111111;
+  .navbar{
+    display: flex;
+    background-color: #000000;
   }
 
-  navigation list {
-  float: left;
-  }
-
-  navigation list a{
-  display: flex;
-  color: white;
-  text-align: center;
-  padding: 20 20;
-  text-decoration: none;
-  font-size: 30;
-  }
-
-  navigation list a:hover {
-  background-color: #111111;
+  .navbar a{
+    color: white;
+    padding: 15 20;
+    text-decoration: none;
+    text-align: center;
   }
 
 </style>
 </head>
 <body>
 
-<navigation>
-  <list><a href = "#home">Home</a></list>
-  <list><a href = "#tools">Tools</a></list>
-</navigation>  
+  <div class="navbar">
+    <list><a href = "#home">Home</a></list>
+    <list><a href = "#tools">Tools</a></list>
+</div>  
 </body>
 </html>
