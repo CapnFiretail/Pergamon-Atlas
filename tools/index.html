@@ -131,7 +131,12 @@
       gap:20px;
       margin-top:20px;
     }
-
+  .generator-grid{
+      display:grid;
+      grid-template-columns:repeat(5, 2fr);
+      gap:20px;
+      margin-top:20px;
+    }
     /* Individual tool cards */
     .tool-card{
       display:flex;
@@ -196,8 +201,11 @@
     <a href="/tools/password-generator" class="tool-card">Password Generator</a>
     <a href="/tools/bmi-calculator" class="tool-card">BMI Calculator</a>
     <a href="/tools/gpa-calculator" class="tool-card">GPA Calculator</a>
-
+  </div>
+      
   <h2>Generators</h2>
+      
+  <div class="generator-grid">  
     <a href="/tools/dice-roller" class="tool-card">Dice Roller</a>
     <a href="/tools/unit-converter" class="tool-card">Unit Converter</a>
     <a href="/tools/percentage-calculator" class="tool-card">Percentage Calculator</a>
