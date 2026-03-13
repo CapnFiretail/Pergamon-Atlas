@@ -35,16 +35,23 @@
       gap: 18px;
     }
 
-    .logo-box {
-      width: 70px;
-      height: 70px;
-      background-color: #222;
-      border: 2px solid white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: white;
+    .logo-box{
+      width:128px;
+      height:128px;
+      background-color:#222;
+      border:2px solid black;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      color:white;
+      overflow:hidden;
+    }  
+
+    .logo-box img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
     }
 
     .brand h1 {
@@ -162,11 +169,14 @@
        TOP HEADER
   ========================== -->
   <div class="topbar">
+    
     <div class="brand">
-      <div class="logo-box">LOGO</div>
+      <div class="logo-box">
+        <img src="/images/logo.png" alt="Pergamon Atlas Logo">
+      </div>
       <h1>Pergamon Atlas | Tools</h1>
     </div>
-
+    
     <button class="suggest-btn">Suggest a Tool</button>
   </div>
 
