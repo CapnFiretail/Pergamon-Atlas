@@ -1,204 +1,531 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    
-    <title>GPA Calculator</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <style>
+<head>
+  <title>GPA Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      /* =========================
+  <style>
+    /* =========================
        GLOBAL PAGE STYLES
-      ========================== */
-      body{
-        margin:0;
-        font-family: Georgia, serif;
-        background-color:#e9e9e9;
+    ========================== */
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background-color: #e9e9e9;
+    }
+
+    /* =========================
+       TOP HEADER / NAV BAR
+    ========================== */
+    .topbar {
+      background-color: #000;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo-box {
+      width: 128px;
+      height: 100px;
+      background-color: #222;
+      border: 2px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 64px;
+      font-weight: bold;
+    }
+
+    .suggest-btn {
+      background-color: white;
+      color: black;
+      border: none;
+      padding: 12px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .suggest-btn:hover {
+      background-color: #ddd;
+    }
+
+    /* =========================
+       PAGE LAYOUT
+    ========================== */
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 110px);
+    }
+
+    /* =========================
+       SIDEBAR NAVIGATION
+    ========================== */
+    .sidebar {
+      width: 220px;
+      background-color: #111;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 16px 24px;
+      font-size: 24px;
+      display: block;
+    }
+
+    .sidebar a:hover {
+      background-color: #222;
+    }
+
+    .ad-box {
+      width: 90%;
+      height: 200px;
+      margin-top: 20px;
+      background-color: #333;
+      color: white;
+      padding: 20px 1px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 18px;
+      border: 2px solid white;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* =========================
+       MAIN CONTENT AREA
+    ========================== */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background-color: #e9e9e9;
+    }
+
+    .welcome-box,
+    .calculator-box,
+    .results-box,
+    .tips-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      margin-bottom: 24px;
+    }
+
+    .welcome-box h2,
+    .calculator-box h2,
+    .results-box h2,
+    .tips-box h2 {
+      margin-top: 0;
+    }
+
+    /* =========================
+       CLASS ENTRY ROWS
+    ========================== */
+    .class-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .class-row {
+      border: 1px solid #d6d6d6;
+      border-radius: 10px;
+      padding: 18px;
+      background-color: #fafafa;
+    }
+
+    .class-row h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+
+    .row-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .field input,
+    .field select {
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      background-color: white;
+    }
+
+    .class-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .remove-btn,
+    .add-btn,
+    .calc-btn {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: Georgia, serif;
+    }
+
+    .remove-btn {
+      background-color: #222;
+      color: white;
+      padding: 10px 16px;
+    }
+
+    .remove-btn:hover {
+      background-color: #444;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .add-btn {
+      background-color: white;
+      color: black;
+      border: 1px solid #999;
+      padding: 12px 18px;
+    }
+
+    .add-btn:hover {
+      background-color: #f1f1f1;
+    }
+
+    .calc-btn {
+      background-color: black;
+      color: white;
+      padding: 12px 18px;
+    }
+
+    .calc-btn:hover {
+      background-color: #222;
+    }
+
+    /* =========================
+       RESULTS
+    ========================== */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .result-card {
+      background-color: #f7f7f7;
+      border-radius: 10px;
+      padding: 18px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .result-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+    }
+
+    .result-number {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .small-note {
+      color: #555;
+      margin-top: 15px;
+      font-size: 15px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+    @media (max-width: 1200px) {
+      .row-grid,
+      .results-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      /* =========================
-         TOP HEADER / NAV BAR
-      ========================== */
-      .topbar{
-        background-color:#000;
-        color:white;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        padding:20px 30px;
+      .brand h1 {
+        font-size: 48px;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        flex-direction: column;
       }
 
-      /* Brand container (logo + title) */
-      .brand{
-        display:flex;
-        align-items:center;
-        gap:18px;
+      .sidebar {
+        width: 100%;
       }
 
-      /* Logo placeholder box */
-      .logo-box{
-        width:128px;
-        height:100px;
-        background-color:#222;
-        border:2px solid black;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:14px;
-        color:white;
-        overflow:hidden;
-      }  
-
-      .logo-box img{
-        width:100%;
-        height:100%;
-        object-fit: cover;
-      }
-      
-      /* Site title */
-      .brand h1{
-        margin:0;
-        font-size:64px;
-        font-weight:bold;
+      .topbar {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
       }
 
-      /* Suggestion button */
-      .suggest-btn{
-        background-color:white;
-        color:black;
-        border:none;
-        padding:12px 20px;
-        font-size:18px;
-        cursor:pointer;
-        border-radius:8px;
+      .brand {
+        flex-direction: column;
       }
 
-      .suggest-btn:hover{
-        background-color:#ddd;
+      .brand h1 {
+        font-size: 38px;
       }
 
-      /* =========================
-         PAGE LAYOUT
-         Sidebar + Main Content
-      ========================== */
-      .layout{
-        display:flex;
-        min-height:calc(100vh - 110px);
+      .row-grid,
+      .results-grid {
+        grid-template-columns: 1fr;
       }
+    }
+  </style>
+</head>
 
-      /* =========================
-         SIDEBAR NAVIGATION
-      ========================== */
-      .sidebar{
-        width:220px;
-        background-color:#111;
-        padding-top:20px;
-        display:flex;
-        flex-direction:column;
-      }
-
-      /* Sidebar links */
-      .sidebar a{
-        color:white;
-        text-decoration:none;
-        padding:16px 24px;
-        font-size:24px;
-        display:block;
-      }
-
-      .sidebar a:hover{
-        background-color:#222;
-      }
-
-      /* =========================
-         SIDEBAR AD SPACE
-      ========================== */
-      .ad-box{
-        width:90%;
-        height:200px;
-        margin-top:20px;
-        background-color:#333;
-        color:white;
-        padding:20px 1px;
-        border-radius:8px;
-        text-align:center;
-        font-size:18px;
-        border:2px solid white;
-        margin-left:auto;
-        margin-right:auto;
-      }
-
-      /* =========================
-         MAIN CONTENT AREA
-      ========================== */
-      .main-content{
-        flex:1;
-        padding:30px;
-        background-color:#e9e9e9;
-      }
-
-      /* Welcome message box */
-      .welcome-box{
-        background-color:white;
-        padding:30px;
-        border-radius:12px;
-        box-shadow:0 2px 8px rgba(0,0,0,0.12);
-      }
-
-      .inputs{
-        margin-top:20px;
-      }
-    </style>
-    
-  </head>
-  
-  <body>
-    <!-- =========================
-           TOP HEADER
-      ========================== -->
-      <div class="topbar">
-
-        <div class="brand">
-          <div class="logo-box">
-            <img src="/images/logo.png" alt="Pergamon Atlas Logo">
-          </div>
-          <h1>GPA Calculator</h1>
-        </div>
-
-        <button class="suggest-btn">Website Suggestions</button>
-
+<body>
+  <!-- =========================
+       TOP HEADER
+  ========================== -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo-box">
+        <img src="/images/logo.png" alt="Pergamon Atlas Logo">
       </div>
-    <!-- =========================
-           PAGE LAYOUT
-      ========================== -->
-      <div class="layout">
+      <h1>GPA Calculator</h1>
+    </div>
 
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
+    <button class="suggest-btn">Website Suggestions</button>
+  </div>
 
-          <a href="/">Home</a>
-          <a href="/tools">Tools</a>
-          <a href="/games">Games</a>
-          <a href="/help">Help</a>
+  <!-- =========================
+       PAGE LAYOUT
+  ========================== -->
+  <div class="layout">
 
-          <div class="ad-box">Ad Space</div>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+      <a href="/">Home</a>
+      <a href="/tools">Tools</a>
+      <a href="/games">Games</a>
+      <a href="/help">Help</a>
 
+      <div class="ad-box">Ad Space</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+      <div class="welcome-box">
+        <h2>Calculate Your GPA</h2>
+        <p>
+          Add each class, choose the letter grade, enter the credits, and select the course level.
+          Then press <strong>Calculate GPA</strong>.
+        </p>
+      </div>
+
+      <div class="calculator-box">
+        <h2>Classes</h2>
+
+        <div id="classList" class="class-list"></div>
+
+        <div class="button-row">
+          <button class="add-btn" type="button" onclick="addClassRow()">+ Add Another Class</button>
+          <button class="calc-btn" type="button" onclick="calculateGPA()">Calculate GPA</button>
+        </div>
+      </div>
+
+      <div class="results-box">
+        <h2>Results</h2>
+
+        <div class="results-grid">
+          <div class="result-card">
+            <h3>Total Classes</h3>
+            <div class="result-number" id="totalClasses">0</div>
+          </div>
+
+          <div class="result-card">
+            <h3>Total Credits</h3>
+            <div class="result-number" id="totalCredits">0.00</div>
+          </div>
+
+          <div class="result-card">
+            <h3>Unweighted GPA</h3>
+            <div class="result-number" id="unweightedGPA">0.00</div>
+          </div>
+
+          <div class="result-card">
+            <h3>Weighted GPA</h3>
+            <div class="result-number" id="weightedGPA">0.00</div>
+          </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
+        <p class="small-note">
+          Weighted GPA here uses a simple bonus system:
+          <strong>Honors = +0.5</strong>, <strong>AP/IB/Dual Enrollment = +1.0</strong>.
+          You can change that easily later if your school uses a different scale.
+        </p>
+      </div>
 
-          <div class="welcome-box">
-            <h2>GPA Calculator</h2>
-            <p>Coming Soon!</p>
+      <div class="tips-box">
+        <h2>How It Works</h2>
+        <p>
+          Unweighted GPA uses the standard 4.0 scale. Weighted GPA adds bonus points for harder classes.
+          Credits matter, so a 4-credit class affects your GPA more than a 1-credit class.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let classCount = 0;
+
+    function addClassRow() {
+      classCount++;
+
+      const classList = document.getElementById("classList");
+
+      const row = document.createElement("div");
+      row.className = "class-row";
+
+      row.innerHTML = `
+        <h3>Class ${classCount}</h3>
+
+        <div class="row-grid">
+          <div class="field">
+            <label>Class Name</label>
+            <input type="text" class="class-name" placeholder="Example: English 1101">
           </div>
-          <div class = "inputs">
-            <form action =/"action_page.php">
-              <label for = "class">Class:</label>
-              <input type = "text" id="class" name="class">
-            </form>
+
+          <div class="field">
+            <label>Letter Grade</label>
+            <select class="grade">
+              <option value="4.0">A</option>
+              <option value="3.0">B</option>
+              <option value="2.0">C</option>
+              <option value="1.0">D</option>
+              <option value="0.0">F</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Credits</label>
+            <input type="number" class="credits" min="0" step="0.5" value="1">
+          </div>
+
+          <div class="field">
+            <label>Course Level</label>
+            <select class="level">
+              <option value="0">Regular</option>
+              <option value="0.5">Honors</option>
+              <option value="1">AP / IB / Dual Enrollment</option>
+            </select>
           </div>
         </div>
-  </body>
+
+        <div class="class-actions">
+          <button type="button" class="remove-btn">Remove</button>
+        </div>
+      `;
+
+      const removeButton = row.querySelector(".remove-btn");
+      removeButton.addEventListener("click", function () {
+        row.remove();
+        updateClassNumbers();
+        calculateGPA();
+      });
+
+      classList.appendChild(row);
+    }
+
+    function updateClassNumbers() {
+      const rows = document.querySelectorAll(".class-row");
+      rows.forEach((row, index) => {
+        const heading = row.querySelector("h3");
+        heading.textContent = `Class ${index + 1}`;
+      });
+      classCount = rows.length;
+    }
+
+    function calculateGPA() {
+      const rows = document.querySelectorAll(".class-row");
+
+      let totalClasses = 0;
+      let totalCredits = 0;
+      let unweightedQualityPoints = 0;
+      let weightedQualityPoints = 0;
+
+      rows.forEach(row => {
+        const grade = parseFloat(row.querySelector(".grade").value);
+        const credits = parseFloat(row.querySelector(".credits").value);
+        const levelBonus = parseFloat(row.querySelector(".level").value);
+
+        if (!isNaN(grade) && !isNaN(credits) && credits > 0) {
+          totalClasses++;
+          totalCredits += credits;
+          unweightedQualityPoints += grade * credits;
+          weightedQualityPoints += (grade + levelBonus) * credits;
+        }
+      });
+
+      const unweightedGPA = totalCredits > 0 ? unweightedQualityPoints / totalCredits : 0;
+      const weightedGPA = totalCredits > 0 ? weightedQualityPoints / totalCredits : 0;
+
+      document.getElementById("totalClasses").textContent = totalClasses;
+      document.getElementById("totalCredits").textContent = totalCredits.toFixed(2);
+      document.getElementById("unweightedGPA").textContent = unweightedGPA.toFixed(2);
+      document.getElementById("weightedGPA").textContent = weightedGPA.toFixed(2);
+    }
+
+    // Start with 4 blank class rows
+    addClassRow();
+    addClassRow();
+    addClassRow();
+    addClassRow();
+  </script>
+</body>
 </html>
