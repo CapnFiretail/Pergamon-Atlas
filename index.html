@@ -120,18 +120,20 @@
   ========================== */
   .ad-box{
     width:90%;
-    height:200px;
     margin-top:20px;
     background-color:#333;
-    color:white;
-    padding:20px 1px;
     border-radius:8px;
-    text-align:center;
-    font-size:18px;
     border:2px solid white;
+    padding:12px;
     margin-left:auto;
     margin-right:auto;
+    text-align:center;
   }
+
+/* Ad itself */
+.ad-box ins{
+  width:100%;
+}
 
   /* =========================
      MAIN CONTENT AREA
@@ -191,7 +193,19 @@
       <a href="/games">Games</a>
       <a href="/help">Help</a>
 
-      <div class="ad-box">Ad Space</div>
+      <div class="ad-box">
+        <!-- Sidebar Ad -->
+        <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-client="ca-pub-4717716734064612"
+          data-ad-slot="8448245585"
+          data-ad-format="auto"
+          data-full-width-responsive="true"></ins>
+        <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+
+      </div>
 
     </div>
 
