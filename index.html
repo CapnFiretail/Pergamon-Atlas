@@ -121,13 +121,19 @@
   .ad-box{
     width:90%;
     margin:25px auto;
-    padding:10px;
+    padding:20px;
     background:#ffffff;
     border-radius:10px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-  }
+  {
+    
+  /* NEW: outline placeholder */
+  border:2px dashed #999;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:120px; /* ensures space shows even before ad loads */
+}
 
 /* Ad itself */
 .ad-box ins{
@@ -192,27 +198,21 @@
       <a href="/tools">Tools</a>
       <a href="/games">Games</a>
       <a href="/help">Help</a>
-
-      <div class="ad-box">
-        <div>
-          <div class="ad-label">Advertisement</div>
-      
-          <ins class="adsbygoogle"
-               style="display:block"
-               data-ad-client="ca-pub-4717716734064612"
-               data-ad-slot="8448245585"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-      
-          <script>
-               (adsbygoogle = window.adsbygoogle || []).push({});
-          </script>
-      
-          </div>
-
-        </div>
-
-      </div>
+    
+    </div>
+    
+    <div class="ad-box">
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-4717716734064612"
+        data-ad-slot="8448245585"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
 
     <!-- Main Content -->
     <div class="main-content">
