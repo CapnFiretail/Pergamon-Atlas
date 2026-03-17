@@ -443,6 +443,7 @@
           <button class="add-btn" type="button" onclick="addClassRow()">+ Add Another Class</button>
           <button class="calc-btn" type="button" onclick="calculateGPA()">Calculate GPA</button>
           <button class="add-btn" type="button" onclick="resetClasses()">Reset Classes</button>
+          <button class="add-btn" type="button" onclick="resetClasses()">Reset Classes</button>
         </div>
       </div>
 
@@ -495,14 +496,17 @@
       return document.querySelector('input[name="studentType"]:checked').value;
     }
 
-    function getClassWeightValue() {
-      const studentType = getStudentType();
-      return studentType === "college" ? 3 : 1;
-    }
-
     function getCreditsLabelText() {
       const studentType = getStudentType();
-      return studentType === "college" ? "Credit Hours" : "Class Weight";
+      return studentType === "college" ? "Credit Hours" : "";
+    }
+    
+    function convertGradeToPoints(numberGrade) {
+      if (numberGrade >= 90) return 4.0;
+      if (numberGrade >= 80) return 3.0;
+      if (numberGrade >= 70) return 2.0;
+      if (numberGrade >= 60) return 1.0;
+      return 0.0;
     }
     
     function resetClasses() {
@@ -518,39 +522,46 @@
       calculateGPA();
     }
     
+    function resetClasses() {
+      const classList = document.getElementById("classList");
+      classList.innerHTML = "";
+      classCount = 0;
+    
+      addClassRow();
+      addClassRow();
+      addClassRow();
+      addClassRow();
+    
+      calculateGPA();
+    }
+    
     function addClassRow() {
       classCount++;
       const studentType = getStudentType();
       const classList = document.getElementById("classList");
-
+    
       const row = document.createElement("div");
       row.className = "class-row";
-
+    
       row.innerHTML = `
         <h3>Class ${classCount}</h3>
-
+    
         <div class="row-grid">
           <div class="field">
             <label>Class Name</label>
             <input type="text" class="class-name" placeholder="Example: English 1101">
           </div>
-
+    
           <div class="field">
-            <label>Letter Grade</label>
-            <select class="grade">
-              <option value="4.0">A</option>
-              <option value="3.0">B</option>
-              <option value="2.0">C</option>
-              <option value="1.0">D</option>
-              <option value="0.0">F</option>
-            </select>
+            <label>Number Grade</label>
+            <input type="number" class="grade" min="0" max="100" step="0.1" placeholder="Enter grade">
           </div>
-
-          <div class="field credit-field">
-            <label>${getCreditsLabelText()}</label>
-            <input type="number" class="credits" min="0" step="0.5" value="${getClassWeightValue()}">
+    
+          <div class="field credit-field" style="${studentType === 'highschool' ? 'display:none;' : ''}">
+            <label>Credit Hours</label>
+            <input type="number" class="credits" min="0" step="0.5" value="3">
           </div>
-
+    
           <div class="field level-field" style="${studentType === 'college' ? 'display:none;' : ''}">
             <label>Course Level</label>
             <select class="level">
@@ -560,19 +571,19 @@
             </select>
           </div>
         </div>
-
+    
         <div class="class-actions">
           <button type="button" class="remove-btn">Remove</button>
         </div>
       `;
-
+    
       const removeButton = row.querySelector(".remove-btn");
       removeButton.addEventListener("click", function () {
         row.remove();
         updateClassNumbers();
         calculateGPA();
       });
-
+    
       classList.appendChild(row);
     }
 
@@ -588,87 +599,92 @@
     function switchMode() {
       const studentType = getStudentType();
       const rows = document.querySelectorAll(".class-row");
-
+    
       document.getElementById("creditsLabel").textContent =
-        studentType === "college" ? "Total Credits" : "Total Classes Weighted";
-
+        studentType === "college" ? "Total Credits" : "Total Classes";
+    
       document.getElementById("weightedLabel").textContent =
-        studentType === "college" ? "College GPA" : "Weighted GPA";
-
+        studentType === "college" ? "GPA" : "Weighted GPA";
+    
       document.getElementById("resultsNote").innerHTML =
         studentType === "college"
-          ? `College GPA is usually based on <strong>credit hours</strong> and typically does not include Honors or AP bonus points.`
+          ? `College GPA is based on <strong>credit hours</strong>. Larger classes affect GPA more than smaller ones.`
           : `High school weighted GPA uses a simple bonus system:
              <strong>Honors = +0.5</strong>, <strong>AP / IB / Dual Enrollment = +1.0</strong>.`;
-
+    
       document.getElementById("tipsText").textContent =
         studentType === "college"
-          ? "In college mode, GPA is calculated using grade points multiplied by credit hours. More credit hours means the course impacts your GPA more."
-          : "In high school mode, each class is usually counted equally, and weighted classes like Honors or AP can add bonus GPA points.";
-
+          ? "In college mode, number grades are converted to GPA points, then weighted by credit hours."
+          : "In high school mode, number grades are converted to GPA points, and weighted classes can add bonus GPA points.";
+    
       rows.forEach(row => {
-        const creditLabel = row.querySelector(".credit-field label");
+        const creditField = row.querySelector(".credit-field");
         const creditInput = row.querySelector(".credits");
         const levelField = row.querySelector(".level-field");
         const levelSelect = row.querySelector(".level");
-
-        creditLabel.textContent = getCreditsLabelText();
-
+    
         if (studentType === "college") {
-          creditInput.value = 3;
+          creditField.style.display = "flex";
           levelField.style.display = "none";
+          if (creditInput) creditInput.value = 3;
           if (levelSelect) levelSelect.value = "0";
         } else {
-          creditInput.value = 1;
+          creditField.style.display = "none";
           levelField.style.display = "flex";
+          if (creditInput) creditInput.value = 3;
         }
       });
-
+    
       calculateGPA();
     }
 
     function calculateGPA() {
       const studentType = getStudentType();
       const rows = document.querySelectorAll(".class-row");
-
+    
       let totalClasses = 0;
       let totalCredits = 0;
       let unweightedQualityPoints = 0;
       let weightedQualityPoints = 0;
-
+    
       rows.forEach(row => {
-        const grade = parseFloat(row.querySelector(".grade").value);
-        const credits = parseFloat(row.querySelector(".credits").value);
+        const numberGrade = parseFloat(row.querySelector(".grade").value);
+        const gradePoints = convertGradeToPoints(numberGrade);
+        const creditsElement = row.querySelector(".credits");
+        const credits = creditsElement ? parseFloat(creditsElement.value) : 0;
         const levelElement = row.querySelector(".level");
         const levelBonus = levelElement ? parseFloat(levelElement.value) : 0;
-
-        if (!isNaN(grade) && !isNaN(credits) && credits > 0) {
+    
+        if (!isNaN(numberGrade)) {
           totalClasses++;
-          totalCredits += credits;
-
+    
           if (studentType === "college") {
-            unweightedQualityPoints += grade * credits;
-            weightedQualityPoints += grade * credits;
+            if (!isNaN(credits) && credits > 0) {
+              totalCredits += credits;
+              unweightedQualityPoints += gradePoints * credits;
+              weightedQualityPoints += gradePoints * credits;
+            }
           } else {
-            unweightedQualityPoints += grade;
-            weightedQualityPoints += (grade + levelBonus);
+            unweightedQualityPoints += gradePoints;
+            weightedQualityPoints += gradePoints + levelBonus;
           }
         }
       });
-
+    
       let unweightedGPA = 0;
       let weightedGPA = 0;
-
+    
       if (studentType === "college") {
         unweightedGPA = totalCredits > 0 ? unweightedQualityPoints / totalCredits : 0;
         weightedGPA = totalCredits > 0 ? weightedQualityPoints / totalCredits : 0;
+        document.getElementById("totalCredits").textContent = totalCredits.toFixed(2);
       } else {
         unweightedGPA = totalClasses > 0 ? unweightedQualityPoints / totalClasses : 0;
         weightedGPA = totalClasses > 0 ? weightedQualityPoints / totalClasses : 0;
+        document.getElementById("totalCredits").textContent = totalClasses;
       }
-
+    
       document.getElementById("totalClasses").textContent = totalClasses;
-      document.getElementById("totalCredits").textContent = totalCredits.toFixed(2);
       document.getElementById("unweightedGPA").textContent = unweightedGPA.toFixed(2);
       document.getElementById("weightedGPA").textContent = weightedGPA.toFixed(2);
     }
