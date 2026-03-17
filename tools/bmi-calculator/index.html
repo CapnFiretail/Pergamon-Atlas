@@ -192,6 +192,10 @@
       background-color: white;
     }
 
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
     .button-row {
       display: flex;
       gap: 14px;
@@ -256,11 +260,20 @@
       font-weight: bold;
     }
 
+    .category-text {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
     .small-note {
       color: #555;
       margin-top: 15px;
       font-size: 15px;
       line-height: 1.5;
+    }
+
+    .hidden {
+      display: none;
     }
 
     /* =========================
@@ -303,9 +316,6 @@
 </head>
 
 <body>
-  <!-- =========================
-       TOP HEADER
-  ========================== -->
   <div class="topbar">
     <div class="brand">
       <div class="logo-box">
@@ -317,12 +327,7 @@
     <button class="suggest-btn">Website Suggestions</button>
   </div>
 
-  <!-- =========================
-       PAGE LAYOUT
-  ========================== -->
   <div class="layout">
-
-    <!-- Sidebar Navigation -->
     <div class="sidebar">
       <a href="/">Home</a>
       <a href="/tools">Tools</a>
@@ -339,9 +344,7 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-
       <div class="welcome-box">
         <h2>Calculate Your BMI</h2>
         <p>
@@ -354,38 +357,51 @@
         <h2>BMI Inputs</h2>
 
         <div class="input-grid">
-          <div class="field">
+          <div class="field full-width">
             <label for="unitType">Unit System</label>
-            <select id="unitType">
+            <select id="unitType" onchange="toggleUnits()">
               <option value="us">U.S. Units (feet, inches, pounds)</option>
               <option value="metric">Metric (centimeters, kilograms)</option>
             </select>
           </div>
 
-          <div class="field">
-            <label for="age">Age</label>
-            <input type="number" id="age" min="1" placeholder="Enter age">
+          <div id="usFields" class="full-width">
+            <div class="input-grid">
+              <div class="field">
+                <label for="heightFeet">Height (Feet)</label>
+                <input type="number" id="heightFeet" min="0" placeholder="Feet">
+              </div>
+
+              <div class="field">
+                <label for="heightInches">Height (Inches)</label>
+                <input type="number" id="heightInches" min="0" placeholder="Inches">
+              </div>
+
+              <div class="field full-width">
+                <label for="weightPounds">Weight (Pounds)</label>
+                <input type="number" id="weightPounds" min="0" step="0.1" placeholder="Pounds">
+              </div>
+            </div>
           </div>
 
-          <div class="field">
-            <label for="heightFeet">Height (Feet)</label>
-            <input type="number" id="heightFeet" min="0" placeholder="Feet">
-          </div>
+          <div id="metricFields" class="full-width hidden">
+            <div class="input-grid">
+              <div class="field">
+                <label for="heightCm">Height (Centimeters)</label>
+                <input type="number" id="heightCm" min="0" step="0.1" placeholder="Centimeters">
+              </div>
 
-          <div class="field">
-            <label for="heightInches">Height (Inches)</label>
-            <input type="number" id="heightInches" min="0" placeholder="Inches">
-          </div>
-
-          <div class="field">
-            <label for="weightPounds">Weight (Pounds)</label>
-            <input type="number" id="weightPounds" min="0" step="0.1" placeholder="Pounds">
+              <div class="field">
+                <label for="weightKg">Weight (Kilograms)</label>
+                <input type="number" id="weightKg" min="0" step="0.1" placeholder="Kilograms">
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="button-row">
-          <button class="calc-btn" type="button">Calculate BMI</button>
-          <button class="reset-btn" type="button">Reset</button>
+          <button class="calc-btn" type="button" onclick="calculateBMI()">Calculate BMI</button>
+          <button class="reset-btn" type="button" onclick="resetBMI()">Reset</button>
         </div>
       </div>
 
@@ -400,12 +416,12 @@
 
           <div class="result-card">
             <h3>Category</h3>
-            <div class="result-number" id="bmiCategory" style="font-size:22px;">--</div>
+            <div class="category-text" id="bmiCategory">--</div>
           </div>
 
           <div class="result-card">
-            <h3>Healthy Range</h3>
-            <div class="result-number" id="healthyRange" style="font-size:20px;">--</div>
+            <h3>Healthy Weight Range</h3>
+            <div class="category-text" id="healthyRange">--</div>
           </div>
         </div>
 
@@ -421,11 +437,93 @@
           categories like underweight, normal weight, overweight, or obesity.
         </p>
       </div>
-
     </div>
   </div>
 
   <script>
+    function toggleUnits() {
+      const unitType = document.getElementById("unitType").value;
+      const usFields = document.getElementById("usFields");
+      const metricFields = document.getElementById("metricFields");
+
+      if (unitType === "us") {
+        usFields.classList.remove("hidden");
+        metricFields.classList.add("hidden");
+      } else {
+        usFields.classList.add("hidden");
+        metricFields.classList.remove("hidden");
+      }
+    }
+
+    function getBMICategory(bmi) {
+      if (bmi < 18.5) return "Underweight";
+      if (bmi < 25) return "Normal";
+      if (bmi < 30) return "Overweight";
+      return "Obese";
+    }
+
+    function calculateBMI() {
+      const unitType = document.getElementById("unitType").value;
+      let bmi = 0;
+      let healthyRangeText = "--";
+
+      if (unitType === "us") {
+        const feet = parseFloat(document.getElementById("heightFeet").value) || 0;
+        const inches = parseFloat(document.getElementById("heightInches").value) || 0;
+        const pounds = parseFloat(document.getElementById("weightPounds").value) || 0;
+
+        const totalInches = (feet * 12) + inches;
+
+        if (totalInches > 0 && pounds > 0) {
+          bmi = (pounds / (totalInches * totalInches)) * 703;
+
+          const lowWeight = (18.5 * totalInches * totalInches) / 703;
+          const highWeight = (24.9 * totalInches * totalInches) / 703;
+          healthyRangeText = `${lowWeight.toFixed(1)} - ${highWeight.toFixed(1)} lbs`;
+        }
+      } else {
+        const heightCm = parseFloat(document.getElementById("heightCm").value) || 0;
+        const weightKg = parseFloat(document.getElementById("weightKg").value) || 0;
+        const heightM = heightCm / 100;
+
+        if (heightM > 0 && weightKg > 0) {
+          bmi = weightKg / (heightM * heightM);
+
+          const lowWeight = 18.5 * heightM * heightM;
+          const highWeight = 24.9 * heightM * heightM;
+          healthyRangeText = `${lowWeight.toFixed(1)} - ${highWeight.toFixed(1)} kg`;
+        }
+      }
+
+      if (bmi > 0) {
+        document.getElementById("bmiResult").textContent = bmi.toFixed(1);
+        document.getElementById("bmiCategory").textContent = getBMICategory(bmi);
+        document.getElementById("healthyRange").textContent = healthyRangeText;
+      } else {
+        document.getElementById("bmiResult").textContent = "0.0";
+        document.getElementById("bmiCategory").textContent = "--";
+        document.getElementById("healthyRange").textContent = "--";
+      }
+    }
+
+    function resetBMI() {
+      document.getElementById("unitType").value = "us";
+
+      document.getElementById("heightFeet").value = "";
+      document.getElementById("heightInches").value = "";
+      document.getElementById("weightPounds").value = "";
+
+      document.getElementById("heightCm").value = "";
+      document.getElementById("weightKg").value = "";
+
+      document.getElementById("bmiResult").textContent = "0.0";
+      document.getElementById("bmiCategory").textContent = "--";
+      document.getElementById("healthyRange").textContent = "--";
+
+      toggleUnits();
+    }
+
+    toggleUnits();
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 </body>
