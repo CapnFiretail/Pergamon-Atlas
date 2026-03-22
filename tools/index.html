@@ -17,6 +17,7 @@
       margin: 0;
       font-family: Georgia, serif;
       background-color: #e9e9e9;
+      color: #111;
     }
 
     /* =========================
@@ -68,17 +69,26 @@
     .suggest-btn {
       background-color: white;
       color: black;
-      border: none;
-      padding: 12px 20px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 8px;
+      border: 1px solid #cfcfcf;
+      padding: 12px 22px;
+      font-size: 17px;
       font-family: Georgia, serif;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
       flex-shrink: 0;
     }
 
     .suggest-btn:hover {
-      background-color: #ddd;
+      background-color: #f2f2f2;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.24);
+    }
+
+    .suggest-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
     }
 
     /* =========================
@@ -110,6 +120,7 @@
       color: white;
       text-decoration: none;
       font-size: 24px;
+      transition: background-color 0.2s ease;
     }
 
     .sidebar a:hover {
@@ -186,13 +197,14 @@
       font-weight: bold;
       text-align: center;
       padding: 15px;
-      transition: background-color 0.2s ease, transform 0.2s ease;
+      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
       box-sizing: border-box;
     }
 
     .tool-card:hover {
       background-color: #f5f5f5;
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.14);
     }
 
     /* =========================
@@ -217,7 +229,7 @@
     }
 
     /* =========================
-       TABLET
+       TABLET / MOBILE
     ========================= */
     @media (max-width: 900px) {
       .topbar {
@@ -259,8 +271,7 @@
       }
 
       .ad-box {
-        width: 92%;
-        margin: 18px auto 0 auto;
+        display: none;
       }
     }
 
@@ -289,7 +300,7 @@
       }
 
       .suggest-btn {
-        font-size: 16px;
+        font-size: 15px;
         padding: 10px 16px;
       }
 
@@ -323,8 +334,7 @@
         padding: 13px 14px;
       }
 
-      .content-ad-box,
-      .ad-box {
+      .content-ad-box {
         min-height: 100px;
         padding: 16px;
       }
