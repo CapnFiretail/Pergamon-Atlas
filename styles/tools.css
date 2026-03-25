@@ -1,1 +1,52 @@
+.tool-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:18px;
+}
 
+.tool-card{
+  display:block;
+  text-decoration:none;
+  color:black;
+  background-color:#ffffff;
+  border-radius:12px;
+  padding:22px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  transition:background-color 0.2s ease, transform 0.2s ease;
+}
+
+.tool-card:hover{
+  background-color:#f5f5f5;
+  transform:translateY(-2px);
+}
+
+.tool-card strong{
+  display:block;
+  font-size:22px;
+  margin-bottom:8px;
+}
+
+.tool-card span{
+  font-size:17px;
+  line-height:1.4;
+  display:block;
+}
+
+@media (max-width:600px){
+  .tool-grid{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+
+  .tool-card{
+    padding:18px;
+  }
+
+  .tool-card strong{
+    font-size:20px;
+  }
+
+  .tool-card span{
+    font-size:16px;
+  }
+}
