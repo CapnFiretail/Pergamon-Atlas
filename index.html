@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,24 +65,40 @@
       line-height:1.05;
     }
 
+    /* =========================
+       ACCOUNT BUTTON
+    ========================== */
     .account-btn{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:10px;
       background-color:#111;
       color:#fff;
       border:1px solid #333;
-      padding:8px 14px;
+      padding:6px 12px;
       font-family:Georgia, serif;
       font-size:15px;
       cursor:pointer;
-      transition:0.2s;
+      transition:all 0.2s ease;
     }
 
     .account-btn:hover{
-      background-color:#f2f2f2;
+      background-color:#1a1a1a;
+      border-color:#c9a34a;
       transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(0,0,0,0.24);
+    }
+
+    .avatar{
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      background-color:#c9a34a;
+      color:black;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+      font-size:14px;
     }
 
     /* =========================
@@ -122,9 +137,6 @@
       background-color:#222;
     }
 
-    /* =========================
-       SIDEBAR AD SPACE
-    ========================== */
     .ad-box{
       width:90%;
       margin:25px auto;
@@ -139,20 +151,12 @@
       box-sizing:border-box;
     }
 
-    .ad-box ins{
-      display:block;
-      width:100%;
-      max-width:100%;
-      background-color:#ffffff;
-    }
-
     /* =========================
-       MAIN CONTENT AREA
+       MAIN CONTENT
     ========================== */
     .main-content{
       flex:1;
       padding:30px;
-      background-color:#e9e9e9;
     }
 
     .hero-box,
@@ -166,14 +170,12 @@
 
     .hero-box h2{
       margin-top:0;
-      margin-bottom:12px;
       font-size:42px;
     }
 
     .hero-box p{
       font-size:21px;
       line-height:1.6;
-      margin-bottom:24px;
     }
 
     .hero-actions{
@@ -183,13 +185,11 @@
     }
 
     .hero-btn{
-      display:inline-block;
-      text-decoration:none;
       padding:13px 22px;
       border-radius:10px;
       font-size:18px;
       font-weight:bold;
-      transition:background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      text-decoration:none;
     }
 
     .hero-btn.primary{
@@ -197,25 +197,9 @@
       color:white;
     }
 
-    .hero-btn.primary:hover{
-      background-color:#222;
-      transform:translateY(-1px);
-    }
-
     .hero-btn.secondary{
       background-color:#efefef;
       color:black;
-    }
-
-    .hero-btn.secondary:hover{
-      background-color:#dddddd;
-      transform:translateY(-1px);
-    }
-
-    .section-box h3{
-      margin-top:0;
-      margin-bottom:18px;
-      font-size:30px;
     }
 
     .feature-grid{
@@ -225,22 +209,9 @@
     }
 
     .feature-card{
-      background-color:#f9f9f9;
-      border-radius:12px;
+      background:#f9f9f9;
       padding:22px;
-      box-shadow:0 1px 5px rgba(0,0,0,0.08);
-    }
-
-    .feature-card h4{
-      margin-top:0;
-      margin-bottom:10px;
-      font-size:24px;
-    }
-
-    .feature-card p{
-      margin:0;
-      font-size:18px;
-      line-height:1.5;
+      border-radius:12px;
     }
 
     .tool-preview-grid{
@@ -251,247 +222,81 @@
 
     .tool-preview{
       display:block;
+      padding:22px;
+      background:white;
+      border-radius:12px;
       text-decoration:none;
       color:black;
-      background-color:#ffffff;
-      border-radius:12px;
-      padding:22px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.1);
-      transition:background-color 0.2s ease, transform 0.2s ease;
-    }
-
-    .tool-preview:hover{
-      background-color:#f5f5f5;
-      transform:translateY(-2px);
-    }
-
-    .tool-preview strong{
-      display:block;
-      font-size:22px;
-      margin-bottom:8px;
-    }
-
-    .tool-preview span{
-      font-size:17px;
-      line-height:1.4;
-    }
-
-    .content-ad-box{
-      background:#ffffff;
-      border:2px dashed #999;
-      border-radius:12px;
-      padding:20px;
-      min-height:120px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      margin:25px 0;
-      box-sizing:border-box;
-    }
-
-    .content-ad-box ins{
-      display:block;
-      width:100%;
     }
 
     /* =========================
-       TABLET / MOBILE
+       MOBILE
     ========================== */
-    @media (max-width: 900px){
-      .topbar{
-        padding:18px 22px;
-      }
-
-      .brand h1{
-        font-size:34px;
-      }
-
-      .logo-box{
-        width:96px;
-        height:74px;
-      }
-
-      .layout{
-        flex-direction:column;
-        min-height:auto;
-      }
-
-      .main-content{
-        order:1;
-        padding:22px;
-      }
-
-      .sidebar{
-        order:2;
-        width:100%;
-        padding-top:0;
-        padding-bottom:20px;
-        align-items:stretch;
-      }
-
-      .sidebar a{
-        text-align:center;
-        font-size:20px;
-        padding:14px 18px;
-        border-top:1px solid #222;
-      }
-
-      .ad-box{
+    @media (max-width: 600px){
+      .account-btn span{
         display:none;
       }
 
-      .hero-box h2{
-        font-size:32px;
+      .account-btn{
+        padding:6px;
       }
 
-      .hero-box p{
-        font-size:19px;
-      }
-    }
-
-    /* =========================
-       PHONE
-    ========================== */
-    @media (max-width: 600px){
       .topbar{
         flex-direction:column;
         align-items:flex-start;
-        padding:16px 18px;
-      }
-     
-      .account-btn{
-        display:none;
-      }
-      
-      .brand{
-        gap:12px;
-        width:100%;
-      }
-
-      .logo-box{
-        width:72px;
-        height:56px;
       }
 
       .brand h1{
         font-size:28px;
       }
 
-      .suggest-btn{
-        font-size:15px;
-        padding:10px 16px;
-      }
-
-      .main-content{
-        padding:16px;
-      }
-
-      .hero-box,
-      .section-box{
-        padding:20px;
-        margin-bottom:18px;
-      }
-
-      .hero-box h2{
-        font-size:26px;
-      }
-
-      .hero-box p{
-        font-size:17px;
-      }
-
-      .hero-actions{
+      .layout{
         flex-direction:column;
       }
 
-      .hero-btn{
+      .sidebar{
         width:100%;
-        box-sizing:border-box;
-        text-align:center;
-      }
-
-      .section-box h3{
-        font-size:24px;
-      }
-
-      .feature-grid,
-      .tool-preview-grid{
-        grid-template-columns:1fr;
-        gap:14px;
-      }
-
-      .feature-card h4{
-        font-size:21px;
-      }
-
-      .feature-card p,
-      .tool-preview span{
-        font-size:16px;
-      }
-
-      .tool-preview strong{
-        font-size:20px;
-      }
-
-      .sidebar a{
-        font-size:18px;
-        padding:13px 14px;
-      }
-
-      .content-ad-box{
-        min-height:100px;
-        padding:16px;
       }
     }
+
   </style>
 </head>
 
 <body>
 
-  <!-- =========================
-       TOP HEADER
-  ========================== -->
+  <!-- HEADER -->
   <div class="topbar">
     <div class="brand">
       <div class="logo-box">
-        <img src="/images/logo.png" alt="Pergamon Atlas Logo">
+        <img src="/images/logo.png">
       </div>
       <h1>Pergamon Atlas</h1>
     </div>
 
-    <button class="account-btn">Account</button>
+    <div class="account-btn">
+      <div class="avatar">C</div>
+      <span>Account</span>
+    </div>
   </div>
 
-  <!-- =========================
-       PAGE LAYOUT
-  ========================== -->
   <div class="layout">
 
-    <!-- Sidebar Navigation -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
       <a href="/">Home</a>
       <a href="/tools">Tools</a>
       <a href="/games">Games</a>
       <a href="/help">Help</a>
 
-      <div class="ad-box">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-4717716734064612"
-             data-ad-slot="8448245585"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-      </div>
+      <div class="ad-box">Ad Space</div>
     </div>
 
-    <!-- Main Content -->
+    <!-- MAIN -->
     <div class="main-content">
 
       <div class="hero-box">
         <h2>Welcome to Pergamon Atlas</h2>
-        <p>
-          The Internet’s Living Library. 
-        </p>
+        <p>The Internet’s Living Library.</p>
 
         <div class="hero-actions">
           <a href="/tools" class="hero-btn primary">Explore Tools</a>
@@ -502,64 +307,27 @@
       <div class="section-box">
         <h3>What is the Pergamon Atlas?</h3>
         <div class="feature-grid">
+
           <div class="feature-card">
             <h4>The Vision</h4>
-            <p>To create a living atlas of tools, knowledge, creativity, and everything beyond—designed to grow without limit.</p>
+            <p>To create a living atlas of tools, knowledge, and creativity.</p>
           </div>
 
           <div class="feature-card">
             <h4>Contribute</h4>
-            <p>Help expand Pergamon Atlas. Suggest tools, ideas, or features and help grow the atlas!</p>
+            <p>Help expand the atlas with ideas and tools.</p>
           </div>
 
           <div class="feature-card">
             <h4>Trust the Process</h4>
-            <p>Iron Man built it in a cave. I built it in my physics lecture... What the hell's a Newton?</p>
+            <p>Built somewhere between ambition and a physics lecture.</p>
           </div>
-        </div>
-      </div>
 
-      <div class="content-ad-box">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-4717716734064612"
-             data-ad-slot="8448245585"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-      </div>
-
-      <div class="section-box">
-        <h3>Popular Tools</h3>
-        <div class="tool-preview-grid">
-          <a href="/tools/gpa-calculator" class="tool-preview">
-            <strong>GPA Calculator</strong>
-            <span>Figure out grades quickly and keep track of academic performance.</span>
-          </a>
-
-          <a href="/tools/bmi-calculator" class="tool-preview">
-            <strong>BMI Calculator</strong>
-            <span>Get a fast body mass index estimate with a clean, simple layout.</span>
-          </a>
-
-          <a href="/tools/tip-calculator" class="tool-preview">
-            <strong>Tip Calculator</strong>
-            <span>Split bills, calculate tips, and get totals in seconds.</span>
-          </a>
-
-          <a href="/tools/compound-interest-calculator" class="tool-preview">
-            <strong>Compound Interest</strong>
-            <span>See how money can grow over time with recurring contributions.</span>
-          </a>
         </div>
       </div>
 
     </div>
   </div>
-
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
 
 </body>
 </html>
