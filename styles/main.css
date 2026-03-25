@@ -72,7 +72,7 @@ body{
   content:"⌕";
   position:absolute;
   left:14px;
-  font-size:20px;
+  font-size:30px;
   color:#bfa04a;
   pointer-events:none;
 }
@@ -249,7 +249,7 @@ body{
 }
 
 .feature-card{
-  background-color:#000000;
+  background-color:#f9f9f9;
   border-radius:12px;
   padding:22px;
   box-shadow:0 1px 5px rgba(0,0,0,0.08);
