@@ -36,8 +36,22 @@
   ========================== -->
   <div class="layout">
 
-    <!-- Shared Sidebar -->
-    <div id="sidebar-container"></div>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+      <a href="/">Home</a>
+      <a href="/tools">Tools</a>
+      <a href="/games">Games</a>
+      <a href="/pages/help-page">Help</a>
+
+      <div class="ad-box">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-4717716734064612"
+             data-ad-slot="8448245585"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+      </div>
+    </div>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -110,16 +124,8 @@
   </div>
 
   <script>
-    fetch('/container/sidebar.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('sidebar-container').innerHTML = data;
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      });
-
-    window.addEventListener('load', function () {
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    });
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 
 </body>
