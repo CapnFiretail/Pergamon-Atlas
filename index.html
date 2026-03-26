@@ -12,59 +12,27 @@
 
 <body>
 
-  <!-- =========================
-       TOP HEADER
-  ========================== -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo-box">
-        <img src="/images/logo.png" alt="Pergamon Atlas Logo">
-      </div>
-      <h1>Pergamon Atlas</h1>
-    </div>
-
-    <div class="header-actions">
-      <div class="search-wrap">
-        <input type="text" class="search-bar" placeholder="Search the Atlas. (This dont work lol)">
-      </div>
-      <a href="pages/account-page" class="account-btn">Account</a>
-    </div>
-  </div>
+  <!-- Shared Header -->
+  <div id="header-container"></div>
 
   <!-- =========================
        PAGE LAYOUT
   ========================== -->
   <div class="layout">
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-      <a href="/">Home</a>
-      <a href="/tools">Tools</a>
-      <a href="/games">Games</a>
-      <a href="pages/help-page">Help</a>
-
-      <div class="ad-box">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-4717716734064612"
-             data-ad-slot="8448245585"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-      </div>
-    </div>
+    <!-- Shared Sidebar -->
+    <div id="sidebar-container"></div>
 
     <!-- Main Content -->
     <div class="main-content">
 
       <div class="hero-box">
         <h2>Welcome to Pergamon Atlas</h2>
-        <p>
-          The Internet’s Living Library.
-        </p>
+        <p>The Internet’s Living Library.</p>
 
         <div class="hero-actions">
           <a href="/tools" class="hero-btn primary">Explore Tools</a>
-          <a href="pages/suggestions-page" class="hero-btn secondary">Suggestions</a>
+          <a href="/pages/suggestions-page" class="hero-btn secondary">Suggestions</a>
         </div>
       </div>
 
@@ -126,8 +94,28 @@
   </div>
 
   <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    fetch('/container/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+
+        const headerTitle = document.getElementById('header-title');
+        if (headerTitle) {
+          headerTitle.textContent = 'Pergamon Atlas';
+        }
+      });
+
+    fetch('/container/sidebar.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('sidebar-container').innerHTML = data;
+
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      });
+
+    window.addEventListener('load', function () {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    });
   </script>
 
 </body>
