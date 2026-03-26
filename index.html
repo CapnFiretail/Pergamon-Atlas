@@ -12,8 +12,24 @@
 
 <body>
 
-  <!-- Shared Header -->
-  <div id="header-container"></div>
+  <!-- =========================
+       TOP HEADER
+  ========================== -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo-box">
+        <img src="/images/logo.png" alt="Pergamon Atlas Logo">
+      </div>
+      <h1>Pergamon Atlas</h1>
+    </div>
+
+    <div class="header-actions">
+      <div class="search-wrap">
+        <input type="text" class="search-bar" placeholder="Search the Atlas. (This dont work lol)">
+      </div>
+      <a href="/pages/account-page" class="account-btn">Account</a>
+    </div>
+  </div>
 
   <!-- =========================
        PAGE LAYOUT
@@ -94,22 +110,10 @@
   </div>
 
   <script>
-    fetch('/container/header.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('header-container').innerHTML = data;
-
-        const headerTitle = document.getElementById('header-title');
-        if (headerTitle) {
-          headerTitle.textContent = 'Pergamon Atlas';
-        }
-      });
-
     fetch('/container/sidebar.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('sidebar-container').innerHTML = data;
-
         (adsbygoogle = window.adsbygoogle || []).push({});
       });
 
