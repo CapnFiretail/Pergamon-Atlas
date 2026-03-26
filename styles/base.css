@@ -1,13 +1,10 @@
 /* =========================================
-   PERGAMON ATLAS - BASE STYLES (main.css)
-   - Reset
-   - Global defaults
-   - Typography
+   PERGAMON ATLAS - MAIN (GLOBAL SYSTEM)
 ========================================= */
 
 
 /* =========================
-   RESET
+   RESET / GLOBAL
 ========================= */
 *,
 *::before,
@@ -15,10 +12,6 @@
   box-sizing:border-box;
 }
 
-
-/* =========================
-   GLOBAL
-========================= */
 body{
   margin:0;
   font-family:Georgia, serif;
@@ -26,35 +19,245 @@ body{
   color:#111;
 }
 
-
-/* =========================
-   TYPOGRAPHY
-========================= */
-
-/* Headings */
-h1, h2, h3, h4{
-  margin-top:0;
-  font-weight:bold;
-}
-
-/* Paragraphs */
-p{
-  margin-top:0;
-}
-
-/* Links */
 a{
-  color:inherit;
   text-decoration:none;
+  color:inherit;
 }
 
-/* Prevent weird visited color changes */
 a:visited{
   color:inherit;
 }
 
-/* Images */
 img{
   max-width:100%;
   display:block;
+}
+
+
+/* =========================
+   HEADER (TOPBAR)
+========================= */
+.topbar{
+  background-color:#000;
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 30px;
+  gap:20px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex:1;
+}
+
+.logo-box{
+  width:128px;
+  height:100px;
+  background-color:#222;
+  border:2px solid #000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.logo-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.brand h1{
+  margin:0;
+  font-size:clamp(24px, 3.1vw, 56px);
+  white-space:nowrap;
+}
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.search-wrap{
+  position:relative;
+}
+
+.search-wrap::before{
+  content:"⌕";
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#bfa04a;
+}
+
+.search-bar{
+  padding:11px 18px 11px 38px;
+  border-radius:999px;
+  border:1px solid rgba(201,163,74,0.35);
+  background:#111;
+  color:#fff;
+}
+
+.account-btn{
+  padding:11px 20px;
+  border-radius:999px;
+  background:#111;
+  color:#f8e8b0;
+  border:1px solid rgba(201,163,74,0.55);
+  font-weight:bold;
+}
+
+
+/* =========================
+   LAYOUT
+========================= */
+.layout{
+  display:flex;
+  min-height:calc(100vh - 140px);
+}
+
+.main-content{
+  flex:1;
+  padding:30px;
+}
+
+
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar{
+  width:220px;
+  background:#111;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.sidebar a{
+  width:100%;
+  padding:16px;
+  color:#fff;
+  font-size:22px;
+}
+
+.sidebar a:hover{
+  background:#222;
+}
+
+
+/* =========================
+   SHARED COMPONENTS
+========================= */
+
+/* Content boxes */
+.hero-box,
+.section-box{
+  background:#fff;
+  padding:30px;
+  margin-bottom:25px;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+.hero-actions{
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.hero-btn{
+  padding:12px 20px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.hero-btn.primary{
+  background:#000;
+  color:#fff;
+}
+
+.hero-btn.secondary{
+  background:#eee;
+}
+
+/* Cards / grids */
+.feature-grid,
+.tool-preview-grid,
+.tool-grid{
+  display:grid;
+  gap:20px;
+}
+
+.feature-grid{
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.tool-preview-grid,
+.tool-grid{
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.feature-card,
+.tool-preview,
+.tool-card{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+
+/* =========================
+   ADS
+========================= */
+.ad-box,
+.content-ad-box{
+  background:#fff;
+  border:2px dashed #999;
+  border-radius:12px;
+  padding:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width:900px){
+  .layout{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+  }
+}
+
+@media (max-width:600px){
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .header-actions{
+    display:none;
+  }
+
+  .hero-actions{
+    flex-direction:column;
+  }
+
+  .hero-btn{
+    width:100%;
+    text-align:center;
+  }
 }
