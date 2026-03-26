@@ -1,0 +1,23 @@
+/* =========================================
+   HOME PAGE STYLES
+========================================= */
+
+/* Center hero content slightly for homepage feel */
+.page-home .hero-box{
+  text-align:left;
+}
+
+/* Bigger hero title */
+.page-home .hero-box h2{
+  font-size:42px;
+}
+
+/* Slight spacing tweak */
+.page-home .feature-grid{
+  margin-top:10px;
+}
+
+/* Optional: emphasize first section */
+.page-home .section-box:first-of-type{
+  border-left:4px solid #bfa04a;
+}
