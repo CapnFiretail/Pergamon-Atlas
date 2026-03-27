@@ -16,7 +16,9 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  border-right: 1px solid #8a611c;
+
+  /* subtle divider instead of gold */
+  border-right: 1px solid #1a1a1a;
 }
 
 /* =========================
@@ -28,7 +30,7 @@
   box-sizing: border-box;
   text-decoration: none;
 
-  color: white;
+  color: #e5e5e5;
   font-size: 22px;
   font-weight: 600;
   padding: 16px 26px;
@@ -36,16 +38,16 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* hover */
 .sidebar a:hover{
   background: #141414;
   color: #f0d39b;
 }
 
+/* ACTIVE STATE (clean, no gold bar) */
 .sidebar a.active{
   background: #16120a;
   color: #e0b35a;
-  border-left: 3px solid #c28a2b;
-  padding-left: 23px;
 }
 
 /* =========================
@@ -73,7 +75,7 @@
 }
 
 /* =========================
-   MAIN CONTENT PLACEHOLDER
+   MAIN CONTENT
 ========================= */
 .main-content{
   flex: 1;
