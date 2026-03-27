@@ -1,4 +1,32 @@
 /* =========================
+   GLOBAL / PAGE FRAME
+========================= */
+html{
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing: inherit;
+}
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  background: #111;
+  color: white;
+  font-family: Georgia, serif;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #8a611c;
+  border-left: 2px solid #8a611c;
+  border-right: 2px solid #8a611c;
+  border-bottom: 2px solid #8a611c;
+}
+
+/* =========================
    TOP HEADER
 ========================= */
 .topbar{
@@ -7,14 +35,14 @@
   color: white;
 }
 
-/* inner layout */
+/* content padding goes here, not on the header background */
 .topbar-inner{
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 18px 28px;
-  box-sizing: border-box;
+  gap: 24px;
 }
 
 /* =========================
@@ -23,7 +51,9 @@
 .brand{
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .logo-box{
@@ -45,11 +75,12 @@
 
 .brand h1{
   margin: 0;
-  font-size: 50px;
+  font-size: 46px;
   font-weight: 800;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   line-height: 1;
   white-space: nowrap;
+  color: white;
 }
 
 /* =========================
@@ -59,6 +90,7 @@
   display: flex;
   align-items: center;
   gap: 18px;
+  flex-shrink: 0;
 }
 
 /* =========================
@@ -76,22 +108,22 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 15px;
-  opacity: 0.9;
+  font-size: 16px;
+  opacity: 0.95;
   pointer-events: none;
 }
 
 .search-wrap input{
-  width: 300px;
+  width: 280px;
   background: #1f1f1f;
   color: white;
   border: 1.5px solid #8a611c;
+  outline: none;
   border-radius: 999px;
   padding: 14px 20px 14px 46px;
   font-size: 16px;
   font-family: Georgia, serif;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  line-height: 1.2;
 }
 
 .search-wrap input::placeholder{
@@ -101,7 +133,7 @@
 
 .search-wrap input:focus{
   border-color: #c28a2b;
-  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.15);
+  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.18);
 }
 
 /* =========================
@@ -112,16 +144,17 @@
   color: #e0c38a;
   border: 1.5px solid #8a611c;
   border-radius: 999px;
-  padding: 14px 22px;
+  padding: 13px 20px;
   font-size: 16px;
   font-weight: 600;
   font-family: Georgia, serif;
+  line-height: 1.2;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .account-btn:hover{
-  background: #211a10;
+  background: rgba(194, 138, 43, 0.12);
+  color: white;
   border-color: #c28a2b;
-  color: #f0d39b;
 }
