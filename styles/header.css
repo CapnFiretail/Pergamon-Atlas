@@ -77,12 +77,13 @@ body{
 
 .brand h1{
   margin: 0;
-  font-size: clamp(28px, 4vw, 48px);
+  font-size: clamp(28px, 3.8vw, 48px);
   font-weight: 800;
   letter-spacing: 0.3px;
   line-height: 1.1;
   color: white;
   white-space: nowrap;
+  min-width: 0;
 }
 
 /* =========================
@@ -92,7 +93,8 @@ body{
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -116,7 +118,7 @@ body{
 }
 
 .search-wrap input{
-  width: 300px;
+  width: clamp(180px, 22vw, 300px);
   background: #1b1b1b;
   color: white;
   border: 1.5px solid #8a611c;
@@ -148,14 +150,14 @@ body{
   color: #e0c38a;
   border: 1.5px solid #8a611c;
   border-radius: 999px;
-  padding: 14px 22px;
+  padding: 14px 18px;
   font-size: 16px;
   font-weight: 600;
   font-family: Georgia, serif;
   line-height: 1.2;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  text-decoration: none;
+  white-space: nowrap;
 }
 
 .account-btn:hover{
