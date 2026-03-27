@@ -4,7 +4,8 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
 
-  <title>Pergamon Atlas | Home</title>
+  <title>Pergamon Atlas | PAGE NAME</title> <!-- CHANGE THIS -->
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,51 +15,42 @@
 
 <body>
 
-  <!-- =========================
-       HEADER (LOADED)
-  ========================== -->
+  <!-- HEADER -->
   <div id="header-placeholder"></div>
 
-  <!-- =========================
-       PAGE LAYOUT
-  ========================== -->
+  <!-- LAYOUT -->
   <div class="layout">
 
-    <!-- =========================
-         SIDEBAR (LOADED)
-    ========================== -->
+    <!-- SIDEBAR -->
     <div id="sidebar-placeholder"></div>
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
+      <!-- PUT YOUR PAGE CONTENT HERE -->
     </main>
 
   </div>
 
-  <!-- =========================
-       LOAD SNIPPETS
-  ========================== -->
+  <!-- LOAD SNIPPETS -->
   <script>
-    // Load Header
+    // HEADER
     fetch('/snippets/header.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('header-placeholder').innerHTML = data;
 
-        // Set page-specific title
-        document.querySelector('.header-title').textContent = "Pergamon Atlas";
+        // CHANGE THIS PER PAGE
+        document.querySelector('.header-title').textContent = "Pergamon Atlas | PAGE NAME";
       });
 
-    // Load Sidebar
+    // SIDEBAR
     fetch('/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('sidebar-placeholder').innerHTML = data;
       });
 
-    // Ads
+    // ADS
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 
