@@ -10,79 +10,59 @@
    SIDEBAR
 ========================= */
 .sidebar{
-  width: 250px; /* slightly wider */
-  background: #0d0d0d;
-  padding: 24px 0;
+  width: 250px;
+  background: #0a0a0a;
+  padding: 22px 0;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-
-  /* subtle divider to separate from content */
-  border-right: 1.5px solid #8a611c;
-}
-
-/* optional label (you can remove if you don’t want it) */
-.sidebar::before{
-  content: "Atlas Index";
-  color: #c28a2b;
-  font-size: 13px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 0 24px 12px 24px;
-  opacity: 0.8;
+  border-right: 1px solid #8a611c;
 }
 
 /* =========================
    SIDEBAR LINKS
 ========================= */
 .sidebar a{
-  color: #e5e5e5;
-  text-decoration: none;
-  padding: 14px 24px;
-  font-size: 20px; /* slightly reduced */
   display: block;
   width: 100%;
   box-sizing: border-box;
+  text-decoration: none;
 
-  border-radius: 8px;
-  margin: 2px 12px;
-
-  transition: all 0.2s ease;
-}
-
-/* hover */
-.sidebar a:hover{
-  background: rgba(194, 138, 43, 0.08);
   color: white;
+  font-size: 22px;
+  font-weight: 600;
+  padding: 16px 26px;
+
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* ACTIVE STATE (big upgrade) */
-.sidebar a.active{
-  background: rgba(194, 138, 43, 0.12);
-  color: #e0c38a;
-  font-weight: 600;
+.sidebar a:hover{
+  background: #141414;
+  color: #f0d39b;
+}
 
-  /* gold accent bar */
+.sidebar a.active{
+  background: #16120a;
+  color: #e0b35a;
   border-left: 3px solid #c28a2b;
-  padding-left: 21px; /* compensates for border */
+  padding-left: 23px;
 }
 
 /* =========================
    SIDEBAR AD SPACE
 ========================= */
 .ad-box{
-  width: 85%;
-  margin: 28px auto;
-  padding: 18px;
-  background: #1a1a1a;
-  border-radius: 10px;
-  border: 1.5px dashed #8a611c;
+  width: calc(100% - 32px);
+  margin: 28px 16px 0 16px;
+  min-height: 420px;
+
+  background: #171717;
+  border: 1px dashed #8a611c;
+  border-radius: 8px;
 
   display: flex;
   justify-content: center;
   align-items: center;
-
-  min-height: 140px;
   box-sizing: border-box;
 }
 
@@ -93,7 +73,7 @@
 }
 
 /* =========================
-   MAIN CONTENT (placeholder)
+   MAIN CONTENT PLACEHOLDER
 ========================= */
 .main-content{
   flex: 1;
