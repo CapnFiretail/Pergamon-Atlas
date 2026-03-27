@@ -1,32 +1,4 @@
 /* =========================
-   GLOBAL / PAGE FRAME
-========================= */
-html{
-  height: 100%;
-  box-sizing: border-box;
-}
-
-*,
-*::before,
-*::after{
-  box-sizing: inherit;
-}
-
-body{
-  margin: 0;
-  min-height: 100vh;
-  background: #111;
-  color: white;
-  font-family: Georgia, serif;
-  display: flex;
-  flex-direction: column;
-  border-top: 2px solid #8a611c;
-  border-left: 2px solid #8a611c;
-  border-right: 2px solid #8a611c;
-  border-bottom: 2px solid #8a611c;
-}
-
-/* =========================
    TOP HEADER
 ========================= */
 .topbar{
@@ -41,7 +13,7 @@ body{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 28px;
+  padding: 16px 28px;
   gap: 24px;
 }
 
@@ -51,14 +23,14 @@ body{
 .brand{
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
   flex-shrink: 1;
 }
 
 .logo-box{
-  width: 100px;
-  height: 100px;
+  width: 92px;
+  height: 92px;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
@@ -75,9 +47,9 @@ body{
 
 .brand h1{
   margin: 0;
-  font-size: 46px;
+  font-size: 44px;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   line-height: 1;
   white-space: nowrap;
   color: white;
@@ -108,53 +80,60 @@ body{
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 16px;
-  opacity: 0.95;
+  font-size: 15px;
+  opacity: 0.9;
   pointer-events: none;
 }
 
 .search-wrap input{
-  width: 280px;
-  background: #1f1f1f;
+  width: 285px;
+  background: #1b1b1b;
   color: white;
   border: 1.5px solid #8a611c;
   outline: none;
   border-radius: 999px;
-  padding: 14px 20px 14px 46px;
+  padding: 13px 20px 13px 46px;
   font-size: 16px;
   font-family: Georgia, serif;
   line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .search-wrap input::placeholder{
   color: #d8c39a;
-  opacity: 0.9;
+  opacity: 0.88;
 }
 
 .search-wrap input:focus{
   border-color: #c28a2b;
-  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.18);
+  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.16);
+  background: #202020;
 }
 
 /* =========================
    ACCOUNT BUTTON
 ========================= */
 .account-btn{
-  background: #1f1f1f;
+  background: #1b1b1b;
   color: #e0c38a;
   border: 1.5px solid #8a611c;
   border-radius: 999px;
-  padding: 13px 20px;
+  padding: 13px 22px;
   font-size: 16px;
   font-weight: 600;
   font-family: Georgia, serif;
   line-height: 1.2;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .account-btn:hover{
-  background: rgba(194, 138, 43, 0.12);
-  color: white;
+  background: #211a10;
+  color: #f0d39b;
   border-color: #c28a2b;
+}
+
+.account-btn:focus{
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.16);
 }
