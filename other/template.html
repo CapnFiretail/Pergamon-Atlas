@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-4717716734064612"
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
 
   <title>Pergamon Atlas | PAGE NAME</title>
@@ -15,29 +15,20 @@
 
 <body>
 
-  <!-- HEADER -->
   <div id="header-placeholder"></div>
 
-  <!-- LAYOUT -->
   <div class="layout">
-
-    <!-- SIDEBAR -->
     <div id="sidebar-placeholder"></div>
 
-    <!-- MAIN CONTENT -->
     <main class="main-content">
       <!-- PUT YOUR PAGE CONTENT HERE -->
     </main>
-
   </div>
 
-  <!-- LOAD SNIPPETS -->
   <script>
-    // ===== PAGE SETTINGS =====
-    const pageName = "PAGE NAME";   // Example: "Tools", "Games", "Help"
+    const pageName = "PAGE NAME";   // Example: "Tools", "Games", "Help", or "" for Home
     const pageHeaderSuffix = pageName ? " | " + pageName : "";
 
-    // ===== LOAD HEADER =====
     fetch('/snippets/header.html')
       .then(res => res.text())
       .then(data => {
@@ -49,7 +40,6 @@
         }
       });
 
-    // ===== LOAD SIDEBAR =====
     fetch('/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
@@ -75,7 +65,6 @@
         });
       });
 
-    // ===== ADS =====
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 
