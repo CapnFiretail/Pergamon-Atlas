@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+  <script async src="https://pagead2.googlesyndication.com/pagead/js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
 
   <title>Pergamon Atlas | PAGE NAME</title>
@@ -33,8 +33,9 @@
 
   <!-- LOAD SNIPPETS -->
   <script>
-    // ===== PAGE-SPECIFIC HEADER TEXT =====
-    const pageHeaderSuffix = " | PAGE NAME"; // change per page, or "" for home
+    // ===== PAGE SETTINGS =====
+    const pageName = "PAGE NAME";   // Example: "Tools", "Games", "Help"
+    const pageHeaderSuffix = pageName ? " | " + pageName : "";
 
     // ===== LOAD HEADER =====
     fetch('/snippets/header.html')
