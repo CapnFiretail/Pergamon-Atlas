@@ -43,22 +43,17 @@ body {
 }
 
 .logo-box {
-  width: 52px;
-  height: 52px;
-  background-color: #1c1c1c;
-  border: 1px solid #333;
-  border-radius: 4px;
+  height: 72px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
   flex-shrink: 0;
 }
 
 .logo-box img {
-  width: 100%;
   height: 100%;
-  object-fit: cover;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-title {
@@ -127,7 +122,36 @@ body {
   background: #1c1c1c;
 }
 
-/* --- Hamburger (mobile only) --- */
+/* --- Account icon button (mobile only) --- */
+.account-icon-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.account-icon-btn:hover {
+  background: #2a2a2a;
+  border-color: #777;
+}
+
+.account-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .hamburger {
   display: none;
   flex-direction: column;
@@ -269,7 +293,7 @@ body {
     height: 64px;
   }
 
-  /* Show hamburger, hide desktop search */
+  /* Show hamburger + icon account, hide text account btn + search */
   .hamburger {
     display: flex;
   }
@@ -279,8 +303,15 @@ body {
   }
 
   .account-btn {
-    padding: 7px 12px;
-    font-size: 13px;
+    display: none;
+  }
+
+  .account-icon-btn {
+    display: flex;
+  }
+
+  .logo-box {
+    height: 48px;
   }
 
   /* Sidebar becomes a slide-in drawer on mobile */
@@ -321,12 +352,6 @@ body {
   }
 
   .logo-box {
-    width: 40px;
     height: 40px;
-  }
-
-  .account-btn {
-    padding: 6px 10px;
-    font-size: 12px;
   }
 }
