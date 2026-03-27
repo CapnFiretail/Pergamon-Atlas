@@ -2,7 +2,7 @@
    TOP HEADER
 ========================= */
 .topbar{
-  background: linear-gradient(90deg, #0f1b2e, #13233a);
+  background: #000000;
   color: white;
   display: flex;
   align-items: center;
