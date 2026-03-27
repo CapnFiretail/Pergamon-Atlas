@@ -20,10 +20,7 @@ body{
   font-family: Georgia, serif;
   display: flex;
   flex-direction: column;
-  border-top: 2px solid #8a611c;
-  border-left: 2px solid #8a611c;
-  border-right: 2px solid #8a611c;
-  border-bottom: 2px solid #8a611c;
+  border: 2px solid #8a611c;
 }
 
 /* =========================
@@ -36,7 +33,9 @@ body{
   border-bottom: 1px solid #111;
 }
 
-/* content padding goes here, not on the header background */
+/* =========================
+   HEADER INNER
+========================= */
 .topbar-inner{
   width: 100%;
   display: flex;
@@ -45,6 +44,7 @@ body{
   padding: 18px 28px;
   gap: 20px;
   min-height: 136px;
+  flex-wrap: nowrap; /* 🔥 prevent wrapping */
 }
 
 /* =========================
@@ -77,7 +77,7 @@ body{
 
 .brand h1{
   margin: 0;
-  font-size: clamp(28px, 3.8vw, 48px);
+  font-size: clamp(26px, 3.6vw, 48px);
   font-weight: 800;
   letter-spacing: 0.3px;
   line-height: 1.1;
@@ -100,7 +100,7 @@ body{
 .header-actions{
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex: 0 0 auto;
   white-space: nowrap;
 }
@@ -126,7 +126,7 @@ body{
 }
 
 .search-wrap input{
-  width: clamp(180px, 22vw, 300px);
+  width: clamp(160px, 20vw, 300px);
   background: #1b1b1b;
   color: white;
   border: 1.5px solid #8a611c;
@@ -164,7 +164,7 @@ body{
   font-family: Georgia, serif;
   line-height: 1.2;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
   text-decoration: none;
 }
@@ -184,8 +184,8 @@ body{
   }
 }
 
-/* hide page suffix before layout starts breaking */
-@media (max-width: 1120px){
+/* hide page suffix earlier so layout never breaks */
+@media (max-width: 1200px){
   .page-title-text{
     display: none;
   }
@@ -214,7 +214,7 @@ body{
   }
 
   .search-wrap input{
-    width: 240px;
+    width: 220px;
   }
 
   .account-btn{
@@ -250,7 +250,7 @@ body{
     text-overflow: ellipsis;
   }
 
-  /* hide search bar on phone */
+  /* hide search bar */
   .search-wrap{
     display: none;
   }
@@ -261,7 +261,7 @@ body{
   }
 
   .account-btn{
-    padding: 10px 14px;
+    padding: 10px;
     font-size: 0;
     min-width: 44px;
     min-height: 44px;
@@ -273,7 +273,6 @@ body{
   .account-btn::before{
     content: "👤";
     font-size: 18px;
-    line-height: 1;
   }
 }
 
@@ -297,7 +296,6 @@ body{
   .account-btn{
     min-width: 40px;
     min-height: 40px;
-    padding: 8px;
   }
 
   .account-btn::before{
