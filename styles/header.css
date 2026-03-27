@@ -7,14 +7,14 @@
   color: white;
 }
 
-/* content padding goes here, not on the header background */
+/* inner layout */
 .topbar-inner{
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 28px;
-  gap: 24px;
+  padding: 18px 28px;
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -24,13 +24,11 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  min-width: 0;
-  flex-shrink: 1;
 }
 
 .logo-box{
-  width: 92px;
-  height: 92px;
+  width: 100px;
+  height: 100px;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
@@ -47,12 +45,11 @@
 
 .brand h1{
   margin: 0;
-  font-size: 44px;
+  font-size: 50px;
   font-weight: 800;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
   line-height: 1;
   white-space: nowrap;
-  color: white;
 }
 
 /* =========================
@@ -62,7 +59,6 @@
   display: flex;
   align-items: center;
   gap: 18px;
-  flex-shrink: 0;
 }
 
 /* =========================
@@ -86,54 +82,46 @@
 }
 
 .search-wrap input{
-  width: 285px;
-  background: #1b1b1b;
+  width: 300px;
+  background: #1f1f1f;
   color: white;
   border: 1.5px solid #8a611c;
-  outline: none;
   border-radius: 999px;
-  padding: 13px 20px 13px 46px;
+  padding: 14px 20px 14px 46px;
   font-size: 16px;
   font-family: Georgia, serif;
-  line-height: 1.2;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-wrap input::placeholder{
   color: #d8c39a;
-  opacity: 0.88;
+  opacity: 0.9;
 }
 
 .search-wrap input:focus{
   border-color: #c28a2b;
-  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.16);
-  background: #202020;
+  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.15);
 }
 
 /* =========================
    ACCOUNT BUTTON
 ========================= */
 .account-btn{
-  background: #1b1b1b;
+  background: #1f1f1f;
   color: #e0c38a;
   border: 1.5px solid #8a611c;
   border-radius: 999px;
-  padding: 13px 22px;
+  padding: 14px 22px;
   font-size: 16px;
   font-weight: 600;
   font-family: Georgia, serif;
-  line-height: 1.2;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .account-btn:hover{
   background: #211a10;
-  color: #f0d39b;
   border-color: #c28a2b;
-}
-
-.account-btn:focus{
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.16);
+  color: #f0d39b;
 }
