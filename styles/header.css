@@ -85,7 +85,7 @@
 
 .search-wrap input{
   width: 250px;
-  background: #333333;
+  background: #1f1f1f;
   color: white;
   border: 1.5px solid #c28a2b;
   outline: none;
@@ -110,8 +110,8 @@
    ACCOUNT BUTTON
 ========================= */
 .account-btn{
-  background: transparent;
-  color: #333333;
+  background: #1f1f1f;
+  color: #d8c39a;
   border: 1.5px solid #c28a2b;
   border-radius: 999px;
   padding: 11px 18px;
