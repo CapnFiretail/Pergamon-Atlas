@@ -33,47 +33,47 @@
 
   <!-- LOAD SNIPPETS -->
   <script>
-  // ===== LOAD HEADER =====
-  fetch('/snippets/header.html')
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById('header-placeholder').innerHTML = data;
-
-      // CHANGE THIS PER PAGE
-      document.querySelector('.header-title').textContent = "Pergamon Atlas | PAGE NAME";
-    });
-
-  // ===== LOAD SIDEBAR =====
-  fetch('/snippets/sidebar.html')
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById('sidebar-placeholder').innerHTML = data;
-
-      // ===== ACTIVE LINK LOGIC =====
-      const path = window.location.pathname;
-
-      document.querySelectorAll('.sidebar a').forEach(link => {
-        link.classList.remove('active');
-
-        // match based on URL
-        if (path === "/" && link.getAttribute("href") === "/") {
-          link.classList.add('active');
-        }
-        else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
-          link.classList.add('active');
-        }
-        else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
-          link.classList.add('active');
-        }
-        else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
-          link.classList.add('active');
-        }
+    // ===== LOAD HEADER =====
+    fetch('/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+  
+        // CHANGE THIS PER PAGE
+        document.querySelector('.header-title').textContent = "Pergamon Atlas | PAGE NAME";
       });
-    });
-
-  // ===== ADS =====
-  (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+  
+    // ===== LOAD SIDEBAR =====
+    fetch('/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
+  
+        // ===== ACTIVE LINK LOGIC =====
+        const path = window.location.pathname;
+  
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+  
+          // match based on URL
+          if (path === "/" && link.getAttribute("href") === "/") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
+            link.classList.add('active');
+          }
+        });
+      });
+  
+    // ===== ADS =====
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
 </body>
 </html>
