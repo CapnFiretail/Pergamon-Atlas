@@ -100,25 +100,29 @@ body {
   background: #222;
 }
 
-.account-btn {
-  display: inline-flex;
-  align-items: center;
-  background: transparent;
-  color: #ccc;
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  font-family: Georgia, serif;
-  font-size: 14px;
-  border: 1px solid #444;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-  white-space: nowrap;
+.account-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:11px 22px;
+  min-height:42px;
+  border-radius:999px;
+
+  background:linear-gradient(135deg, #171717, #0d0d0d);
+  color:#f8e8b0;
+  border:1px solid rgba(201,163,74,0.65);
+
+  font-family:Arial, sans-serif;
+  font-size:15px;
+  font-weight:700;
+  white-space:nowrap;
+
+  transition:all 0.2s ease;
 }
 
-.account-btn:hover {
-  color: white;
-  border-color: #888;
-  background: #1c1c1c;
+.account-btn:hover{
+  border-color:#f8e8b0;
+  background:linear-gradient(135deg, #1c1c1c, #111);
 }
 
 /* --- Account icon button (mobile only) --- */
