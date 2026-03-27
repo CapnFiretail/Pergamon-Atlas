@@ -1,87 +1,102 @@
-/* =============================================
-   PERGAMON ATLAS — header.css
-   Shared across all pages
-   ============================================= */
-
-/* --- Reset & Base --- */
-*, *::before, *::after {
-  box-sizing: border-box;
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
 }
 
-body {
-  margin: 0;
-  font-family: Georgia, serif;
-  background-color: #e9e9e9;
-  color: #111;
+body{
+  margin:0;
+  font-family:Georgia, serif;
+  background-color:#e9e9e9;
+  color:#111;
 }
 
-/* =============================================
-   TOP BAR
-   ============================================= */
-.topbar {
-  background-color: #0a0a0a;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 30px;
-  height: 80px;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid #2a2a2a;
+img{
+  max-width:100%;
+  display:block;
 }
 
-/* --- Brand (logo + title) --- */
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  text-decoration: none;
-  flex-shrink: 0;
+a{
+  text-decoration:none;
+  color:inherit;
 }
 
-.logo-box {
-  height: 72px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
+a:visited{
+  color:inherit;
 }
 
-.logo-box img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-  display: block;
+/* =========================
+   HEADER
+========================= */
+.topbar{
+  background-color:#000;
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 30px;
+  gap:20px;
 }
 
-.brand-title {
-  margin: 0;
-  font-size: clamp(18px, 2.2vw, 28px);
-  font-weight: normal;
-  letter-spacing: 0.04em;
-  color: white;
-  white-space: nowrap;
+.brand{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  min-width:0;
+  flex:1 1 auto;
 }
 
-/* --- Header Actions (search + account) --- */
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
+.logo-box{
+  width:128px;
+  height:100px;
+  background:#222;
+  overflow:hidden;
+  flex-shrink:0;
 }
 
-.search-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
+.logo-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.brand h1{
+  margin:0;
+  color:#fff;
+  font-size:clamp(24px, 3.2vw, 56px);
+  line-height:1.05;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* =========================
+   HEADER ACTIONS
+========================= */
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-shrink:0;
+}
+
+.search-wrap{
+  position:relative;
+}
+
+.search-wrap::before{
+  content:"🔍";
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:16px;
+  pointer-events:none;
 }
 
 .search-bar{
   width:220px;
-  padding:11px 18px 11px 38px;
+  padding:11px 18px 11px 40px;
   border-radius:999px;
   border:1px solid rgba(201,163,74,0.45);
   background:linear-gradient(135deg, #111111, #191919);
@@ -95,11 +110,6 @@ body {
   color:#d8c88a;
 }
 
-.search-bar:focus {
-  border-color: #666;
-  background: #222;
-}
-
 .account-btn{
   display:inline-flex;
   align-items:center;
@@ -107,261 +117,85 @@ body {
   padding:11px 22px;
   min-height:42px;
   border-radius:999px;
-
   background:linear-gradient(135deg, #171717, #0d0d0d);
   color:#f8e8b0;
   border:1px solid rgba(201,163,74,0.65);
-
   font-family:Arial, sans-serif;
   font-size:15px;
   font-weight:700;
   white-space:nowrap;
-
   transition:all 0.2s ease;
+}
+
+.account-btn:hover,
+.account-btn:active,
+.account-btn:visited{
+  color:#f8e8b0;
 }
 
 .account-btn:hover{
   border-color:#f8e8b0;
-  background:linear-gradient(135deg, #1c1c1c, #111);
+  background:linear-gradient(135deg, #1c1c1c, #111111);
+}
+
+.account-text{
+  display:inline;
 }
 
 .account-icon{
   display:none;
 }
 
-.account-text{
-  display:inline;
-}
-/* --- Account icon button (mobile only) --- */
-.account-icon-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #1c1c1c;
-  border: 1px solid #444;
-  cursor: pointer;
-  text-decoration: none;
-  flex-shrink: 0;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.account-icon-btn:hover {
-  background: #2a2a2a;
-  border-color: #777;
-}
-
-.account-icon-btn svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  margin-left: 4px;
-}
-
-.hamburger span {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background: white;
-  border-radius: 2px;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-
-/* Animate hamburger → X when sidebar open */
-.hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.is-open span:nth-child(2) { opacity: 0; }
-.hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-
-/* =============================================
-   LAYOUT (sidebar + main)
-   ============================================= */
-.layout {
-  display: flex;
-  min-height: calc(100vh - 80px);
-}
-
-/* =============================================
-   SIDEBAR
-   ============================================= */
-.sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  background: #fff;
-  border-right: 1px solid #ddd;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 0 24px;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0 12px;
-  margin-bottom: 24px;
-}
-
-.sidebar-nav a {
-  display: block;
-  padding: 9px 14px;
-  color: #222;
-  text-decoration: none;
-  font-family: Georgia, serif;
-  font-size: 15px;
-  border-radius: 5px;
-  transition: background 0.15s ease, color 0.15s ease;
-  border: 1px solid transparent;
-}
-
-.sidebar-nav a:hover {
-  background: #f0f0f0;
-  border-color: #e0e0e0;
-}
-
-.sidebar-nav a.active {
-  background: #111;
-  color: white;
-  border-color: #111;
-}
-
-.ad-box {
-  padding: 0 12px;
-  margin-top: auto;
-}
-
-/* =============================================
-   MAIN CONTENT
-   ============================================= */
-.main-content {
-  flex: 1;
-  min-width: 0;
-  padding: 32px 36px;
-}
-
-/* =============================================
-   OVERLAY (mobile sidebar backdrop)
-   ============================================= */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 90;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.sidebar-overlay.is-visible {
-  opacity: 1;
-}
-
-
-/* =============================================
-   RESPONSIVE BREAKPOINTS
-   ============================================= */
-
-/* --- Tablet (≤900px) --- */
-@media (max-width: 900px) {
-  .topbar {
-    padding: 0 20px;
+/* =========================
+   PHONE ONLY
+========================= */
+@media screen and (max-width:600px){
+  .topbar{
+    padding:14px 16px;
+    gap:12px;
   }
 
-  .search-bar {
-    width: 180px;
+  .brand{
+    gap:10px;
+    min-width:0;
   }
 
-  .sidebar {
-    width: 200px;
+  .logo-box{
+    width:54px;
+    height:42px;
   }
 
-  .main-content {
-    padding: 24px 24px;
-  }
-}
-
-/* --- Mobile (≤700px) --- */
-@media (max-width: 700px) {
-  .topbar {
-    padding: 0 16px;
-    height: 64px;
+  .brand h1{
+    font-size:clamp(18px, 6vw, 24px);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
-  /* Show hamburger + icon account, hide text account btn + search */
-  .hamburger {
-    display: flex;
+  .search-wrap{
+    display:none;
   }
 
-  .search-wrap {
-    display: none;
+  .header-actions{
+    gap:10px;
   }
 
-  .account-btn {
-    display: none;
+  .account-btn{
+    width:40px;
+    height:40px;
+    min-height:40px;
+    padding:0;
+    border-radius:50%;
+    flex-shrink:0;
   }
 
-  .account-icon-btn {
-    display: flex;
+  .account-text{
+    display:none;
   }
 
-  .logo-box {
-    height: 48px;
-  }
-
-  /* Sidebar becomes a slide-in drawer on mobile */
-  .sidebar {
-    position: fixed;
-    top: 64px;
-    left: 0;
-    bottom: 0;
-    width: 240px;
-    z-index: 95;
-    transform: translateX(-100%);
-    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
-  }
-
-  .sidebar.is-open {
-    transform: translateX(0);
-  }
-
-  .sidebar-overlay {
-    display: block;
-    top: 64px;
-  }
-
-  .layout {
-    min-height: calc(100vh - 64px);
-  }
-
-  .main-content {
-    padding: 20px 16px;
-  }
-}
-
-/* --- Very small phones (≤420px) --- */
-@media (max-width: 420px) {
-  .brand-title {
-    font-size: 17px;
-  }
-
-  .logo-box {
-    height: 40px;
+  .account-icon{
+    display:inline;
+    font-size:18px;
+    line-height:1;
   }
 }
