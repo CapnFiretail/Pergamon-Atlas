@@ -1,1 +1,150 @@
+/* =========================
+   PAGE LAYOUT
+========================= */
+.page-shell{
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+  padding: 24px 28px 28px 28px;
+}
 
+/* =========================
+   SIDEBAR
+========================= */
+.sidebar{
+  width: 250px;
+  flex-shrink: 0;
+  background: #121212;
+  border: 1.5px solid #8a611c;
+  padding: 18px;
+}
+
+.sidebar-nav{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-link{
+  display: block;
+  background: #1a1a1a;
+  color: #f1e7d0;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 14px 16px;
+  border: 1.5px solid #8a611c;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.sidebar-link:hover{
+  background: rgba(194, 138, 43, 0.10);
+  color: white;
+  border-color: #c28a2b;
+}
+
+.sidebar-link.active{
+  background: rgba(194, 138, 43, 0.14);
+  color: white;
+  border-color: #c28a2b;
+}
+
+/* =========================
+   SIDEBAR EXTRA CARD
+========================= */
+.sidebar-card{
+  margin-top: 22px;
+  background: #181818;
+  border: 1.5px solid #8a611c;
+  padding: 16px;
+  color: #e7dcc3;
+}
+
+.sidebar-card h3{
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  color: white;
+}
+
+.sidebar-card p{
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+.main-content{
+  flex: 1;
+  min-width: 0;
+}
+
+/* =========================
+   HERO CARD
+========================= */
+.hero-card{
+  background: #151515;
+  border: 1.5px solid #8a611c;
+  padding: 24px;
+  margin-bottom: 24px;
+  color: #f4f4f4;
+}
+
+.hero-card h2{
+  margin: 0 0 12px 0;
+  font-size: 34px;
+  color: white;
+}
+
+.hero-card p{
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #ddd2b8;
+}
+
+/* =========================
+   CONTENT GRID
+========================= */
+.content-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.content-card{
+  background: #151515;
+  border: 1.5px solid #8a611c;
+  padding: 20px;
+  color: #ece2ca;
+  min-height: 210px;
+}
+
+.content-card h3{
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  color: white;
+}
+
+.content-card p{
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* =========================
+   AD BOX
+========================= */
+.ad-box{
+  background: #111;
+  border: 1.5px dashed #8a611c;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cdb07d;
+  font-size: 20px;
+}
