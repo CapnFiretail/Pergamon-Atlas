@@ -4,9 +4,10 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
 
+  <title>Pergamon Atlas | Tools</title>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pergamon Atlas | Tools</title>
 
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
@@ -14,24 +15,16 @@
 
 <body>
 
-  <!-- =========================
-       HEADER (LOADED)
-  ========================== -->
+  <!-- HEADER -->
   <div id="header-placeholder"></div>
 
-  <!-- =========================
-       PAGE LAYOUT
-  ========================== -->
+  <!-- LAYOUT -->
   <div class="layout">
 
-    <!-- =========================
-         SIDEBAR (LOADED)
-    ========================== -->
+    <!-- SIDEBAR -->
     <div id="sidebar-placeholder"></div>
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
       <div class="hero-box">
@@ -41,7 +34,7 @@
         </p>
 
         <div class="hero-actions">
-          <a href="pages/suggestions-page" class="hero-btn primary">Suggest a Tool</a>
+          <a href="/suggestions" class="hero-btn primary">Suggest a Tool</a>
           <a href="/" class="hero-btn secondary">Back to Home</a>
         </div>
       </div>
@@ -133,19 +126,31 @@
     </main>
   </div>
 
-  <!-- =========================
-       LOAD SNIPPETS
-  ========================== -->
   <script>
-    // Load Header
+    // =========================
+    // PAGE SETTINGS
+    // =========================
+    const pageName = "Tools";
+
+    // =========================
+    // HEADER
+    // =========================
+    const pageHeaderSuffix = pageName ? " | " + pageName : "";
+
     fetch('/snippets/header.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('header-placeholder').innerHTML = data;
-        document.querySelector('.header-title').textContent = "Pergamon Atlas | Tools";
+
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) {
+          pageTitleText.textContent = pageHeaderSuffix;
+        }
       });
 
-    // Load Sidebar
+    // =========================
+    // SIDEBAR + ACTIVE LINK
+    // =========================
     fetch('/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
@@ -171,7 +176,9 @@
         });
       });
 
-    // Ads
+    // =========================
+    // ADS
+    // =========================
     (adsbygoogle = window.adsbygoogle || []).push({});
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
