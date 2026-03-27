@@ -33,6 +33,7 @@ body{
   width: 100%;
   background: #000000;
   color: white;
+  border-bottom: 1px solid #111;
 }
 
 /* content padding goes here, not on the header background */
@@ -42,7 +43,7 @@ body{
   align-items: center;
   justify-content: space-between;
   padding: 18px 28px;
-  gap: 24px;
+  gap: 20px;
 }
 
 /* =========================
@@ -51,7 +52,7 @@ body{
 .brand{
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
   flex-shrink: 1;
 }
@@ -75,9 +76,9 @@ body{
 
 .brand h1{
   margin: 0;
-  font-size: 46px;
+  font-size: 48px;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   line-height: 1;
   white-space: nowrap;
   color: white;
@@ -89,7 +90,7 @@ body{
 .header-actions{
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   flex-shrink: 0;
 }
 
@@ -108,14 +109,14 @@ body{
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 16px;
-  opacity: 0.95;
+  font-size: 15px;
+  opacity: 0.92;
   pointer-events: none;
 }
 
 .search-wrap input{
-  width: 280px;
-  background: #1f1f1f;
+  width: 300px;
+  background: #1b1b1b;
   color: white;
   border: 1.5px solid #8a611c;
   outline: none;
@@ -124,14 +125,16 @@ body{
   font-size: 16px;
   font-family: Georgia, serif;
   line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .search-wrap input::placeholder{
   color: #d8c39a;
-  opacity: 0.9;
+  opacity: 0.88;
 }
 
 .search-wrap input:focus{
+  background: #202020;
   border-color: #c28a2b;
   box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.18);
 }
@@ -140,21 +143,21 @@ body{
    ACCOUNT BUTTON
 ========================= */
 .account-btn{
-  background: #1f1f1f;
+  background: #1b1b1b;
   color: #e0c38a;
   border: 1.5px solid #8a611c;
   border-radius: 999px;
-  padding: 13px 20px;
+  padding: 14px 22px;
   font-size: 16px;
   font-weight: 600;
   font-family: Georgia, serif;
   line-height: 1.2;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .account-btn:hover{
-  background: rgba(194, 138, 43, 0.12);
+  background: #211a10;
   color: white;
   border-color: #c28a2b;
 }
