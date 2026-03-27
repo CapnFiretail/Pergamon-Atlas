@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0;   /* no left/right padding */
+  padding: 14px 0;   /* no left/right padding */
   margin: 0;
   width: 100%;
   box-sizing: border-box;
