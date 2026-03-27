@@ -178,14 +178,16 @@ body{
 /* =========================
    SMALLER LAPTOP
 ========================= */
-.page-title-text{
-  display: inline;
-  white-space: nowrap;
+@media (max-width: 1250px){
+  .page-title-text{
+    font-size: 0.88em;
+  }
 }
 
-@media (max-width: 1320px){
+/* hide page suffix earlier so layout never breaks */
+@media (max-width: 1200px){
   .page-title-text{
-    display: none !important;
+    display: none;
   }
 }
 
