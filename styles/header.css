@@ -54,7 +54,7 @@ body{
   align-items: center;
   gap: 14px;
   min-width: 0;
-  flex-shrink: 1;
+  flex: 1 1 auto; 
 }
 
 .logo-box{
@@ -75,14 +75,20 @@ body{
 }
 
 .brand h1{
-  margin: 0;
-  font-size: 48px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  line-height: 1;
-  white-space: nowrap;
-  color: white;
-}
+     margin: 0;
+   
+     /* 🔥 THIS is the key */
+     font-size: clamp(28px, 4vw, 48px);
+   
+     font-weight: 800;
+     letter-spacing: 0.3px;
+     line-height: 1;
+     color: white;
+   
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+   }
 
 /* =========================
    RIGHT SIDE
