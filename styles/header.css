@@ -161,3 +161,117 @@ body{
   color: white;
   border-color: #c28a2b;
 }
+
+/* =========================
+   TABLET
+========================= */
+@media (max-width: 1100px){
+  .topbar-inner{
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .brand{
+    gap: 12px;
+  }
+
+  .logo-box{
+    width: 82px;
+    height: 82px;
+  }
+
+  .brand h1{
+    font-size: 40px;
+  }
+
+  .search-wrap input{
+    width: 240px;
+  }
+
+  .account-btn{
+    padding: 13px 18px;
+  }
+}
+
+/* =========================
+   PHONE
+========================= */
+@media (max-width: 800px){
+  .topbar-inner{
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .brand{
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .logo-box{
+    width: 64px;
+    height: 64px;
+  }
+
+  .brand h1{
+    font-size: 30px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* hide search bar on phone */
+  .search-wrap{
+    display: none;
+  }
+
+  .header-actions{
+    flex-shrink: 0;
+    gap: 0;
+  }
+
+  .account-btn{
+    padding: 10px 14px;
+    font-size: 0;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .account-btn::before{
+    content: "👤";
+    font-size: 18px;
+    line-height: 1;
+  }
+}
+
+/* =========================
+   SMALL PHONE
+========================= */
+@media (max-width: 520px){
+  .topbar-inner{
+    padding: 12px 14px;
+  }
+
+  .logo-box{
+    width: 54px;
+    height: 54px;
+  }
+
+  .brand h1{
+    font-size: 24px;
+  }
+
+  .account-btn{
+    min-width: 40px;
+    min-height: 40px;
+    padding: 8px;
+  }
+
+  .account-btn::before{
+    font-size: 16px;
+  }
+}
