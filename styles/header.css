@@ -59,8 +59,8 @@ body{
 }
 
 .logo-box{
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
