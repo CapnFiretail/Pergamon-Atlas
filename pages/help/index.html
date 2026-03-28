@@ -1,49 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
+
+  <title>Pergamon Atlas | Help</title> 
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pergamon Atlas | Help</title>
+
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
-
- 
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo-box">
-        <img src="/images/logo.png" alt="Logo">
-      </div>
-      <h1>Pergamon Atlas | Help</h1>
-    </div>
+  <div id="header-placeholder"></div>
 
-    <div class="header-actions">
-      <div class="search-wrap">
-        <input class="search-bar" placeholder="Search the Atlas...">
-      </div>
-      <a href="/account-page" class="account-btn">Account</a>
-    </div>
-  </div>
-
-  <!-- LAYOUT -->
   <div class="layout">
+    <div id="sidebar-placeholder"></div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <a href="/">Home</a>
-      <a href="/tools">Tools</a>
-      <a href="/games">Games</a>
-      <a href="/help">Help</a>
-    </div>
+    <main class="main-content">
+    </main>
   </div>
+
+  <script>
+    const pageName = "Help";
+    const pageHeaderSuffix = pageName ? " | " + pageName : "";
+
+    fetch('/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) {
+          pageTitleText.textContent = pageHeaderSuffix;
+        }
+      });
+
+    fetch('/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
+
+        const path = window.location.pathname;
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+
+          if (path === "/" && link.getAttribute("href") === "/") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
+            link.classList.add('active');
+          }
+        });
+      });
+
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
 </body>
 </html>
