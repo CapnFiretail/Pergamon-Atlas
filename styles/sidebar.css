@@ -3,8 +3,14 @@
 ========================= */
 .layout{
   display: flex;
-  min-height: calc(100vh - 136px);
   align-items: stretch;
+  min-height: calc(100vh - 136px);
+}
+
+/* make injected sidebar wrapper stretch too */
+#sidebar-placeholder{
+  display: flex;
+  align-self: stretch;
 }
 
 /* =========================
@@ -19,7 +25,9 @@
   flex-shrink: 0;
   border-right: 1px solid #1a1a1a;
   min-height: 100%;
+  box-sizing: border-box;
 }
+
 /* =========================
    SIDEBAR LINKS
 ========================= */
@@ -110,6 +118,11 @@
     min-height: auto;
   }
 
+  #sidebar-placeholder{
+    display: block;
+    align-self: auto;
+  }
+
   .sidebar{
     position: fixed;
     left: 0;
@@ -117,6 +130,7 @@
     bottom: 0;
     width: 100%;
     height: 72px;
+    min-height: 72px;
     padding: 0;
     margin: 0;
     background: #0a0a0a;
@@ -180,6 +194,7 @@
 @media (max-width: 520px){
   .sidebar{
     height: 68px;
+    min-height: 68px;
   }
 
   .main-content{
