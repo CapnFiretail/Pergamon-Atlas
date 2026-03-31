@@ -11,6 +11,8 @@
 
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/home.css">
 </head>
 
 <body>
@@ -26,17 +28,87 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
-      <!-- PUT YOUR PAGE CONTENT HERE -->
+      
+      <section class="hero-section">
+        <div class="hero-card">
+          <p class="eyebrow">A growing digital world</p>
+          <h2>Welcome to Pergamon Atlas</h2>
+          <p class="hero-text">
+            A living atlas of tools, knowledge, creativity, and whatever else deserves a place.
+            Built to grow, adapt, and become something bigger over time.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="/tools" class="atlas-button primary-button">Explore Tools</a>
+            <a href="/games" class="atlas-button secondary-button">Play Games</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="content-card">
+          <h3>What is the Pergamon Atlas?</h3>
+          <p>
+            Pergamon Atlas is my attempt to build one place where useful tools, fun ideas,
+            helpful content, and random creations can all live together.
+          </p>
+        </article>
+
+        <article class="content-card">
+          <h3>Why I’m making it</h3>
+          <p>
+            I wanted a project that could hold everything I’m interested in — not just one niche,
+            but an expandable system where I can keep building without hitting a wall.
+          </p>
+        </article>
+
+        <article class="content-card">
+          <h3>Trust the process</h3>
+          <p>
+            Iron Man built it in a cave. I’m building this in physics class, late at night,
+            and somewhere between ambition and sleep deprivation.
+          </p>
+        </article>
+      </section>
+
+      <section class="featured-section">
+        <div class="section-header">
+          <h2>Start Here</h2>
+          <p>A few places to begin exploring the atlas.</p>
+        </div>
+
+        <div class="feature-grid">
+          <a href="/tools" class="feature-box">
+            <h3>Tools</h3>
+            <p>Calculators, helpers, and useful little creations.</p>
+          </a>
+
+          <a href="/games" class="feature-box">
+            <h3>Games</h3>
+            <p>Fun experiments and interactive distractions.</p>
+          </a>
+
+          <a href="/help" class="feature-box">
+            <h3>Suggestions</h3>
+            <p>Help shape what gets added next.</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="quote-banner">
+        <p>
+          “To create a living atlas of tools, knowledge, and creativity — designed to grow without limits.”
+        </p>
+      </section>
+
     </main>
 
   </div>
 
   <!-- LOAD SNIPPETS -->
   <script>
-    // ===== PAGE-SPECIFIC HEADER TEXT =====
-    const pageHeaderSuffix = ""; // change per page, or "" for home
+    const pageHeaderSuffix = "";
 
-    // ===== LOAD HEADER =====
     fetch('/snippets/header.html')
       .then(res => res.text())
       .then(data => {
@@ -48,7 +120,6 @@
         }
       });
 
-    // ===== LOAD SIDEBAR =====
     fetch('/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
@@ -74,7 +145,6 @@
         });
       });
 
-    // ===== ADS =====
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 
