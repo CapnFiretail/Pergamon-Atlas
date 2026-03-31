@@ -4,6 +4,7 @@
 .layout{
   display: flex;
   min-height: calc(100vh - 136px);
+  align-items: stretch;
 }
 
 /* =========================
@@ -17,8 +18,8 @@
   flex-direction: column;
   flex-shrink: 0;
   border-right: 1px solid #1a1a1a;
+  min-height: 100%;
 }
-
 /* =========================
    SIDEBAR LINKS
 ========================= */
