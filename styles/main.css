@@ -1,14 +1,23 @@
+html,
+body{
+  height:100%;
+}
+
 body{
   margin:0;
   font-family:Georgia, serif;
   background-color:#e9e9e9;
   color:#111;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
 .layout{
   display:flex;
-  align-items:flex-start;
-  min-height:calc(100vh - 120px);
+  align-items:stretch;
+  flex:1;
+  min-height:0;
 }
 
 .main-content{
@@ -58,6 +67,7 @@ body{
 @media (max-width: 768px){
   .layout{
     flex-direction:column;
+    flex:unset;
   }
 
   .main-content{
