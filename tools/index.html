@@ -5,12 +5,183 @@
     crossorigin="anonymous"></script>
 
   <title>Pergamon Atlas | Tools</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+
+  <style>
+    .tools-hero{
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+
+    .tools-hero h2{
+      margin: 0 0 12px 0;
+      font-size: clamp(32px, 5vw, 48px);
+      color: #e0b35a;
+      line-height: 1.1;
+    }
+
+    .tools-hero p{
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #ededed;
+      max-width: 900px;
+    }
+
+    .tools-grid{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin-bottom: 28px;
+    }
+
+    .tool-card{
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 22px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      display: block;
+    }
+
+    .tool-card:hover{
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      border-color: #8a611c;
+    }
+
+    .tool-icon{
+      font-size: 34px;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+
+    .tool-card h3{
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      color: #111;
+    }
+
+    .tool-card p{
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .tool-link{
+      font-size: 15px;
+      font-weight: 700;
+      color: #8a611c;
+    }
+
+    .coming-soon{
+      margin-top: 6px;
+      display: inline-block;
+      background: #16120a;
+      color: #e0b35a;
+      border: 1px solid #8a611c;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .featured-strip{
+      margin-top: 6px;
+    }
+
+    .featured-strip h3{
+      margin: 0 0 16px 0;
+      font-size: 28px;
+    }
+
+    .featured-list{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .featured-item{
+      background: #f7f7f7;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .featured-item h4{
+      margin: 0 0 10px 0;
+      font-size: 22px;
+    }
+
+    .featured-item p{
+      margin: 0 0 14px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #222;
+    }
+
+    .featured-item a{
+      text-decoration: none;
+      font-weight: 700;
+      color: #8a611c;
+    }
+
+    @media (max-width: 1050px){
+      .tools-grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px){
+      .tools-hero{
+        padding: 22px 18px;
+        margin-bottom: 22px;
+      }
+
+      .tools-hero p{
+        font-size: 16px;
+      }
+
+      .tools-grid{
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .featured-list{
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .tool-card,
+      .featured-item{
+        padding: 18px;
+      }
+
+      .tool-card h3{
+        font-size: 22px;
+      }
+
+      .featured-strip h3{
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -21,8 +192,110 @@
     <div id="sidebar-placeholder"></div>
 
     <main class="main-content">
+      <section class="tools-hero">
+        <h2>Tools</h2>
+        <p>
+          Welcome to the workshop wing of Pergamon Atlas — a growing collection of useful,
+          simple, and actually practical tools. Some are built for school, some for life,
+          some just because they should exist. Over time this page can become the launchpad
+          for calculators, utilities, generators, and whatever else belongs in the atlas.
+        </p>
+      </section>
+
+      <section class="section-header">
+        <h2>Browse the Collection</h2>
+        <p>
+          Start with the essentials below. This is your main tools hub.
+        </p>
+      </section>
+
+      <section class="tools-grid">
+        <a href="/tools/gpa-calculator" class="tool-card">
+          <div class="tool-icon">📘</div>
+          <h3>GPA Calculator</h3>
+          <p>
+            Calculate weighted and unweighted GPA quickly with support for class types
+            and clean inputs.
+          </p>
+          <span class="tool-link">Open tool →</span>
+        </a>
+
+        <a href="/tools/tip-calculator" class="tool-card">
+          <div class="tool-icon">💵</div>
+          <h3>Tip Calculator</h3>
+          <p>
+            Split bills, calculate percentages, and figure out what everyone owes without
+            doing mental gymnastics at the table.
+          </p>
+          <span class="tool-link">Open tool →</span>
+        </a>
+
+        <a href="/tools/bmi-calculator" class="tool-card">
+          <div class="tool-icon">📏</div>
+          <h3>BMI Calculator</h3>
+          <p>
+            A simple health utility for checking body mass index with fast, readable results.
+          </p>
+          <span class="tool-link">Open tool →</span>
+        </a>
+
+        <a href="/tools/coin-flip" class="tool-card">
+          <div class="tool-icon">🪙</div>
+          <h3>Coin Flip</h3>
+          <p>
+            Need fate to decide? Flip a coin instantly for the most noble form of decision making.
+          </p>
+          <span class="tool-link">Open tool →</span>
+        </a>
+
+        <div class="tool-card">
+          <div class="tool-icon">🧮</div>
+          <h3>More Calculators</h3>
+          <p>
+            This section can grow into grade tools, finance tools, time savers, converters,
+            and student survival gear.
+          </p>
+          <span class="coming-soon">Coming Soon</span>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-icon">⚙️</div>
+          <h3>Atlas Utilities</h3>
+          <p>
+            Future home for random but useful creations — generators, checklists, planners,
+            and all the weirdly useful tools the internet should have.
+          </p>
+          <span class="coming-soon">Under Construction</span>
+        </div>
+      </section>
+
+      <section class="content-card featured-strip">
+        <h3>Featured Tools</h3>
+
+        <div class="featured-list">
+          <div class="featured-item">
+            <h4>Student Essentials</h4>
+            <p>
+              Built for quick wins: GPA tracking, class helpers, study-side utilities, and
+              tools that save time when school gets chaotic.
+            </p>
+            <a href="/tools/gpa-calculator">Visit GPA Calculator →</a>
+          </div>
+
+          <div class="featured-item">
+            <h4>Everyday Utilities</h4>
+            <p>
+              Small tools for real situations — bills, quick calculations, decisions, and
+              the kind of stuff you should be able to pull up fast.
+            </p>
+            <a href="/tools/tip-calculator">Visit Tip Calculator →</a>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
+
+  <div id="footer-placeholder"></div>
 
   <script>
     const pageName = "Tools";
@@ -58,13 +331,22 @@
           else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
+          else if (
+            (path.startsWith("/help") || path.startsWith("/pages/help")) &&
+            (link.getAttribute("href") === "/help" || link.getAttribute("href") === "/pages/help")
+          ) {
             link.classList.add('active');
           }
         });
+
+        (adsbygoogle = window.adsbygoogle || []).push({});
       });
 
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    fetch('/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
   </script>
 
 </body>
