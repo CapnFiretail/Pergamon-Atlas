@@ -1,28 +1,14 @@
-html,
-body{
-  height:100%;
-}
-
 body{
   margin:0;
   font-family:Georgia, serif;
   background-color:#000;
   color:#111;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-#header-placeholder,
-#footer-placeholder{
-  flex-shrink:0;
 }
 
 .layout{
   display:flex;
   align-items:stretch;
-  flex:1;
-  min-height:0;
+  background:#000;
 }
 
 .main-content{
@@ -71,19 +57,13 @@ body{
 }
 
 @media (max-width: 768px){
-  body{
-    background-color:#e9e9e9;
-  }
-
   .layout{
     display:block;
-    flex:unset;
-    min-height:auto;
+    background:#e9e9e9;
   }
 
   .main-content{
     padding:20px 16px 100px;
-    background-color:#e9e9e9;
   }
 
   .section-header h2{
