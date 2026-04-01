@@ -11,6 +11,178 @@
 
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+
+  <style>
+    .games-hero{
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+
+    .games-hero h2{
+      margin: 0 0 12px 0;
+      font-size: clamp(32px, 5vw, 48px);
+      color: #e0b35a;
+      line-height: 1.1;
+    }
+
+    .games-hero p{
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #ededed;
+      max-width: 900px;
+    }
+
+    .games-grid{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin-bottom: 28px;
+    }
+
+    .game-card{
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 22px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      display: block;
+    }
+
+    .game-card:hover{
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+      border-color: #8a611c;
+    }
+
+    .game-icon{
+      font-size: 34px;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+
+    .game-card h3{
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      color: #111;
+    }
+
+    .game-card p{
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .game-link{
+      font-size: 15px;
+      font-weight: 700;
+      color: #8a611c;
+    }
+
+    .coming-soon{
+      margin-top: 6px;
+      display: inline-block;
+      background: #16120a;
+      color: #e0b35a;
+      border: 1px solid #8a611c;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .featured-strip{
+      margin-top: 6px;
+    }
+
+    .featured-strip h3{
+      margin: 0 0 16px 0;
+      font-size: 28px;
+    }
+
+    .featured-list{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .featured-item{
+      background: #f7f7f7;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .featured-item h4{
+      margin: 0 0 10px 0;
+      font-size: 22px;
+    }
+
+    .featured-item p{
+      margin: 0 0 14px 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #222;
+    }
+
+    .featured-item a{
+      text-decoration: none;
+      font-weight: 700;
+      color: #8a611c;
+    }
+
+    @media (max-width: 1050px){
+      .games-grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px){
+      .games-hero{
+        padding: 22px 18px;
+        margin-bottom: 22px;
+      }
+
+      .games-hero p{
+        font-size: 16px;
+      }
+
+      .games-grid{
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .featured-list{
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .game-card,
+      .featured-item{
+        padding: 18px;
+      }
+
+      .game-card h3{
+        font-size: 22px;
+      }
+
+      .featured-strip h3{
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -21,8 +193,105 @@
     <div id="sidebar-placeholder"></div>
 
     <main class="main-content">
+      <section class="games-hero">
+        <h2>Games</h2>
+        <p>
+          Welcome to the arcade wing of Pergamon Atlas — a growing place for small games,
+          experiments, time-killers, and weird little interactive ideas that deserve to exist.
+          Some will be simple, some competitive, some chaotic, and some probably built for no
+          reason other than the fact that they sounded fun.
+        </p>
+      </section>
+
+      <section class="section-header">
+        <h2>Browse the Collection</h2>
+        <p>
+          A home for playable things, from tiny classics to future Atlas originals.
+        </p>
+      </section>
+
+      <section class="games-grid">
+        <a href="/games/coin-flip" class="game-card">
+          <div class="game-icon">🪙</div>
+          <h3>Coin Flip</h3>
+          <p>
+            The most honorable decision engine ever created. Heads or tails, fate decides.
+          </p>
+          <span class="game-link">Play now →</span>
+        </a>
+
+        <div class="game-card">
+          <div class="game-icon">🧠</div>
+          <h3>Quick Brain Games</h3>
+          <p>
+            A future home for reaction tests, memory games, logic mini-games, and fast challenges.
+          </p>
+          <span class="coming-soon">Coming Soon</span>
+        </div>
+
+        <div class="game-card">
+          <div class="game-icon">🎲</div>
+          <h3>Randomizers</h3>
+          <p>
+            Dice rollers, chance tools, and other little chaos machines for decisions and games.
+          </p>
+          <span class="coming-soon">Coming Soon</span>
+        </div>
+
+        <div class="game-card">
+          <div class="game-icon">👾</div>
+          <h3>Arcade Projects</h3>
+          <p>
+            A section for simple playable projects — the kind of browser games you can jump into fast.
+          </p>
+          <span class="coming-soon">Under Construction</span>
+        </div>
+
+        <div class="game-card">
+          <div class="game-icon">⚔️</div>
+          <h3>Atlas Originals</h3>
+          <p>
+            Future home for the strange stuff: original concepts, experiments, and things that only make sense here.
+          </p>
+          <span class="coming-soon">Future Build</span>
+        </div>
+
+        <div class="game-card">
+          <div class="game-icon">🏆</div>
+          <h3>Score Challenges</h3>
+          <p>
+            Eventually this could hold leaderboard-style games, timed runs, and high-score chasing.
+          </p>
+          <span class="coming-soon">Planned</span>
+        </div>
+      </section>
+
+      <section class="content-card featured-strip">
+        <h3>Featured Games</h3>
+
+        <div class="featured-list">
+          <div class="featured-item">
+            <h4>Start Simple</h4>
+            <p>
+              Quick, clean, and easy to open. These are the games that work as instant little distractions.
+            </p>
+            <a href="/games/coin-flip">Visit Coin Flip →</a>
+          </div>
+
+          <div class="featured-item">
+            <h4>What’s Coming</h4>
+            <p>
+              This section is built to grow into an actual game shelf — mini arcade projects, reaction games,
+              puzzles, and whatever other nonsense earns a place in the atlas.
+            </p>
+            <a href="/games">More games coming soon →</a>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
+
+  <div id="footer-placeholder"></div>
 
   <script>
     const pageName = "Games";
@@ -58,13 +327,22 @@
           else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
+          else if (
+            (path.startsWith("/help") || path.startsWith("/pages/help")) &&
+            (link.getAttribute("href") === "/help" || link.getAttribute("href") === "/pages/help")
+          ) {
             link.classList.add('active');
           }
         });
+
+        (adsbygoogle = window.adsbygoogle || []).push({});
       });
 
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    fetch('/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
   </script>
 
 </body>
