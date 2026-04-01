@@ -1,22 +1,18 @@
-/* =========================
-   FOOTER
-========================= */
 .site-footer{
-  background:#0a0a0a;
+  background:#000;
   color:#e5e5e5;
-  border-top:2px solid #1a1a1a;
-  margin-top:0;
+  border-top:2px solid #8a611c;
+  margin:0;
 }
 
 .footer-inner{
-  max-width:1400px;
-  margin:0 auto;
+  width:100%;
+  box-sizing:border-box;
   padding:24px 32px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   gap:24px;
-  box-sizing:border-box;
 }
 
 .footer-brand h3{
@@ -28,21 +24,20 @@
 .footer-brand p{
   margin:0;
   font-size:15px;
-  color:#bdbdbd;
+  color:#d6d6d6;
 }
 
 .footer-links{
   display:flex;
-  flex-wrap:wrap;
   gap:18px;
+  flex-wrap:wrap;
 }
 
 .footer-links a{
   text-decoration:none;
-  color:#e5e5e5;
+  color:#f3f3f3;
   font-size:16px;
   font-weight:600;
-  transition:color 0.2s ease;
 }
 
 .footer-links a:hover{
@@ -55,16 +50,10 @@
   }
 
   .footer-inner{
-    flex-direction:column;
-    align-items:flex-start;
     padding:22px 16px;
   }
 
   .footer-links{
     display:none;
-  }
-
-  .footer-links a{
-    font-size:15px;
   }
 }
