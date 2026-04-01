@@ -4,10 +4,11 @@
 .layout{
   display: flex;
   align-items: stretch;
-  min-height: calc(100vh - 136px);
+  flex: 1;
+  min-height: 0;
 }
 
-/* make injected sidebar wrapper stretch too */
+/* injected sidebar wrapper */
 #sidebar-placeholder{
   display: flex;
   align-self: stretch;
@@ -24,7 +25,6 @@
   flex-direction: column;
   flex-shrink: 0;
   border-right: 1px solid #1a1a1a;
-  min-height: 100%;
   box-sizing: border-box;
 }
 
@@ -115,6 +115,7 @@
 @media (max-width: 800px){
   .layout{
     display: block;
+    flex: unset;
     min-height: auto;
   }
 
