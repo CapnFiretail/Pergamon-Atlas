@@ -1,5 +1,5 @@
 /* =========================
-   PAGE LAYOUT
+   SIDEBAR WRAPPER
 ========================= */
 #sidebar-placeholder{
   display:flex;
@@ -81,14 +81,6 @@
 }
 
 /* =========================
-   MAIN CONTENT
-========================= */
-.main-content{
-  flex:1;
-  min-width:0;
-}
-
-/* =========================
    TABLET
 ========================= */
 @media (max-width: 900px){
@@ -108,7 +100,6 @@
 @media (max-width: 800px){
   #sidebar-placeholder{
     display:block;
-    align-self:auto;
   }
 
   .sidebar{
@@ -118,7 +109,6 @@
     bottom:0;
     width:100%;
     height:72px;
-    min-height:72px;
     padding:0;
     margin:0;
     background:#0a0a0a;
@@ -170,23 +160,11 @@
   .ad-box{
     display:none;
   }
-
-  .main-content{
-    padding-bottom:90px;
-  }
 }
 
-/* =========================
-   SMALL PHONE
-========================= */
 @media (max-width: 520px){
   .sidebar{
     height:68px;
-    min-height:68px;
-  }
-
-  .main-content{
-    padding-bottom:86px;
   }
 
   .nav-icon{
