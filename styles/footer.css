@@ -61,7 +61,7 @@
   }
 
   .footer-links{
-    gap:14px;
+    display:none;
   }
 
   .footer-links a{
