@@ -121,10 +121,14 @@
   
     .row-grid{
       display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 16px;
-      align-items: end;
     }
-  
+    
+    .full-width{
+      grid-column: 1 / -1;
+    }
+    
     .row-grid.highschool-grid{
       grid-template-columns: 2fr 1fr 1.1fr;
     }
@@ -303,11 +307,10 @@
     }
   
     @media (max-width: 640px){
-      .gpa-hero,
-      .gpa-panel,
-      .formula-box{
-        padding: 18px;
+      .row-grid{
+        grid-template-columns: 1fr;
       }
+    }
   
       .row-grid.highschool-grid,
       .row-grid.college-grid,
@@ -504,30 +507,34 @@
         </div>
 
         <div class="row-grid">
-          <div class="field">
-            <label>Class Name</label>
-            <input type="text" class="class-name" placeholder="Example: English 1101">
-          </div>
-
-          <div class="field">
-            <label>Grade</label>
-            <input type="number" class="grade" min="0" max="100" step="0.1" placeholder="Enter grade">
-          </div>
-
-          <div class="field credit-field" style="${studentType === 'highschool' ? 'display:none;' : ''}">
-            <label>Credit Hours</label>
-            <input type="number" class="credits" min="0.5" step="0.5" value="3">
-          </div>
-
-          <div class="field level-field" style="${studentType === 'college' ? 'display:none;' : ''}">
-            <label>Rigor</label>
-            <select class="level">
-              <option value="0">Regular</option>
-              <option value="0.5">Honors</option>
-              <option value="1">AP / IB / Dual Enrollment</option>
-            </select>
-          </div>
+  
+        <!-- FULL WIDTH CLASS NAME -->
+        <div class="field full-width">
+          <label>Class Name</label>
+          <input type="text" class="class-name" placeholder="Example: English 1101">
         </div>
+      
+        <!-- SECOND ROW -->
+        <div class="field">
+          <label>Grade</label>
+          <input type="number" class="grade" min="0" max="100" step="0.1" placeholder="Enter grade">
+        </div>
+      
+        <div class="field credit-field" style="${studentType === 'highschool' ? 'display:none;' : ''}">
+          <label>Credit Hours</label>
+          <input type="number" class="credits" min="0.5" step="0.5" value="3">
+        </div>
+      
+        <div class="field level-field" style="${studentType === 'college' ? 'display:none;' : ''}">
+          <label>Rigor</label>
+          <select class="level">
+            <option value="0">Regular</option>
+            <option value="0.5">Honors</option>
+            <option value="1">AP / IB</option>
+          </select>
+        </div>
+      
+      </div>
       `;
 
       row.querySelector(".remove").addEventListener("click", () => {
@@ -547,9 +554,6 @@
       classList.innerHTML = "";
       classCount = 0;
 
-      addClassRow();
-      addClassRow();
-      addClassRow();
       addClassRow();
 
       calculateGPA();
