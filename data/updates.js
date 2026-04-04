@@ -10,7 +10,7 @@ const atlasUpdates = [
     ]
   },
   {
-    date: "March 9, 2026",
+    date: "March 10, 2026",
     tag: "Eureka!",
     title: "The Pergamon Atlas is Born",
     text: ""
