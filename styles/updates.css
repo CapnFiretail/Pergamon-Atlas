@@ -1,0 +1,110 @@
+/* =========================
+   UPDATES SHARED STYLES
+========================= */
+
+.updates-section{
+  margin-bottom:32px;
+}
+
+.updates-wrap{
+  display:grid;
+  gap:18px;
+}
+
+.update-card{
+  background:#fff;
+  border:2px solid #000;
+  border-left:6px solid #c28a2b;
+  border-radius:14px;
+  padding:22px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  transition:transform 0.15s ease;
+}
+
+.update-card:hover{
+  transform:translateY(-2px);
+}
+
+.update-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.update-date{
+  font-size:14px;
+  font-weight:bold;
+  color:#8a611c;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
+}
+
+.update-tag{
+  font-size:13px;
+  font-weight:bold;
+  background:#111;
+  color:#e0b35a;
+  padding:6px 10px;
+  border-radius:999px;
+}
+
+.update-card h3{
+  margin:0 0 10px 0;
+  font-size:24px;
+  color:#111;
+}
+
+.update-card p{
+  margin:0;
+  font-size:16px;
+  line-height:1.7;
+  color:#222;
+}
+
+/* =========================
+   DASH LIST STYLE
+========================= */
+
+.update-list{
+  margin:12px 0 0 0;
+  padding-left:0;
+  list-style:none;
+}
+
+.update-list li{
+  margin-bottom:6px;
+  font-size:16px;
+  line-height:1.6;
+  color:#222;
+  position:relative;
+  padding-left:18px;
+}
+
+.update-list li::before{
+  content:"—";
+  position:absolute;
+  left:0;
+  color:#c28a2b;
+  font-weight:bold;
+}
+
+.update-list li:last-child{
+  margin-bottom:0;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px){
+  .update-card{
+    padding:20px 18px;
+  }
+
+  .update-card h3{
+    font-size:22px;
+  }
+}
