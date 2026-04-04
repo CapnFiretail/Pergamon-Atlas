@@ -362,17 +362,25 @@
     function renderUpdates(updates, containerId, limit = null){
       const container = document.getElementById(containerId);
       if (!container) return;
-
+    
       const visibleUpdates = limit ? updates.slice(0, limit) : updates;
-
+    
       container.innerHTML = visibleUpdates.map(update => `
         <article class="update-card">
           <div class="update-meta">
             <span class="update-date">${update.date}</span>
             <span class="update-tag">${update.tag}</span>
           </div>
+    
           <h3>${update.title}</h3>
-          <p>${update.text}</p>
+    
+          ${update.text ? `<p>${update.text}</p>` : ""}
+    
+          ${update.list ? `
+            <ul class="update-list">
+              ${update.list.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          ` : ""}
         </article>
       `).join("");
     }
