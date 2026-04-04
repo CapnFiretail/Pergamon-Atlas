@@ -19,6 +19,10 @@
   padding:22px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
   transition:transform 0.15s ease;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  overflow:visible;
 }
 
 .update-card:hover{
@@ -58,10 +62,14 @@
 }
 
 .update-card p{
-  margin:0;
+  margin:0 0 12px 0;
   font-size:16px;
   line-height:1.7;
   color:#222;
+}
+
+.update-card p:last-child{
+  margin-bottom:0;
 }
 
 /* =========================
@@ -72,6 +80,7 @@
   margin:12px 0 0 0;
   padding-left:0;
   list-style:none;
+  overflow:visible;
 }
 
 .update-list li{
@@ -81,6 +90,7 @@
   color:#222;
   position:relative;
   padding-left:18px;
+  overflow:visible;
 }
 
 .update-list li::before{
