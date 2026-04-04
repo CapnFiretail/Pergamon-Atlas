@@ -16,7 +16,9 @@
   <link rel="stylesheet" href="/styles/updates.css">
 
   <style>
-    .hero-section{ margin-bottom:32px; }
+    .hero-section{
+      margin-bottom:32px;
+    }
 
     .hero-card{
       background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);
@@ -38,6 +40,7 @@
     .hero-card h2{
       margin:0 0 16px 0;
       font-size:clamp(34px,5vw,56px);
+      line-height:1.1;
     }
 
     .hero-text{
@@ -56,17 +59,33 @@
     }
 
     .atlas-button{
+      display:inline-block;
       text-decoration:none;
       font-weight:bold;
       padding:12px 20px;
       border-radius:10px;
+      transition:0.2s ease;
       border:2px solid #000;
     }
 
-    .primary-button{ background:#c28a2b; color:#111; }
-    .secondary-button{ background:transparent; color:white; border-color:#c28a2b; }
+    .atlas-button:hover{
+      transform:translateY(-2px);
+    }
 
-    .feature-section{ margin-bottom:32px; }
+    .primary-button{
+      background:#c28a2b;
+      color:#111;
+    }
+
+    .secondary-button{
+      background:transparent;
+      color:white;
+      border-color:#c28a2b;
+    }
+
+    .feature-section{
+      margin-bottom:32px;
+    }
 
     .feature-grid{
       display:grid;
@@ -75,12 +94,15 @@
     }
 
     .feature-box{
+      display:block;
       text-decoration:none;
       color:inherit;
       background:#fff;
       border:2px solid #000;
       border-radius:14px;
       padding:24px;
+      transition:0.2s ease;
+      box-shadow:0 4px 14px rgba(0,0,0,0.08);
     }
 
     .feature-box:hover{
@@ -88,121 +110,234 @@
       border-color:#c28a2b;
     }
 
-    .suggestions-section{ margin-bottom:32px; }
+    .feature-box h3{
+      margin:0 0 10px 0;
+      font-size:24px;
+    }
+
+    .feature-box p{
+      margin:0;
+      line-height:1.6;
+      font-size:16px;
+      color:#222;
+    }
+
+    .updates-footer{
+      margin-top:18px;
+    }
+
+    .suggestions-section{
+      margin-bottom:32px;
+    }
 
     .suggestions-card{
       background:#fff;
       border:2px solid #000;
       border-radius:14px;
       padding:28px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    .suggestions-card h2{
+      margin:0 0 14px 0;
+      font-size:clamp(28px,4vw,40px);
+    }
+
+    .suggestions-card p{
+      margin:0 0 18px 0;
+      font-size:18px;
+      line-height:1.7;
+      color:#222;
+      max-width:850px;
     }
 
     .suggestions-link{
       display:inline-block;
+      text-decoration:none;
+      font-weight:bold;
       padding:12px 20px;
       border-radius:10px;
       border:2px solid #000;
       background:#c28a2b;
       color:#111;
-      text-decoration:none;
-      font-weight:bold;
+      transition:0.2s ease;
+    }
+
+    .suggestions-link:hover{
+      transform:translateY(-2px);
     }
 
     @media (max-width:768px){
-      .feature-grid{ grid-template-columns:1fr; }
-      .hero-buttons{ flex-direction:column; }
-      .atlas-button{ width:100%; text-align:center; }
+      .feature-grid{
+        grid-template-columns:1fr;
+      }
+
+      .hero-buttons{
+        flex-direction:column;
+      }
+
+      .atlas-button{
+        width:100%;
+        text-align:center;
+        box-sizing:border-box;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div id="header-placeholder"></div>
+  <div id="header-placeholder"></div>
 
-<div class="layout">
-<div id="sidebar-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
 
-<main class="main-content">
+    <main class="main-content">
 
-<!-- HERO -->
-<section class="hero-section">
-  <div class="hero-card">
-    <p class="hero-eyebrow">A growing digital world</p>
-    <h2>Welcome to Pergamon Atlas</h2>
-    <p class="hero-text">The Internet's Living Library</p>
+      <section class="hero-section">
+        <div class="hero-card">
+          <p class="hero-eyebrow">A growing digital world</p>
+          <h2>Welcome to Pergamon Atlas</h2>
+          <p class="hero-text">The Internet's Living Library</p>
 
-    <div class="hero-buttons">
-      <a href="/tools" class="atlas-button primary-button">Explore Tools</a>
-      <a href="/games" class="atlas-button secondary-button">Play Games</a>
-    </div>
+          <div class="hero-buttons">
+            <a href="/tools" class="atlas-button primary-button">Explore Tools</a>
+            <a href="/games" class="atlas-button secondary-button">Play Games</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-section">
+        <div class="section-header">
+          <h2>Explore</h2>
+          <p>Start exploring the atlas through tools, games, and future additions.</p>
+        </div>
+
+        <div class="feature-grid">
+          <a href="/tools" class="feature-box">
+            <h3>Tools</h3>
+            <p>Calculators, helpers, and useful little creations.</p>
+          </a>
+
+          <a href="/games" class="feature-box">
+            <h3>Games</h3>
+            <p>Fun experiments and interactive distractions.</p>
+          </a>
+
+          <a href="/pages/help" class="feature-box">
+            <h3>Suggestions</h3>
+            <p>Help shape what gets added next.</p>
+          </a>
+        </div>
+      </section>
+
+      <section class="updates-section">
+        <div class="section-header">
+          <h2>Atlas Updates</h2>
+          <p>A running log of what is being built, changed, and tested.</p>
+        </div>
+
+        <div id="updates-placeholder" class="updates-wrap"></div>
+
+        <div class="updates-footer">
+          <a href="/pages/updates" class="suggestions-link">View Full Update Log</a>
+        </div>
+      </section>
+
+      <section class="suggestions-section">
+        <div class="suggestions-card">
+          <h2>Shape the Atlas</h2>
+          <p>
+            Pergamon Atlas is meant to grow. Suggestions help decide what tools, games,
+            pages, and ideas get added next. If there is something you want to see built,
+            this is where to say it.
+          </p>
+          <a href="/pages/help" class="suggestions-link">Leave a Suggestion</a>
+        </div>
+      </section>
+
+    </main>
   </div>
-</section>
 
-<!-- EXPLORE -->
-<section class="feature-section">
-  <div class="section-header">
-    <h2>Explore</h2>
-    <p>Start exploring the atlas.</p>
-  </div>
+  <div id="footer-placeholder"></div>
 
-  <div class="feature-grid">
-    <a href="/tools" class="feature-box"><h3>Tools</h3></a>
-    <a href="/games" class="feature-box"><h3>Games</h3></a>
-    <a href="/pages/help" class="feature-box"><h3>Suggestions</h3></a>
-  </div>
-</section>
+  <script src="/data/updates.js"></script>
 
-<!-- UPDATES -->
-<section class="updates-section">
-  <div class="section-header">
-    <h2>Atlas Updates</h2>
-    <p>Latest progress.</p>
-  </div>
+  <script>
+    const pageHeaderSuffix = "";
 
-  <div id="updates-placeholder" class="updates-wrap"></div>
+    function renderUpdates(updates, containerId, limit = null){
+      const container = document.getElementById(containerId);
+      if (!container) return;
 
-  <div style="margin-top:18px;">
-    <a href="/pages/updates" class="suggestions-link">View Full Update Log</a>
-  </div>
-</section>
+      const visibleUpdates = limit ? updates.slice(0, limit) : updates;
 
-<!-- SUGGESTIONS -->
-<section class="suggestions-section">
-  <div class="suggestions-card">
-    <h2>Shape the Atlas</h2>
-    <p>Help decide what gets built next.</p>
-    <a href="/pages/help" class="suggestions-link">Leave a Suggestion</a>
-  </div>
-</section>
+      container.innerHTML = visibleUpdates.map(update => `
+        <article class="update-card">
+          <div class="update-meta">
+            <span class="update-date">${update.date}</span>
+            <span class="update-tag">${update.tag}</span>
+          </div>
 
-</main>
-</div>
+          <h3>${update.title}</h3>
 
-<div id="footer-placeholder"></div>
+          ${update.text ? `<p>${update.text}</p>` : ""}
 
-<script src="/data/updates.js"></script>
+          ${update.list ? `
+            <ul class="update-list">
+              ${update.list.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          ` : ""}
+        </article>
+      `).join("");
+    }
 
-<script>
-function renderUpdates(updates, containerId, limit=null){
-  const container=document.getElementById(containerId);
-  const list=limit?updates.slice(0,limit):updates;
+    fetch('/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
 
-  container.innerHTML=list.map(u=>`
-    <article class="update-card">
-      <div class="update-meta">
-        <span class="update-date">${u.date}</span>
-        <span class="update-tag">${u.tag}</span>
-      </div>
-      <h3>${u.title}</h3>
-      ${u.text?`<p>${u.text}</p>`:""}
-      ${u.list?`<ul class="update-list">${u.list.map(i=>`<li>${i}</li>`).join("")}</ul>`:""}
-    </article>
-  `).join("");
-}
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) {
+          pageTitleText.textContent = pageHeaderSuffix;
+        }
+      });
 
-renderUpdates(atlasUpdates,'updates-placeholder',3);
-</script>
+    fetch('/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
+
+        const path = window.location.pathname;
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+
+          if (path === "/" && link.getAttribute("href") === "/") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/pages/help") && link.getAttribute("href") === "/pages/help") {
+            link.classList.add('active');
+          }
+        });
+      });
+
+    fetch('/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+
+    renderUpdates(atlasUpdates, 'updates-placeholder', 3);
+
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
 </body>
 </html>
