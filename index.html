@@ -124,9 +124,6 @@
       color:#222;
     }
 
-    /* =========================
-       UPDATES SECTION
-    ========================== */
     .updates-section{
       margin-bottom:32px;
     }
@@ -171,9 +168,23 @@
       border-radius:999px;
     }
 
-    /* =========================
-       SUGGESTIONS
-    ========================== */
+    .update-card h3{
+      margin:0 0 10px 0;
+      font-size:24px;
+      color:#111;
+    }
+
+    .update-card p{
+      margin:0;
+      font-size:16px;
+      line-height:1.7;
+      color:#222;
+    }
+
+    .updates-footer{
+      margin-top:18px;
+    }
+
     .suggestions-section{
       margin-bottom:32px;
     }
@@ -216,6 +227,18 @@
     }
 
     @media (max-width: 768px){
+      .hero-card{
+        padding:24px 20px;
+      }
+
+      .hero-card h2{
+        font-size:38px;
+      }
+
+      .hero-text{
+        font-size:17px;
+      }
+
       .feature-grid{
         grid-template-columns:1fr;
       }
@@ -226,6 +249,29 @@
 
       .atlas-button{
         width:100%;
+        box-sizing:border-box;
+        text-align:center;
+      }
+
+      .update-card{
+        padding:20px 18px;
+      }
+
+      .update-card h3{
+        font-size:22px;
+      }
+
+      .suggestions-card{
+        padding:22px 18px;
+      }
+
+      .suggestions-card p{
+        font-size:16px;
+      }
+
+      .suggestions-link{
+        width:100%;
+        box-sizing:border-box;
         text-align:center;
       }
     }
@@ -240,8 +286,6 @@
     <div id="sidebar-placeholder"></div>
 
     <main class="main-content">
-
-      <!-- HERO -->
       <section class="hero-section">
         <div class="hero-card">
           <p class="hero-eyebrow">A growing digital world</p>
@@ -257,7 +301,6 @@
         </div>
       </section>
 
-      <!-- EXPLORE -->
       <section class="feature-section">
         <div class="section-header">
           <h2>Explore</h2>
@@ -275,46 +318,64 @@
             <p>Fun experiments and interactive distractions.</p>
           </a>
 
-          <a href="/help" class="feature-box">
+          <a href="/pages/help" class="feature-box">
             <h3>Suggestions</h3>
             <p>Help shape what gets added next.</p>
           </a>
         </div>
       </section>
 
-      <!-- UPDATES (SNIPPET LOADED) -->
       <section class="updates-section">
         <div class="section-header">
           <h2>Atlas Updates</h2>
-          <p>A running log of what is being built.</p>
+          <p>A running log of what is being built, changed, and tested.</p>
         </div>
 
-        <div id="updates-placeholder"></div>
+        <div id="updates-placeholder" class="updates-wrap"></div>
 
-        <div style="margin-top:18px;">
+        <div class="updates-footer">
           <a href="/pages/updates" class="suggestions-link">View Full Update Log</a>
         </div>
       </section>
 
-      <!-- SUGGESTIONS -->
       <section class="suggestions-section">
         <div class="suggestions-card">
           <h2>Shape the Atlas</h2>
           <p>
             Pergamon Atlas is meant to grow. Suggestions help decide what tools, games,
-            pages, and ideas get added next.
+            pages, and ideas get added next. If there is something you want to see built,
+            this is where to say it.
           </p>
-          <a href="/help" class="suggestions-link">Leave a Suggestion</a>
+          <a href="/pages/help" class="suggestions-link">Leave a Suggestion</a>
         </div>
       </section>
-
     </main>
   </div>
 
   <div id="footer-placeholder"></div>
 
+  <script src="/data/updates.js"></script>
+
   <script>
     const pageHeaderSuffix = "";
+
+    function renderUpdates(updates, containerId, limit = null){
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const visibleUpdates = limit ? updates.slice(0, limit) : updates;
+
+      container.innerHTML = visibleUpdates.map(update => `
+        <article class="update-card">
+          <div class="update-meta">
+            <span class="update-date">${update.date}</span>
+            <span class="update-tag">${update.tag}</span>
+          </div>
+          <h3>${update.title}</h3>
+          <p>${update.text}</p>
+        </article>
+      `).join("");
+    }
 
     fetch('/snippets/header.html')
       .then(res => res.text())
@@ -346,17 +407,10 @@
           else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
+          else if (path.startsWith("/pages/help") && link.getAttribute("href") === "/pages/help") {
             link.classList.add('active');
           }
         });
-      });
-
-    /* 🔥 LOAD UPDATES SNIPPET */
-    fetch('/snippets/home-updates.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('updates-placeholder').innerHTML = data;
       });
 
     fetch('/snippets/footer.html')
@@ -364,6 +418,8 @@
       .then(data => {
         document.getElementById('footer-placeholder').innerHTML = data;
       });
+
+    renderUpdates(atlasUpdates, 'updates-placeholder', 3);
 
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
