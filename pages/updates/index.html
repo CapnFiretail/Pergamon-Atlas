@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+    crossorigin="anonymous"></script>
+
   <title>Pergamon Atlas | Updates</title>
 
   <meta charset="utf-8">
@@ -15,48 +18,103 @@
 
 <body>
 
-<div id="header-placeholder"></div>
+  <div id="header-placeholder"></div>
 
-<div class="layout">
-<div id="sidebar-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
 
-<main class="main-content">
+    <main class="main-content">
+      <section class="updates-page-section">
+        <div class="section-header">
+          <h2>Full Update Log</h2>
+          <p>The full running archive of Pergamon Atlas progress.</p>
+        </div>
 
-<section>
-  <div class="section-header">
-    <h2>Full Update Log</h2>
-    <p>All progress.</p>
+        <div id="all-updates-placeholder" class="updates-wrap"></div>
+      </section>
+    </main>
   </div>
 
-  <div id="all-updates-placeholder" class="updates-wrap"></div>
-</section>
+  <div id="footer-placeholder"></div>
 
-</main>
-</div>
+  <script src="/data/updates.js"></script>
 
-<div id="footer-placeholder"></div>
+  <script>
+    const pageName = "Updates";
+    const pageHeaderSuffix = pageName ? " | " + pageName : "";
 
-<script src="/data/updates.js"></script>
+    function renderUpdates(updates, containerId, limit = null){
+      const container = document.getElementById(containerId);
+      if (!container) return;
 
-<script>
-function renderUpdates(updates, containerId){
-  const container=document.getElementById(containerId);
+      const visibleUpdates = limit ? updates.slice(0, limit) : updates;
 
-  container.innerHTML=updates.map(u=>`
-    <article class="update-card">
-      <div class="update-meta">
-        <span class="update-date">${u.date}</span>
-        <span class="update-tag">${u.tag}</span>
-      </div>
-      <h3>${u.title}</h3>
-      ${u.text?`<p>${u.text}</p>`:""}
-      ${u.list?`<ul class="update-list">${u.list.map(i=>`<li>${i}</li>`).join("")}</ul>`:""}
-    </article>
-  `).join("");
-}
+      container.innerHTML = visibleUpdates.map(update => `
+        <article class="update-card">
+          <div class="update-meta">
+            <span class="update-date">${update.date}</span>
+            <span class="update-tag">${update.tag}</span>
+          </div>
 
-renderUpdates(atlasUpdates,'all-updates-placeholder');
-</script>
+          <h3>${update.title}</h3>
+
+          ${update.text ? `<p>${update.text}</p>` : ""}
+
+          ${update.list ? `
+            <ul class="update-list">
+              ${update.list.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          ` : ""}
+        </article>
+      `).join("");
+    }
+
+    fetch('/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) {
+          pageTitleText.textContent = pageHeaderSuffix;
+        }
+      });
+
+    fetch('/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
+
+        const path = window.location.pathname;
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+
+          if (path === "/" && link.getAttribute("href") === "/") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/pages/help") && link.getAttribute("href") === "/pages/help") {
+            link.classList.add('active');
+          }
+        });
+      });
+
+    fetch('/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+
+    renderUpdates(atlasUpdates, 'all-updates-placeholder');
+
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
 </body>
 </html>
