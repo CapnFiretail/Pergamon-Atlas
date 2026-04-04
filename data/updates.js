@@ -3,7 +3,7 @@ const atlasUpdates = [
     date: "April 3, 2026",
     tag: "Update Log",
     title: "Homepage Updates",
-    text: "Cleaned up structure and added new systems.",
+    text: "The first update log entry!",
     list: [
       "Added update log system",
       "Built updates archive page",
