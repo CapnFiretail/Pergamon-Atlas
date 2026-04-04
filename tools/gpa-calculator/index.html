@@ -23,301 +23,147 @@
       margin-bottom: 24px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.18);
     }
-  
+
     .gpa-hero h2{
       margin: 0 0 10px 0;
       font-size: clamp(30px, 4vw, 42px);
       color: #f0d39b;
     }
-  
-    .gpa-hero p{
-      margin: 0;
-      font-size: 17px;
-      line-height: 1.7;
-      color: #f3f3f3;
-      max-width: 900px;
-    }
-  
+
     .gpa-grid{
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: 22px;
-      align-items: start;
     }
-  
+
     .gpa-panel{
       background: white;
       border: 2px solid #000;
       border-radius: 16px;
       padding: 24px;
-      box-sizing: border-box;
       box-shadow: 0 4px 14px rgba(0,0,0,0.08);
     }
-  
-    .gpa-panel h3{
-      margin: 0 0 10px 0;
-      font-size: 28px;
-    }
-  
+
     .panel-subtext{
-      margin: 0 0 18px 0;
+      margin-bottom: 16px;
       color: #333;
-      line-height: 1.6;
-      font-size: 16px;
     }
-  
+
     .mode-toggle{
       display: flex;
       gap: 12px;
-      flex-wrap: wrap;
       margin-top: 10px;
     }
-  
+
     .mode-pill{
-      display: inline-flex;
-      align-items: center;
+      display: flex;
       gap: 8px;
-      padding: 12px 16px;
-      border: 1px solid #c9c9c9;
+      padding: 10px 14px;
       border-radius: 999px;
       background: #f7f7f7;
-      font-size: 16px;
-      cursor: pointer;
-      user-select: none;
-    }
-  
-    .mode-pill input{
-      margin: 0;
-      accent-color: #8a611c;
+      border: 1px solid #ccc;
       cursor: pointer;
     }
-  
+
     .class-list{
       display: flex;
       flex-direction: column;
       gap: 16px;
       margin-top: 20px;
     }
-  
+
     .class-row{
-      border: 1px solid #d6d6d6;
+      border: 1px solid #ddd;
       border-radius: 14px;
       padding: 18px;
       background: #fafafa;
     }
-  
+
     .class-row-top{
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-  
-    .class-row-top h4{
-      margin: 0;
-      font-size: 22px;
-    }
-  
+
     .row-grid{
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 14px;
     }
-  
+
     .field{
       display: flex;
       flex-direction: column;
-      gap: 7px;
     }
-  
-    .field label{
-      font-size: 15px;
-      font-weight: 700;
-      color: #111;
-    }
-  
+
     .field input,
     .field select{
-      width: 100%;
-      padding: 12px 12px;
-      border: 1px solid #bdbdbd;
-      border-radius: 10px;
-      font-size: 16px;
-      font-family: Georgia, serif;
-      background: white;
-      box-sizing: border-box;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
     }
-  
-    .field input:focus,
-    .field select:focus{
-      outline: none;
-      border-color: #8a611c;
-      box-shadow: 0 0 0 2px rgba(138, 97, 28, 0.14);
-    }
-  
+
     .button-row{
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       margin-top: 20px;
     }
-  
+
     .atlas-btn{
+      padding: 10px 16px;
+      border-radius: 8px;
       border: none;
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-size: 16px;
-      font-family: Georgia, serif;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
     }
-  
-    .atlas-btn:hover{
-      transform: translateY(-1px);
-    }
-  
-    .atlas-btn.primary{
-      background: #000;
+
+    .primary{
+      background: black;
       color: white;
     }
-  
-    .atlas-btn.primary:hover{
-      background: #1c1c1c;
-    }
-  
-    .atlas-btn.secondary{
+
+    .secondary{
       background: white;
-      color: #111;
       border: 1px solid #999;
     }
-  
-    .atlas-btn.secondary:hover{
-      background: #f3f3f3;
+
+    .remove{
+      background: #222;
+      color: white;
     }
-  
-    .atlas-btn.remove{
-      background: #20150a;
-      color: #f0d39b;
-      border: 1px solid #8a611c;
-      padding: 10px 14px;
-      font-size: 15px;
-    }
-  
-    .atlas-btn.remove:hover{
-      background: #2a1b0c;
-    }
-  
+
     .results-grid{
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr 1fr;
       gap: 14px;
       margin-top: 18px;
     }
-  
+
     .result-card{
       background: #f7f7f7;
-      border: 1px solid #ddd;
-      border-radius: 14px;
-      padding: 18px;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
     }
-  
-    .result-card h4{
-      margin: 0 0 10px 0;
-      font-size: 18px;
-    }
-  
+
     .result-number{
-      font-size: 34px;
-      font-weight: 800;
-      color: #111;
+      font-size: 28px;
+      font-weight: bold;
     }
-  
-    .result-caption{
-      margin-top: 8px;
-      font-size: 14px;
-      color: #555;
-      line-height: 1.5;
-    }
-  
-    .info-stack{
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-    }
-  
+
     .formula-box{
       background: #111;
       color: white;
-      border-radius: 14px;
       padding: 20px;
-      border: 2px solid #000;
+      border-radius: 14px;
     }
-  
-    .formula-box h4{
-      margin: 0 0 12px 0;
-      color: #f0d39b;
-      font-size: 22px;
-    }
-  
-    .formula-box p,
-    .formula-box li{
-      color: #f3f3f3;
-      line-height: 1.7;
-      font-size: 15px;
-    }
-  
-    .formula-box ul{
-      margin: 0;
-      padding-left: 20px;
-    }
-  
-    .tiny-note{
-      margin-top: 16px;
-      color: #444;
-      font-size: 15px;
-      line-height: 1.6;
-    }
-  
-    @media (max-width: 1100px){
+
+    @media (max-width: 900px){
       .gpa-grid{
         grid-template-columns: 1fr;
       }
-    }
-  
-    @media (max-width: 850px){
+
       .row-grid{
         grid-template-columns: 1fr 1fr;
-      }
-  
-      .results-grid{
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  
-    @media (max-width: 640px){
-      .gpa-hero,
-      .gpa-panel,
-      .formula-box{
-        padding: 18px;
-      }
-  
-      .row-grid,
-      .results-grid{
-        grid-template-columns: 1fr;
-      }
-  
-      .class-row-top{
-        flex-direction: column;
-        align-items: flex-start;
-      }
-  
-      .button-row{
-        flex-direction: column;
-      }
-  
-      .button-row .atlas-btn{
-        width: 100%;
       }
     }
   </style>
@@ -332,16 +178,13 @@
     <main class="main-content">
       <section class="gpa-hero">
         <h2>GPA Calculator</h2>
-        <p>
-          The only GPA Calculator you'll ever need!
-        </p>
       </section>
 
       <section class="gpa-grid">
         <div class="gpa-panel">
-          <h3>Add  your classes</h3>
+          <h3>Add Your Classes</h3>
           <p class="panel-subtext">
-            Toggle between High-School and College Mode!
+            Toggle between high school and college mode.
           </p>
 
           <div class="mode-toggle">
@@ -359,53 +202,46 @@
           <div id="classList" class="class-list"></div>
 
           <div class="button-row">
-            <button class="atlas-btn secondary" type="button" id="addClassBtn">+ Add Another Class</button>
-            <button class="atlas-btn primary" type="button" id="calculateBtn">Calculate GPA</button>
-            <button class="atlas-btn secondary" type="button" id="resetBtn">Reset</button>
+            <button class="atlas-btn secondary" onclick="addClassRow()">+ Add</button>
+            <button class="atlas-btn primary" onclick="calculateGPA()">Calculate</button>
+            <button class="atlas-btn secondary" onclick="resetClasses()">Reset</button>
           </div>
 
-          <p class="tiny-note" id="tipsText">
-            Feel free to offer Suggestions!
+          <p id="tipsText">
+            Weighted classes can boost GPA in high school mode.
           </p>
         </div>
 
-        <div class="info-stack">
+        <div>
           <div class="gpa-panel">
-            <h3>Your Results</h3>
-            <p class="panel-subtext">
-            </p>
+            <h3>Results</h3>
 
             <div class="results-grid">
               <div class="result-card">
-                <h4>Total Classes</h4>
+                <h4>Total</h4>
                 <div class="result-number" id="totalClasses">0</div>
               </div>
 
               <div class="result-card">
-                <h4 id="creditsLabel">Total Classes</h4>
+                <h4 id="creditsLabel">Classes</h4>
                 <div class="result-number" id="totalCredits">0</div>
               </div>
 
               <div class="result-card">
-                <h4>Unweighted GPA</h4>
+                <h4>Unweighted</h4>
                 <div class="result-number" id="unweightedGPA">0.00</div>
               </div>
 
               <div class="result-card">
-                <h4 id="weightedLabel">Weighted GPA</h4>
+                <h4 id="weightedLabel">Weighted</h4>
                 <div class="result-number" id="weightedGPA">0.00</div>
               </div>
             </div>
           </div>
 
           <div class="formula-box">
-            <h4>Calculations</h4>
-            <ul id="modeNotes">
-              <li>Regular high school classes use a 4.0 scale from number grades.</li>
-              <li>Honors adds +0.5 GPA points.</li>
-              <li>AP / IB / Dual Enrollment adds +1.0 GPA points.</li>
-              <li>College GPA is weighted by credit hours.</li>
-            </ul>
+            <h4>Other Educational Tools</h4>
+            <p>Coming Soon.</p>
           </div>
         </div>
       </section>
@@ -415,7 +251,6 @@
   <div id="footer-placeholder"></div>
 
   <script>
-    const pageName = "GPA Calculator";
     const pageHeaderSuffix = "";
 
     fetch('/snippets/header.html')
@@ -423,35 +258,13 @@
       .then(data => {
         document.getElementById('header-placeholder').innerHTML = data;
         const pageTitleText = document.querySelector('.page-title-text');
-        if (pageTitleText) pageTitleText.textContent = pageHeaderSuffix;
+        if (pageTitleText) pageTitleText.textContent = "";
       });
 
     fetch('/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('sidebar-placeholder').innerHTML = data;
-
-        const path = window.location.pathname;
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-
-          if (path === "/" && link.getAttribute("href") === "/") {
-            link.classList.add('active');
-          } else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
-            link.classList.add('active');
-          } else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
-            link.classList.add('active');
-          } else if (
-            (path.startsWith("/help") || path.startsWith("/pages/help")) &&
-            (link.getAttribute("href") === "/help" || link.getAttribute("href") === "/pages/help")
-          ) {
-            link.classList.add('active');
-          }
-        });
-
-        try {
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {}
       });
 
     fetch('/snippets/footer.html')
@@ -462,216 +275,88 @@
 
     let classCount = 0;
 
-    const classList = document.getElementById("classList");
-    const addClassBtn = document.getElementById("addClassBtn");
-    const calculateBtn = document.getElementById("calculateBtn");
-    const resetBtn = document.getElementById("resetBtn");
-
-    function getStudentType() {
-      return document.querySelector('input[name="studentType"]:checked').value;
-    }
-
-    function convertGradeToPoints(numberGrade) {
-      if (isNaN(numberGrade)) return null;
-      if (numberGrade >= 90) return 4.0;
-      if (numberGrade >= 80) return 3.0;
-      if (numberGrade >= 70) return 2.0;
-      if (numberGrade >= 60) return 1.0;
-      return 0.0;
-    }
-
-    function updateClassNumbers() {
-      const rows = document.querySelectorAll(".class-row");
-      rows.forEach((row, index) => {
-        const heading = row.querySelector(".class-title");
-        heading.textContent = `Class ${index + 1}`;
-      });
-      classCount = rows.length;
-    }
-
-    function buildClassRow() {
+    function addClassRow(){
       classCount++;
-      const studentType = getStudentType();
 
       const row = document.createElement("div");
       row.className = "class-row";
 
       row.innerHTML = `
         <div class="class-row-top">
-          <h4 class="class-title">Class ${classCount}</h4>
-          <button type="button" class="atlas-btn remove">Remove</button>
+          <strong>Class ${classCount}</strong>
+          <button class="atlas-btn remove">Remove</button>
         </div>
 
         <div class="row-grid">
-          <div class="field">
-            <label>Class Name</label>
-            <input type="text" class="class-name" placeholder="Example: English 1101">
-          </div>
-
-          <div class="field">
-            <label>Grade</label>
-            <input type="number" class="grade" min="0" max="100" step="0.1" placeholder="Enter grade">
-          </div>
-
-          <div class="field credit-field" style="${studentType === 'highschool' ? 'display:none;' : ''}">
-            <label>Credit Hours</label>
-            <input type="number" class="credits" min="0.5" step="0.5" value="3">
-          </div>
-
-          <div class="field level-field" style="${studentType === 'college' ? 'display:none;' : ''}">
-            <label>Course Level</label>
-            <select class="level">
-              <option value="0">Regular</option>
-              <option value="0.5">Honors</option>
-              <option value="1">AP / IB / Dual Enrollment</option>
-            </select>
-          </div>
+          <input placeholder="Class Name">
+          <input type="number" class="grade" placeholder="Grade">
+          <input type="number" class="credits" value="3">
+          <select class="level">
+            <option value="0">Regular</option>
+            <option value="0.5">Honors</option>
+            <option value="1">AP</option>
+          </select>
         </div>
       `;
 
-      row.querySelector(".remove").addEventListener("click", () => {
+      row.querySelector(".remove").onclick = () => {
         row.remove();
-        updateClassNumbers();
         calculateGPA();
-      });
+      };
 
-      classList.appendChild(row);
+      document.getElementById("classList").appendChild(row);
     }
 
-    function addClassRow() {
-      buildClassRow();
-    }
-
-    function resetClasses() {
-      classList.innerHTML = "";
+    function resetClasses(){
+      document.getElementById("classList").innerHTML = "";
       classCount = 0;
-
-      addClassRow();
-      addClassRow();
-      addClassRow();
-      addClassRow();
-
-      calculateGPA();
+      for(let i=0;i<4;i++) addClassRow();
     }
 
-    function switchMode() {
-      const studentType = getStudentType();
+    function convertGrade(g){
+      if(g>=90) return 4;
+      if(g>=80) return 3;
+      if(g>=70) return 2;
+      if(g>=60) return 1;
+      return 0;
+    }
+
+    function calculateGPA(){
       const rows = document.querySelectorAll(".class-row");
+      let total=0, credits=0, u=0, w=0;
+      const type = document.querySelector('input[name="studentType"]:checked').value;
 
-      document.getElementById("creditsLabel").textContent =
-        studentType === "college" ? "Credit Hours" : "Total Classes";
+      rows.forEach(r=>{
+        const g = parseFloat(r.querySelector(".grade").value);
+        if(isNaN(g)) return;
 
-      document.getElementById("creditsCaption").textContent =
-        studentType === "college"
-          ? "Total credit hours used in the calculation."
-          : "Equal-weight class count in high school mode.";
+        const gp = convertGrade(g);
+        total++;
 
-      document.getElementById("weightedLabel").textContent =
-        studentType === "college" ? "College GPA" : "Weighted GPA";
-
-      document.getElementById("weightedCaption").textContent =
-        studentType === "college"
-          ? "Same as GPA here, since college mode uses credit weighting."
-          : "Weighted classes can increase this value.";
-
-      document.getElementById("tipsText").textContent =
-        studentType === "college"
-          ? "In college mode, number grades are converted to GPA points, then weighted by credit hours."
-          : "In high school mode, each class counts equally, and weighted courses can add bonus GPA points.";
-
-      document.getElementById("modeNotes").innerHTML =
-        studentType === "college"
-          ? `
-            <li>College GPA is based on grade points multiplied by credit hours.</li>
-            <li>A 4 credit course affects GPA more than a 1 credit course.</li>
-            <li>This version uses a simple 90/80/70/60 conversion scale.</li>
-            <li>Weighted high school bonuses are disabled in college mode.</li>
-          `
-          : `
-            <li>Regular high school classes use a 4.0 scale from number grades.</li>
-            <li>Honors adds +0.5 GPA points.</li>
-            <li>AP / IB / Dual Enrollment adds +1.0 GPA points.</li>
-            <li>All classes count equally in high school mode.</li>
-          `;
-
-      rows.forEach(row => {
-        const creditField = row.querySelector(".credit-field");
-        const levelField = row.querySelector(".level-field");
-        const creditInput = row.querySelector(".credits");
-        const levelSelect = row.querySelector(".level");
-
-        if (studentType === "college") {
-          creditField.style.display = "flex";
-          levelField.style.display = "none";
-          if (creditInput && !creditInput.value) creditInput.value = 3;
-          if (levelSelect) levelSelect.value = "0";
+        if(type==="college"){
+          const c = parseFloat(r.querySelector(".credits").value);
+          credits += c;
+          u += gp*c;
+          w += gp*c;
         } else {
-          creditField.style.display = "none";
-          levelField.style.display = "flex";
+          const bonus = parseFloat(r.querySelector(".level").value);
+          u += gp;
+          w += gp+bonus;
         }
       });
 
-      calculateGPA();
-    }
-
-    function calculateGPA() {
-      const studentType = getStudentType();
-      const rows = document.querySelectorAll(".class-row");
-
-      let totalClasses = 0;
-      let totalCredits = 0;
-      let unweightedQualityPoints = 0;
-      let weightedQualityPoints = 0;
-
-      rows.forEach(row => {
-        const numberGrade = parseFloat(row.querySelector(".grade").value);
-        const gradePoints = convertGradeToPoints(numberGrade);
-
-        if (gradePoints === null) return;
-
-        totalClasses++;
-
-        if (studentType === "college") {
-          const credits = parseFloat(row.querySelector(".credits").value);
-          if (!isNaN(credits) && credits > 0) {
-            totalCredits += credits;
-            unweightedQualityPoints += gradePoints * credits;
-            weightedQualityPoints += gradePoints * credits;
-          }
-        } else {
-          const levelBonus = parseFloat(row.querySelector(".level").value) || 0;
-          unweightedQualityPoints += gradePoints;
-          weightedQualityPoints += gradePoints + levelBonus;
-        }
-      });
-
-      let unweightedGPA = 0;
-      let weightedGPA = 0;
-      let displayCredits = 0;
-
-      if (studentType === "college") {
-        unweightedGPA = totalCredits > 0 ? unweightedQualityPoints / totalCredits : 0;
-        weightedGPA = totalCredits > 0 ? weightedQualityPoints / totalCredits : 0;
-        displayCredits = totalCredits.toFixed(1);
+      if(type==="college"){
+        document.getElementById("totalCredits").textContent = credits;
+        document.getElementById("unweightedGPA").textContent = (u/credits||0).toFixed(2);
+        document.getElementById("weightedGPA").textContent = (w/credits||0).toFixed(2);
       } else {
-        unweightedGPA = totalClasses > 0 ? unweightedQualityPoints / totalClasses : 0;
-        weightedGPA = totalClasses > 0 ? weightedQualityPoints / totalClasses : 0;
-        displayCredits = totalClasses;
+        document.getElementById("totalCredits").textContent = total;
+        document.getElementById("unweightedGPA").textContent = (u/total||0).toFixed(2);
+        document.getElementById("weightedGPA").textContent = (w/total||0).toFixed(2);
       }
 
-      document.getElementById("totalClasses").textContent = totalClasses;
-      document.getElementById("totalCredits").textContent = displayCredits;
-      document.getElementById("unweightedGPA").textContent = unweightedGPA.toFixed(2);
-      document.getElementById("weightedGPA").textContent = weightedGPA.toFixed(2);
+      document.getElementById("totalClasses").textContent = total;
     }
-
-    document.querySelectorAll('input[name="studentType"]').forEach(input => {
-      input.addEventListener("change", switchMode);
-    });
-
-    addClassBtn.addEventListener("click", addClassRow);
-    calculateBtn.addEventListener("click", calculateGPA);
-    resetBtn.addEventListener("click", resetClasses);
 
     resetClasses();
   </script>
