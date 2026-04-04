@@ -246,12 +246,6 @@
       font-weight: 800;
       color: #111;
     }
-
-    .breakdown-number{
-      font-size: 22px;
-      line-height: 1.4;
-      letter-spacing: 0.2px;
-    }
   
     .info-stack{
       display: flex;
@@ -391,8 +385,8 @@
               </div>
 
               <div class="result-card">
-                <h4 id="breakdownLabel">Class Breakdown</h4>
-                <div class="result-number breakdown-number" id="classBreakdown">R: 0 | H: 0 | AP: 0</div>
+                <h4 id="creditsLabel">Total Classes</h4>
+                <div class="result-number" id="totalCredits">0</div>
               </div>
 
               <div class="result-card">
@@ -562,24 +556,24 @@
     function switchMode() {
       const studentType = getStudentType();
       const rows = document.querySelectorAll(".class-row");
-    
-      document.getElementById("breakdownLabel").textContent =
-        studentType === "college" ? "Credit Hours" : "Class Breakdown";
-    
+
+      document.getElementById("creditsLabel").textContent =
+        studentType === "college" ? "Credit Hours" : "Total Classes";
+
       document.getElementById("weightedLabel").textContent =
         studentType === "college" ? "College GPA" : "Weighted GPA";
-    
+
       document.getElementById("tipsText").textContent =
         studentType === "college"
           ? "In college mode, grades are weighted by credit hours."
-          : "Feel free to offer suggestions for future educational tools.";
-    
+          : "In high school mode, weighted courses can add bonus GPA points.";
+
       rows.forEach(row => {
         const creditField = row.querySelector(".credit-field");
         const levelField = row.querySelector(".level-field");
         const creditInput = row.querySelector(".credits");
         const levelSelect = row.querySelector(".level");
-    
+
         if (studentType === "college") {
           creditField.style.display = "flex";
           levelField.style.display = "none";
@@ -590,31 +584,27 @@
           levelField.style.display = "flex";
         }
       });
-    
+
       calculateGPA();
     }
-    
+
     function calculateGPA() {
       const studentType = getStudentType();
       const rows = document.querySelectorAll(".class-row");
-    
+
       let totalClasses = 0;
       let totalCredits = 0;
       let unweightedQualityPoints = 0;
       let weightedQualityPoints = 0;
-    
-      let regularCount = 0;
-      let honorsCount = 0;
-      let apCount = 0;
-    
+
       rows.forEach(row => {
         const numberGrade = parseFloat(row.querySelector(".grade").value);
         const gradePoints = convertGradeToPoints(numberGrade);
-    
+
         if (gradePoints === null) return;
-    
+
         totalClasses++;
-    
+
         if (studentType === "college") {
           const credits = parseFloat(row.querySelector(".credits").value);
           if (!isNaN(credits) && credits > 0) {
@@ -624,38 +614,10 @@
           }
         } else {
           const levelBonus = parseFloat(row.querySelector(".level").value) || 0;
-    
-          if (levelBonus === 0) {
-            regularCount++;
-          } else if (levelBonus === 0.5) {
-            honorsCount++;
-          } else if (levelBonus === 1) {
-            apCount++;
-          }
-    
           unweightedQualityPoints += gradePoints;
           weightedQualityPoints += gradePoints + levelBonus;
         }
       });
-    
-      let unweightedGPA = 0;
-      let weightedGPA = 0;
-    
-      if (studentType === "college") {
-        unweightedGPA = totalCredits > 0 ? unweightedQualityPoints / totalCredits : 0;
-        weightedGPA = totalCredits > 0 ? weightedQualityPoints / totalCredits : 0;
-        document.getElementById("classBreakdown").textContent = totalCredits.toFixed(1);
-      } else {
-        unweightedGPA = totalClasses > 0 ? unweightedQualityPoints / totalClasses : 0;
-        weightedGPA = totalClasses > 0 ? weightedQualityPoints / totalClasses : 0;
-        document.getElementById("classBreakdown").textContent =
-          `R: ${regularCount} | H: ${honorsCount} | AP: ${apCount}`;
-      }
-    
-      document.getElementById("totalClasses").textContent = totalClasses;
-      document.getElementById("unweightedGPA").textContent = unweightedGPA.toFixed(2);
-      document.getElementById("weightedGPA").textContent = weightedGPA.toFixed(2);
-    }
 
       let unweightedGPA = 0;
       let weightedGPA = 0;
