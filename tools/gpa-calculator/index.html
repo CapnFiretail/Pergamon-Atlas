@@ -102,16 +102,16 @@
     .class-row{
       border: 1px solid #d6d6d6;
       border-radius: 14px;
-      padding: 18px;
+      padding: 22px;
       background: #fafafa;
     }
   
     .class-row-top{
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 18px;
     }
   
     .class-row-top h4{
@@ -121,8 +121,9 @@
   
     .row-grid{
       display: grid;
-      grid-template-columns: 1.8fr 1fr 1fr 1fr;
-      gap: 14px;
+      grid-template-columns: 1.9fr 1.1fr 1fr 1fr;
+      gap: 18px;
+      align-items: end;
     }
   
     .field{
@@ -200,10 +201,20 @@
       background: #20150a;
       color: #f0d39b;
       border: 1px solid #8a611c;
-      padding: 10px 14px;
+      padding: 9px 16px;
       font-size: 15px;
+      min-width: 106px;
+      flex-shrink: 0;
     }
-  
+    .class-row .field{
+      min-width: 0;
+    }
+    
+    .class-row .field input,
+    .class-row .field select{
+      min-width: 0;
+    }
+    
     .atlas-btn.remove:hover{
       background: #2a1b0c;
     }
@@ -280,14 +291,25 @@
   
     @media (max-width: 850px){
       .row-grid{
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1.5fr 1fr 1fr;
       }
-  
+    
       .results-grid{
         grid-template-columns: 1fr 1fr;
       }
     }
-  
+    
+    @media (max-width: 700px){
+      .class-row-top{
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    
+      .row-grid{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
     @media (max-width: 640px){
       .gpa-hero,
       .gpa-panel,
