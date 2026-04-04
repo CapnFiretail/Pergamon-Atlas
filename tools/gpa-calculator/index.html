@@ -102,7 +102,7 @@
     .class-row{
       border: 1px solid #d6d6d6;
       border-radius: 14px;
-      padding: 20px 18px 18px 18px;
+      padding: 20px;
       background: #fafafa;
     }
   
@@ -121,9 +121,16 @@
   
     .row-grid{
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1.2fr;
       gap: 16px;
       align-items: end;
+    }
+  
+    .row-grid.highschool-grid{
+      grid-template-columns: 2fr 1fr 1.1fr;
+    }
+  
+    .row-grid.college-grid{
+      grid-template-columns: 2fr 1fr 1.15fr;
     }
   
     .field{
@@ -285,8 +292,9 @@
     }
   
     @media (max-width: 850px){
-      .row-grid{
-        grid-template-columns: 1.6fr 1fr 1fr;
+      .row-grid.highschool-grid,
+      .row-grid.college-grid{
+        grid-template-columns: 1fr 1fr;
       }
   
       .results-grid{
@@ -301,7 +309,8 @@
         padding: 18px;
       }
   
-      .row-grid,
+      .row-grid.highschool-grid,
+      .row-grid.college-grid,
       .results-grid{
         grid-template-columns: 1fr;
       }
