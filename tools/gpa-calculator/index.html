@@ -99,7 +99,11 @@
       margin-top: 20px;
     }
   
+    /* =========================
+       CLASS ROW (KEY CHANGE)
+    ========================== */
     .class-row{
+      position: relative;
       border: 1px solid #d6d6d6;
       border-radius: 14px;
       padding: 22px;
@@ -109,9 +113,8 @@
     .class-row-top{
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 18px;
+      align-items: center;
+      margin-bottom: 14px;
     }
   
     .class-row-top h4{
@@ -119,17 +122,37 @@
       font-size: 22px;
     }
   
+    /* FLOAT REMOVE BUTTON */
+    .atlas-btn.remove{
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #20150a;
+      color: #f0d39b;
+      border: 1px solid #8a611c;
+      padding: 9px 16px;
+      font-size: 15px;
+    }
+  
+    .atlas-btn.remove:hover{
+      background: #2a1b0c;
+    }
+  
+    /* GRID NOW FULL WIDTH */
     .row-grid{
       display: grid;
-      grid-template-columns: 1.9fr 1.1fr 1fr 1fr;
-      gap: 18px;
-      align-items: end;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 14px;
+  
+      /* THIS IS THE MAGIC */
+      padding-right: 140px;
     }
   
     .field{
       display: flex;
       flex-direction: column;
       gap: 7px;
+      min-width: 0;
     }
   
     .field label{
@@ -141,7 +164,7 @@
     .field input,
     .field select{
       width: 100%;
-      padding: 12px 12px;
+      padding: 12px;
       border: 1px solid #bdbdbd;
       border-radius: 10px;
       font-size: 16px;
@@ -171,11 +194,6 @@
       font-size: 16px;
       font-family: Georgia, serif;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
-    }
-  
-    .atlas-btn:hover{
-      transform: translateY(-1px);
     }
   
     .atlas-btn.primary{
@@ -195,28 +213,6 @@
   
     .atlas-btn.secondary:hover{
       background: #f3f3f3;
-    }
-  
-    .atlas-btn.remove{
-      background: #20150a;
-      color: #f0d39b;
-      border: 1px solid #8a611c;
-      padding: 9px 16px;
-      font-size: 15px;
-      min-width: 106px;
-      flex-shrink: 0;
-    }
-    .class-row .field{
-      min-width: 0;
-    }
-    
-    .class-row .field input,
-    .class-row .field select{
-      min-width: 0;
-    }
-    
-    .atlas-btn.remove:hover{
-      background: #2a1b0c;
     }
   
     .results-grid{
@@ -264,23 +260,15 @@
       font-size: 22px;
     }
   
-    .formula-box p,
-    .formula-box li{
+    .formula-box p{
       color: #f3f3f3;
-      line-height: 1.7;
       font-size: 15px;
-    }
-  
-    .formula-box ul{
-      margin: 0;
-      padding-left: 20px;
     }
   
     .tiny-note{
       margin-top: 16px;
       color: #444;
       font-size: 15px;
-      line-height: 1.6;
     }
   
     @media (max-width: 1100px){
@@ -291,48 +279,23 @@
   
     @media (max-width: 850px){
       .row-grid{
-        grid-template-columns: 1.5fr 1fr 1fr;
-      }
-    
-      .results-grid{
         grid-template-columns: 1fr 1fr;
+        padding-right: 0;
       }
     }
-    
-    @media (max-width: 700px){
-      .class-row-top{
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    
-      .row-grid{
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    
+  
     @media (max-width: 640px){
-      .gpa-hero,
-      .gpa-panel,
-      .formula-box{
+      .class-row{
         padding: 18px;
       }
   
-      .row-grid,
-      .results-grid{
+      .atlas-btn.remove{
+        position: static;
+        margin-bottom: 10px;
+      }
+  
+      .row-grid{
         grid-template-columns: 1fr;
-      }
-  
-      .class-row-top{
-        flex-direction: column;
-        align-items: flex-start;
-      }
-  
-      .button-row{
-        flex-direction: column;
-      }
-  
-      .button-row .atlas-btn{
-        width: 100%;
       }
     }
   </style>
