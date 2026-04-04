@@ -122,19 +122,12 @@
     .row-grid{
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    
-    .full-width{
-      grid-column: 1 / -1;
-    }
-    
-    .row-grid.highschool-grid{
-      grid-template-columns: 2fr 1fr 1.1fr;
+      gap: 16px 20px;
+      align-items: end;
     }
   
-    .row-grid.college-grid{
-      grid-template-columns: 2fr 1fr 1.15fr;
+    .full-width{
+      grid-column: 1 / -1;
     }
   
     .field{
@@ -173,9 +166,13 @@
   
     .button-row{
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 12px;
       margin-top: 20px;
+    }
+  
+    .button-row .atlas-btn{
+      flex: 1 1 0;
     }
   
     .atlas-btn{
@@ -218,7 +215,7 @@
       padding: 10px 16px;
       font-size: 15px;
       min-width: 110px;
-      flex-shrink: 0;
+      flex: 0 0 auto;
     }
   
     .atlas-btn.remove:hover{
@@ -296,24 +293,19 @@
     }
   
     @media (max-width: 850px){
-      .row-grid.highschool-grid,
-      .row-grid.college-grid{
-        grid-template-columns: 1fr 1fr;
-      }
-  
       .results-grid{
         grid-template-columns: 1fr 1fr;
       }
     }
   
     @media (max-width: 640px){
-      .row-grid{
-        grid-template-columns: 1fr;
+      .gpa-hero,
+      .gpa-panel,
+      .formula-box{
+        padding: 18px;
       }
-    }
   
-      .row-grid.highschool-grid,
-      .row-grid.college-grid,
+      .row-grid,
       .results-grid{
         grid-template-columns: 1fr;
       }
@@ -325,10 +317,12 @@
   
       .button-row{
         flex-direction: column;
+        flex-wrap: nowrap;
       }
   
       .button-row .atlas-btn{
         width: 100%;
+        flex: none;
       }
     }
   </style>
