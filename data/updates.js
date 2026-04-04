@@ -2,7 +2,7 @@ const atlasUpdates = [
   {
     date: "April 3, 2026",
     tag: "Update Log",
-    title: "Homepage Updates",
+    title: "Homepage Updates & GPA-Calculator",
     text: "The first update log entry!",
     list: [
       "Added update log system",
