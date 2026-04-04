@@ -124,6 +124,63 @@
       color:#222;
     }
 
+    .updates-section{
+      margin-bottom:32px;
+    }
+
+    .updates-wrap{
+      display:grid;
+      gap:18px;
+    }
+
+    .update-card{
+      background:#fff;
+      border:2px solid #000;
+      border-left:6px solid #c28a2b;
+      border-radius:14px;
+      padding:22px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    .update-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .update-date{
+      font-size:14px;
+      font-weight:bold;
+      color:#8a611c;
+      text-transform:uppercase;
+      letter-spacing:0.6px;
+    }
+
+    .update-tag{
+      font-size:13px;
+      font-weight:bold;
+      background:#111;
+      color:#e0b35a;
+      padding:6px 10px;
+      border-radius:999px;
+    }
+
+    .update-card h3{
+      margin:0 0 10px 0;
+      font-size:24px;
+      color:#111;
+    }
+
+    .update-card p{
+      margin:0;
+      font-size:16px;
+      line-height:1.7;
+      color:#222;
+    }
+
     .suggestions-section{
       margin-bottom:32px;
     }
@@ -192,6 +249,14 @@
         text-align:center;
       }
 
+      .update-card{
+        padding:20px 18px;
+      }
+
+      .update-card h3{
+        font-size:22px;
+      }
+
       .suggestions-card{
         padding:22px 18px;
       }
@@ -253,6 +318,40 @@
             <h3>Suggestions</h3>
             <p>Help shape what gets added next.</p>
           </a>
+        </div>
+      </section>
+
+      <section class="updates-section">
+        <div class="section-header">
+          <h2>Atlas Updates</h2>
+          <p>A running build log of what is being added, changed, and experimented with.</p>
+        </div>
+
+        <div class="updates-wrap">
+          <article class="update-card">
+            <div class="update-meta">
+              <span class="update-date">April 3, 2026</span>
+              <span class="update-tag">Homepage</span>
+            </div>
+            <h3>Added the first update log section</h3>
+            <p>
+              The homepage now includes a dedicated place for weekly progress updates.
+              This makes Pergamon Atlas feel more alive and makes it easier to build in public
+              instead of waiting for some “final version.”
+            </p>
+          </article>
+
+          <article class="update-card">
+            <div class="update-meta">
+              <span class="update-date">Next Update</span>
+              <span class="update-tag">Planned</span>
+            </div>
+            <h3>Simplify the Tools and Games pages</h3>
+            <p>
+              The next step is trimming those pages down so they feel cleaner, easier to grow,
+              and more like expandable libraries instead of finished sections.
+            </p>
+          </article>
         </div>
       </section>
 
