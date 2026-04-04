@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-    crossorigin="anonymous"></script>
-
   <title>Pergamon Atlas | Updates</title>
 
   <meta charset="utf-8">
@@ -13,192 +10,53 @@
   <link rel="stylesheet" href="/styles/sidebar.css">
   <link rel="stylesheet" href="/styles/main.css">
   <link rel="stylesheet" href="/styles/footer.css">
-
-  <style>
-    .updates-page-section{
-      margin-bottom:32px;
-    }
-
-    .updates-wrap{
-      display:grid;
-      gap:18px;
-    }
-
-    .update-card{
-      background:#fff;
-      border:2px solid #000;
-      border-left:6px solid #c28a2b;
-      border-radius:14px;
-      padding:22px;
-      box-shadow:0 4px 14px rgba(0,0,0,0.08);
-    }
-
-    .update-meta{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-
-    .update-date{
-      font-size:14px;
-      font-weight:bold;
-      color:#8a611c;
-      text-transform:uppercase;
-      letter-spacing:0.6px;
-    }
-
-    .update-tag{
-      font-size:13px;
-      font-weight:bold;
-      background:#111;
-      color:#e0b35a;
-      padding:6px 10px;
-      border-radius:999px;
-    }
-
-    .update-card h3{
-      margin:0 0 10px 0;
-      font-size:24px;
-      color:#111;
-    }
-
-    .update-card p{
-      margin:0;
-      font-size:16px;
-      line-height:1.7;
-      color:#222;
-    }
-    
-    .update-list{
-      margin:12px 0 0 0;
-      padding-left:22px;
-    }
-    
-    .update-list li{
-      margin-bottom:6px;
-      font-size:16px;
-      line-height:1.6;
-      color:#222;
-    }
-    
-    .update-list li:last-child{
-      margin-bottom:0;
-    }
-        @media (max-width: 768px){
-          .update-card{
-            padding:20px 18px;
-          }
-    
-          .update-card h3{
-            font-size:22px;
-          }
-        }
-    
-  </style>
+  <link rel="stylesheet" href="/styles/updates.css">
 </head>
 
 <body>
 
-  <div id="header-placeholder"></div>
+<div id="header-placeholder"></div>
 
-  <div class="layout">
-    <div id="sidebar-placeholder"></div>
+<div class="layout">
+<div id="sidebar-placeholder"></div>
 
-    <main class="main-content">
-      <section class="updates-page-section">
-        <div class="section-header">
-          <h2>Full Update Log</h2>
-          <p>The full running archive of Pergamon Atlas progress.</p>
-        </div>
+<main class="main-content">
 
-        <div id="all-updates-placeholder" class="updates-wrap"></div>
-      </section>
-    </main>
+<section>
+  <div class="section-header">
+    <h2>Full Update Log</h2>
+    <p>All progress.</p>
   </div>
 
-  <div id="footer-placeholder"></div>
+  <div id="all-updates-placeholder" class="updates-wrap"></div>
+</section>
 
-  <script src="/data/updates.js"></script>
+</main>
+</div>
 
-  <script>
-    const pageName = "Updates";
-    const pageHeaderSuffix = pageName ? " | " + pageName : "";
+<div id="footer-placeholder"></div>
 
-    function renderUpdates(updates, containerId, limit = null){
-      const container = document.getElementById(containerId);
-      if (!container) return;
-    
-      const visibleUpdates = limit ? updates.slice(0, limit) : updates;
-    
-      container.innerHTML = visibleUpdates.map(update => `
-        <article class="update-card">
-          <div class="update-meta">
-            <span class="update-date">${update.date}</span>
-            <span class="update-tag">${update.tag}</span>
-          </div>
-    
-          <h3>${update.title}</h3>
-    
-          ${update.text ? `<p>${update.text}</p>` : ""}
-    
-          ${update.list ? `
-            <ul class="update-list">
-              ${update.list.map(item => `<li>${item}</li>`).join("")}
-            </ul>
-          ` : ""}
-        </article>
-      `).join("");
-    }
+<script src="/data/updates.js"></script>
 
-    fetch('/snippets/header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header-placeholder').innerHTML = data;
+<script>
+function renderUpdates(updates, containerId){
+  const container=document.getElementById(containerId);
 
-        const pageTitleText = document.querySelector('.page-title-text');
-        if (pageTitleText) {
-          pageTitleText.textContent = pageHeaderSuffix;
-        }
-      });
+  container.innerHTML=updates.map(u=>`
+    <article class="update-card">
+      <div class="update-meta">
+        <span class="update-date">${u.date}</span>
+        <span class="update-tag">${u.tag}</span>
+      </div>
+      <h3>${u.title}</h3>
+      ${u.text?`<p>${u.text}</p>`:""}
+      ${u.list?`<ul class="update-list">${u.list.map(i=>`<li>${i}</li>`).join("")}</ul>`:""}
+    </article>
+  `).join("");
+}
 
-    fetch('/snippets/sidebar.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('sidebar-placeholder').innerHTML = data;
-
-        const path = window.location.pathname;
-
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-
-          if (path === "/" && link.getAttribute("href") === "/") {
-            link.classList.add('active');
-          }
-          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
-            link.classList.add('active');
-          }
-          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
-            link.classList.add('active');
-          }
-          else if (path.startsWith("/pages/help") && link.getAttribute("href") === "/pages/help") {
-            link.classList.add('active');
-          }
-        });
-      });
-
-    fetch('/snippets/footer.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('footer-placeholder').innerHTML = data;
-      });
-
-    renderUpdates(atlasUpdates, 'all-updates-placeholder');
-
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
+renderUpdates(atlasUpdates,'all-updates-placeholder');
+</script>
 
 </body>
 </html>
