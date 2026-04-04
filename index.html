@@ -124,6 +124,9 @@
       color:#222;
     }
 
+    /* =========================
+       UPDATES SECTION
+    ========================== */
     .updates-section{
       margin-bottom:32px;
     }
@@ -168,19 +171,9 @@
       border-radius:999px;
     }
 
-    .update-card h3{
-      margin:0 0 10px 0;
-      font-size:24px;
-      color:#111;
-    }
-
-    .update-card p{
-      margin:0;
-      font-size:16px;
-      line-height:1.7;
-      color:#222;
-    }
-
+    /* =========================
+       SUGGESTIONS
+    ========================== */
     .suggestions-section{
       margin-bottom:32px;
     }
@@ -223,18 +216,6 @@
     }
 
     @media (max-width: 768px){
-      .hero-card{
-        padding:24px 20px;
-      }
-
-      .hero-card h2{
-        font-size:38px;
-      }
-
-      .hero-text{
-        font-size:17px;
-      }
-
       .feature-grid{
         grid-template-columns:1fr;
       }
@@ -245,29 +226,6 @@
 
       .atlas-button{
         width:100%;
-        box-sizing:border-box;
-        text-align:center;
-      }
-
-      .update-card{
-        padding:20px 18px;
-      }
-
-      .update-card h3{
-        font-size:22px;
-      }
-
-      .suggestions-card{
-        padding:22px 18px;
-      }
-
-      .suggestions-card p{
-        font-size:16px;
-      }
-
-      .suggestions-link{
-        width:100%;
-        box-sizing:border-box;
         text-align:center;
       }
     }
@@ -282,6 +240,8 @@
     <div id="sidebar-placeholder"></div>
 
     <main class="main-content">
+
+      <!-- HERO -->
       <section class="hero-section">
         <div class="hero-card">
           <p class="hero-eyebrow">A growing digital world</p>
@@ -297,6 +257,7 @@
         </div>
       </section>
 
+      <!-- EXPLORE -->
       <section class="feature-section">
         <div class="section-header">
           <h2>Explore</h2>
@@ -321,51 +282,32 @@
         </div>
       </section>
 
+      <!-- UPDATES (SNIPPET LOADED) -->
       <section class="updates-section">
         <div class="section-header">
           <h2>Atlas Updates</h2>
-          <p>A running build log of what is being added, changed, and experimented with.</p>
+          <p>A running log of what is being built.</p>
         </div>
 
-        <div class="updates-wrap">
-          <article class="update-card">
-            <div class="update-meta">
-              <span class="update-date">April 3, 2026</span>
-              <span class="update-tag">Homepage</span>
-            </div>
-            <h3>Added the first update log section</h3>
-            <p>
-              The homepage now includes a dedicated place for weekly progress updates.
-              This makes Pergamon Atlas feel more alive and makes it easier to build in public
-              instead of waiting for some “final version.”
-            </p>
-          </article>
+        <div id="updates-placeholder"></div>
 
-          <article class="update-card">
-            <div class="update-meta">
-              <span class="update-date">Next Update</span>
-              <span class="update-tag">Planned</span>
-            </div>
-            <h3>Simplify the Tools and Games pages</h3>
-            <p>
-              The next step is trimming those pages down so they feel cleaner, easier to grow,
-              and more like expandable libraries instead of finished sections.
-            </p>
-          </article>
+        <div style="margin-top:18px;">
+          <a href="/pages/updates" class="suggestions-link">View Full Update Log</a>
         </div>
       </section>
 
+      <!-- SUGGESTIONS -->
       <section class="suggestions-section">
         <div class="suggestions-card">
           <h2>Shape the Atlas</h2>
           <p>
             Pergamon Atlas is meant to grow. Suggestions help decide what tools, games,
-            pages, and ideas get added next. If there is something you want to see built,
-            this is where to say it.
+            pages, and ideas get added next.
           </p>
           <a href="/help" class="suggestions-link">Leave a Suggestion</a>
         </div>
       </section>
+
     </main>
   </div>
 
@@ -408,6 +350,13 @@
             link.classList.add('active');
           }
         });
+      });
+
+    /* 🔥 LOAD UPDATES SNIPPET */
+    fetch('/snippets/home-updates.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('updates-placeholder').innerHTML = data;
       });
 
     fetch('/snippets/footer.html')
