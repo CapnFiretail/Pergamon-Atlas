@@ -8,7 +8,7 @@ const atlasUpdates = [
       "Added update log system",
       "Built updates archive page",
       "Revised tools home page",
-      "Revised GPA-Calculator"
+      "Updated GPA-Calculator"
     ]
   },
   {
