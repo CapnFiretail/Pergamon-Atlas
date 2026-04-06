@@ -5,7 +5,6 @@
     crossorigin="anonymous"></script>
 
   <title>Pergamon Atlas | Games</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -16,21 +15,20 @@
 
   <style>
     .games-hero{
-      background:
-        linear-gradient(135deg, rgba(10,10,10,0.96) 0%, rgba(25,25,25,0.96) 100%);
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
       color: white;
       border: 2px solid #8a611c;
-      border-radius: 18px;
-      padding: 30px;
+      border-radius: 16px;
+      padding: 28px;
       margin-bottom: 28px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
     }
 
     .games-hero h2{
       margin: 0 0 12px 0;
-      font-size: clamp(34px, 5vw, 52px);
+      font-size: clamp(32px, 5vw, 48px);
       color: #e0b35a;
-      line-height: 1.05;
+      line-height: 1.1;
     }
 
     .games-hero p{
@@ -38,20 +36,7 @@
       font-size: 18px;
       line-height: 1.7;
       color: #ededed;
-      max-width: 960px;
-    }
-
-    .hero-note{
-      margin-top: 18px;
-      display: inline-block;
-      padding: 8px 14px;
-      border: 1px solid #8a611c;
-      border-radius: 999px;
-      background: rgba(22,18,10,0.9);
-      color: #f0d39b;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
+      max-width: 900px;
     }
 
     .games-grid{
@@ -86,7 +71,7 @@
     }
 
     .game-card h3{
-      margin: 0 0 8px 0;
+      margin: 0 0 10px 0;
       font-size: 24px;
       color: #111;
     }
@@ -96,25 +81,6 @@
       font-size: 16px;
       line-height: 1.7;
       color: #333;
-    }
-
-    .game-meta{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .meta-pill{
-      display: inline-block;
-      border: 1px solid #8a611c;
-      background: #16120a;
-      color: #e0b35a;
-      border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
     }
 
     .game-link{
@@ -136,152 +102,41 @@
       letter-spacing: 0.2px;
     }
 
-    .shelf-section{
-      margin-bottom: 28px;
+    .featured-strip{
+      margin-top: 6px;
     }
 
-    .shelf-header{
-      margin-bottom: 16px;
-    }
-
-    .shelf-header h3{
-      margin: 0 0 8px 0;
+    .featured-strip h3{
+      margin: 0 0 16px 0;
       font-size: 28px;
     }
 
-    .shelf-header p{
-      margin: 0;
-      font-size: 17px;
-      line-height: 1.7;
-      color: #333;
-    }
-
-    .shelf-grid{
+    .featured-list{
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
     }
 
-    .shelf-card{
+    .featured-item{
       background: #f7f7f7;
       border: 2px solid #000;
       border-radius: 14px;
       padding: 20px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
     }
 
-    .shelf-card h4{
+    .featured-item h4{
       margin: 0 0 10px 0;
       font-size: 22px;
     }
 
-    .shelf-card p{
-      margin: 0 0 14px 0;
+    .featured-item p{
+      margin: 0;
       font-size: 16px;
       line-height: 1.7;
       color: #222;
     }
 
-    .shelf-card a{
-      text-decoration: none;
-      font-weight: 700;
-      color: #8a611c;
-    }
-
-    .archive-box{
-      margin-top: 8px;
-      padding: 18px;
-      border: 2px dashed #8a611c;
-      border-radius: 14px;
-      background: #fcfaf5;
-    }
-
-    .archive-box p{
-      margin: 0 0 12px 0;
-      font-size: 16px;
-      line-height: 1.7;
-      color: #222;
-    }
-
-    .code-row{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .archive-code{
-      display: inline-block;
-      font-family: "Courier New", Courier, monospace;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      background: #111;
-      color: #f0d39b;
-      padding: 9px 12px;
-      border-radius: 10px;
-      border: 1px solid #8a611c;
-    }
-
-    .prompt-panel{
-      background: linear-gradient(135deg, #111 0%, #1b1b1b 100%);
-      color: white;
-      border: 2px solid #8a611c;
-      border-radius: 16px;
-      padding: 24px;
-    }
-
-    .prompt-panel h3{
-      margin: 0 0 10px 0;
-      font-size: 28px;
-      color: #e0b35a;
-    }
-
-    .prompt-panel p{
-      margin: 0 0 16px 0;
-      font-size: 16px;
-      line-height: 1.75;
-      color: #ededed;
-      max-width: 900px;
-    }
-
-    .prompt-actions{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .prompt-btn{
-      display: inline-block;
-      text-decoration: none;
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-size: 15px;
-      font-weight: 700;
-      transition: 0.2s ease;
-    }
-
-    .prompt-btn.primary{
-      background: #8a611c;
-      color: white;
-      border: 1px solid #8a611c;
-    }
-
-    .prompt-btn.primary:hover{
-      background: #a67422;
-      border-color: #a67422;
-    }
-
-    .prompt-btn.secondary{
-      background: transparent;
-      color: #f0d39b;
-      border: 1px solid #8a611c;
-    }
-
-    .prompt-btn.secondary:hover{
-      background: #16120a;
-    }
-
-    @media (max-width: 1100px){
+    @media (max-width: 1050px){
       .games-grid{
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -297,24 +152,26 @@
         font-size: 16px;
       }
 
-      .games-grid,
-      .shelf-grid{
+      .games-grid{
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .featured-list{
         grid-template-columns: 1fr;
         gap: 16px;
       }
 
       .game-card,
-      .shelf-card,
-      .prompt-panel{
+      .featured-item{
         padding: 18px;
       }
 
-      .game-card h3,
-      .prompt-panel h3{
-        font-size: 24px;
+      .game-card h3{
+        font-size: 22px;
       }
 
-      .shelf-header h3{
+      .featured-strip h3{
         font-size: 24px;
       }
     }
@@ -330,150 +187,67 @@
 
     <main class="main-content">
       <section class="games-hero">
-        <h2>Games of the Atlas</h2>
+        <h2>Games</h2>
         <p>
-          Not just an arcade — a growing library of playable creations. Some are Captain-made,
-          some are experiments, some may one day be generated by the Atlas itself, and every
-          game belongs on a shelf. The goal is simple: build a collection that never stops growing.
+          Welcome to the game wing of Pergamon Atlas. This shelf is small for now, but it will grow into a living arcade of experiments, classics, and strange little creations.
         </p>
-        <div class="hero-note">A living shelf of playable ideas</div>
       </section>
 
       <section class="section-header">
-        <h2>Featured Shelf</h2>
+        <h2>Browse the Collection</h2>
         <p>
-          Start here. These are highlighted games, concepts, and sections that define what this library is becoming.
+          Three games to begin the shelf. More will be added as the library expands.
         </p>
       </section>
 
       <section class="games-grid">
-        <a href="/games/coin-flip" class="game-card">
-          <div class="game-icon">🪙</div>
-          <h3>Coin Flip</h3>
-          <div class="game-meta">
-            <span class="meta-pill">Archive Code: ARCH-0001</span>
-            <span class="meta-pill">Chance</span>
-            <span class="meta-pill">Playable Now</span>
-          </div>
+        <a href="/games/atlas-runner" class="game-card">
+          <div class="game-icon">🏃</div>
+          <h3>Atlas Runner</h3>
           <p>
-            A simple but noble beginning. Fast, clean, and exactly the kind of tiny utility-game that belongs in the archive.
+            A fast-paced reflex game where you weave through hazards and survive as long as you can.
           </p>
-          <span class="game-link">Open the shelf →</span>
+          <span class="game-link">Open game →</span>
+          <div class="coming-soon">Coming Soon</div>
         </a>
 
-        <div class="game-card">
-          <div class="game-icon">⚓</div>
-          <h3>The Captain’s Games</h3>
-          <div class="game-meta">
-            <span class="meta-pill">Curated</span>
-            <span class="meta-pill">Personal Shelf</span>
-          </div>
+        <a href="/games/cryptkeeper" class="game-card">
+          <div class="game-icon">🪙</div>
+          <h3>Cryptkeeper</h3>
           <p>
-            A dedicated section for your own originals, favorites, experiments, and handcrafted weirdness.
+            A strange treasure game of choices, risk, and greed. Push your luck too hard and lose it all.
           </p>
-          <span class="coming-soon">Featured Section</span>
-        </div>
+          <span class="game-link">Open game →</span>
+          <div class="coming-soon">Coming Soon</div>
+        </a>
 
-        <div class="game-card">
-          <div class="game-icon">∞</div>
-          <h3>Atlas Archive</h3>
-          <div class="game-meta">
-            <span class="meta-pill">Infinite Growth</span>
-            <span class="meta-pill">Library System</span>
-          </div>
+        <a href="/games/chess-forge" class="game-card">
+          <div class="game-icon">♟️</div>
+          <h3>Chess Forge</h3>
           <p>
-            The long-term vision: a shelf that expands over time with new games, archived by code and sorted like a real collection.
+            A tactical strategy game inspired by classic board battles, rebuilt in the Atlas style.
           </p>
-          <span class="coming-soon">Growing Collection</span>
-        </div>
+          <span class="game-link">Open game →</span>
+          <div class="coming-soon">Coming Soon</div>
+        </a>
       </section>
 
-      <section class="content-card shelf-section">
-        <div class="shelf-header">
-          <h3>The Captain’s Games</h3>
-          <p>
-            This shelf gives the library a heartbeat. Not everything should feel machine-made — some games should clearly come from you.
-          </p>
-        </div>
-
-        <div class="shelf-grid">
-          <div class="shelf-card">
-            <h4>Captain Originals</h4>
+      <section class="featured-strip">
+        <h3>What This Wing Will Become</h3>
+        <div class="featured-list">
+          <div class="featured-item">
+            <h4>The Captain’s Games</h4>
             <p>
-              Your personal projects, bigger ideas, and more intentional creations would live here. This section can become the signature shelf of the whole site.
+              A curated shelf of games made directly by you, each one feeling like its own little artifact in the atlas.
             </p>
-            <a href="/games">Captain shelf coming soon →</a>
           </div>
 
-          <div class="shelf-card">
-            <h4>Captain Picks</h4>
+          <div class="featured-item">
+            <h4>An Expanding Arcade</h4>
             <p>
-              Even when the archive gets huge, you can still spotlight your favorite games, your newest build, or the strangest thing worth preserving.
+              Over time, this wing can grow into a much larger collection of arcade games, experiments, puzzles, and AI-built creations.
             </p>
-            <a href="/games">Curated highlights →</a>
           </div>
-        </div>
-      </section>
-
-      <section class="content-card shelf-section">
-        <div class="shelf-header">
-          <h3>Atlas Archive</h3>
-          <p>
-            Every game in the library can be treated like an item in a real archive — categorized, stored, and identified with its own code.
-          </p>
-        </div>
-
-        <div class="archive-box">
-          <p>
-            Instead of just “Game 12,” each creation can have an archive identity. That makes the library feel organized, collectible, and infinite.
-          </p>
-
-          <div class="code-row">
-            <span class="archive-code">ARCH-0001</span>
-            <span class="archive-code">CAPT-0042</span>
-            <span class="archive-code">LAB-0189</span>
-            <span class="archive-code">COMM-0027</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="content-card shelf-section">
-        <div class="shelf-header">
-          <h3>Future Shelves</h3>
-          <p>
-            This page can grow far beyond a normal games page. These are the sections that make the concept feel big.
-          </p>
-        </div>
-
-        <div class="shelf-grid">
-          <div class="shelf-card">
-            <h4>Prompt the Atlas</h4>
-            <p>
-              Members could eventually describe a game idea and let the Atlas try to turn it into something playable.
-            </p>
-            <a href="/pages/help">Pitch an idea →</a>
-          </div>
-
-          <div class="shelf-card">
-            <h4>Build for the Library</h4>
-            <p>
-              In the future, creators could submit their own games and have them preserved as part of the archive.
-            </p>
-            <a href="/pages/help">Suggest a feature →</a>
-          </div>
-        </div>
-      </section>
-
-      <section class="prompt-panel">
-        <h3>Prompt the Atlas</h3>
-        <p>
-          One of the coolest future directions for this page is letting members describe a game and have the library generate or inspire something from that idea.
-          Whether it becomes daily game generation, member requests, or an experimental lab shelf, this is where the “living” part of the library really takes off.
-        </p>
-
-        <div class="prompt-actions">
-          <a href="/pages/help" class="prompt-btn primary">Suggest a Game Idea</a>
-          <a href="/games" class="prompt-btn secondary">Explore the Archive</a>
         </div>
       </section>
     </main>
