@@ -2,347 +2,518 @@
 <html lang="en">
 <head>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
 
   <title>Pergamon Atlas | Tip Calculator</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+
   <style>
-    /* =========================
-       GLOBAL PAGE STYLES
-    ========================== */
-    body{
-      margin:0;
-      font-family:Georgia, serif;
-      background-color:#e9e9e9;
+    .tip-page{
+      max-width: 980px;
+      margin: 0 auto;
     }
 
-    /* =========================
-       TOP HEADER / NAV BAR
-    ========================== */
-    .topbar{
-      background-color:#000;
-      color:white;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:20px 30px;
+    .hero-card{
+      background: linear-gradient(135deg, #111 0%, #1b1b1b 100%);
+      color: #f4ead7;
+      border: 2px solid #8a611c;
+      border-radius: 18px;
+      padding: 26px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.22);
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:18px;
+    .hero-card h2{
+      margin: 0 0 10px 0;
+      font-size: clamp(30px, 4vw, 42px);
+      color: white;
     }
 
-    .logo-box{
-      width:128px;
-      height:100px;
-      background-color:#222;
-      border:2px solid black;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
+    .hero-card p{
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #eadab8;
+      max-width: 700px;
     }
 
-    .logo-box img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
+    .tip-layout{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      gap: 24px;
+      align-items: start;
     }
 
-    .brand h1{
-      margin:0;
-      font-size:64px;
-      font-weight:bold;
+    .tool-card{
+      background: white;
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
-    .suggest-btn{
-      background-color:white;
-      color:black;
-      border:none;
-      padding:12px 20px;
-      font-size:18px;
-      cursor:pointer;
-      border-radius:8px;
+    .tool-card h3{
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      color: #111;
     }
 
-    .suggest-btn:hover{
-      background-color:#ddd;
+    .tool-card p{
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #222;
     }
 
-    /* =========================
-       PAGE LAYOUT
-    ========================== */
-    .layout{
-      display:flex;
-      min-height:calc(100vh - 140px);
+    .field-group{
+      margin-top: 20px;
     }
 
-    /* =========================
-       SIDEBAR
-    ========================== */
-    .sidebar{
-      width:220px;
-      background-color:#111;
-      padding-top:20px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+    .field{
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
     }
 
-    .sidebar a{
-      color:white;
-      text-decoration:none;
-      padding:16px 24px;
-      font-size:24px;
-      display:block;
-      width:100%;
-      box-sizing:border-box;
+    .field label{
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
     }
 
-    .sidebar a:hover{
-      background-color:#222;
+    .field input{
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #b9b9b9;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      background: #fff;
+      color: #111;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-sizing: border-box;
     }
 
-    /* =========================
-       SIDEBAR AD SPACE
-    ========================== */
-    .ad-box{
-      width:90%;
-      margin:25px auto;
-      padding:20px;
-      background:#ffffff;
-      border-radius:10px;
-      border:2px dashed #999;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:120px;
-      box-sizing:border-box;
+    .field input:focus{
+      border-color: #c28a2b;
+      box-shadow: 0 0 0 3px rgba(194, 138, 43, 0.18);
+      background: #fffdf8;
     }
 
-    .ad-box ins{
-      display:block;
-      width:100%;
-      max-width:100%;
-      background-color:#ffffff;
+    .tip-button-row{
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    /* =========================
-       MAIN CONTENT AREA
-    ========================== */
-    .main-content{
-      flex:1;
-      padding:30px;
-      background-color:#e9e9e9;
+    .tip-btn{
+      border: 1.5px solid #c8c8c8;
+      background: #f7f7f7;
+      color: #111;
+      border-radius: 999px;
+      padding: 11px 10px;
+      font-size: 15px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .welcome-box{
-      background-color:white;
-      padding:30px;
-      border-radius:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.12);
-      max-width:700px;
+    .tip-btn:hover{
+      background: #efefef;
+      border-color: #a8a8a8;
     }
 
-    .calculator-form{
-      margin-top:20px;
+    .tip-btn.active{
+      background: #111;
+      color: #f1dfb3;
+      border-color: #8a611c;
     }
 
-    .calculator-form label{
-      display:block;
-      font-size:22px;
-      margin-bottom:8px;
-      margin-top:18px;
+    .button-row{
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+      flex-wrap: wrap;
     }
 
-    .calculator-form input,
-    .calculator-form select{
-      width:100%;
-      padding:14px;
-      font-size:20px;
-      font-family:Georgia, serif;
-      border:1px solid #bbb;
-      border-radius:8px;
-      box-sizing:border-box;
+    .primary-btn,
+    .secondary-btn{
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .calc-btn,
-    .reset-btn{
-      margin-top:22px;
-      padding:14px 22px;
-      font-size:20px;
-      font-family:Georgia, serif;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      margin-right:12px;
+    .primary-btn{
+      border: 1.5px solid #8a611c;
+      background: #111;
+      color: #f1dfb3;
     }
 
-    .calc-btn{
-      background-color:#000;
-      color:white;
+    .primary-btn:hover{
+      background: #1b1b1b;
+      border-color: #c28a2b;
+      color: white;
     }
 
-    .calc-btn:hover{
-      background-color:#222;
+    .secondary-btn{
+      border: 1.5px solid #999;
+      background: white;
+      color: #111;
     }
 
-    .reset-btn{
-      background-color:#d9d9d9;
-      color:black;
+    .secondary-btn:hover{
+      background: #f3f3f3;
     }
 
-    .reset-btn:hover{
-      background-color:#c5c5c5;
+    .error-box{
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #d59b9b;
+      background: #fff4f4;
+      color: #7b1f1f;
+      font-size: 15px;
+      line-height: 1.5;
     }
 
-    .results-box{
-      margin-top:30px;
-      padding:22px;
-      background-color:#f7f7f7;
-      border-radius:10px;
-      border:1px solid #ccc;
+    .hidden{
+      display: none;
     }
 
-    .results-box p{
-      font-size:24px;
-      margin:12px 0;
+    .result-stack{
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
     }
 
-    .error-message{
-      color:#b00020;
-      font-size:20px;
-      margin-top:18px;
-      font-weight:bold;
+    .result-card{
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .result-card h4{
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .result-value{
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      color: #111;
+      line-height: 1.1;
+    }
+
+    .mini-note{
+      margin-top: 14px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .muted{
+      color: #555;
+    }
+
+    @media (max-width: 900px){
+      .tip-layout{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px){
+      .hero-card,
+      .tool-card{
+        padding: 20px;
+      }
+
+      .tip-button-row{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .button-row{
+        flex-direction: column;
+      }
+
+      .primary-btn,
+      .secondary-btn{
+        width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
+  <div id="header-placeholder"></div>
 
-  <!-- =========================
-       TOP HEADER
-  ========================== -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo-box">
-        <img src="/images/logo.png" alt="Pergamon Atlas Logo">
-      </div>
-      <h1>Pergamon Atlas</h1>
-    </div>
-
-    <button class="suggest-btn">Website Suggestions</button>
-  </div>
-
-  <!-- =========================
-       PAGE LAYOUT
-  ========================== -->
   <div class="layout">
+    <div id="sidebar-placeholder"></div>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-      <a href="/">Home</a>
-      <a href="/tools">Tools</a>
-      <a href="/games">Games</a>
-      <a href="/help">Help</a>
+    <main class="main-content">
+      <div class="tip-page">
+        <section class="hero-card">
+          <h2>Tip Calculator</h2>
+          <p>
+            A fast, simple way to calculate the tip, total bill, and split cost per person.
+          </p>
+        </section>
 
-      <div class="ad-box">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-4717716734064612"
-             data-ad-slot="8448245585"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-      </div>
-    </div>
+        <div class="tip-layout">
+          <section class="tool-card">
+            <h3>Enter the Bill</h3>
+            <p class="muted">
+              Keep it simple. Enter the bill, pick a tip, and split it if needed.
+            </p>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <div class="welcome-box">
-        <h2>Tip Calculator</h2>
-        <p>Quickly calculate tip, total bill, and cost per person.</p>
+            <div class="field-group">
+              <div class="field">
+                <label for="billAmount">Bill Amount ($)</label>
+                <input type="number" id="billAmount" placeholder="Enter bill amount" min="0" step="0.01">
+              </div>
 
-        <div class="calculator-form">
-          <label for="billAmount">Bill Amount ($)</label>
-          <input type="number" id="billAmount" placeholder="Enter bill amount" step="0.01" min="0">
+              <div class="field">
+                <label>Tip Percentage</label>
+                <div class="tip-button-row">
+                  <button type="button" class="tip-btn" data-tip="15">15%</button>
+                  <button type="button" class="tip-btn" data-tip="18">18%</button>
+                  <button type="button" class="tip-btn active" data-tip="20">20%</button>
+                  <button type="button" class="tip-btn" data-tip="25">25%</button>
+                </div>
+              </div>
 
-          <label for="tipPercent">Tip Percentage</label>
-          <select id="tipPercent">
-            <option value="15">15%</option>
-            <option value="18">18%</option>
-            <option value="20" selected>20%</option>
-            <option value="25">25%</option>
-          </select>
+              <div class="field">
+                <label for="customTip">Custom Tip (%)</label>
+                <input type="number" id="customTip" placeholder="Optional custom tip" min="0" step="0.1">
+              </div>
 
-          <label for="peopleCount">Number of People</label>
-          <input type="number" id="peopleCount" placeholder="Enter number of people" min="1" value="1">
+              <div class="field">
+                <label for="peopleCount">Number of People</label>
+                <input type="number" id="peopleCount" placeholder="Enter number of people" min="1" step="1" value="1">
+              </div>
+            </div>
 
-          <button class="calc-btn" onclick="calculateTip()">Calculate Tip</button>
-          <button class="reset-btn" onclick="resetCalculator()">Reset</button>
+            <div class="button-row">
+              <button class="primary-btn" type="button" id="calculateBtn">Calculate Tip</button>
+              <button class="secondary-btn" type="button" id="resetBtn">Reset</button>
+            </div>
 
-          <div id="errorBox" class="error-message"></div>
+            <div id="errorBox" class="error-box hidden"></div>
+          </section>
 
-          <div class="results-box" id="resultsBox">
-            <p><strong>Tip Amount:</strong> $0.00</p>
-            <p><strong>Total Bill:</strong> $0.00</p>
-            <p><strong>Per Person:</strong> $0.00</p>
-          </div>
+          <section class="tool-card">
+            <h3>Your Results</h3>
+            <p class="muted">Everything updates here after you calculate.</p>
+
+            <div class="result-stack">
+              <div class="result-card">
+                <h4>Tip Amount</h4>
+                <div class="result-value" id="tipAmountResult">$0.00</div>
+              </div>
+
+              <div class="result-card">
+                <h4>Total Bill</h4>
+                <div class="result-value" id="totalBillResult">$0.00</div>
+              </div>
+
+              <div class="result-card">
+                <h4>Per Person</h4>
+                <div class="result-value" id="perPersonResult">$0.00</div>
+              </div>
+            </div>
+
+            <p class="mini-note">
+              Per person is based on the final total after tip.
+            </p>
+          </section>
         </div>
       </div>
-    </div>
-
+    </main>
   </div>
 
+  <div id="footer-placeholder"></div>
+
   <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    const pageName = "Tip Calculator";
+    const pageHeaderSuffix = pageName ? " | " + pageName : "";
 
-    function calculateTip(){
-      let billAmount = parseFloat(document.getElementById("billAmount").value);
-      let tipPercent = parseFloat(document.getElementById("tipPercent").value);
-      let peopleCount = parseInt(document.getElementById("peopleCount").value);
+    fetch('/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) {
+          pageTitleText.textContent = pageHeaderSuffix;
+        }
+      });
 
-      let errorBox = document.getElementById("errorBox");
-      let resultsBox = document.getElementById("resultsBox");
+    fetch('/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
 
+        const path = window.location.pathname;
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+
+          if (path === "/" && link.getAttribute("href") === "/") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
+            link.classList.add('active');
+          }
+          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
+            link.classList.add('active');
+          }
+          else if (
+            (path.startsWith("/help") || path.startsWith("/pages/help")) &&
+            link.getAttribute("href") === "/pages/help"
+          ) {
+            link.classList.add('active');
+          }
+        });
+
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      });
+
+    fetch('/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+
+    const billAmountInput = document.getElementById("billAmount");
+    const customTipInput = document.getElementById("customTip");
+    const peopleCountInput = document.getElementById("peopleCount");
+    const errorBox = document.getElementById("errorBox");
+
+    const tipAmountResult = document.getElementById("tipAmountResult");
+    const totalBillResult = document.getElementById("totalBillResult");
+    const perPersonResult = document.getElementById("perPersonResult");
+
+    const tipButtons = document.querySelectorAll(".tip-btn");
+    let selectedTip = 20;
+
+    function formatMoney(value) {
+      return `$${value.toFixed(2)}`;
+    }
+
+    function clearError() {
       errorBox.textContent = "";
+      errorBox.classList.add("hidden");
+    }
 
-      if (isNaN(billAmount) || billAmount <= 0){
-        errorBox.textContent = "Please enter a valid bill amount.";
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.remove("hidden");
+    }
+
+    function resetResults() {
+      tipAmountResult.textContent = "$0.00";
+      totalBillResult.textContent = "$0.00";
+      perPersonResult.textContent = "$0.00";
+    }
+
+    function setActiveTipButton(tipValue) {
+      tipButtons.forEach(button => {
+        button.classList.toggle("active", Number(button.dataset.tip) === tipValue);
+      });
+    }
+
+    tipButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        selectedTip = Number(button.dataset.tip);
+        customTipInput.value = "";
+        setActiveTipButton(selectedTip);
+        clearError();
+      });
+    });
+
+    function getTipPercent() {
+      const customTip = parseFloat(customTipInput.value);
+
+      if (!isNaN(customTip) && customTip >= 0) {
+        tipButtons.forEach(button => button.classList.remove("active"));
+        return customTip;
+      }
+
+      setActiveTipButton(selectedTip);
+      return selectedTip;
+    }
+
+    function calculateTip() {
+      clearError();
+
+      const billAmount = parseFloat(billAmountInput.value);
+      const peopleCount = parseInt(peopleCountInput.value, 10);
+      const tipPercent = getTipPercent();
+
+      if (isNaN(billAmount) || billAmount <= 0) {
+        showError("Please enter a valid bill amount.");
+        resetResults();
         return;
       }
 
-      if (isNaN(peopleCount) || peopleCount < 1){
-        errorBox.textContent = "Please enter a valid number of people.";
+      if (isNaN(tipPercent) || tipPercent < 0) {
+        showError("Please enter a valid tip percentage.");
+        resetResults();
         return;
       }
 
-      let tipAmount = billAmount * (tipPercent / 100);
-      let totalBill = billAmount + tipAmount;
-      let perPerson = totalBill / peopleCount;
+      if (isNaN(peopleCount) || peopleCount < 1) {
+        showError("Please enter a valid number of people.");
+        resetResults();
+        return;
+      }
 
-      resultsBox.innerHTML = `
-        <p><strong>Tip Amount:</strong> $${tipAmount.toFixed(2)}</p>
-        <p><strong>Total Bill:</strong> $${totalBill.toFixed(2)}</p>
-        <p><strong>Per Person:</strong> $${perPerson.toFixed(2)}</p>
-      `;
+      const tipAmount = billAmount * (tipPercent / 100);
+      const totalBill = billAmount + tipAmount;
+      const perPerson = totalBill / peopleCount;
+
+      tipAmountResult.textContent = formatMoney(tipAmount);
+      totalBillResult.textContent = formatMoney(totalBill);
+      perPersonResult.textContent = formatMoney(perPerson);
     }
 
-    function resetCalculator(){
-      document.getElementById("billAmount").value = "";
-      document.getElementById("tipPercent").value = "20";
-      document.getElementById("peopleCount").value = "1";
-      document.getElementById("errorBox").textContent = "";
-      document.getElementById("resultsBox").innerHTML = `
-        <p><strong>Tip Amount:</strong> $0.00</p>
-        <p><strong>Total Bill:</strong> $0.00</p>
-        <p><strong>Per Person:</strong> $0.00</p>
-      `;
+    function resetCalculator() {
+      billAmountInput.value = "";
+      customTipInput.value = "";
+      peopleCountInput.value = "1";
+      selectedTip = 20;
+      setActiveTipButton(selectedTip);
+      clearError();
+      resetResults();
+      billAmountInput.focus();
     }
+
+    document.getElementById("calculateBtn").addEventListener("click", calculateTip);
+    document.getElementById("resetBtn").addEventListener("click", resetCalculator);
+
+    [billAmountInput, customTipInput, peopleCountInput].forEach(input => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          calculateTip();
+        }
+      });
+    });
   </script>
-
 </body>
 </html>
