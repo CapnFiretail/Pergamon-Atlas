@@ -7,6 +7,7 @@ const atlasUpdates = [
     list: [
       "Built Tip Calculator",
       "Built BMI Calculator",
+      "Built Compound Interest Calculator V1",
     ]
   },
   {
