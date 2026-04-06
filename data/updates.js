@@ -1,11 +1,12 @@
 const atlasUpdates = [
   {
     date: "April 6, 2026",
-    tag: "Update Log",
-    title: "tbd",
-    text: "tbd",
+    tag: "Tools",
+    title: "BMI, Tips & More",
+    text: "",
     list: [
-      "tbd",
+      "Built Tip Calculator",
+      "Built BMI Calculator",
     ]
   },
   {
