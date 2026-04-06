@@ -585,8 +585,8 @@
     }
 
     function getScaleLeftPercent(bmi) {
-      const capped = Math.max(10, Math.min(bmi, 40));
-      return ((capped - 10) / 30) * 100;
+      const capped = Math.max(0, Math.min(bmi, 40));
+      return (capped / 40) * 100;
     }
 
     function formatRange(low, high, unitLabel) {
