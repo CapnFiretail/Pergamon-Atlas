@@ -1,5 +1,14 @@
 const atlasUpdates = [
   {
+    date: "April 6, 2026",
+    tag: "Update Log",
+    title: "tbd",
+    text: "tbd",
+    list: [
+      "tbd",
+    ]
+  },
+  {
     date: "April 3, 2026",
     tag: "Update Log",
     title: "Homepage Updates & GPA-Calculator",
