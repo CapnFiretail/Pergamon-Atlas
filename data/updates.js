@@ -1,5 +1,16 @@
 const atlasUpdates = [
   {
+    date: "April 8, 2026",
+    tag: "Games",
+    title: "Tic Tac Toe & More",
+    text: "",
+    list: [
+      "Drafted Atlas Runner Game",
+      "Drafted Tic Tac Toe Game",
+      "Drafted Chess Game",
+    ]
+  },
+  {
     date: "April 6, 2026",
     tag: "Tools",
     title: "BMI, Tips & More",
