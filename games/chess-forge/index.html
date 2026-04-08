@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+    crossorigin="anonymous"></script>
+
+  <title>Pergamon Atlas | Chess Forge</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+
+  <style>
+    .chess-shell{ max-width: 1200px; margin: 0 auto; }
+    .hero{ background: linear-gradient(135deg, #111 0%, #1a1a1a 100%); color: #fff; border: 2px solid #000; border-radius: 18px; padding: 28px; box-shadow: 0 8px 24px rgba(0,0,0,.18); margin-bottom: 24px; }
+    .hero h2{ margin:0 0 10px 0; font-size: clamp(32px,5vw,52px); }
+    .hero p{ margin:0; color:#e2e2e2; line-height:1.7; font-size:18px; max-width:860px; }
+
+    .layout-grid{ display:grid; grid-template-columns:320px 1fr; gap:24px; align-items:start; }
+    .panel, .stage{ background:#fff; border:2px solid #000; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    .panel{ padding:20px; position:sticky; top:24px; }
+    .stage{ padding:22px; }
+
+    .panel h3, .stage h3{ margin:0 0 14px 0; font-size:24px; }
+    .panel p{ margin:0 0 12px 0; color:#333; line-height:1.6; }
+    .action-btn{ border:2px solid #000; background:#111; color:#fff; border-radius:999px; padding:12px 16px; font-family:Georgia,serif; font-size:15px; cursor:pointer; }
+    .action-btn:hover{ background:#222; }
+
+    .badge{ margin-top:14px; background:#f6f6f6; border:2px solid #000; border-radius:12px; padding:12px 14px; line-height:1.6; color:#222; }
+
+    .top-status{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+    .box{ background:#f6f6f6; border:2px solid #000; border-radius:12px; padding:12px 14px; min-width:220px; }
+    .box h4{ margin:0 0 6px 0; font-size:17px; }
+    .box p{ margin:0; line-height:1.6; }
+
+    .board-wrap{ display:flex; justify-content:center; margin:14px 0; }
+    .board{ width:min(100%, 640px); aspect-ratio:1/1; border:2px solid #000; border-radius:14px; overflow:hidden; display:grid; grid-template-columns:repeat(8,1fr); }
+    .square{ border:none; font-size: clamp(26px, 4.5vw, 44px); display:flex; align-items:center; justify-content:center; cursor:pointer; background:transparent; padding:0; }
+    .square.light{ background:#f0d9b5; }
+    .square.dark{ background:#b58863; }
+    .square.selected{ box-shadow: inset 0 0 0 4px #2f6fdf; }
+    .square.legal{ box-shadow: inset 0 0 0 4px rgba(19,156,76,.7); }
+    .square.capture{ box-shadow: inset 0 0 0 4px rgba(189,39,39,.85); }
+
+    .legend{ margin-top:16px; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+    .legend div{ background:#fafafa; border:2px solid #000; border-radius:12px; padding:12px; font-size:14px; line-height:1.5; }
+
+    @media (max-width: 980px){
+      .layout-grid{ grid-template-columns:1fr; }
+      .panel{ position:static; }
+    }
+    @media (max-width: 700px){
+      .hero{ padding:22px 18px; }
+      .panel,.stage{ padding:18px; }
+      .legend{ grid-template-columns:1fr; }
+      .box{ width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content">
+      <div class="chess-shell">
+        <section class="hero">
+          <h2>Chess Forge</h2>
+          <p>Classic local chess on one screen. Standard movement rules are included, plus check, checkmate, and stalemate detection.</p>
+        </section>
+
+        <section class="layout-grid">
+          <aside class="panel">
+            <h3>Controls</h3>
+            <p>Click a piece to see legal moves. Then click a highlighted square to move.</p>
+            <button class="action-btn" id="reset-btn">New Match</button>
+            <div class="badge" id="special-note">Special rules: automatic queen promotion is enabled. Castling and en passant are not yet implemented.</div>
+          </aside>
+
+          <section class="stage">
+            <div class="top-status">
+              <div class="box">
+                <h4>Turn</h4>
+                <p id="turn-text">White to move.</p>
+              </div>
+              <div class="box">
+                <h4>Game State</h4>
+                <p id="state-text">Match in progress.</p>
+              </div>
+            </div>
+
+            <div class="board-wrap">
+              <div id="board" class="board" aria-label="Chess board"></div>
+            </div>
+
+            <div class="legend">
+              <div><strong>Blue</strong> = selected piece.</div>
+              <div><strong>Green</strong> = legal move.</div>
+              <div><strong>Red</strong> = legal capture.</div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script>
+    const PIECES = {
+      wp: '♙', wr: '♖', wn: '♘', wb: '♗', wq: '♕', wk: '♔',
+      bp: '♟', br: '♜', bn: '♞', bb: '♝', bq: '♛', bk: '♚'
+    };
+
+    const boardEl = document.getElementById('board');
+    const turnText = document.getElementById('turn-text');
+    const stateText = document.getElementById('state-text');
+    const resetBtn = document.getElementById('reset-btn');
+
+    let board = [];
+    let turn = 'w';
+    let selected = null;
+    let legalMoves = [];
+    let gameOver = false;
+
+    function initialBoard(){
+      return [
+        ['br','bn','bb','bq','bk','bb','bn','br'],
+        ['bp','bp','bp','bp','bp','bp','bp','bp'],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        [null,null,null,null,null,null,null,null],
+        ['wp','wp','wp','wp','wp','wp','wp','wp'],
+        ['wr','wn','wb','wq','wk','wb','wn','wr']
+      ];
+    }
+
+    function resetGame(){
+      board = initialBoard();
+      turn = 'w';
+      selected = null;
+      legalMoves = [];
+      gameOver = false;
+      render();
+      updateStatus();
+    }
+
+    function inBounds(r,c){ return r>=0 && r<8 && c>=0 && c<8; }
+    function colorOf(piece){ return piece ? piece[0] : null; }
+
+    function findKing(b, color){
+      const target = color + 'k';
+      for(let r=0;r<8;r++) for(let c=0;c<8;c++) if(b[r][c] === target) return {r,c};
+      return null;
+    }
+
+    function cloneBoard(b){ return b.map(row => row.slice()); }
+
+    function pseudoMovesFor(b, r, c){
+      const piece = b[r][c];
+      if(!piece) return [];
+      const color = piece[0];
+      const type = piece[1];
+      const moves = [];
+      const forward = color === 'w' ? -1 : 1;
+
+      function pushSlide(drs){
+        for(const [dr,dc] of drs){
+          let nr = r + dr, nc = c + dc;
+          while(inBounds(nr,nc)){
+            const target = b[nr][nc];
+            if(!target){ moves.push({r:nr,c:nc}); }
+            else {
+              if(colorOf(target) !== color) moves.push({r:nr,c:nc});
+              break;
+            }
+            nr += dr; nc += dc;
+          }
+        }
+      }
+
+      if(type === 'p'){
+        const one = r + forward;
+        if(inBounds(one,c) && !b[one][c]){
+          moves.push({r:one,c});
+          const start = color === 'w' ? 6 : 1;
+          const two = r + (2*forward);
+          if(r === start && !b[two][c]) moves.push({r:two,c});
+        }
+        for(const dc of [-1,1]){
+          const nr = r + forward, nc = c + dc;
+          if(inBounds(nr,nc) && b[nr][nc] && colorOf(b[nr][nc]) !== color){
+            moves.push({r:nr,c:nc});
+          }
+        }
+      }
+
+      if(type === 'n'){
+        const jumps = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+        for(const [dr,dc] of jumps){
+          const nr = r+dr, nc = c+dc;
+          if(!inBounds(nr,nc)) continue;
+          const target = b[nr][nc];
+          if(!target || colorOf(target)!==color) moves.push({r:nr,c:nc});
+        }
+      }
+
+      if(type === 'b') pushSlide([[-1,-1],[-1,1],[1,-1],[1,1]]);
+      if(type === 'r') pushSlide([[-1,0],[1,0],[0,-1],[0,1]]);
+      if(type === 'q') pushSlide([[-1,-1],[-1,1],[1,-1],[1,1],[-1,0],[1,0],[0,-1],[0,1]]);
+
+      if(type === 'k'){
+        for(let dr=-1; dr<=1; dr++){
+          for(let dc=-1; dc<=1; dc++){
+            if(dr===0 && dc===0) continue;
+            const nr = r+dr, nc = c+dc;
+            if(!inBounds(nr,nc)) continue;
+            const target = b[nr][nc];
+            if(!target || colorOf(target)!==color) moves.push({r:nr,c:nc});
+          }
+        }
+      }
+
+      return moves;
+    }
+
+    function isInCheck(b, color){
+      const king = findKing(b, color);
+      if(!king) return false;
+      const enemy = color === 'w' ? 'b' : 'w';
+
+      for(let r=0;r<8;r++){
+        for(let c=0;c<8;c++){
+          const p = b[r][c];
+          if(!p || p[0] !== enemy) continue;
+          const attacks = pseudoMovesFor(b, r, c);
+          if(attacks.some(m => m.r === king.r && m.c === king.c)) return true;
+        }
+      }
+      return false;
+    }
+
+    function legalMovesFor(b, r, c){
+      const piece = b[r][c];
+      if(!piece) return [];
+      const color = piece[0];
+      const candidates = pseudoMovesFor(b, r, c);
+      return candidates.filter(m => {
+        const next = cloneBoard(b);
+        next[m.r][m.c] = next[r][c];
+        next[r][c] = null;
+        return !isInCheck(next, color);
+      });
+    }
+
+    function hasLegalMove(b, color){
+      for(let r=0;r<8;r++) for(let c=0;c<8;c++){
+        const p = b[r][c];
+        if(p && p[0] === color && legalMovesFor(b, r, c).length) return true;
+      }
+      return false;
+    }
+
+    function movePiece(from, to){
+      board[to.r][to.c] = board[from.r][from.c];
+      board[from.r][from.c] = null;
+
+      const moved = board[to.r][to.c];
+      if(moved === 'wp' && to.r === 0) board[to.r][to.c] = 'wq';
+      if(moved === 'bp' && to.r === 7) board[to.r][to.c] = 'bq';
+
+      turn = turn === 'w' ? 'b' : 'w';
+      selected = null;
+      legalMoves = [];
+      evaluateState();
+      render();
+      updateStatus();
+    }
+
+    function evaluateState(){
+      const inCheck = isInCheck(board, turn);
+      const anyMove = hasLegalMove(board, turn);
+      if(anyMove){
+        gameOver = false;
+        if(inCheck) stateText.textContent = `${turn === 'w' ? 'White' : 'Black'} is in check.`;
+        else stateText.textContent = 'Match in progress.';
+        return;
+      }
+      gameOver = true;
+      if(inCheck){
+        const winner = turn === 'w' ? 'Black' : 'White';
+        stateText.textContent = `Checkmate. ${winner} wins.`;
+      } else {
+        stateText.textContent = 'Stalemate. Draw.';
+      }
+    }
+
+    function onSquareClick(r,c){
+      if(gameOver) return;
+      const piece = board[r][c];
+
+      if(selected){
+        const valid = legalMoves.find(m => m.r===r && m.c===c);
+        if(valid){
+          movePiece(selected, valid);
+          return;
+        }
+      }
+
+      if(piece && piece[0] === turn){
+        selected = {r,c};
+        legalMoves = legalMovesFor(board, r, c);
+      } else {
+        selected = null;
+        legalMoves = [];
+      }
+      render();
+      updateStatus();
+    }
+
+    function updateStatus(){
+      if(gameOver) return;
+      const color = turn === 'w' ? 'White' : 'Black';
+      turnText.textContent = `${color} to move.`;
+      if(selected){
+        const p = board[selected.r][selected.c];
+        const name = ({p:'Pawn',r:'Rook',n:'Knight',b:'Bishop',q:'Queen',k:'King'})[p[1]];
+        stateText.textContent = `${color} selected ${name}.`;
+      }
+      if(isInCheck(board, turn)) stateText.textContent = `${color} is in check.`;
+    }
+
+    function render(){
+      boardEl.innerHTML = '';
+      for(let r=0;r<8;r++){
+        for(let c=0;c<8;c++){
+          const sq = document.createElement('button');
+          sq.className = `square ${(r+c)%2===0 ? 'light' : 'dark'}`;
+          const piece = board[r][c];
+          if(piece) sq.textContent = PIECES[piece];
+          if(selected && selected.r===r && selected.c===c) sq.classList.add('selected');
+
+          const legal = legalMoves.find(m => m.r===r && m.c===c);
+          if(legal){
+            if(board[r][c]) sq.classList.add('capture');
+            else sq.classList.add('legal');
+          }
+
+          sq.addEventListener('click', () => onSquareClick(r,c));
+          boardEl.appendChild(sq);
+        }
+      }
+    }
+
+    resetBtn.addEventListener('click', resetGame);
+
+    const pageName = 'Chess Forge';
+    const pageHeaderSuffix = pageName ? ' | ' + pageName : '';
+
+    fetch('/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) pageTitleText.textContent = pageHeaderSuffix;
+      });
+
+    fetch('/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
+
+        const path = window.location.pathname;
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+          if (path === '/' && link.getAttribute('href') === '/') link.classList.add('active');
+          else if (path.startsWith('/tools') && link.getAttribute('href') === '/tools') link.classList.add('active');
+          else if (path.startsWith('/games') && link.getAttribute('href') === '/games') link.classList.add('active');
+          else if (path.startsWith('/help') && link.getAttribute('href') === '/help') link.classList.add('active');
+        });
+
+        try{ (adsbygoogle = window.adsbygoogle || []).push({}); } catch(err){}
+      });
+
+    fetch('/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => { document.getElementById('footer-placeholder').innerHTML = data; });
+
+    resetGame();
+  </script>
+</body>
+</html>
