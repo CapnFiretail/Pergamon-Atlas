@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Pomodoro Timer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:16px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .mode-tabs{display:flex;gap:0;margin-bottom:28px;border:2px solid #000;border-radius:12px;overflow:hidden}
+    .mode-tab{flex:1;padding:12px;text-align:center;cursor:pointer;font-size:15px;font-family:Georgia,serif;font-weight:700;background:white;border:none;transition:.15s}
+    .mode-tab.active{background:#111;color:white}
+    .timer-ring{width:260px;height:260px;margin:0 auto 24px;position:relative}
+    .timer-ring svg{transform:rotate(-90deg)}
+    .timer-ring circle.bg{fill:none;stroke:#eee;stroke-width:12}
+    .timer-ring circle.progress{fill:none;stroke:#c28a2b;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .5s,stroke .3s}
+    .timer-display{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .timer-time{font-size:54px;font-weight:800;color:#111;letter-spacing:-2px}
+    .timer-label{font-size:14px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+    .btn-row{display:flex;gap:12px;justify-content:center}
+    .atlas-btn{border:none;border-radius:10px;padding:13px 28px;font-size:16px;font-family:Georgia,serif;cursor:pointer;transition:.15s}
+    .atlas-btn.primary{background:#000;color:white}
+    .atlas-btn.primary:hover{background:#222}
+    .atlas-btn.secondary{background:white;color:#111;border:1.5px solid #ccc}
+    .atlas-btn.secondary:hover{background:#f5f5f5}
+    .settings-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .settings-field label{font-size:14px;font-weight:700;color:#333}
+    .settings-field input{padding:10px;border:1.5px solid #ccc;border-radius:9px;font-size:15px;font-family:Georgia,serif}
+    .settings-field input:focus{outline:none;border-color:#8a611c}
+    .session-log{max-height:300px;overflow-y:auto}
+    .log-item{display:flex;justify-content:space-between;padding:9px 12px;background:#f7f7f7;border:1px solid #eee;border-radius:8px;margin-bottom:7px;font-size:14px}
+    .log-type{font-weight:700}
+    .log-type.work{color:#c28a2b}
+    .log-type.break{color:#4caf50}
+    .stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:15px}
+    .stat-row:last-child{border-bottom:none}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Pomodoro Timer</h2>
+        <p>Work in focused 25-minute sprints. Short breaks keep you sharp. Long breaks recharge you.</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <div class="mode-tabs">
+            <button class="mode-tab active" id="tab-work" onclick="switchMode('work')">Focus</button>
+            <button class="mode-tab" id="tab-short" onclick="switchMode('short')">Short Break</button>
+            <button class="mode-tab" id="tab-long" onclick="switchMode('long')">Long Break</button>
+          </div>
+          <div class="timer-ring">
+            <svg viewBox="0 0 260 260" width="260" height="260">
+              <circle class="bg" cx="130" cy="130" r="110"/>
+              <circle class="progress" id="progressCircle" cx="130" cy="130" r="110" stroke-dasharray="691" stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-display">
+              <div class="timer-time" id="timerTime">25:00</div>
+              <div class="timer-label" id="timerLabel">Focus Time</div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="atlas-btn secondary" onclick="resetTimer()">Reset</button>
+            <button class="atlas-btn primary" id="startBtn" onclick="toggleTimer()">Start</button>
+            <button class="atlas-btn secondary" onclick="skipSession()">Skip</button>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>Settings</h3>
+            <div class="settings-field"><label>Focus (minutes)</label><input type="number" id="setWork" value="25" min="1" max="60"></div>
+            <div class="settings-field"><label>Short Break (minutes)</label><input type="number" id="setShort" value="5" min="1" max="30"></div>
+            <div class="settings-field"><label>Long Break (minutes)</label><input type="number" id="setLong" value="15" min="1" max="60"></div>
+            <button class="atlas-btn primary" style="width:100%;margin-top:4px" onclick="applySettings()">Apply</button>
+          </div>
+          <div class="panel">
+            <h3>Today's Stats</h3>
+            <div class="stat-row"><span>Focus Sessions</span><span id="statSessions">0</span></div>
+            <div class="stat-row"><span>Total Focus Time</span><span id="statTime">0 min</span></div>
+            <div class="stat-row"><span>Breaks Taken</span><span id="statBreaks">0</span></div>
+          </div>
+          <div class="panel">
+            <h3>Session Log</h3>
+            <div class="session-log" id="sessionLog"><div style="color:#aaa;font-size:14px">No sessions yet.</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Pomodoro Timer');
+
+    const CIRCUMFERENCE = 2 * Math.PI * 110;
+    let durations = {work:25*60, short:5*60, long:15*60};
+    let mode = 'work';
+    let timeLeft = durations.work;
+    let running = false;
+    let interval = null;
+    let sessions = 0, breaks = 0, totalFocusSecs = 0;
+    let sessionFocusSecs = 0;
+    let log = [];
+
+    const modeLabels = {work:'Focus Time', short:'Short Break', long:'Long Break'};
+    const modeColors = {work:'#c28a2b', short:'#4caf50', long:'#2196f3'};
+
+    function switchMode(m) {
+      clearInterval(interval); running = false;
+      mode = m;
+      timeLeft = durations[m];
+      sessionFocusSecs = 0;
+      ['work','short','long'].forEach(t=>{
+        document.getElementById('tab-'+t).classList.toggle('active',t===m);
+      });
+      document.querySelector('.progress').style.stroke = modeColors[m];
+      document.getElementById('startBtn').textContent = 'Start';
+      render();
+    }
+
+    function render() {
+      const total = durations[mode];
+      const pct = timeLeft / total;
+      document.querySelector('.progress').style.strokeDashoffset = CIRCUMFERENCE * (1-pct);
+      const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+      const s = String(timeLeft%60).padStart(2,'0');
+      document.getElementById('timerTime').textContent = m+':'+s;
+      document.getElementById('timerLabel').textContent = modeLabels[mode];
+      document.title = m+':'+s + ' — Pomodoro';
+    }
+
+    function toggleTimer() {
+      if (running) {
+        clearInterval(interval); running = false;
+        document.getElementById('startBtn').textContent = 'Resume';
+      } else {
+        running = true;
+        document.getElementById('startBtn').textContent = 'Pause';
+        interval = setInterval(() => {
+          timeLeft--;
+          if (mode === 'work') sessionFocusSecs++;
+          render();
+          if (timeLeft <= 0) sessionComplete();
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(interval); running = false;
+      timeLeft = durations[mode];
+      sessionFocusSecs = 0;
+      document.getElementById('startBtn').textContent = 'Start';
+      render();
+    }
+
+    function skipSession() { sessionComplete(); }
+
+    function sessionComplete() {
+      clearInterval(interval); running = false;
+      if (mode === 'work') {
+        sessions++;
+        totalFocusSecs += sessionFocusSecs;
+        log.unshift({type:'work', label:'Focus Session', duration: Math.round(sessionFocusSecs/60)+'m'});
+      } else {
+        breaks++;
+        log.unshift({type:'break', label:mode==='short'?'Short Break':'Long Break', duration:Math.round((durations[mode]-timeLeft)/60)+'m'});
+      }
+      updateStats(); renderLog();
+      try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA').play(); } catch(e){}
+      alert(mode==='work' ? 'Focus session complete! Take a break.' : 'Break over! Ready to focus?');
+      switchMode(mode==='work' ? (sessions%4===0?'long':'short') : 'work');
+    }
+
+    function updateStats() {
+      document.getElementById('statSessions').textContent = sessions;
+      document.getElementById('statTime').textContent = Math.round(totalFocusSecs/60) + ' min';
+      document.getElementById('statBreaks').textContent = breaks;
+    }
+
+    function renderLog() {
+      if (!log.length) return;
+      const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      document.getElementById('sessionLog').innerHTML = log.slice(0,20).map(l=>
+        `<div class="log-item"><span class="log-type ${l.type}">${l.label}</span><span>${l.duration} · ${time}</span></div>`
+      ).join('');
+    }
+
+    function applySettings() {
+      durations.work = parseInt(document.getElementById('setWork').value)*60||25*60;
+      durations.short = parseInt(document.getElementById('setShort').value)*60||5*60;
+      durations.long = parseInt(document.getElementById('setLong').value)*60||15*60;
+      switchMode(mode);
+    }
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Stroop Test</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .stroop-word{font-size:clamp(52px,10vw,84px);font-weight:900;margin:28px 0;min-height:100px;display:flex;align-items:center;justify-content:center;letter-spacing:2px}
+    .instruction{font-size:16px;color:#555;margin-bottom:16px;font-weight:700}
+    .color-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .color-btn{border:3px solid transparent;border-radius:12px;padding:14px 24px;font-size:16px;font-weight:800;cursor:pointer;transition:.12s;min-width:90px;font-family:Georgia,serif}
+    .color-btn:hover{filter:brightness(.85);transform:scale(1.04)}
+    .color-btn:active{transform:scale(.97)}
+    .stats-row{display:flex;justify-content:center;gap:28px;font-size:16px;font-weight:700;margin-bottom:12px}
+    .stats-row .val{font-size:26px;display:block}
+    .feedback-bar{height:6px;border-radius:4px;background:#eee;margin:8px auto;width:80%;overflow:hidden}
+    .feedback-fill{height:100%;border-radius:4px;transition:.3s;width:0%}
+    .feedback-fill.correct{background:#2a9d3a}
+    .feedback-fill.wrong{background:#c0392b}
+    .progress-wrap{margin:8px 0 16px}
+    .progress-bar{height:10px;background:#eee;border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;background:#8a611c;border-radius:999px;transition:.3s}
+    .start-overlay{padding:20px 0}
+    .atlas-btn{border:none;border-radius:10px;padding:14px 32px;font-size:17px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .result-screen{padding:16px 0}
+    .result-big{font-size:52px;font-weight:800;margin-bottom:8px}
+    .result-sub{font-size:16px;color:#555}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Stroop Test</h2>
+        <p>Click the COLOR the word is written in — not what the word says. Brain challenge!</p>
+      </div>
+      <div class="panel" id="gamePanel">
+        <div id="startScreen" class="start-overlay">
+          <p style="font-size:16px;color:#555;margin-bottom:20px">You'll see color words displayed in a different ink color.<br>Click the <strong>ink color</strong>, not the word!</p>
+          <button class="atlas-btn" onclick="startGame()">Start (20 rounds)</button>
+        </div>
+        <div id="playScreen" style="display:none">
+          <div class="stats-row">
+            <span><span class="val" id="scoreVal">0</span>Score</span>
+            <span><span class="val" id="roundVal">1</span>/ 20</span>
+            <span><span class="val" id="streakVal">0</span>Streak</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:5%"></div></div>
+          </div>
+          <div class="instruction">What COLOR is this word written in?</div>
+          <div class="stroop-word" id="stroopWord">RED</div>
+          <div class="color-btns" id="colorBtns"></div>
+          <div class="feedback-bar"><div class="feedback-fill" id="feedbackFill"></div></div>
+        </div>
+        <div id="resultScreen" style="display:none" class="result-screen">
+          <div class="result-big" id="resultBig">0/20</div>
+          <div class="result-sub" id="resultSub"></div>
+          <button class="atlas-btn" style="margin-top:20px" onclick="startGame()">Play Again</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Stroop Test');
+
+    const COLORS = [
+      {name:'RED',   hex:'#e74c3c'},
+      {name:'BLUE',  hex:'#2980b9'},
+      {name:'GREEN', hex:'#27ae60'},
+      {name:'YELLOW',hex:'#f39c12'},
+      {name:'PURPLE',hex:'#8e44ad'},
+      {name:'ORANGE',hex:'#e67e22'},
+    ];
+
+    let round, score, streak, answerColor;
+
+    function startGame(){
+      round=0;score=0;streak=0;
+      document.getElementById('startScreen').style.display='none';
+      document.getElementById('resultScreen').style.display='none';
+      document.getElementById('playScreen').style.display='block';
+      nextRound();
+    }
+
+    function nextRound(){
+      round++;
+      if(round>20){endGame();return;}
+      document.getElementById('roundVal').textContent=round;
+      document.getElementById('progressFill').style.width=(round/20*100)+'%';
+      document.getElementById('feedbackFill').className='feedback-fill';
+      document.getElementById('feedbackFill').style.width='0%';
+
+      const wordColor = COLORS[Math.floor(Math.random()*COLORS.length)];
+      answerColor = COLORS[Math.floor(Math.random()*COLORS.length)];
+      document.getElementById('stroopWord').textContent=wordColor.name;
+      document.getElementById('stroopWord').style.color=answerColor.hex;
+
+      // Shuffle 4 choices including the correct one
+      let choices=[answerColor];
+      const others=COLORS.filter(c=>c.name!==answerColor.name);
+      while(choices.length<4){const r=others[Math.floor(Math.random()*others.length)];if(!choices.find(c=>c.name===r.name))choices.push(r);}
+      choices=choices.sort(()=>Math.random()-.5);
+
+      document.getElementById('colorBtns').innerHTML=choices.map(c=>
+        `<button class="color-btn" style="background:${c.hex};color:white" onclick="answer('${c.name}')">${c.name}</button>`
+      ).join('');
+    }
+
+    function answer(name){
+      document.getElementById('colorBtns').querySelectorAll('button').forEach(b=>b.disabled=true);
+      const correct=name===answerColor.name;
+      const fill=document.getElementById('feedbackFill');
+      fill.style.width='100%';
+      if(correct){score++;streak++;fill.className='feedback-fill correct';}
+      else{streak=0;fill.className='feedback-fill wrong';}
+      document.getElementById('scoreVal').textContent=score;
+      document.getElementById('streakVal').textContent=streak;
+      setTimeout(nextRound,600);
+    }
+
+    function endGame(){
+      document.getElementById('playScreen').style.display='none';
+      document.getElementById('resultScreen').style.display='block';
+      document.getElementById('resultBig').textContent=score+'/20';
+      const pct=Math.round(score/20*100);
+      const msg=pct>=90?'Incredible focus!':pct>=70?'Great job!':pct>=50?'Not bad!':'Keep practicing!';
+      document.getElementById('resultSub').textContent=pct+'% correct — '+msg;
+    }
+  </script>
+</body>
+</html>

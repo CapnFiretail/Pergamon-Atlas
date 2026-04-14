@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Random Number Generator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .big-result{background:#111;color:#f0d39b;border-radius:16px;padding:36px;text-align:center;margin-bottom:20px;cursor:pointer}
+    .big-num{font-size:clamp(56px,10vw,96px);font-weight:800;font-family:monospace;line-height:1;animation:pop .15s ease}
+    @keyframes pop{0%{transform:scale(.8);opacity:.5}100%{transform:scale(1);opacity:1}}
+    .big-hint{font-size:14px;color:#888;margin-top:10px}
+    .range-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+    .range-row label{font-size:14px;font-weight:700;color:#333;white-space:nowrap}
+    .range-row input{padding:11px;border:1.5px solid #ccc;border-radius:9px;font-size:16px;font-family:Georgia,serif;width:110px}
+    .range-row input:focus{outline:none;border-color:#8a611c}
+    .options-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+    .option-chip{display:flex;align-items:center;gap:7px;padding:9px 14px;border:1.5px solid #ccc;border-radius:999px;cursor:pointer;font-size:15px;transition:.15s}
+    .option-chip input{accent-color:#8a611c;margin:0}
+    .atlas-btn{border:none;border-radius:10px;padding:13px 24px;font-size:16px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s;margin-right:10px}
+    .atlas-btn:hover{background:#222}
+    .multi-output{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:16px;font-size:16px;font-family:monospace;line-height:1.8;margin-top:14px;min-height:60px;word-break:break-all}
+    .hist-list{max-height:350px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+    .hist-item{background:#f7f7f7;border:1px solid #eee;border-radius:8px;padding:10px 14px;font-family:monospace;font-size:16px;font-weight:700;display:flex;justify-content:space-between}
+    .hist-time{font-size:12px;color:#aaa;font-family:Georgia,serif;font-weight:400}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Random Number Generator</h2>
+        <p>Generate single or multiple random numbers in any range, with optional filtering.</p>
+      </div>
+      <div class="layout2">
+        <div>
+          <div class="panel">
+            <div class="big-result" onclick="generateSingle()" title="Click to regenerate">
+              <div class="big-num" id="bigNum">?</div>
+              <div class="big-hint">Click to generate</div>
+            </div>
+            <div class="range-row">
+              <label>Min:</label><input type="number" id="minVal" value="1">
+              <label>Max:</label><input type="number" id="maxVal" value="100">
+            </div>
+            <div class="options-row">
+              <label class="option-chip"><input type="checkbox" id="optNoRepeat"> No Repeats</label>
+              <label class="option-chip"><input type="checkbox" id="optEven"> Even Only</label>
+              <label class="option-chip"><input type="checkbox" id="optOdd"> Odd Only</label>
+            </div>
+            <div>
+              <button class="atlas-btn" onclick="generateSingle()">Generate One</button>
+              <button class="atlas-btn" onclick="generateMulti()">Generate Multiple</button>
+            </div>
+            <div class="range-row" style="margin-top:14px">
+              <label>Count:</label><input type="number" id="count" value="5" min="1" max="1000">
+            </div>
+            <div class="multi-output" id="multiOutput" style="display:none"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>History</h3>
+          <button style="background:none;border:none;font-size:13px;color:#aaa;cursor:pointer;margin-bottom:10px" onclick="history=[];renderHistory()">Clear</button>
+          <div class="hist-list" id="histList"><div style="color:#aaa;font-size:14px">No rolls yet.</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Random Number Generator');
+
+    let history = [];
+    let usedNumbers = new Set();
+
+    function getRand(min, max) {
+      const noRepeat=document.getElementById('optNoRepeat').checked;
+      const evenOnly=document.getElementById('optEven').checked;
+      const oddOnly=document.getElementById('optOdd').checked;
+
+      let pool = [];
+      for(let i=min;i<=max;i++){
+        if(evenOnly&&i%2!==0) continue;
+        if(oddOnly&&i%2!==1) continue;
+        if(noRepeat&&usedNumbers.has(i)) continue;
+        pool.push(i);
+      }
+      if(!pool.length) return null;
+      const n=pool[Math.floor(Math.random()*pool.length)];
+      if(noRepeat) usedNumbers.add(n);
+      return n;
+    }
+
+    function generateSingle() {
+      const min=parseInt(document.getElementById('minVal').value);
+      const max=parseInt(document.getElementById('maxVal').value);
+      if(isNaN(min)||isNaN(max)||min>max){return;}
+      const n=getRand(min,max);
+      if(n===null){usedNumbers.clear();alert('All numbers used! Resetting.');return;}
+      document.getElementById('bigNum').textContent=n;
+      const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      history.unshift({val:n,time:t});
+      if(history.length>50)history.pop();
+      renderHistory();
+    }
+
+    function generateMulti() {
+      const min=parseInt(document.getElementById('minVal').value);
+      const max=parseInt(document.getElementById('maxVal').value);
+      const count=Math.min(1000,parseInt(document.getElementById('count').value)||5);
+      if(isNaN(min)||isNaN(max)||min>max) return;
+      const results=[];
+      for(let i=0;i<count;i++){
+        const n=getRand(min,max);
+        if(n===null)break;
+        results.push(n);
+      }
+      const out=document.getElementById('multiOutput');
+      out.style.display='block';
+      out.textContent=results.join(', ');
+      const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      history.unshift({val:'['+results.slice(0,5).join(',')+results.length>5?'…'+']':']',time:t});
+      if(history.length>50)history.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list=document.getElementById('histList');
+      if(!history.length){list.innerHTML='<div style="color:#aaa;font-size:14px">No rolls yet.</div>';return;}
+      list.innerHTML=history.map(h=>`<div class="hist-item"><span>${h.val}</span><span class="hist-time">${h.time}</span></div>`).join('');
+    }
+  </script>
+</body>
+</html>

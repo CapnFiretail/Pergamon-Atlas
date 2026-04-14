@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Scientific Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .calc-wrap{display:flex;gap:22px;align-items:start;flex-wrap:wrap}
+    .calc-body{background:#111;border:2px solid #000;border-radius:18px;padding:20px;width:360px;flex-shrink:0;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .display{background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+    .expr{font-size:14px;color:#888;font-family:monospace;min-height:18px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .value{font-size:36px;font-weight:700;color:#f0d39b;text-align:right;font-family:monospace;word-break:break-all;min-height:44px}
+    .btn-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+    .btn{border:none;border-radius:10px;padding:14px 6px;font-size:14px;font-family:Georgia,serif;cursor:pointer;transition:transform .1s,background .1s;font-weight:700}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:scale(.95)}
+    .btn.num{background:#2a2a2a;color:white}
+    .btn.num:hover{background:#3a3a3a}
+    .btn.op{background:#8a611c;color:white}
+    .btn.op:hover{background:#a07020}
+    .btn.fn{background:#1d1d1d;color:#f0d39b}
+    .btn.fn:hover{background:#2d2d2d}
+    .btn.equals{background:#c28a2b;color:#111;font-size:18px}
+    .btn.equals:hover{background:#d49a30}
+    .btn.clear{background:#400;color:#faa}
+    .btn.clear:hover{background:#600}
+    .btn.wide2{grid-column:span 2}
+    .history-panel{flex:1;min-width:240px}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .panel h3{margin:0 0 14px;font-size:20px}
+    .history-list{max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+    .hist-item{background:#f7f7f7;border:1px solid #eee;border-radius:9px;padding:10px 14px;cursor:pointer;transition:.15s}
+    .hist-item:hover{border-color:#8a611c}
+    .hist-expr{font-size:13px;color:#888;font-family:monospace}
+    .hist-val{font-size:18px;font-weight:700;font-family:monospace;color:#111}
+    .empty-hist{color:#aaa;font-size:14px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Scientific Calculator</h2>
+        <p>Full scientific calculator with trig, logarithms, constants, and history.</p>
+      </div>
+      <div class="calc-wrap">
+        <div class="calc-body">
+          <div class="display">
+            <div class="expr" id="expr"></div>
+            <div class="value" id="value">0</div>
+          </div>
+          <div class="btn-grid">
+            <!-- Row 1: mode + clear -->
+            <button class="btn fn" onclick="toggleDeg()"><span id="degLabel">DEG</span></button>
+            <button class="btn fn" onclick="appendFn('Math.PI')">π</button>
+            <button class="btn fn" onclick="appendFn('Math.E')">e</button>
+            <button class="btn clear" onclick="backspace()">⌫</button>
+            <button class="btn clear" onclick="clearAll()">AC</button>
+            <!-- Row 2: trig -->
+            <button class="btn fn" onclick="appendFn('sin(')">sin</button>
+            <button class="btn fn" onclick="appendFn('cos(')">cos</button>
+            <button class="btn fn" onclick="appendFn('tan(')">tan</button>
+            <button class="btn fn" onclick="appendFn('asin(')">sin⁻¹</button>
+            <button class="btn fn" onclick="appendFn('acos(')">cos⁻¹</button>
+            <!-- Row 3: log/power -->
+            <button class="btn fn" onclick="appendFn('log(')">log</button>
+            <button class="btn fn" onclick="appendFn('ln(')">ln</button>
+            <button class="btn fn" onclick="appendFn('sqrt(')">√</button>
+            <button class="btn fn" onclick="appendFn('pow(')">xʸ</button>
+            <button class="btn fn" onclick="appendFn('atan(')">tan⁻¹</button>
+            <!-- Row 4: numbers -->
+            <button class="btn num" onclick="append('7')">7</button>
+            <button class="btn num" onclick="append('8')">8</button>
+            <button class="btn num" onclick="append('9')">9</button>
+            <button class="btn op" onclick="append('/')">÷</button>
+            <button class="btn fn" onclick="appendFn('abs(')">|x|</button>
+            <!-- Row 5 -->
+            <button class="btn num" onclick="append('4')">4</button>
+            <button class="btn num" onclick="append('5')">5</button>
+            <button class="btn num" onclick="append('6')">6</button>
+            <button class="btn op" onclick="append('*')">×</button>
+            <button class="btn fn" onclick="appendFn('fact(')">n!</button>
+            <!-- Row 6 -->
+            <button class="btn num" onclick="append('1')">1</button>
+            <button class="btn num" onclick="append('2')">2</button>
+            <button class="btn num" onclick="append('3')">3</button>
+            <button class="btn op" onclick="append('-')">−</button>
+            <button class="btn op" onclick="append('%')">%</button>
+            <!-- Row 7 -->
+            <button class="btn num wide2" onclick="append('0')">0</button>
+            <button class="btn num" onclick="append('.')">.</button>
+            <button class="btn op" onclick="append('+')">+</button>
+            <button class="btn equals" onclick="calculate()">=</button>
+            <!-- Row 8: parens -->
+            <button class="btn fn wide2" onclick="append('(')">( )</button>
+            <button class="btn fn wide2" onclick="append(')')"> ) </button>
+            <button class="btn fn" onclick="toggleSign()">+/−</button>
+          </div>
+        </div>
+        <div class="history-panel">
+          <div class="panel">
+            <h3>History</h3>
+            <div class="history-list" id="histList"><div class="empty-hist">No calculations yet.</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Scientific Calculator');
+
+    let expr = '';
+    let useDeg = true;
+    let history = [];
+
+    function toRad(x) { return useDeg ? x * Math.PI/180 : x; }
+    function toDeg(x) { return useDeg ? x * 180/Math.PI : x; }
+
+    function sin(x){ return Math.sin(toRad(x)); }
+    function cos(x){ return Math.cos(toRad(x)); }
+    function tan(x){ return Math.tan(toRad(x)); }
+    function asin(x){ return toDeg(Math.asin(x)); }
+    function acos(x){ return toDeg(Math.acos(x)); }
+    function atan(x){ return toDeg(Math.atan(x)); }
+    function log(x){ return Math.log10(x); }
+    function ln(x){ return Math.log(x); }
+    function sqrt(x){ return Math.sqrt(x); }
+    function abs(x){ return Math.abs(x); }
+    function pow(x,y){ return Math.pow(x,y); }
+    function fact(n){ if(n<0||!Number.isInteger(n))return NaN; let r=1; for(let i=2;i<=n;i++)r*=i; return r; }
+
+    function append(v) { expr += v; render(); }
+    function appendFn(fn) { expr += fn; render(); }
+    function clearAll() { expr = ''; render(true); }
+    function backspace() { expr = expr.slice(0,-1); render(); }
+    function toggleDeg() { useDeg = !useDeg; document.getElementById('degLabel').textContent = useDeg?'DEG':'RAD'; }
+    function toggleSign() { try { const v = eval(sanitize(expr||'0')); expr = String(-v); render(); } catch(e){} }
+
+    function sanitize(s) {
+      return s.replace(/Math\.PI/g, String(Math.PI))
+              .replace(/Math\.E/g, String(Math.E))
+              .replace(/(\d+)%/g, '($1/100)')
+              .replace(/×/g,'*').replace(/÷/g,'/');
+    }
+
+    function render(reset) {
+      document.getElementById('expr').textContent = expr;
+      if (reset) { document.getElementById('value').textContent = '0'; return; }
+      if (!expr) { document.getElementById('value').textContent = '0'; return; }
+      try {
+        const result = eval(sanitize(expr));
+        if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+          document.getElementById('value').textContent = parseFloat(result.toPrecision(12)).toString();
+        }
+      } catch(e) {}
+    }
+
+    function calculate() {
+      if (!expr) return;
+      try {
+        const result = eval(sanitize(expr));
+        const formatted = parseFloat(result.toPrecision(12)).toString();
+        history.unshift({expr, result: formatted});
+        renderHistory();
+        document.getElementById('expr').textContent = expr + ' =';
+        document.getElementById('value').textContent = formatted;
+        expr = formatted;
+      } catch(e) {
+        document.getElementById('value').textContent = 'Error';
+        expr = '';
+      }
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('histList');
+      if (!history.length) return;
+      list.innerHTML = history.slice(0,20).map(h=>`
+        <div class="hist-item" onclick="loadFromHistory('${h.result}')">
+          <div class="hist-expr">${h.expr} =</div>
+          <div class="hist-val">${h.result}</div>
+        </div>
+      `).join('');
+    }
+
+    function loadFromHistory(val) { expr = val; render(); }
+
+    document.addEventListener('keydown', e => {
+      if (e.key >= '0' && e.key <= '9') append(e.key);
+      else if ('+-*/.()'.includes(e.key)) append(e.key);
+      else if (e.key === 'Enter') calculate();
+      else if (e.key === 'Backspace') backspace();
+      else if (e.key === 'Escape') clearAll();
+    });
+  </script>
+</body>
+</html>

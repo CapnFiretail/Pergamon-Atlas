@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Markdown Previewer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .editor-layout{display:grid;grid-template-columns:1fr 1fr;gap:0;border:2px solid #000;border-radius:16px;overflow:hidden;min-height:560px}
+    .editor-pane{display:flex;flex-direction:column}
+    .pane-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#1a1a1a;color:white;font-size:14px;font-weight:700}
+    .pane-btn{background:#2a2a2a;border:1px solid #3a3a3a;color:#ddd;border-radius:7px;padding:5px 12px;font-size:13px;font-family:Georgia,serif;cursor:pointer}
+    .pane-btn:hover{background:#3a3a3a}
+    textarea.code{flex:1;width:100%;padding:18px;border:none;outline:none;font-size:14px;font-family:monospace;resize:none;background:#fafafa;line-height:1.6;box-sizing:border-box;border-right:1px solid #eee}
+    .preview-area{flex:1;padding:20px;overflow-y:auto;background:white;font-family:Georgia,serif;line-height:1.7}
+    .preview-area h1,.preview-area h2,.preview-area h3{margin:1.2em 0 .5em;line-height:1.2}
+    .preview-area h1{font-size:28px;border-bottom:2px solid #eee;padding-bottom:8px}
+    .preview-area h2{font-size:22px;border-bottom:1px solid #eee;padding-bottom:6px}
+    .preview-area h3{font-size:18px}
+    .preview-area code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px}
+    .preview-area pre{background:#111;color:#f0d39b;padding:16px;border-radius:10px;overflow-x:auto}
+    .preview-area pre code{background:none;color:inherit;padding:0}
+    .preview-area blockquote{border-left:4px solid #c28a2b;margin:0;padding:8px 16px;background:#fffaf4;color:#555}
+    .preview-area table{border-collapse:collapse;width:100%;margin:12px 0}
+    .preview-area th,.preview-area td{border:1px solid #ddd;padding:8px 12px;text-align:left}
+    .preview-area th{background:#111;color:white}
+    .preview-area img{max-width:100%;border-radius:8px}
+    .preview-area a{color:#8a611c}
+    .preview-area ul,.preview-area ol{padding-left:24px}
+    .preview-area hr{border:none;border-top:2px solid #eee;margin:16px 0}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .tool-btn{border:1.5px solid #ccc;border-radius:9px;padding:8px 14px;font-size:13px;font-family:Georgia,serif;cursor:pointer;background:white}
+    .tool-btn:hover{border-color:#8a611c;color:#8a611c}
+    @media(max-width:800px){.editor-layout{grid-template-columns:1fr;grid-template-rows:300px 1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Markdown Previewer</h2>
+        <p>Write Markdown on the left, see the rendered preview on the right in real time.</p>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" onclick="insert('**','**')"><strong>Bold</strong></button>
+        <button class="tool-btn" onclick="insert('*','*')"><em>Italic</em></button>
+        <button class="tool-btn" onclick="insert('`','`')">Code</button>
+        <button class="tool-btn" onclick="insertLine('## ')">H2</button>
+        <button class="tool-btn" onclick="insertLine('### ')">H3</button>
+        <button class="tool-btn" onclick="insertLine('- ')">List</button>
+        <button class="tool-btn" onclick="insertLine('> ')">Quote</button>
+        <button class="tool-btn" onclick="insertLine('---')">HR</button>
+        <button class="tool-btn" onclick="insertLink()">Link</button>
+        <button class="tool-btn" onclick="loadSample()">Sample</button>
+        <button class="tool-btn" onclick="clearAll()">Clear</button>
+        <button class="tool-btn" onclick="copyHTML()">Copy HTML</button>
+      </div>
+      <div class="editor-layout">
+        <div class="editor-pane">
+          <div class="pane-header">Markdown <button class="pane-btn" onclick="copyMarkdown()">Copy</button></div>
+          <textarea class="code" id="editor" placeholder="# Hello World&#10;&#10;Type your **Markdown** here..." oninput="render()"></textarea>
+        </div>
+        <div class="editor-pane">
+          <div class="pane-header">Preview <span id="wordCountLabel" style="color:#888;font-size:12px;font-weight:400"></span></div>
+          <div class="preview-area" id="preview"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Markdown Previewer');
+
+    function render() {
+      const md = document.getElementById('editor').value;
+      document.getElementById('preview').innerHTML = marked.parse(md);
+      const words = md.trim() ? md.trim().split(/\s+/).length : 0;
+      document.getElementById('wordCountLabel').textContent = words + ' words';
+    }
+
+    function insert(before, after) {
+      const ta = document.getElementById('editor');
+      const start = ta.selectionStart, end = ta.selectionEnd;
+      const sel = ta.value.slice(start, end);
+      ta.value = ta.value.slice(0,start) + before + sel + after + ta.value.slice(end);
+      ta.selectionStart = start + before.length;
+      ta.selectionEnd = end + before.length;
+      ta.focus(); render();
+    }
+
+    function insertLine(prefix) {
+      const ta = document.getElementById('editor');
+      const start = ta.selectionStart;
+      const lineStart = ta.value.lastIndexOf('\n', start-1)+1;
+      ta.value = ta.value.slice(0,lineStart) + prefix + ta.value.slice(lineStart);
+      ta.selectionStart = ta.selectionEnd = lineStart + prefix.length;
+      ta.focus(); render();
+    }
+
+    function insertLink() {
+      const ta = document.getElementById('editor');
+      const start = ta.selectionStart;
+      const sel = ta.value.slice(start, ta.selectionEnd) || 'link text';
+      const insertion = `[${sel}](url)`;
+      ta.value = ta.value.slice(0,start) + insertion + ta.value.slice(ta.selectionEnd);
+      ta.focus(); render();
+    }
+
+    function clearAll() { document.getElementById('editor').value=''; render(); }
+    function copyMarkdown() { navigator.clipboard.writeText(document.getElementById('editor').value); }
+    function copyHTML() { navigator.clipboard.writeText(document.getElementById('preview').innerHTML); }
+
+    function loadSample() {
+      document.getElementById('editor').value = `# Welcome to the Markdown Previewer
+
+## Formatting
+
+You can write **bold**, *italic*, and \`inline code\`.
+
+## Lists
+
+- Item one
+- Item two
+  - Nested item
+- Item three
+
+1. First
+2. Second
+3. Third
+
+## Blockquote
+
+> "The secret of getting ahead is getting started." — Mark Twain
+
+## Code Block
+
+\`\`\`javascript
+function greet(name) {
+  return 'Hello, ' + name + '!';
+}
+\`\`\`
+
+## Table
+
+| Name | Type | Status |
+|------|------|--------|
+| JSON Formatter | Utility | Live |
+| Markdown Previewer | Utility | Live |
+
+---
+
+Made with ❤ at Pergamon Atlas`;
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

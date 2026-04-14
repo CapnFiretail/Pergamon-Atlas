@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Times Tables</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .mode-tabs{display:flex;gap:0;border:2px solid #000;border-radius:12px;overflow:hidden;margin-bottom:20px;width:fit-content}
+    .mode-tab{padding:11px 24px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:white;border:none;font-weight:700}
+    .mode-tab.active{background:#111;color:white}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    /* Chart */
+    .chart-table{border-collapse:collapse;font-size:16px;width:100%}
+    .chart-table th,.chart-table td{padding:10px 12px;text-align:center;border:1px solid #eee}
+    .chart-table th{background:#111;color:#f0d39b;font-size:14px}
+    .chart-table td{cursor:pointer;transition:.1s}
+    .chart-table td:hover{background:#ffe082}
+    .chart-table .highlight{background:#c28a2b;color:white;font-weight:800}
+    .chart-table .header-row td{background:#f7f7f7;font-weight:700;color:#111}
+    /* Quiz */
+    .quiz-setup{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:13px;font-weight:700;color:#333}
+    .field select,.field input{padding:10px;border:1.5px solid #ccc;border-radius:9px;font-size:15px;font-family:Georgia,serif}
+    .field select:focus,.field input:focus{outline:none;border-color:#8a611c}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;align-self:flex-end;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .question-box{background:#111;color:white;border-radius:16px;padding:36px;text-align:center;margin-bottom:20px}
+    .q-text{font-size:42px;font-weight:800;color:#f0d39b;margin-bottom:6px}
+    .q-progress{font-size:14px;color:#888;margin-bottom:0}
+    .answer-input{width:100%;padding:18px;border:2px solid #ccc;border-radius:12px;font-size:28px;font-family:Georgia,serif;text-align:center;box-sizing:border-box;margin-bottom:12px}
+    .answer-input:focus{outline:none;border-color:#8a611c}
+    .answer-input.correct{border-color:#4caf50;background:#e8f5e9}
+    .answer-input.wrong{border-color:#f44336;background:#fff5f5}
+    .feedback{font-size:20px;font-weight:700;text-align:center;min-height:28px;margin-bottom:12px}
+    .feedback.correct{color:#2e7d32}
+    .feedback.wrong{color:#c00}
+    .score-row{display:flex;gap:12px;flex-wrap:wrap}
+    .score-chip{flex:1;background:#f7f7f7;border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;min-width:80px}
+    .score-chip .n{font-size:26px;font-weight:800}
+    .score-chip .l{font-size:12px;color:#666;margin-top:2px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Times Tables</h2>
+        <p>Study the multiplication chart or drill yourself with a timed quiz.</p>
+      </div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="tabChart" onclick="setMode('chart')">Chart</button>
+        <button class="mode-tab" id="tabQuiz" onclick="setMode('quiz')">Quiz</button>
+      </div>
+
+      <div id="chartSection">
+        <div class="panel">
+          <h3>Multiplication Table (1–12)</h3>
+          <div style="overflow-x:auto"><table class="chart-table" id="chartTable"></table></div>
+        </div>
+      </div>
+
+      <div id="quizSection" style="display:none">
+        <div class="panel">
+          <h3>Setup</h3>
+          <div class="quiz-setup">
+            <div class="field"><label>Table (or All)</label>
+              <select id="quizTable">
+                <option value="all">All (1–12)</option>
+                ${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1}s</option>`).join('')}
+              </select>
+            </div>
+            <div class="field"><label>Questions</label>
+              <select id="quizCount">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <button class="atlas-btn" onclick="startQuiz()">Start Quiz</button>
+          </div>
+          <div id="quizArea" style="display:none">
+            <div class="question-box">
+              <div class="q-text" id="qText"></div>
+              <div class="q-progress" id="qProgress"></div>
+            </div>
+            <input class="answer-input" type="number" id="answerInput" placeholder="?" autocomplete="off" oninput="checkAnswer()">
+            <div class="feedback" id="feedback"></div>
+            <div class="score-row">
+              <div class="score-chip"><div class="n" id="qCorrect">0</div><div class="l">Correct</div></div>
+              <div class="score-chip"><div class="n" id="qWrong">0</div><div class="l">Wrong</div></div>
+              <div class="score-chip"><div class="n" id="qStreak">0</div><div class="l">Streak</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Times Tables');
+
+    function buildChart() {
+      const table = document.getElementById('chartTable');
+      let html = '<thead><tr><th>×</th>';
+      for (let i=1;i<=12;i++) html+='<th>'+i+'</th>';
+      html += '</tr></thead><tbody>';
+      for (let i=1;i<=12;i++) {
+        html += '<tr class="header-row"><td>'+i+'</td>';
+        for (let j=1;j<=12;j++) html+=`<td onclick="highlight(${i},${j})">${i*j}</td>`;
+        html += '</tr>';
+      }
+      html += '</tbody>';
+      table.innerHTML = html;
+    }
+
+    function highlight(r,c) {
+      document.querySelectorAll('.chart-table td').forEach((td,idx)=>{
+        const row=Math.floor(idx/13), col=idx%13;
+        td.classList.toggle('highlight', row===r&&col===c);
+      });
+    }
+
+    function setMode(m) {
+      document.getElementById('chartSection').style.display=m==='chart'?'block':'none';
+      document.getElementById('quizSection').style.display=m==='quiz'?'block':'none';
+      document.getElementById('tabChart').classList.toggle('active',m==='chart');
+      document.getElementById('tabQuiz').classList.toggle('active',m==='quiz');
+    }
+
+    let questions = [], qIdx = 0, correct = 0, wrong = 0, streak = 0;
+
+    function startQuiz() {
+      const tableVal = document.getElementById('quizTable').value;
+      const count = parseInt(document.getElementById('quizCount').value);
+      const qs = [];
+      for (let k=0;k<count;k++) {
+        const a = tableVal==='all' ? Math.floor(Math.random()*12)+1 : parseInt(tableVal);
+        const b = Math.floor(Math.random()*12)+1;
+        qs.push({a,b,answer:a*b});
+      }
+      questions=qs; qIdx=0; correct=0; wrong=0; streak=0;
+      document.getElementById('quizArea').style.display='block';
+      document.getElementById('qCorrect').textContent='0';
+      document.getElementById('qWrong').textContent='0';
+      document.getElementById('qStreak').textContent='0';
+      showQ();
+    }
+
+    function showQ() {
+      if(qIdx>=questions.length){finishQuiz();return;}
+      const q=questions[qIdx];
+      document.getElementById('qText').textContent=q.a+' × '+q.b+' = ?';
+      document.getElementById('qProgress').textContent=(qIdx+1)+' / '+questions.length;
+      document.getElementById('answerInput').value='';
+      document.getElementById('answerInput').className='answer-input';
+      document.getElementById('feedback').textContent='';
+      document.getElementById('feedback').className='feedback';
+      document.getElementById('answerInput').focus();
+    }
+
+    function checkAnswer() {
+      const val=parseInt(document.getElementById('answerInput').value);
+      if(isNaN(val)) return;
+      const q=questions[qIdx];
+      const inp=document.getElementById('answerInput');
+      if(val===q.answer){
+        inp.className='answer-input correct';
+        document.getElementById('feedback').textContent='✓ Correct!';
+        document.getElementById('feedback').className='feedback correct';
+        correct++; streak++;
+        document.getElementById('qCorrect').textContent=correct;
+        document.getElementById('qStreak').textContent=streak;
+        setTimeout(()=>{qIdx++;showQ();},600);
+      } else if(document.getElementById('answerInput').value.length>String(q.answer).length) {
+        inp.className='answer-input wrong';
+        document.getElementById('feedback').textContent='✗ Answer: '+q.answer;
+        document.getElementById('feedback').className='feedback wrong';
+        wrong++; streak=0;
+        document.getElementById('qWrong').textContent=wrong;
+        document.getElementById('qStreak').textContent=0;
+        setTimeout(()=>{qIdx++;showQ();},1200);
+      }
+    }
+
+    function finishQuiz() {
+      document.getElementById('quizArea').innerHTML = `
+        <div style="text-align:center;padding:28px 0">
+          <div style="font-size:54px;font-weight:800;color:#c28a2b">${Math.round(correct/(correct+wrong)*100)}%</div>
+          <div style="font-size:16px;color:#555;margin-top:8px">${correct} correct, ${wrong} wrong</div>
+          <button class="atlas-btn" style="margin-top:18px" onclick="startQuiz()">Try Again</button>
+        </div>`;
+    }
+
+    buildChart();
+  </script>
+</body>
+</html>
