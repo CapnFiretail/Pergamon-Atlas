@@ -1,5 +1,23 @@
 const atlasUpdates = [
   {
+    date: "April 14, 2026",
+    tag: "Games",
+    title: "Pergamon Gamers Rejoice!",
+    text: "",
+    list: [
+      "A number of new games added to the atlas!"
+    ]
+  },
+  {
+    date: "April 14, 2026",
+    tag: "Tools",
+    title: "Tools Tools Toooools!",
+    text: "",
+    list: [
+      "Added a bunch of new tools to the Atlas!"
+    ]
+  },
+  {
     date: "April 8, 2026",
     tag: "Games",
     title: "Tic Tac Toe & More",
