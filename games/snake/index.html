@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Snake</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .hud{display:flex;justify-content:center;gap:32px;margin-bottom:12px;font-size:16px;font-weight:700}
+    .hud .val{font-size:28px;display:block;color:#8a611c;font-family:monospace}
+    canvas{border:3px solid #000;border-radius:10px;display:block;margin:0 auto;max-width:100%}
+    .controls{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .speed-row{display:flex;justify-content:center;gap:8px;margin-bottom:10px}
+    .spd-btn{border:2px solid #ccc;border-radius:8px;padding:6px 14px;font-size:13px;font-family:Georgia,serif;cursor:pointer;background:white;font-weight:700;transition:.15s}
+    .spd-btn.active{background:#111;color:white;border-color:#111}
+    .dpad{display:grid;grid-template-columns:repeat(3,48px);gap:4px;justify-content:center;margin-top:10px}
+    .dpad-btn{width:48px;height:48px;border:2px solid #ccc;border-radius:8px;background:#f7f7f7;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .dpad-btn:active{background:#ddd}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Snake</h2>
+        <p>Eat food, grow longer, don't crash</p>
+      </div>
+      <div class="panel">
+        <div class="hud">
+          <span><span class="val" id="scoreVal">0</span>Score</span>
+          <span><span class="val" id="bestVal">0</span>Best</span>
+          <span><span class="val" id="lenVal">1</span>Length</span>
+        </div>
+        <div class="speed-row">
+          <button class="spd-btn active" onclick="setSpeed(150,'slow',this)">Slow</button>
+          <button class="spd-btn" onclick="setSpeed(100,'med',this)">Medium</button>
+          <button class="spd-btn" onclick="setSpeed(65,'fast',this)">Fast</button>
+        </div>
+        <canvas id="c" width="400" height="400"></canvas>
+        <div class="controls">
+          <button class="atlas-btn" id="startBtn" onclick="startGame()">Start</button>
+          <button class="atlas-btn" style="background:#555" onclick="togglePause()">Pause</button>
+        </div>
+        <div class="dpad">
+          <div></div><button class="dpad-btn" onclick="dir(0,-1)">▲</button><div></div>
+          <button class="dpad-btn" onclick="dir(-1,0)">◀</button><div></div><button class="dpad-btn" onclick="dir(1,0)">▶</button>
+          <div></div><button class="dpad-btn" onclick="dir(0,1)">▼</button><div></div>
+        </div>
+        <div style="font-size:13px;color:#aaa;margin-top:8px">Use arrow keys or WASD to control</div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Snake');
+
+    const GRID=20, CELL=20;
+    const canvas=document.getElementById('c');
+    const ctx=canvas.getContext('2d');
+    let snake,food,dx,dy,score,gameLoop,paused,speed,best;
+
+    best=parseInt(localStorage.getItem('snake_best')||0);
+    document.getElementById('bestVal').textContent=best;
+    speed=150;
+
+    function setSpeed(ms,lbl,btn){speed=ms;document.querySelectorAll('.spd-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+
+    function startGame(){
+      clearInterval(gameLoop);
+      snake=[{x:10,y:10}];dx=1;dy=0;score=0;paused=false;
+      placeFood();
+      draw();
+      gameLoop=setInterval(update,speed);
+      document.getElementById('startBtn').textContent='Restart';
+    }
+
+    function placeFood(){
+      do{food={x:Math.floor(Math.random()*GRID),y:Math.floor(Math.random()*GRID)};}
+      while(snake.some(s=>s.x===food.x&&s.y===food.y));
+    }
+
+    function dir(x,y){
+      if(x!==0&&dx===0){dx=x;dy=0;}
+      else if(y!==0&&dy===0){dx=0;dy=y;}
+    }
+
+    function togglePause(){paused=!paused;}
+
+    function update(){
+      if(paused) return;
+      const head={x:snake[0].x+dx,y:snake[0].y+dy};
+      if(head.x<0||head.x>=GRID||head.y<0||head.y>=GRID||snake.some(s=>s.x===head.x&&s.y===head.y)){
+        clearInterval(gameLoop);
+        ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(0,0,400,400);
+        ctx.fillStyle='#f0d39b';ctx.font='bold 32px monospace';ctx.textAlign='center';
+        ctx.fillText('Game Over!',200,180);
+        ctx.font='20px Georgia';ctx.fillText('Score: '+score,200,220);
+        ctx.fillText('Click Start to retry',200,260);
+        return;
+      }
+      snake.unshift(head);
+      if(head.x===food.x&&head.y===food.y){
+        score++;document.getElementById('scoreVal').textContent=score;
+        document.getElementById('lenVal').textContent=snake.length;
+        if(score>best){best=score;localStorage.setItem('snake_best',best);document.getElementById('bestVal').textContent=best;}
+        placeFood();
+      } else snake.pop();
+      draw();
+    }
+
+    function draw(){
+      ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,400,400);
+      // Grid dots
+      ctx.fillStyle='#222';
+      for(let x=0;x<GRID;x++)for(let y=0;y<GRID;y++){ctx.beginPath();ctx.arc(x*CELL+CELL/2,y*CELL+CELL/2,1,0,Math.PI*2);ctx.fill();}
+      // Food
+      ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(food.x*CELL+CELL/2,food.y*CELL+CELL/2,CELL/2-2,0,Math.PI*2);ctx.fill();
+      // Snake
+      snake.forEach((s,i)=>{
+        ctx.fillStyle=i===0?'#f0d39b':'#8a611c';
+        ctx.beginPath();ctx.roundRect(s.x*CELL+1,s.y*CELL+1,CELL-2,CELL-2,4);ctx.fill();
+      });
+    }
+
+    document.addEventListener('keydown',e=>{
+      if(e.key==='ArrowLeft'||e.key==='a') {e.preventDefault();dir(-1,0);}
+      if(e.key==='ArrowRight'||e.key==='d') {e.preventDefault();dir(1,0);}
+      if(e.key==='ArrowUp'||e.key==='w') {e.preventDefault();dir(0,-1);}
+      if(e.key==='ArrowDown'||e.key==='s') {e.preventDefault();dir(0,1);}
+      if(e.key===' ') {e.preventDefault();togglePause();}
+    });
+
+    // Initial draw
+    ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,400,400);
+    ctx.fillStyle='#f0d39b';ctx.font='bold 22px Georgia';ctx.textAlign='center';
+    ctx.fillText('Press Start to play',200,200);
+  </script>
+</body>
+</html>

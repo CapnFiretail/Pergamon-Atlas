@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Wordle</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .grid{display:grid;grid-template-rows:repeat(6,1fr);gap:6px;max-width:330px;margin:0 auto 16px}
+    .row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .tile{width:100%;aspect-ratio:1;border:2px solid #ccc;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:clamp(22px,5vw,30px);font-weight:900;text-transform:uppercase;transition:background .3s,border .3s,color .3s;background:white}
+    .tile.filled{border-color:#999}
+    .tile.correct{background:#2a9d3a;border-color:#2a9d3a;color:white}
+    .tile.present{background:#d4a017;border-color:#d4a017;color:white}
+    .tile.absent{background:#555;border-color:#555;color:white}
+    .tile.active-row{border-color:#111}
+    .keyboard{display:flex;flex-direction:column;gap:6px;align-items:center;margin-bottom:10px}
+    .kb-row{display:flex;gap:5px}
+    .key{height:50px;min-width:36px;border:none;border-radius:6px;background:#d3d6da;font-size:13px;font-weight:700;cursor:pointer;padding:0 6px;transition:.15s;font-family:Georgia,serif}
+    .key.wide{min-width:52px;font-size:12px}
+    .key:hover{filter:brightness(.9)}
+    .key.correct{background:#2a9d3a;color:white}
+    .key.present{background:#d4a017;color:white}
+    .key.absent{background:#555;color:white}
+    .status{font-size:16px;font-weight:700;min-height:26px;margin-bottom:10px}
+    .status.win{color:#2a9d3a}
+    .status.lose{color:#c0392b}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+    .shake{animation:shake .4s}
+    @keyframes flip{0%{transform:scaleY(1)}50%{transform:scaleY(0)}100%{transform:scaleY(1)}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Wordle</h2>
+        <p>Guess the 5-letter word in 6 tries</p>
+      </div>
+      <div class="panel">
+        <div class="status" id="status">Guess a 5-letter word</div>
+        <div class="grid" id="grid"></div>
+        <div class="keyboard" id="keyboard"></div>
+        <button class="atlas-btn" onclick="newGame()">New Word</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Wordle');
+
+    const WORDS=['crane','flute','brave','light','grain','stone','blood','flame','chart','plant','power','brush','cloud','dance','earth','fancy','ghost','heart','ivory','jewel','knife','lemon','magic','night','ocean','queen','river','shade','tiger','uncle','vigor','water','young','zebra','alpha','bench','caves','debug','eagle','frost','glide','honor','infer','jumbo','knack','lance','mercy','novel','orbit','pasta','quilt','realm','siren','twine','uvula','vault','while','xenon','yacht','zones','array','blend','chess','cubic','draft','every','forge','grove','haste','irony','jazzy','kneel','layer','maker','nerve','overt','pixel','quest','risky','shirt','track','ultra','video','wedge','xenon','yearn','zooms','angel','boxer','crack','derby','enjoy','floss','glare','handy','index','jolly','karma','lobby','mayor','nymph','ozone','plank','quirk','radar','slope','tempo','umbra','viola','witch','xylem','yummy','zonal'];
+    const VALID_WORDS=new Set(WORDS);
+
+    let secret,guesses,current,gameOver;
+
+    const KB_ROWS=[['q','w','e','r','t','y','u','i','o','p'],['a','s','d','f','g','h','j','k','l'],['Enter','z','x','c','v','b','n','m','⌫']];
+
+    function newGame(){
+      secret=WORDS[Math.floor(Math.random()*WORDS.length)];
+      guesses=[];current='';gameOver=false;
+      buildGrid();buildKeyboard();
+      setStatus('Guess a 5-letter word');
+    }
+
+    function buildGrid(){
+      const g=document.getElementById('grid');
+      g.innerHTML='';
+      for(let r=0;r<6;r++){
+        const row=document.createElement('div');row.className='row';row.id='row-'+r;
+        for(let c=0;c<5;c++){const t=document.createElement('div');t.className='tile';t.id=`t${r}${c}`;row.appendChild(t);}
+        g.appendChild(row);
+      }
+      updateCurrentRow();
+    }
+
+    function buildKeyboard(){
+      const kb=document.getElementById('keyboard');kb.innerHTML='';
+      KB_ROWS.forEach(row=>{
+        const r=document.createElement('div');r.className='kb-row';
+        row.forEach(k=>{
+          const btn=document.createElement('button');btn.className='key'+(k.length>1?' wide':'');
+          btn.textContent=k;btn.dataset.key=k;
+          btn.onclick=()=>handleKey(k);kb.appendChild(btn);
+          r.appendChild(btn);
+        });
+        kb.appendChild(r);
+      });
+    }
+
+    function updateCurrentRow(){
+      const row=guesses.length;
+      for(let c=0;c<5;c++){
+        const t=document.getElementById(`t${row}${c}`);
+        if(!t)return;
+        t.textContent=current[c]||'';
+        t.className='tile active-row'+(current[c]?' filled':'');
+      }
+    }
+
+    function handleKey(k){
+      if(gameOver) return;
+      if(k==='⌫'||k==='Backspace'){current=current.slice(0,-1);updateCurrentRow();return;}
+      if(k==='Enter'){submitGuess();return;}
+      if(current.length<5&&/^[a-zA-Z]$/.test(k)){current+=k.toLowerCase();updateCurrentRow();}
+    }
+
+    function submitGuess(){
+      if(current.length<5){shake();setStatus('Not enough letters');return;}
+      guesses.push(current);
+      revealGuess(guesses.length-1);
+      const won=current===secret;
+      gameOver=won||guesses.length>=6;
+      current='';
+      if(won){setStatus('Brilliant! 🎉','win');}
+      else if(guesses.length>=6){setStatus('The word was: '+secret.toUpperCase(),'lose');}
+      else setStatus('');
+    }
+
+    function revealGuess(row){
+      const guess=guesses[row];
+      const result=Array(5).fill('absent');
+      const secretArr=secret.split('');const guessArr=guess.split('');
+      // Greens
+      for(let i=0;i<5;i++){if(guessArr[i]===secretArr[i]){result[i]='correct';secretArr[i]=null;guessArr[i]=null;}}
+      // Yellows
+      for(let i=0;i<5;i++){
+        if(guessArr[i]===null)continue;
+        const j=secretArr.indexOf(guessArr[i]);
+        if(j!==-1){result[i]='present';secretArr[j]=null;}
+      }
+      result.forEach((r,c)=>{
+        setTimeout(()=>{
+          const t=document.getElementById(`t${row}${c}`);
+          t.className='tile '+r;
+          // Update keyboard
+          const k=guess[c];
+          const kBtn=document.querySelector(`[data-key="${k}"]`);
+          if(kBtn){const pri={correct:3,present:2,absent:1};const cur=pri[kBtn.dataset.state||'none']||0;if(pri[r]>cur){kBtn.className='key '+r;kBtn.dataset.state=r;}}
+        },c*80);
+      });
+      if(row<5) setTimeout(()=>{if(!gameOver)updateCurrentRow();},5*80+50);
+    }
+
+    function shake(){
+      const row=document.getElementById('row-'+guesses.length);
+      row.classList.add('shake');setTimeout(()=>row.classList.remove('shake'),400);
+    }
+
+    function setStatus(msg,cls=''){const el=document.getElementById('status');el.textContent=msg;el.className='status '+(cls||'');}
+
+    document.addEventListener('keydown',e=>{
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      if(e.key==='Enter') handleKey('Enter');
+      else if(e.key==='Backspace') handleKey('⌫');
+      else if(/^[a-zA-Z]$/.test(e.key)) handleKey(e.key);
+    });
+
+    newGame();
+  </script>
+</body>
+</html>
