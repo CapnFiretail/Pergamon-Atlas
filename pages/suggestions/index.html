@@ -1,86 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
 
+  <title>Pergamon Atlas | Suggestions</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pergamon Atlas | Suggestions</title>
+
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
-  
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+
+  <style>
+    /* ── Hero ── */
+    .suggestions-hero {
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .suggestions-hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 5vw, 44px);
+      color: #e0b35a;
+    }
+
+    .suggestions-hero p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #ededed;
+      max-width: 680px;
+    }
+
+    /* ── Form card ── */
+    .form-card {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      max-width: 660px;
+    }
+
+    .form-card h3 {
+      margin: 0 0 20px;
+      font-size: 22px;
+      color: #111;
+    }
+
+    /* ── Field groups ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .field-row .field-group {
+      margin-bottom: 0;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #222;
+      font-family: Georgia, serif;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: 2px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      font-family: Georgia, serif;
+      font-size: 15px;
+      color: #111;
+      background: #fafafa;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #8a611c;
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+    }
+
+    /* ── Submit ── */
+    .submit-btn {
+      font-family: Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: #8a611c;
+      border: 2px solid #8a611c;
+      border-radius: 8px;
+      padding: 11px 28px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.12s;
+    }
+
+    .submit-btn:hover {
+      background: #a87422;
+      border-color: #a87422;
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:focus {
+      outline: 3px solid #e0b35a;
+      outline-offset: 2px;
+    }
+
+    /* ── Notice box ── */
+    .notice-box {
+      margin-top: 18px;
+      background: #f8f5ee;
+      border: 2px solid #e0c98a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #5a4210;
+      line-height: 1.6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .form-card {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo-box">
-        <img src="/images/logo.png" alt="Logo">
-      </div>
-      <h1>Pergamon Atlas | Suggestions</h1>
-    </div>
+  <div id="header-placeholder"></div>
 
-    <div class="header-actions">
-      <div class="search-wrap">
-        <input class="search-bar" placeholder="Search the Atlas...">
-      </div>
-      <a href="/account-page" class="account-btn">Account</a>
-    </div>
-  </div>
-
-  <!-- LAYOUT -->
   <div class="layout">
+    <div id="sidebar-placeholder"></div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <a href="/">Home</a>
-      <a href="/tools">Tools</a>
-      <a href="/games">Games</a>
-      <a href="/help">Help</a>
-    </div>
+    <main class="main-content">
 
-    <!-- MAIN -->
-    <div class="main-content">
+      <section class="suggestions-hero">
+        <h2>Help Shape the Atlas</h2>
+        <p>Have an idea for a tool, a game, or something that isn't working right? Share it below — every suggestion is read.</p>
+      </section>
 
-      <div class="hero-box">
-        <h2>Suggest Something for the Atlas</h2>
-        <p>
-          Have an idea for a tool, feature, or improvement? Drop it below — this atlas grows from ideas like yours.
-        </p>
+      <div class="form-card">
+        <h3>Submit a Suggestion</h3>
+
+        <form action="#" method="post">
+
+          <div class="field-row">
+            <div class="field-group">
+              <label for="sugg-name">Name</label>
+              <input type="text" id="sugg-name" name="name" placeholder="Optional">
+              <span class="field-hint">Leave blank to submit anonymously.</span>
+            </div>
+            <div class="field-group">
+              <label for="sugg-email">Email</label>
+              <input type="email" id="sugg-email" name="email" placeholder="Optional">
+              <span class="field-hint">Only if you'd like a reply.</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="sugg-category">Category</label>
+            <select id="sugg-category" name="category">
+              <option value="">— Select a category —</option>
+              <option value="tool-idea">Tool Idea</option>
+              <option value="game-idea">Game Idea</option>
+              <option value="bug-report">Bug Report</option>
+              <option value="design-suggestion">Design Suggestion</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="sugg-message">Your Suggestion</label>
+            <textarea id="sugg-message" name="message" placeholder="Describe your idea or report a problem..."></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit Suggestion</button>
+
+          <div class="notice-box">
+            Backend submission support will be connected later. Your input won't be sent anywhere yet.
+          </div>
+
+        </form>
       </div>
 
-      <div class="section-box">
-
-        <div class="form-group">
-          <label>Name (optional)</label>
-          <input type="text">
-        </div>
-
-        <div class="form-group">
-          <label>Type of Suggestion</label>
-          <select>
-            <option>Tool Idea</option>
-            <option>Feature Request</option>
-            <option>Bug / Fix</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Your Idea</label>
-          <textarea></textarea>
-        </div>
-
-        <button class="submit-btn">Submit</button>
-
-      </div>
-
-    </div>
+    </main>
   </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/scripts/atlas.js"></script>
+  <script>loadSnippets('Suggestions');</script>
 
 </body>
 </html>
