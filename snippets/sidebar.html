@@ -1,5 +1,7 @@
 <!-- SIDEBAR SNIPPET -->
-<aside class="sidebar">
+<aside class="sidebar" id="mainSidebar">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" onclick="toggleSidebar()">‹</button>
+
   <a href="/" class="active">
     <span class="nav-icon">🏠</span>
     <span class="nav-label">Home</span>
@@ -29,3 +31,23 @@
          data-full-width-responsive="true"></ins>
   </div>
 </aside>
+
+<script>
+  (function(){
+    // Apply collapsed state immediately to avoid layout flash
+    if(localStorage.getItem('sidebarCollapsed')==='1'){
+      var s=document.getElementById('mainSidebar');
+      var b=document.getElementById('sidebarToggle');
+      if(s) s.classList.add('collapsed');
+      if(b) b.textContent='›';
+    }
+  })();
+
+  function toggleSidebar(){
+    var s=document.getElementById('mainSidebar');
+    var b=document.getElementById('sidebarToggle');
+    var collapsed=s.classList.toggle('collapsed');
+    b.textContent=collapsed?'›':'‹';
+    localStorage.setItem('sidebarCollapsed',collapsed?'1':'0');
+  }
+</script>
