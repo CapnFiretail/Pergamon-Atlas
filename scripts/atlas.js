@@ -16,6 +16,8 @@ function loadSnippets(pageName) {
     .then(r => r.text())
     .then(html => {
       document.getElementById('sidebar-placeholder').innerHTML = html;
+
+      // Active link highlighting
       const path = window.location.pathname;
       document.querySelectorAll('.sidebar a').forEach(link => {
         link.classList.remove('active');
@@ -28,6 +30,22 @@ function loadSnippets(pageName) {
           (path.startsWith('/pages/help') || path.startsWith('/help'))
         ) link.classList.add('active');
       });
+
+      // Sidebar collapse toggle
+      const sidebar = document.getElementById('mainSidebar');
+      const toggleBtn = document.getElementById('sidebarToggle');
+      if (sidebar && toggleBtn) {
+        if (localStorage.getItem('sidebarCollapsed') === '1') {
+          sidebar.classList.add('collapsed');
+          toggleBtn.textContent = '›';
+        }
+        toggleBtn.addEventListener('click', function () {
+          const collapsed = sidebar.classList.toggle('collapsed');
+          toggleBtn.textContent = collapsed ? '›' : '‹';
+          localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+        });
+      }
+
       try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
     });
 
