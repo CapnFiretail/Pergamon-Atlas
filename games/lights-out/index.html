@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Lights Out</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .lo-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+    #loGrid{display:grid;grid-template-columns:repeat(5,1fr);width:min(100%,340px);aspect-ratio:1;gap:8px;padding:16px;background:#111;border-radius:14px;border:2px solid #8a611c}
+    .lo-cell{border-radius:8px;cursor:pointer;transition:background .15s,box-shadow .15s;aspect-ratio:1}
+    .lo-cell.on{background:#f0d39b;box-shadow:0 0 16px rgba(240,211,155,.6)}
+    .lo-cell.off{background:#2a2010}
+    .lo-cell.on:hover{background:#fde8a0}
+    .lo-cell.off:hover{background:#3a3018}
+    .lo-stats{display:flex;gap:20px;background:#111;border-radius:10px;padding:14px 24px;color:white}
+    .lo-stat{text-align:center}
+    .lo-stat .val{font-size:28px;font-weight:800;color:#f0d39b;font-family:monospace}
+    .lo-stat .lbl{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+    .lo-btn{padding:10px 22px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .lo-btn:hover{background:#8a611c;color:white}
+    .lo-msg{font-size:18px;font-weight:700;color:#f0d39b;min-height:24px;text-align:center}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Lights Out</h2>
+        <p>Click a light to toggle it and its neighbors. Turn all lights off to win.</p>
+      </div>
+      <div class="lo-wrap">
+        <div class="lo-stats">
+          <div class="lo-stat"><div class="val" id="movesEl">0</div><div class="lbl">Moves</div></div>
+          <div class="lo-stat"><div class="val" id="litEl">0</div><div class="lbl">Lit</div></div>
+        </div>
+        <div id="loGrid"></div>
+        <div class="lo-msg" id="loMsg"></div>
+        <button class="lo-btn" onclick="newGame()">New Puzzle</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/scripts/atlas.js"></script>
+  <script>loadSnippets('Lights Out');</script>
+  <script>
+  const SIZE=5;
+  let grid,moves,won;
+
+  function newGame(){
+    grid=Array(SIZE).fill(null).map(()=>Array(SIZE).fill(false));
+    // Generate by applying 8–14 random clicks from solved state
+    const clicks=8+Math.floor(Math.random()*7);
+    for(let i=0;i<clicks;i++)toggle(Math.floor(Math.random()*SIZE),Math.floor(Math.random()*SIZE));
+    moves=0;won=false;
+    document.getElementById('loMsg').textContent='';
+    document.getElementById('movesEl').textContent='0';
+    render();
+  }
+
+  function toggle(r,c){
+    [[r,c],[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([x,y])=>{
+      if(x>=0&&x<SIZE&&y>=0&&y<SIZE)grid[x][y]=!grid[x][y];
+    });
+  }
+
+  function handleClick(r,c){
+    if(won)return;
+    toggle(r,c);
+    moves++;
+    document.getElementById('movesEl').textContent=moves;
+    const lit=grid.flat().filter(Boolean).length;
+    document.getElementById('litEl').textContent=lit;
+    if(lit===0){won=true;document.getElementById('loMsg').textContent=`All out in ${moves} moves!`;}
+    render();
+  }
+
+  function render(){
+    const g=document.getElementById('loGrid');
+    g.innerHTML='';
+    let lit=0;
+    grid.forEach((row,r)=>row.forEach((on,c)=>{
+      const d=document.createElement('div');
+      d.className='lo-cell '+(on?'on':'off');
+      if(on)lit++;
+      d.onclick=()=>handleClick(r,c);
+      g.appendChild(d);
+    }));
+    document.getElementById('litEl').textContent=lit;
+  }
+
+  newGame();
+  </script>
+</body>
+</html>
