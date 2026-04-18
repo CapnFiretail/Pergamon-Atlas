@@ -1,6 +1,16 @@
 const atlasUpdates = [
   {
-    date: "April 14, 2026",
+    date: "April 17, 2026",
+    tag: "Features",
+    title: "The Archives",
+    text: "Take a gander",
+    list: [
+      "...",
+      "Also made the sidebar collapseable"
+    ]
+  },
+  {
+    date: "April 15, 2026",
     tag: "Games",
     title: "Pergamon Gamers Rejoice!",
     text: "",
