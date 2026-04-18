@@ -180,7 +180,16 @@
 
 <script src="/systems/nav-codes.js"></script>
 <script src="/scripts/atlas.js"></script>
-<script>loadSnippets('Tools');</script>
+<script>
+  loadSnippets('Tools');
+  const _toolsCode = window.atlasNavCodes && window.atlasNavCodes[window.location.pathname.replace(/\/$/, '') || '/'];
+  if (_toolsCode) {
+    const _i = setInterval(() => {
+      const el = document.getElementById('system-code-display');
+      if (el) { el.textContent = _toolsCode; clearInterval(_i); }
+    }, 50);
+  }
+</script>
 
 </body>
 </html>

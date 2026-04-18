@@ -1,5 +1,5 @@
 window.atlasNavCodes = {
-  "/":      "SYSTEM-NAV-0-0-0-A100",
-  "/tools": "SYSTEM-NAV-0-0-1-B100",
-  "/games": "SYSTEM-NAV-0-0-2-C100"
+  "/":      "SYSTEM-NAV-z0-y0-x0-A100",
+  "/tools": "SYSTEM-NAV-z0-y0-x1-B100",
+  "/games": "SYSTEM-NAV-z0-y0-x2-C100"
 };

@@ -303,6 +303,15 @@
   <div id="footer-placeholder"></div>
   <script src="/systems/nav-codes.js"></script>
   <script src="/scripts/atlas.js"></script>
-  <script>loadSnippets('Games');</script>
+  <script>
+    loadSnippets('Games');
+    const _gamesCode = window.atlasNavCodes && window.atlasNavCodes[window.location.pathname.replace(/\/$/, '') || '/'];
+    if (_gamesCode) {
+      const _i = setInterval(() => {
+        const el = document.getElementById('system-code-display');
+        if (el) { el.textContent = _gamesCode; clearInterval(_i); }
+      }, 50);
+    }
+  </script>
 </body>
 </html>
