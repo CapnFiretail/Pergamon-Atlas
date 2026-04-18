@@ -280,6 +280,7 @@
 
   <div id="footer-placeholder"></div>
 
+  <script src="/systems/nav-codes.js"></script>
   <script src="/data/updates.js"></script>
 
   <script>
@@ -360,6 +361,11 @@
           });
         }
 
+        if (window.atlasNavCodes) {
+          const slug = window.location.pathname.replace(/\/$/, '') || '/';
+          const el = document.getElementById('system-code-display');
+          if (el) el.textContent = window.atlasNavCodes[slug] || '';
+        }
       });
 
     fetch('/snippets/footer.html')
@@ -371,21 +377,6 @@
     renderUpdates(atlasUpdates, 'updates-placeholder', 2);
 
     (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-  <script type="module">
-    import { getSystemCode } from '/systems/connect-page.js';
-    const code = getSystemCode();
-    if (code) {
-      const trySet = () => {
-        const el = document.getElementById('system-code-display');
-        if (el) { el.textContent = code; return true; }
-        return false;
-      };
-      if (!trySet()) {
-        new MutationObserver((_, obs) => { if (trySet()) obs.disconnect(); })
-          .observe(document.body, { childList: true, subtree: true });
-      }
-    }
   </script>
 
 </body>

@@ -47,6 +47,12 @@ function loadSnippets(pageName) {
       }
 
       try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+
+      if (window.atlasNavCodes) {
+        const slug = window.location.pathname.replace(/\/$/, '') || '/';
+        const el = document.getElementById('system-code-display');
+        if (el) el.textContent = window.atlasNavCodes[slug] || '';
+      }
     });
 
   fetch('/snippets/footer.html')
