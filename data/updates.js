@@ -10,6 +10,15 @@ const atlasUpdates = [
     ]
   },
   {
+    date: "April 16, 2026",
+    tag: "Games & Tools",
+    title: "Added a few new games and tools!",
+    text: "Take a gander",
+    list: [
+      "Battleship, blackjack, caculators, and more!"
+    ]
+  },
+  {
     date: "April 15, 2026",
     tag: "Games",
     title: "Pergamon Gamers Rejoice!",
