@@ -302,13 +302,16 @@
   </div>
   <div id="footer-placeholder"></div>
   <script src="/scripts/atlas.js"></script>
+  <script>loadSnippets('Games');</script>
   <script type="module">
     import { getSystemCode } from '/systems/connect-page.js';
-    window.__atlasAfterSidebar = () => {
-      const el = document.getElementById('system-code-display');
-      if (el) el.textContent = getSystemCode() || '';
-    };
-    loadSnippets('Games');
+    const code = getSystemCode();
+    if (code) {
+      new MutationObserver((_, obs) => {
+        const el = document.getElementById('system-code-display');
+        if (el) { el.textContent = code; obs.disconnect(); }
+      }).observe(document.body, { childList: true, subtree: true });
+    }
   </script>
 </body>
 </html>

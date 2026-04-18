@@ -360,10 +360,6 @@
           });
         }
 
-        if (window.__systemCode) {
-          const codeEl = document.getElementById('system-code-display');
-          if (codeEl) codeEl.textContent = window.__systemCode;
-        }
       });
 
     fetch('/snippets/footer.html')
@@ -378,7 +374,13 @@
   </script>
   <script type="module">
     import { getSystemCode } from '/systems/connect-page.js';
-    window.__systemCode = getSystemCode() || '';
+    const code = getSystemCode();
+    if (code) {
+      new MutationObserver((_, obs) => {
+        const el = document.getElementById('system-code-display');
+        if (el) { el.textContent = code; obs.disconnect(); }
+      }).observe(document.body, { childList: true, subtree: true });
+    }
   </script>
 
 </body>

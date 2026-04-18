@@ -47,7 +47,6 @@ function loadSnippets(pageName) {
       }
 
       try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-      if (typeof window.__atlasAfterSidebar === 'function') window.__atlasAfterSidebar();
     });
 
   fetch('/snippets/footer.html')
