@@ -5,7 +5,6 @@ window.atlasNavCodes = {
 };
 
 window.atlasNavMeta = {
-  "/":                      { chamber: "HM" },
   "/sectors/systems/tools": { chamber: "TL" },
   "/sectors/systems/games": { chamber: "GM" }
 };
