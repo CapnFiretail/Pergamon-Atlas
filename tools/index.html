@@ -178,28 +178,8 @@
 
 <div id="footer-placeholder"></div>
 
-<script>
-const pageName = "Tools";
-
-fetch('/snippets/header.html')
-.then(res => res.text())
-.then(data => {
-  document.getElementById('header-placeholder').innerHTML = data;
-  document.querySelector('.page-title-text').textContent = " | " + pageName;
-});
-
-fetch('/snippets/sidebar.html')
-.then(res => res.text())
-.then(data => {
-  document.getElementById('sidebar-placeholder').innerHTML = data;
-});
-
-fetch('/snippets/footer.html')
-.then(res => res.text())
-.then(data => {
-  document.getElementById('footer-placeholder').innerHTML = data;
-});
-</script>
+<script src="/scripts/atlas.js"></script>
+<script>loadSnippets('Tools');</script>
 
 </body>
 </html>
