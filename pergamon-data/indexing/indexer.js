@@ -5,20 +5,61 @@ const path = require('path');
 
 const ROOT    = path.resolve(__dirname, '../../');
 const SECTORS = {
-  tools: path.join(ROOT, 'sectors/atlas/tools'),
-  games: path.join(ROOT, 'sectors/atlas/games')
+  tools: { dir: path.join(ROOT, 'sectors/atlas/tools'), hex: 'B100', chamber: 'TL' },
+  games: { dir: path.join(ROOT, 'sectors/atlas/games'), hex: 'C100', chamber: 'GM' }
 };
-const OUTPUT = path.join(__dirname, 'entries.js');
+const ENTRIES_OUT   = path.join(__dirname, 'entries.js');
+const COLLISION_OUT = path.join(ROOT, 'pergamon-data', 'collisions.json');
 
-// Acronyms that should stay fully uppercase
-const ACRONYMS = new Set(['gpa', 'bmi', 'qr', 'json', 'url', 'rng', 'rgb', 'dna']);
+// --- RNG (mirrors browser generator.js exactly) ---
 
-function toTitleCase(slug) {
-  return slug
-    .split('-')
-    .map(w => ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
+function mulberry32(seed) {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
+
+function hexToSeed(hex) { return parseInt(hex, 16) || 1; }
+
+function hashPath(str) {
+  let h = 0x12345678;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 0x9e3779b9);
+    h ^= h >>> 16;
+  }
+  return h >>> 0;
+}
+
+const RANGES = {
+  X: { min: 0, max: 9999 },
+  Y: { min: 0, max: 999  },
+  Z: { min: 1, max: 3    }
+};
+
+function inRange(rng, min, max) {
+  return Math.floor(rng() * (max - min + 1)) + min;
+}
+
+function computeSeed(sectorHex, pagePath) {
+  return (hexToSeed(sectorHex) ^ hashPath(pagePath)) >>> 0;
+}
+
+function computeCoords(seed) {
+  const xStream = mulberry32((seed ^ 0xDEAD) >>> 0);
+  const yStream = mulberry32((seed ^ 0xBEEF) >>> 0);
+  const zStream = mulberry32((seed ^ 0xCAFE) >>> 0);
+  return {
+    z: inRange(zStream, RANGES.Z.min, RANGES.Z.max),
+    y: inRange(yStream, RANGES.Y.min, RANGES.Y.max),
+    x: inRange(xStream, RANGES.X.min, RANGES.X.max)
+  };
+}
+
+// --- HTML metadata helpers ---
 
 function extractMeta(html) {
   const match = html.match(/<script[^>]+id="atlas-meta"[^>]*>([\s\S]*?)<\/script>/);
@@ -26,44 +67,104 @@ function extractMeta(html) {
   try { return JSON.parse(match[1].trim()); } catch { return null; }
 }
 
-function indexSector(sectorPath, type) {
-  if (!fs.existsSync(sectorPath)) return [];
+function injectOrUpdateMeta(html, meta) {
+  const json = JSON.stringify(meta, null, 2);
+  const tag  = `<script type="application/json" id="atlas-meta">\n${json}\n</script>`;
 
-  const entries = [];
-  const dirs = fs.readdirSync(sectorPath)
-    .filter(d => fs.statSync(path.join(sectorPath, d)).isDirectory())
+  if (/<script[^>]+id="atlas-meta"/.test(html)) {
+    return html.replace(/<script[^>]+id="atlas-meta"[^>]*>[\s\S]*?<\/script>/, tag);
+  }
+  return html.replace('<head>', '<head>\n  ' + tag);
+}
+
+// --- Utilities ---
+
+const ACRONYMS = new Set(['gpa', 'bmi', 'qr', 'json', 'url', 'rng', 'rgb', 'dna']);
+
+function toTitleCase(slug) {
+  return slug.split('-').map(w =>
+    ACRONYMS.has(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
+  ).join(' ');
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// --- Index ---
+
+const allEntries = [];
+const coordMap   = {};
+const collisions = [];
+
+for (const [type, sector] of Object.entries(SECTORS)) {
+  if (!fs.existsSync(sector.dir)) continue;
+
+  const dirs = fs.readdirSync(sector.dir)
+    .filter(d => fs.statSync(path.join(sector.dir, d)).isDirectory())
     .sort();
 
   for (const dir of dirs) {
-    const htmlPath = path.join(sectorPath, dir, 'index.html');
+    const htmlPath = path.join(sector.dir, dir, 'index.html');
     if (!fs.existsSync(htmlPath)) continue;
 
-    const html = fs.readFileSync(htmlPath, 'utf-8');
-    const meta = extractMeta(html);
+    const html         = fs.readFileSync(htmlPath, 'utf-8');
+    const pagePath     = `/sectors/atlas/${type}/${dir}`;
+    const existing     = extractMeta(html) || {};
 
-    const entry = {
-      path: `/sectors/atlas/${type}/${dir}`,
-      name: meta?.name || toTitleCase(dir)
+    const seed   = computeSeed(sector.hex, pagePath);
+    const coords = computeCoords(seed);
+
+    const meta = {
+      name:    existing.name    || toTitleCase(dir),
+      date:    existing.date    || today(),        // preserved on re-index
+      chamber: sector.chamber,
+      seed,
+      coords
     };
-    if (meta?.description) entry.description = meta.description;
-    if (meta?.tags)        entry.tags        = meta.tags;
+    if (existing.description) meta.description = existing.description;
+    if (existing.tags)        meta.tags        = existing.tags;
 
-    entries.push(entry);
+    fs.writeFileSync(htmlPath, injectOrUpdateMeta(html, meta));
+
+    // Collision tracking
+    const key = `${coords.z},${coords.y},${coords.x}`;
+    if (!coordMap[key]) coordMap[key] = [];
+    coordMap[key].push(pagePath);
+
+    allEntries.push({ type, ...meta, path: pagePath });
   }
-
-  return entries;
 }
+
+// --- Collision report ---
+
+for (const [key, pages] of Object.entries(coordMap)) {
+  if (pages.length > 1) {
+    const [z, y, x] = key.split(',').map(Number);
+    collisions.push({ coords: { z, y, x }, pages });
+  }
+}
+
+if (collisions.length > 0) {
+  fs.writeFileSync(COLLISION_OUT, JSON.stringify(collisions, null, 2));
+  console.warn(`⚠  ${collisions.length} collision(s) detected → pergamon-data/collisions.json`);
+} else {
+  if (fs.existsSync(COLLISION_OUT)) fs.unlinkSync(COLLISION_OUT);
+  console.log('✓  No coordinate collisions');
+}
+
+// --- Write entries.js ---
+
+const tools = allEntries.filter(e => e.type === 'tools');
+const games = allEntries.filter(e => e.type === 'games');
 
 function formatEntry(e) {
-  let line = `    { path: "${e.path}", name: "${e.name}"`;
-  if (e.description) line += `, description: "${e.description}"`;
-  if (e.tags)        line += `, tags: ${JSON.stringify(e.tags)}`;
-  line += ' }';
-  return line;
+  let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", chamber: "${e.chamber}", seed: ${e.seed}, coords: { z: ${e.coords.z}, y: ${e.coords.y}, x: ${e.coords.x} }`;
+  if (e.description) s += `, description: "${e.description}"`;
+  if (e.tags)        s += `, tags: ${JSON.stringify(e.tags)}`;
+  s += ' }';
+  return s;
 }
-
-const tools = indexSector(SECTORS.tools, 'tools');
-const games = indexSector(SECTORS.games, 'games');
 
 const output =
 `window.atlasEntries = {
@@ -79,5 +180,5 @@ ${games.map(formatEntry).join(',\n')}
 };
 `;
 
-fs.writeFileSync(OUTPUT, output);
-console.log(`✓ Indexed ${tools.length} tools, ${games.length} games → entries.js`);
+fs.writeFileSync(ENTRIES_OUT, output);
+console.log(`✓  Indexed ${tools.length} tools, ${games.length} games → entries.js`);
