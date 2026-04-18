@@ -184,10 +184,15 @@
   import { getSystemCode } from '/systems/connect-page.js';
   const code = getSystemCode();
   if (code) {
-    new MutationObserver((_, obs) => {
+    const trySet = () => {
       const el = document.getElementById('system-code-display');
-      if (el) { el.textContent = code; obs.disconnect(); }
-    }).observe(document.body, { childList: true, subtree: true });
+      if (el) { el.textContent = code; return true; }
+      return false;
+    };
+    if (!trySet()) {
+      new MutationObserver((_, obs) => { if (trySet()) obs.disconnect(); })
+        .observe(document.body, { childList: true, subtree: true });
+    }
   }
 </script>
 
