@@ -1,23 +1,23 @@
 (function () {
   const path = window.location.pathname;
 
-  let systemCode, chamber;
+  let hex, chamber;
 
   if (path.startsWith('/sectors/atlas/tools')) {
-    systemCode = 'SYSTEM-NAV-0-0-1-B100';
+    hex     = 'B100';
     chamber = 'TL';
   } else if (path.startsWith('/sectors/atlas/games')) {
-    systemCode = 'SYSTEM-NAV-0-0-2-C100';
+    hex     = 'C100';
     chamber = 'GM';
   }
 
-  if (!systemCode) return;
+  if (!hex) return;
 
   function trySet() {
     if (!window.atlasGenerator) return false;
     const el = document.getElementById('atlas-code-display');
     if (!el) return false;
-    el.textContent = window.atlasGenerator.generateFromPath(path, chamber) || '';
+    el.textContent = window.atlasGenerator.generateFromEntry(hex, path, chamber) || '';
     return true;
   }
 

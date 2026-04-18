@@ -73,11 +73,15 @@
     return buildCode(hexToSeed(hex), chamber);
   }
 
-  // For individual pages: seed comes from the page's unique URL path
-  function generateFromPath(path, chamber) {
-    return buildCode(hashPath(path), chamber);
+  // For individual pages: seed is the system hex rooted with the page's unique path
+  // B100 (tools) or C100 (games) anchors the coordinate space; path makes it unique
+  function generateFromEntry(systemHex, pagePath, chamber) {
+    const base = hexToSeed(systemHex);
+    const leaf = hashPath(pagePath);
+    const seed = (base ^ leaf) >>> 0;
+    return buildCode(seed, chamber);
   }
 
-  window.atlasGenerator = { generate, generateFromPath };
+  window.atlasGenerator = { generate, generateFromEntry };
 
 })();
