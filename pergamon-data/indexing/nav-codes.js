@@ -4,7 +4,4 @@ window.atlasNavCodes = {
   "/sectors/systems/games": "SYSTEM-NAV-0-0-2-C100"
 };
 
-window.atlasNavMeta = {
-  "/sectors/systems/tools": { chamber: "TL" },
-  "/sectors/systems/games": { chamber: "GM" }
-};
+window.atlasNavMeta = {};

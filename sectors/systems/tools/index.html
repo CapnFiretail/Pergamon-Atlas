@@ -179,22 +179,14 @@
 <div id="footer-placeholder"></div>
 
 <script src="/pergamon-data/indexing/nav-codes.js"></script>
-<script src="/pergamon-data/indexing/generator.js"></script>
 <script src="/function/scripts/atlas.js"></script>
 <script>
   loadSnippets('Tools');
-  const _slug = window.location.pathname.replace(/\/$/, '') || '/';
-  const _sysCode = window.atlasNavCodes && window.atlasNavCodes[_slug];
+  const _sysCode = window.atlasNavCodes && window.atlasNavCodes[window.location.pathname.replace(/\/$/, '') || '/'];
   if (_sysCode) {
     const _i = setInterval(() => {
-      const sysEl = document.getElementById('system-code-display');
-      const atlasEl = document.getElementById('atlas-code-display');
-      if (sysEl && atlasEl) {
-        sysEl.textContent = _sysCode;
-        const meta = window.atlasNavMeta && window.atlasNavMeta[_slug];
-        if (meta && window.atlasGenerator) atlasEl.textContent = window.atlasGenerator.generate(_sysCode, meta.chamber) || '';
-        clearInterval(_i);
-      }
+      const el = document.getElementById('system-code-display');
+      if (el) { el.textContent = _sysCode; clearInterval(_i); }
     }, 50);
   }
 </script>
