@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Tetris</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .tet-layout{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+    .tet-board-wrap{position:relative;flex-shrink:0}
+    #tetCanvas{display:block;border:3px solid #8a611c;border-radius:4px;background:#111}
+    .tet-panel{background:white;border:2px solid #000;border-radius:14px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08);min-width:150px}
+    .tet-panel h3{margin:0 0 14px;font-size:17px}
+    .tet-stat{margin-bottom:12px}
+    .tet-stat .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+    .tet-stat .val{font-size:26px;font-weight:800;color:#8a611c;font-family:monospace}
+    #nextCanvas{display:block;border:1.5px solid #ccc;border-radius:4px;background:#1a1a1a;margin-top:6px}
+    .tet-btn{width:100%;padding:9px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;margin-bottom:8px;transition:.15s}
+    .tet-btn:hover{background:#8a611c;color:white}
+    .tet-controls{font-size:12px;color:#888;line-height:1.8;margin-top:10px}
+    .tet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;border-radius:2px;color:white;flex-direction:column;gap:10px;text-align:center;padding:20px}
+    .tet-overlay h3{margin:0;font-size:24px;color:#f0d39b}
+    .tet-overlay p{margin:0;font-size:14px;color:#ccc}
+    .tet-overlay.hidden{display:none}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Tetris</h2>
+        <p>Clear lines by filling rows. Arrow keys to move, Up to rotate, Down to drop faster.</p>
+      </div>
+      <div class="tet-layout">
+        <div class="tet-board-wrap">
+          <canvas id="tetCanvas" width="300" height="600"></canvas>
+          <div class="tet-overlay" id="tetOverlay">
+            <h3>Tetris</h3>
+            <p>Press Start or Space</p>
+          </div>
+        </div>
+        <aside class="tet-panel">
+          <h3>Next</h3>
+          <canvas id="nextCanvas" width="100" height="100"></canvas>
+          <div class="tet-stat" style="margin-top:14px"><div class="lbl">Score</div><div class="val" id="scoreEl">0</div></div>
+          <div class="tet-stat"><div class="lbl">Lines</div><div class="val" id="linesEl">0</div></div>
+          <div class="tet-stat"><div class="lbl">Level</div><div class="val" id="levelEl">1</div></div>
+          <button class="tet-btn" onclick="startGame()">New Game</button>
+          <button class="tet-btn" onclick="togglePause()">Pause</button>
+          <div class="tet-controls">← → Move<br>↑ Rotate<br>↓ Soft drop<br>Space Hard drop</div>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Tetris');</script>
+  <script>
+  const COLS=10,ROWS=20,CELL=30;
+  const COLORS=['#c28a2b','#8a611c','#d4a03a','#a07820','#f0d070','#6a4a10','#b08030'];
+  const PIECES=[
+    [[0,0],[0,1],[0,2],[0,3]],   // I
+    [[0,0],[0,1],[1,0],[1,1]],   // O
+    [[0,0],[0,1],[0,2],[1,1]],   // T
+    [[0,1],[0,2],[1,0],[1,1]],   // S
+    [[0,0],[0,1],[1,1],[1,2]],   // Z
+    [[0,0],[1,0],[1,1],[1,2]],   // J
+    [[0,2],[1,0],[1,1],[1,2]]    // L
+  ];
+
+  const canvas=document.getElementById('tetCanvas');
+  const ctx=canvas.getContext('2d');
+  const nCanvas=document.getElementById('nextCanvas');
+  const nCtx=nCanvas.getContext('2d');
+
+  let board,piece,pieceType,pieceColor,nextType,nextColor,score,lines,level,paused,gameRunning,dropInt;
+
+  function rotate(cells){
+    const maxR=Math.max(...cells.map(c=>c[0]));
+    return cells.map(([r,c])=>[c,maxR-r]);
+  }
+
+  function newPiece(){
+    pieceType=nextType;pieceColor=nextColor;
+    const shape=PIECES[pieceType].map(c=>[...c]);
+    piece={cells:shape,r:0,c:Math.floor((COLS-4)/2)};
+    nextType=Math.floor(Math.random()*PIECES.length);
+    nextColor=COLORS[nextType];
+    drawNext();
+  }
+
+  function startGame(){
+    board=Array(ROWS).fill(null).map(()=>Array(COLS).fill(0));
+    score=0;lines=0;level=1;paused=false;gameRunning=true;
+    nextType=Math.floor(Math.random()*PIECES.length);
+    nextColor=COLORS[nextType];
+    newPiece();
+    document.getElementById('tetOverlay').classList.add('hidden');
+    clearInterval(dropInt); dropInt=setInterval(drop,getSpeed());
+    updateStats(); draw();
+  }
+
+  function getSpeed(){return Math.max(100,700-level*60);}
+
+  function valid(cells,dr,dc,rot){
+    return cells.every(([r,c])=>{
+      const nr=r+(rot?0:dr),nc=c+(rot?0:dc);
+      if(rot){const [rr,rc]=rot;return rr+piece.r>=0&&rr+piece.r<ROWS&&rc+piece.c>=0&&rc+piece.c<COLS&&!board[rr+piece.r][rc+piece.c];}
+      return nr+piece.r>=0&&nr+piece.r<ROWS&&nc+piece.c>=0&&nc+piece.c<COLS&&!board[nr+piece.r][nc+piece.c];
+    });
+  }
+
+  function canPlace(cells,pr,pc){
+    return cells.every(([r,c])=>{
+      const nr=r+pr,nc=c+pc;
+      return nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&!board[nr][nc];
+    });
+  }
+
+  function drop(){
+    if(!gameRunning||paused)return;
+    if(canPlace(piece.cells,piece.r+1,piece.c)){piece.r++;}
+    else{lock();newPiece();if(!canPlace(piece.cells,piece.r,piece.c)){endGame();return;}}
+    draw();
+  }
+
+  function lock(){
+    piece.cells.forEach(([r,c])=>board[r+piece.r][c+piece.c]=pieceColor);
+    clearLines();
+  }
+
+  function clearLines(){
+    let cleared=0;
+    for(let r=ROWS-1;r>=0;r--){
+      if(board[r].every(c=>c)){board.splice(r,1);board.unshift(Array(COLS).fill(0));cleared++;r++;}
+    }
+    if(cleared){
+      const pts=[0,100,300,500,800];
+      score+=pts[cleared]*level;
+      lines+=cleared;
+      level=Math.floor(lines/10)+1;
+      clearInterval(dropInt);dropInt=setInterval(drop,getSpeed());
+      updateStats();
+    }
+  }
+
+  function hardDrop(){
+    while(canPlace(piece.cells,piece.r+1,piece.c))piece.r++;
+    lock();newPiece();
+    if(!canPlace(piece.cells,piece.r,piece.c)){endGame();return;}
+    draw();
+  }
+
+  function endGame(){
+    gameRunning=false;clearInterval(dropInt);
+    const ov=document.getElementById('tetOverlay');
+    ov.classList.remove('hidden');
+    ov.innerHTML=`<h3>Game Over</h3><p>Score: ${score} | Lines: ${lines}</p>`;
+  }
+
+  function togglePause(){
+    if(!gameRunning)return;
+    paused=!paused;
+    if(paused)clearInterval(dropInt);
+    else dropInt=setInterval(drop,getSpeed());
+  }
+
+  function updateStats(){
+    document.getElementById('scoreEl').textContent=score;
+    document.getElementById('linesEl').textContent=lines;
+    document.getElementById('levelEl').textContent=level;
+  }
+
+  function ghostRow(){
+    let gr=piece.r;
+    while(canPlace(piece.cells,gr+1,piece.c))gr++;
+    return gr;
+  }
+
+  function draw(){
+    ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
+    // Board
+    board.forEach((row,r)=>row.forEach((col,c)=>{
+      if(col){ctx.fillStyle=col;ctx.fillRect(c*CELL+1,r*CELL+1,CELL-2,CELL-2);}
+    }));
+    // Grid lines
+    ctx.strokeStyle='rgba(255,255,255,.03)';ctx.lineWidth=1;
+    for(let r=0;r<ROWS;r++){ctx.beginPath();ctx.moveTo(0,r*CELL);ctx.lineTo(COLS*CELL,r*CELL);ctx.stroke();}
+    for(let c=0;c<COLS;c++){ctx.beginPath();ctx.moveTo(c*CELL,0);ctx.lineTo(c*CELL,ROWS*CELL);ctx.stroke();}
+    // Ghost
+    const gr=ghostRow();
+    piece.cells.forEach(([r,c])=>{
+      ctx.fillStyle='rgba(255,255,255,.1)';
+      ctx.fillRect((c+piece.c)*CELL+1,(r+gr)*CELL+1,CELL-2,CELL-2);
+    });
+    // Piece
+    piece.cells.forEach(([r,c])=>{
+      ctx.fillStyle=pieceColor;
+      ctx.fillRect((c+piece.c)*CELL+1,(r+piece.r)*CELL+1,CELL-2,CELL-2);
+    });
+  }
+
+  function drawNext(){
+    nCtx.fillStyle='#1a1a1a';nCtx.fillRect(0,0,100,100);
+    const cells=PIECES[nextType];
+    const nc=25;
+    cells.forEach(([r,c])=>{
+      nCtx.fillStyle=nextColor;
+      nCtx.fillRect(c*nc+12,r*nc+25,nc-2,nc-2);
+    });
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(!gameRunning||paused)return;
+    if(e.key==='ArrowLeft'){if(canPlace(piece.cells,piece.r,piece.c-1))piece.c--;draw();}
+    else if(e.key==='ArrowRight'){if(canPlace(piece.cells,piece.r,piece.c+1))piece.c++;draw();}
+    else if(e.key==='ArrowDown'){drop();}
+    else if(e.key==='ArrowUp'||e.key==='z'){
+      const rot=rotate(piece.cells);
+      if(canPlace(rot,piece.r,piece.c)){piece.cells=rot;}
+      draw();
+    }
+    else if(e.key===' '){e.preventDefault();hardDrop();}
+  });
+  </script>
+</body>
+</html>

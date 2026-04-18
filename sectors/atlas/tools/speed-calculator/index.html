@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Speed Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;color:#f3f3f3}
+    .card{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .card h3{margin:0 0 18px;font-size:20px}
+    .mode-tabs{display:flex;gap:0;border:1.5px solid #ccc;border-radius:10px;overflow:hidden;margin-bottom:20px;width:fit-content}
+    .mode-tab{padding:9px 22px;background:white;border:none;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s;color:#555}
+    .mode-tab.active{background:#111;color:white;font-weight:700}
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:4px}
+    .input-unit{display:flex;gap:8px}
+    .input-unit input{flex:1;padding:11px;border:1.5px solid #ccc;border-radius:8px;font-size:16px;font-family:Georgia,serif}
+    .input-unit input:focus{outline:none;border-color:#8a611c}
+    .input-unit select{padding:11px;border:1.5px solid #ccc;border-radius:8px;font-family:Georgia,serif;font-size:14px;background:white}
+    .input-unit select:focus{outline:none;border-color:#8a611c}
+    .calc-btn{background:#111;color:white;border:none;border-radius:8px;padding:11px 24px;font-size:15px;font-family:Georgia,serif;cursor:pointer;transition:.15s}
+    .calc-btn:hover{background:#333}
+    .result-hero{background:#f7f7f7;border:1.5px solid #eee;border-radius:12px;padding:20px;text-align:center;margin-top:18px}
+    .result-hero .r-val{font-size:48px;font-weight:800;color:#8a611c;font-family:monospace;line-height:1}
+    .result-hero .r-lbl{font-size:14px;color:#888;margin-top:4px}
+    .conversions{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:14px}
+    .conv-box{background:#f7f7f7;border:1.5px solid #eee;border-radius:8px;padding:12px;text-align:center}
+    .conv-box .c-val{font-size:18px;font-weight:800;color:#111;font-family:monospace}
+    .conv-box .c-lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em}
+    .pace-section{margin-top:16px}
+    .pace-section h4{font-size:14px;font-weight:700;color:#555;margin:0 0 10px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Speed Calculator</h2>
+        <p>Solve for speed, distance, or time. Includes unit conversion and pace calculator.</p>
+      </div>
+      <div class="card">
+        <h3>Calculate</h3>
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tabSpeed" onclick="setMode('speed')">Find Speed</button>
+          <button class="mode-tab" id="tabDist" onclick="setMode('distance')">Find Distance</button>
+          <button class="mode-tab" id="tabTime" onclick="setMode('time')">Find Time</button>
+        </div>
+
+        <!-- Speed mode -->
+        <div id="modeSpeed">
+          <div class="field">
+            <label>Distance</label>
+            <div class="input-unit">
+              <input type="number" id="s_dist" placeholder="e.g. 100" min="0">
+              <select id="s_distUnit">
+                <option value="km">km</option>
+                <option value="mi">miles</option>
+                <option value="m">meters</option>
+                <option value="ft">feet</option>
+                <option value="nmi">nautical mi</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <div class="input-unit">
+              <input type="number" id="s_h" placeholder="h" min="0" style="max-width:80px">
+              <input type="number" id="s_m" placeholder="min" min="0" max="59" style="max-width:80px">
+              <input type="number" id="s_s" placeholder="sec" min="0" max="59" style="max-width:80px">
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcSpeed()">Calculate Speed</button>
+          <div id="speedResult"></div>
+        </div>
+
+        <!-- Distance mode -->
+        <div id="modeDist" style="display:none">
+          <div class="field">
+            <label>Speed</label>
+            <div class="input-unit">
+              <input type="number" id="d_speed" placeholder="e.g. 60" min="0">
+              <select id="d_speedUnit">
+                <option value="kph">km/h</option>
+                <option value="mph">mph</option>
+                <option value="ms">m/s</option>
+                <option value="knot">knots</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <div class="input-unit">
+              <input type="number" id="d_h" placeholder="h" min="0" style="max-width:80px">
+              <input type="number" id="d_m" placeholder="min" min="0" max="59" style="max-width:80px">
+              <input type="number" id="d_s" placeholder="sec" min="0" max="59" style="max-width:80px">
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcDist()">Calculate Distance</button>
+          <div id="distResult"></div>
+        </div>
+
+        <!-- Time mode -->
+        <div id="modeTime" style="display:none">
+          <div class="field">
+            <label>Distance</label>
+            <div class="input-unit">
+              <input type="number" id="t_dist" placeholder="e.g. 42.195" min="0">
+              <select id="t_distUnit">
+                <option value="km">km</option>
+                <option value="mi">miles</option>
+                <option value="m">meters</option>
+                <option value="ft">feet</option>
+                <option value="nmi">nautical mi</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Speed</label>
+            <div class="input-unit">
+              <input type="number" id="t_speed" placeholder="e.g. 10" min="0">
+              <select id="t_speedUnit">
+                <option value="kph">km/h</option>
+                <option value="mph">mph</option>
+                <option value="ms">m/s</option>
+                <option value="knot">knots</option>
+              </select>
+            </div>
+          </div>
+          <button class="calc-btn" onclick="calcTime()">Calculate Time</button>
+          <div id="timeResult"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Speed Calculator');</script>
+  <script>
+  // Conversions to meters
+  const distToM={km:1000,mi:1609.344,m:1,ft:.3048,nmi:1852};
+  // Conversions to m/s
+  const speedToMs={kph:1/3.6,mph:0.44704,ms:1,knot:0.514444};
+
+  function setMode(m){
+    ['speed','distance','time'].forEach(t=>{
+      document.getElementById('mode'+t.charAt(0).toUpperCase()+t.slice(1)).style.display=m===t?'block':'none';
+      document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',m===t);
+    });
+  }
+
+  function getTime(h,m,s){return(parseFloat(h)||0)*3600+(parseFloat(m)||0)*60+(parseFloat(s)||0);}
+  function fmtTime(secs){
+    const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=Math.round(secs%60);
+    return(h?h+'h ':'')+( (h||m)?m+'m ':'')+s+'s';
+  }
+  function fmtNum(n,d=2){return n>=10000?Math.round(n).toLocaleString():parseFloat(n.toFixed(d)).toString();}
+
+  function speedConversions(ms){
+    return[
+      ['km/h',fmtNum(ms*3.6)],['mph',fmtNum(ms*2.23694)],['m/s',fmtNum(ms)],
+      ['knots',fmtNum(ms/0.514444)],['ft/s',fmtNum(ms*3.28084)],
+    ];
+  }
+  function distConversions(m){
+    return[
+      ['km',fmtNum(m/1000)],['miles',fmtNum(m/1609.344)],['meters',fmtNum(m)],
+      ['feet',fmtNum(m/0.3048)],['naut. mi',fmtNum(m/1852)],
+    ];
+  }
+
+  function convGrid(items){
+    return`<div class="conversions">${items.map(([l,v])=>`<div class="conv-box"><div class="c-val">${v}</div><div class="c-lbl">${l}</div></div>`).join('')}</div>`;
+  }
+
+  function paceHtml(ms){
+    const minPerKm=ms>0?1000/ms/60:0;
+    const minPerMi=ms>0?1609.344/ms/60:0;
+    function fmtPace(minPerUnit){const m=Math.floor(minPerUnit);const s=Math.round((minPerUnit-m)*60);return m+':'+(s<10?'0':'')+s;}
+    return`<div class="pace-section"><h4>Running Pace</h4><div class="conversions"><div class="conv-box"><div class="c-val">${fmtPace(minPerKm)}</div><div class="c-lbl">min/km</div></div><div class="conv-box"><div class="c-val">${fmtPace(minPerMi)}</div><div class="c-lbl">min/mile</div></div></div></div>`;
+  }
+
+  function calcSpeed(){
+    const distM=(parseFloat(document.getElementById('s_dist').value)||0)*distToM[document.getElementById('s_distUnit').value];
+    const timeSec=getTime(document.getElementById('s_h').value,document.getElementById('s_m').value,document.getElementById('s_s').value);
+    if(!distM||!timeSec){document.getElementById('speedResult').innerHTML='<p style="color:#c0392b;margin-top:10px">Enter both distance and time.</p>';return;}
+    const ms=distM/timeSec;
+    document.getElementById('speedResult').innerHTML=`
+      <div class="result-hero"><div class="r-val">${fmtNum(ms*3.6)}</div><div class="r-lbl">km/h</div></div>
+      ${convGrid(speedConversions(ms))}${paceHtml(ms)}`;
+  }
+
+  function calcDist(){
+    const ms=(parseFloat(document.getElementById('d_speed').value)||0)*speedToMs[document.getElementById('d_speedUnit').value];
+    const timeSec=getTime(document.getElementById('d_h').value,document.getElementById('d_m').value,document.getElementById('d_s').value);
+    if(!ms||!timeSec){document.getElementById('distResult').innerHTML='<p style="color:#c0392b;margin-top:10px">Enter both speed and time.</p>';return;}
+    const m=ms*timeSec;
+    document.getElementById('distResult').innerHTML=`
+      <div class="result-hero"><div class="r-val">${fmtNum(m/1000)}</div><div class="r-lbl">km</div></div>
+      ${convGrid(distConversions(m))}`;
+  }
+
+  function calcTime(){
+    const distM=(parseFloat(document.getElementById('t_dist').value)||0)*distToM[document.getElementById('t_distUnit').value];
+    const ms=(parseFloat(document.getElementById('t_speed').value)||0)*speedToMs[document.getElementById('t_speedUnit').value];
+    if(!distM||!ms){document.getElementById('timeResult').innerHTML='<p style="color:#c0392b;margin-top:10px">Enter both distance and speed.</p>';return;}
+    const secs=distM/ms;
+    document.getElementById('timeResult').innerHTML=`
+      <div class="result-hero"><div class="r-val">${fmtTime(secs)}</div><div class="r-lbl">Duration</div></div>
+      <div class="conversions">
+        <div class="conv-box"><div class="c-val">${fmtNum(secs/3600,3)}</div><div class="c-lbl">hours</div></div>
+        <div class="conv-box"><div class="c-val">${fmtNum(secs/60,1)}</div><div class="c-lbl">minutes</div></div>
+        <div class="conv-box"><div class="c-val">${Math.round(secs)}</div><div class="c-lbl">seconds</div></div>
+      </div>`;
+  }
+  </script>
+</body>
+</html>

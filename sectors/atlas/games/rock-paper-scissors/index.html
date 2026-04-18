@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Rock Paper Scissors</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18);text-align:center}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .score-row{display:flex;justify-content:center;gap:40px;font-size:18px;font-weight:700;margin-bottom:8px}
+    .score-row span{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .score-row .num{font-size:42px;line-height:1}
+    .score-row .you{color:#2a9d3a}
+    .score-row .tie{color:#888}
+    .score-row .ai{color:#c0392b}
+    .arena{display:flex;justify-content:center;align-items:center;gap:40px;padding:24px 0;flex-wrap:wrap}
+    .arena-side{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .arena-side .who{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px}
+    .arena-emoji{font-size:clamp(64px,12vw,100px);line-height:1;transition:.2s;min-height:110px;display:flex;align-items:center}
+    .vs{font-size:24px;font-weight:800;color:#ccc}
+    .result-msg{font-size:22px;font-weight:800;margin:8px 0 4px;min-height:32px}
+    .result-msg.win{color:#2a9d3a}
+    .result-msg.lose{color:#c0392b}
+    .result-msg.tie{color:#888}
+    .choices{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:16px}
+    .choice-btn{background:#111;color:white;border:3px solid transparent;border-radius:16px;padding:16px 24px;font-size:42px;cursor:pointer;transition:.15s;line-height:1}
+    .choice-btn:hover{border-color:#8a611c;transform:scale(1.1)}
+    .choice-btn:active{transform:scale(.95)}
+    .history-row{display:flex;flex-direction:row;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px;max-height:64px;overflow:hidden}
+    .hist-chip{font-size:11px;background:#f7f7f7;border:1px solid #eee;border-radius:6px;padding:3px 7px}
+    .hist-chip.w{border-color:#a8e6b0;background:#e9fbe9}
+    .hist-chip.l{border-color:#f5b8b8;background:#fdf0f0}
+    .reset-btn{background:none;border:1.5px solid #ccc;border-radius:8px;padding:7px 16px;font-size:13px;font-family:Georgia,serif;cursor:pointer;color:#888;margin-top:12px}
+    .reset-btn:hover{border-color:#000;color:#000}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Rock Paper Scissors</h2>
+        <p>Classic game vs the computer</p>
+      </div>
+      <div class="panel">
+        <div class="score-row">
+          <span><div class="num you" id="scoreYou">0</div><div>You</div></span>
+          <span><div class="num tie" id="scoreTie">0</div><div>Tie</div></span>
+          <span><div class="num ai" id="scoreAI">0</div><div>CPU</div></span>
+        </div>
+        <div class="arena">
+          <div class="arena-side"><div class="who">You</div><div class="arena-emoji" id="emojiYou">❓</div></div>
+          <div class="vs">VS</div>
+          <div class="arena-side"><div class="who">CPU</div><div class="arena-emoji" id="emojiCPU">❓</div></div>
+        </div>
+        <div class="result-msg" id="resultMsg">Choose your move!</div>
+        <div class="choices">
+          <button class="choice-btn" onclick="play('rock')" title="Rock">🪨</button>
+          <button class="choice-btn" onclick="play('paper')" title="Paper">📄</button>
+          <button class="choice-btn" onclick="play('scissors')" title="Scissors">✂️</button>
+        </div>
+        <div class="history-row" id="histRow"></div>
+        <button class="reset-btn" onclick="reset()">Reset Score</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Rock Paper Scissors');
+
+    const emojis = {rock:'🪨', paper:'📄', scissors:'✂️'};
+    const moves = ['rock','paper','scissors'];
+    let scores = {you:0,tie:0,ai:0};
+    let history = [];
+
+    function beats(a, b) {
+      return (a==='rock'&&b==='scissors')||(a==='paper'&&b==='rock')||(a==='scissors'&&b==='paper');
+    }
+
+    function play(choice) {
+      const cpu = moves[Math.floor(Math.random()*3)];
+      document.getElementById('emojiYou').textContent = emojis[choice];
+      document.getElementById('emojiCPU').textContent = emojis[cpu];
+
+      const msg = document.getElementById('resultMsg');
+      let result;
+      if(choice===cpu){scores.tie++;msg.className='result-msg tie';msg.textContent='Tie!';result='t';}
+      else if(beats(choice,cpu)){scores.you++;msg.className='result-msg win';msg.textContent='You win!';result='w';}
+      else{scores.ai++;msg.className='result-msg lose';msg.textContent='CPU wins!';result='l';}
+
+      document.getElementById('scoreYou').textContent=scores.you;
+      document.getElementById('scoreTie').textContent=scores.tie;
+      document.getElementById('scoreAI').textContent=scores.ai;
+
+      history.unshift({y:emojis[choice],c:emojis[cpu],r:result});
+      if(history.length>20) history.pop();
+      document.getElementById('histRow').innerHTML=history.map(h=>
+        `<div class="hist-chip ${h.r}">${h.y}vs${h.c}</div>`).join('');
+    }
+
+    function reset(){scores={you:0,tie:0,ai:0};history=[];document.getElementById('scoreYou').textContent=0;document.getElementById('scoreTie').textContent=0;document.getElementById('scoreAI').textContent=0;document.getElementById('emojiYou').textContent='❓';document.getElementById('emojiCPU').textContent='❓';document.getElementById('resultMsg').className='result-msg';document.getElementById('resultMsg').textContent='Choose your move!';document.getElementById('histRow').innerHTML='';}
+  </script>
+</body>
+</html>

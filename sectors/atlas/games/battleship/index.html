@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Battleship</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .bs-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+    .bs-board-wrap h3{margin:0 0 8px;font-size:16px;font-weight:700;color:#444;text-align:center}
+    .bs-grid{display:grid;grid-template-columns:repeat(10,1fr);width:min(100%,340px);aspect-ratio:1;gap:2px;background:#ccc;border:2px solid #888;border-radius:6px;overflow:hidden;margin:0 auto}
+    .bs-cell{background:#c8e0f0;display:flex;align-items:center;justify-content:center;font-size:clamp(10px,1.6vw,16px);cursor:pointer;transition:filter .1s}
+    .bs-cell:hover{filter:brightness(1.1)}
+    .bs-cell.ship{background:#8a7060}
+    .bs-cell.hit{background:#c0392b;color:white}
+    .bs-cell.miss{background:#7fb3d0;color:rgba(255,255,255,.6)}
+    .bs-cell.sunk{background:#7a1c1c;color:white}
+    .bs-cell.no-cursor{cursor:default}
+    .bs-status{background:white;border:2px solid #000;border-radius:14px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-top:16px}
+    .bs-status p{margin:0 0 8px;font-size:14px;color:#444}
+    .bs-status strong{color:#111}
+    .bs-msg{font-size:16px;font-weight:700;padding:10px;background:#f0f8e8;border-radius:8px;border:1.5px solid #8a611c;color:#3a5a1a;margin-bottom:10px;text-align:center;min-height:20px}
+    .bs-btn{padding:10px 20px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .bs-btn:hover{background:#8a611c;color:white}
+    .ship-list{font-size:13px;color:#444;line-height:1.8}
+    @media(max-width:700px){.bs-layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Battleship</h2>
+        <p>Find and sink all enemy ships. Click the enemy grid to fire. Ships are hidden.</p>
+      </div>
+      <div class="bs-msg" id="bsMsg">Click New Game to start.</div>
+      <div class="bs-layout">
+        <div class="bs-board-wrap">
+          <h3>Your Fleet</h3>
+          <div class="bs-grid" id="playerGrid"></div>
+        </div>
+        <div class="bs-board-wrap">
+          <h3>Enemy Waters — click to fire</h3>
+          <div class="bs-grid" id="enemyGrid"></div>
+        </div>
+      </div>
+      <div class="bs-status">
+        <div class="ship-list" id="shipStatus"></div>
+        <div style="margin-top:12px"><button class="bs-btn" onclick="newGame()">New Game</button></div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Battleship');</script>
+  <script>
+  const SHIPS=[{name:'Carrier',size:5},{name:'Battleship',size:4},{name:'Cruiser',size:3},{name:'Submarine',size:3},{name:'Destroyer',size:2}];
+  let playerBoard,enemyBoard,playerShips,enemyShips,gameOver,aiHits,aiDir,aiStart;
+
+  function makeBoard(){return Array(10).fill(null).map(()=>Array(10).fill(0));}
+
+  function placeShipsRandom(board){
+    const placed=[];
+    for(const s of SHIPS){
+      let ok=false;
+      while(!ok){
+        const horiz=Math.random()<.5;
+        const r=Math.floor(Math.random()*(horiz?10:11-s.size));
+        const c=Math.floor(Math.random()*(horiz?11-s.size:10));
+        const cells=[];
+        let clear=true;
+        for(let i=0;i<s.size;i++){
+          const nr=r+(horiz?0:i),nc=c+(horiz?i:0);
+          if(board[nr][nc]!==0){clear=false;break;}
+          cells.push([nr,nc]);
+        }
+        if(clear){cells.forEach(([r,c])=>board[r][c]=1);placed.push({name:s.name,size:s.size,cells,hits:0,sunk:false});ok=true;}
+      }
+    }
+    return placed;
+  }
+
+  function newGame(){
+    playerBoard=makeBoard(); enemyBoard=makeBoard();
+    playerShips=placeShipsRandom(playerBoard);
+    enemyShips=placeShipsRandom(enemyBoard);
+    gameOver=false; aiHits=[]; aiDir=null; aiStart=null;
+    document.getElementById('bsMsg').textContent='Your turn — click on the enemy grid.';
+    renderPlayer(); renderEnemy(); renderShipStatus();
+  }
+
+  function fireAt(r,c){
+    if(gameOver||enemyBoard[r][c]===2||enemyBoard[r][c]===3)return;
+    let hit=false;
+    if(enemyBoard[r][c]===1){
+      enemyBoard[r][c]=2; hit=true;
+      const ship=enemyShips.find(s=>s.cells.some(([sr,sc])=>sr===r&&sc===c));
+      if(ship){ship.hits++;if(ship.hits===ship.size){ship.sunk=true;ship.cells.forEach(([sr,sc])=>enemyBoard[sr][sc]=3);}}
+    }else{enemyBoard[r][c]=3;}  // using 3 for miss on enemy board too
+    renderEnemy(); renderShipStatus();
+    if(enemyShips.every(s=>s.sunk)){gameOver=true;document.getElementById('bsMsg').textContent='You win! All enemy ships sunk!';return;}
+    if(!hit) document.getElementById('bsMsg').textContent='Miss! Enemy fires back...';
+    else document.getElementById('bsMsg').textContent='Hit! Enemy fires back...';
+    setTimeout(aiTurn,600);
+  }
+
+  function aiTurn(){
+    if(gameOver)return;
+    let r,c;
+    // Smart AI: track hits
+    if(aiHits.length>0){
+      // Try to extend in a direction
+      if(aiDir){
+        const [lr,lc]=aiHits[aiHits.length-1];
+        r=lr+aiDir[0]; c=lc+aiDir[1];
+        if(r<0||r>=10||c<0||c>=10||playerBoard[r][c]===2||playerBoard[r][c]===3){
+          // Reverse direction from start
+          const[sr,sc]=aiStart;
+          aiDir=[-aiDir[0],-aiDir[1]];
+          r=sr+aiDir[0]; c=sc+aiDir[1];
+          if(r<0||r>=10||c<0||c>=10||playerBoard[r][c]===2||playerBoard[r][c]===3){aiDir=null;aiHits=[];r=-1;}
+        }
+      }
+      if(!aiDir||r<0){
+        // Try adjacent to first hit
+        const[hr,hc]=aiHits[0];
+        const adj=[[hr-1,hc],[hr+1,hc],[hr,hc-1],[hr,hc+1]].filter(([x,y])=>x>=0&&x<10&&y>=0&&y<10&&playerBoard[x][y]!==2&&playerBoard[x][y]!==3);
+        if(adj.length===0){aiHits=[];aiDir=null;r=-1;}
+        else{[r,c]=adj[Math.floor(Math.random()*adj.length)];}
+      }
+    }
+    if(r===-1||aiHits.length===0){
+      // Hunt mode: random untried cell
+      let tries=0;
+      do{r=Math.floor(Math.random()*10);c=Math.floor(Math.random()*10);tries++;}
+      while((playerBoard[r][c]===2||playerBoard[r][c]===3)&&tries<200);
+    }
+    let hit=false;
+    if(playerBoard[r][c]===1){
+      playerBoard[r][c]=2; hit=true;
+      if(aiHits.length===0)aiStart=[r,c];
+      else if(aiHits.length===1&&!aiDir){const[pr,pc]=aiHits[0];aiDir=[r-pr,c-pc];}
+      aiHits.push([r,c]);
+      const ship=playerShips.find(s=>s.cells.some(([sr,sc])=>sr===r&&sc===c));
+      if(ship){ship.hits++;if(ship.hits===ship.size){ship.sunk=true;ship.cells.forEach(([sr,sc])=>playerBoard[sr][sc]=3);aiHits=[];aiDir=null;}}
+    }else{playerBoard[r][c]=3;}
+    renderPlayer(); renderShipStatus();
+    if(playerShips.every(s=>s.sunk)){gameOver=true;document.getElementById('bsMsg').textContent='Enemy wins! All your ships are sunk.';return;}
+    document.getElementById('bsMsg').textContent=hit?'Enemy hit your ship! Your turn.':'Enemy missed. Your turn.';
+  }
+
+  function renderBoard(grid,boardEl,showShips,clickFn){
+    boardEl.innerHTML='';
+    for(let r=0;r<10;r++)for(let c=0;c<10;c++){
+      const d=document.createElement('div');
+      const v=grid[r][c];
+      let cls='bs-cell';
+      if(v===1&&showShips)cls+=' ship';
+      if(v===2)cls+=' hit';
+      if(v===3)cls+=(showShips?' sunk':' miss');
+      if(!clickFn)cls+=' no-cursor';
+      d.className=cls;
+      if(v===2)d.textContent='✕';
+      if(v===3)d.textContent=showShips?'✕':'·';
+      if(clickFn)d.onclick=()=>clickFn(r,c);
+      boardEl.appendChild(d);
+    }
+  }
+
+  function renderPlayer(){renderBoard(playerBoard,document.getElementById('playerGrid'),true,null);}
+  function renderEnemy(){renderBoard(enemyBoard,document.getElementById('enemyGrid'),false,fireAt);}
+
+  function renderShipStatus(){
+    const el=document.getElementById('shipStatus');
+    const pLines=playerShips.map(s=>`<span style="color:${s.sunk?'#c0392b':'#333'}">${s.sunk?'☠':'🚢'} Your ${s.name}</span>`);
+    const eLines=enemyShips.map(s=>`<span style="color:${s.sunk?'#5a8a3a':'#333'}">${s.sunk?'✓ Sunk':'? '} Enemy ${s.name}</span>`);
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px">'+[...pLines,...eLines].map(l=>`<div>${l}</div>`).join('')+'</div>';
+  }
+
+  newGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Connect Four</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .score-row{display:flex;justify-content:center;gap:32px;margin-bottom:14px;font-size:16px;font-weight:700}
+    .score-row .num{font-size:30px;display:block;line-height:1}
+    .p1-score{color:#e74c3c}
+    .p2-score{color:#f1c40f}
+    .status{font-size:18px;font-weight:800;margin-bottom:12px;min-height:28px}
+    .col-btns{display:flex;justify-content:center;gap:2px;margin:0 auto 4px;max-width:350px}
+    .col-btn{width:46px;height:28px;border:none;background:transparent;cursor:pointer;font-size:18px;transition:.1s}
+    .col-btn:hover{transform:scale(1.2)}
+    .board{display:inline-grid;grid-template-columns:repeat(7,46px);gap:4px;background:#2980b9;padding:8px;border-radius:12px;margin-bottom:12px}
+    .disc{width:46px;height:46px;border-radius:50%;background:#1a5276;transition:background .2s}
+    .disc.p1{background:#e74c3c}
+    .disc.p2{background:#f1c40f}
+    .disc.win{box-shadow:0 0 0 4px white}
+    .mode-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+    .mode-btn{padding:7px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
+    .mode-btn.active{background:#111;color:white;border-color:#111}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Connect Four</h2>
+        <p>First to connect 4 in a row wins</p>
+      </div>
+      <div class="panel">
+        <div class="mode-row">
+          <button class="mode-btn active" id="btn2p" onclick="setMode('2p')">2 Players</button>
+          <button class="mode-btn" id="btnAI" onclick="setMode('ai')">vs Computer</button>
+        </div>
+        <div class="score-row">
+          <span><span class="num p1-score" id="scoreP1">0</span>Player 1</span>
+          <span><span class="num" style="color:#888" id="scoreTie">0</span>Tie</span>
+          <span><span class="num p2-score" id="scoreP2">0</span>Player 2</span>
+        </div>
+        <div class="status" id="status">🔴 Player 1's turn</div>
+        <div class="col-btns" id="colBtns"></div>
+        <div class="board" id="board"></div>
+        <button class="atlas-btn" onclick="reset()">New Game</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Connect Four');
+
+    const ROWS=6,COLS=7;
+    let grid,turn,gameOver,mode,scores;
+    scores={p1:0,p2:0,tie:0};mode='2p';
+
+    function setMode(m){mode=m;document.getElementById('btn2p').classList.toggle('active',m==='2p');document.getElementById('btnAI').classList.toggle('active',m==='ai');reset();}
+
+    function reset(){
+      grid=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+      turn=1;gameOver=false;
+      setStatus();renderBoard();buildColBtns();
+    }
+
+    function setStatus(){
+      const el=document.getElementById('status');
+      if(!gameOver) el.textContent=(turn===1?'🔴 Player 1':'🟡 '+(mode==='ai'?'Computer':'Player 2'))+"'s turn";
+    }
+
+    function buildColBtns(){
+      const row=document.getElementById('colBtns');
+      row.innerHTML=Array.from({length:COLS},(_,c)=>
+        `<button class="col-btn" onclick="drop(${c})">${turn===1?'🔴':'🟡'}</button>`).join('');
+    }
+
+    function drop(col){
+      if(gameOver) return;
+      const row=getRow(col);if(row===-1) return;
+      grid[row][col]=turn;
+      renderBoard();
+      const win=checkWin(row,col,turn);
+      if(win){gameOver=true;highlightWin(win);scores['p'+turn]++;updateScores();
+        document.getElementById('status').textContent=(turn===1?'🔴 Player 1':'🟡 '+(mode==='ai'?'Computer':'Player 2'))+' wins!';return;}
+      if(grid[0].every(c=>c!==0)){gameOver=true;scores.tie++;updateScores();document.getElementById('status').textContent="It's a tie!";return;}
+      turn=turn===1?2:1;
+      setStatus();buildColBtns();
+      if(mode==='ai'&&turn===2) setTimeout(aiMove,400);
+    }
+
+    function getRow(col){for(let r=ROWS-1;r>=0;r--)if(grid[r][col]===0)return r;return -1;}
+
+    function aiMove(){
+      // Try to win, block player, else pick best column
+      const best=findBestMove(2)||findBestMove(1)||getCenterOrRandom();
+      if(best!==null) drop(best);
+    }
+
+    function findBestMove(player){
+      for(let c=0;c<COLS;c++){const r=getRow(c);if(r===-1)continue;grid[r][c]=player;const w=checkWin(r,c,player);grid[r][c]=0;if(w)return c;}
+      return null;
+    }
+
+    function getCenterOrRandom(){
+      if(getRow(3)!==-1) return 3;
+      const valid=[];for(let c=0;c<COLS;c++)if(getRow(c)!==-1)valid.push(c);
+      return valid[Math.floor(Math.random()*valid.length)]??null;
+    }
+
+    function checkWin(r,c,p){
+      const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+      for(const [dr,dc] of dirs){
+        const line=[[r,c]];
+        for(const s of[-1,1])for(let i=1;i<4;i++){const nr=r+dr*i*s,nc=c+dc*i*s;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&grid[nr][nc]===p)line.push([nr,nc]);else break;}
+        if(line.length>=4)return line.slice(0,4);
+      }
+      return null;
+    }
+
+    function highlightWin(cells){
+      renderBoard();
+      cells.forEach(([r,c])=>{
+        const discs=document.getElementById('board').children;
+        discs[r*COLS+c].classList.add('win');
+      });
+    }
+
+    function renderBoard(){
+      const b=document.getElementById('board');b.innerHTML='';
+      for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+        const d=document.createElement('div');d.className='disc'+(grid[r][c]===1?' p1':grid[r][c]===2?' p2':'');
+        b.appendChild(d);
+      }
+    }
+
+    function updateScores(){document.getElementById('scoreP1').textContent=scores.p1;document.getElementById('scoreP2').textContent=scores.p2;document.getElementById('scoreTie').textContent=scores.tie;}
+
+    reset();
+  </script>
+</body>
+</html>

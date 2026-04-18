@@ -4,15 +4,13 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
     crossorigin="anonymous"></script>
 
-  <title>Pergamon Atlas | PAGE NAME</title> 
+  <title>Pergamon Atlas | Help</title> 
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="/function/styles/header.css">
   <link rel="stylesheet" href="/function/styles/sidebar.css">
-  <link rel="stylesheet" href="/function/styles/main.css">
-  <link rel="stylesheet" href="/function/styles/footer.css">
 </head>
 
 <body>
@@ -27,7 +25,7 @@
   </div>
 
   <script>
-    const pageName = "PAGE NAME";
+    const pageName = "Help";
     const pageHeaderSuffix = pageName ? " | " + pageName : "";
 
     fetch('/function/snippets/header.html')
@@ -60,7 +58,7 @@
           else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/help") && link.getAttribute("href") === "/help") {
+          else if (path.startsWith("/pages/help") && link.getAttribute("href") === "/pages/help") {
             link.classList.add('active');
           }
         });

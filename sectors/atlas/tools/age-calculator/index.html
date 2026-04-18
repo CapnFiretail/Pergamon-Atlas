@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Age Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .panel h3{margin:0 0 18px;font-size:24px}
+    .field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+    .field label{font-size:15px;font-weight:700;color:#333}
+    .field input{padding:13px;border:1.5px solid #ccc;border-radius:10px;font-size:17px;font-family:Georgia,serif}
+    .field input:focus{outline:none;border-color:#8a611c;box-shadow:0 0 0 2px rgba(138,97,28,.14)}
+    .atlas-btn{width:100%;border:none;border-radius:10px;padding:13px;font-size:16px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s;margin-top:4px}
+    .atlas-btn:hover{background:#222}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .stat-box{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:16px;text-align:center}
+    .stat-num{font-size:28px;font-weight:800;color:#111}
+    .stat-label{font-size:13px;color:#555;margin-top:4px}
+    .big-age{background:#111;color:#f0d39b;border-radius:14px;padding:24px;text-align:center;margin-bottom:16px}
+    .big-age .age-num{font-size:56px;font-weight:800;line-height:1}
+    .big-age .age-sub{font-size:16px;color:#aaa;margin-top:6px}
+    .next-bday{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:16px;margin-top:12px;font-size:15px;color:#333;line-height:1.7}
+    .next-bday strong{color:#111}
+    @media(max-width:800px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Age Calculator</h2>
+        <p>Calculate your exact age in years, months, days, hours, and more.</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <h3>Enter Your Birthday</h3>
+          <div class="field"><label>Date of Birth</label><input type="date" id="dob"></div>
+          <div class="field"><label>Calculate Age On</label><input type="date" id="calcDate"></div>
+          <button class="atlas-btn" onclick="calculate()">Calculate Age</button>
+        </div>
+        <div>
+          <div class="big-age" id="bigAge" style="display:none">
+            <div class="age-num" id="ageYears">—</div>
+            <div class="age-sub">years old</div>
+          </div>
+          <div class="panel" id="resultPanel" style="display:none">
+            <div class="stat-grid">
+              <div class="stat-box"><div class="stat-num" id="resYears">—</div><div class="stat-label">Years</div></div>
+              <div class="stat-box"><div class="stat-num" id="resMonths">—</div><div class="stat-label">Months</div></div>
+              <div class="stat-box"><div class="stat-num" id="resDays">—</div><div class="stat-label">Days</div></div>
+              <div class="stat-box"><div class="stat-num" id="resWeeks">—</div><div class="stat-label">Weeks</div></div>
+              <div class="stat-box"><div class="stat-num" id="resHours">—</div><div class="stat-label">Hours</div></div>
+              <div class="stat-box"><div class="stat-num" id="resMinutes">—</div><div class="stat-label">Minutes</div></div>
+            </div>
+            <div class="next-bday" id="nextBday"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Age Calculator');
+
+    // default calcDate to today
+    const today = new Date();
+    document.getElementById('calcDate').value = today.toISOString().split('T')[0];
+
+    function calculate() {
+      const dob = new Date(document.getElementById('dob').value);
+      const calc = new Date(document.getElementById('calcDate').value);
+      if (isNaN(dob)||isNaN(calc)) return;
+      if (dob > calc) { alert('Date of birth cannot be after the calculation date.'); return; }
+
+      let years = calc.getFullYear() - dob.getFullYear();
+      let months = calc.getMonth() - dob.getMonth();
+      let days = calc.getDate() - dob.getDate();
+      if (days < 0) { months--; const prev = new Date(calc.getFullYear(), calc.getMonth(), 0); days += prev.getDate(); }
+      if (months < 0) { years--; months += 12; }
+
+      const totalDays = Math.floor((calc - dob) / 86400000);
+      const totalWeeks = Math.floor(totalDays / 7);
+      const totalHours = totalDays * 24;
+      const totalMinutes = totalHours * 60;
+      const totalMonths = years * 12 + months;
+
+      document.getElementById('ageYears').textContent = years;
+      document.getElementById('resYears').textContent = years;
+      document.getElementById('resMonths').textContent = totalMonths.toLocaleString();
+      document.getElementById('resDays').textContent = totalDays.toLocaleString();
+      document.getElementById('resWeeks').textContent = totalWeeks.toLocaleString();
+      document.getElementById('resHours').textContent = totalHours.toLocaleString();
+      document.getElementById('resMinutes').textContent = totalMinutes.toLocaleString();
+
+      // next birthday
+      let nextBday = new Date(calc.getFullYear(), dob.getMonth(), dob.getDate());
+      if (nextBday <= calc) nextBday.setFullYear(nextBday.getFullYear() + 1);
+      const daysUntil = Math.ceil((nextBday - calc) / 86400000);
+      const bmonth = nextBday.toLocaleString('default',{month:'long'});
+      document.getElementById('nextBday').innerHTML =
+        '<strong>Next Birthday:</strong> ' + bmonth + ' ' + nextBday.getDate() + ', ' + nextBday.getFullYear() +
+        ' — <strong>' + daysUntil + ' days away</strong>';
+
+      document.getElementById('bigAge').style.display = 'block';
+      document.getElementById('resultPanel').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

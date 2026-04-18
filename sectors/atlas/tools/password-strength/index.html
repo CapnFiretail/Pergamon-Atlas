@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Password Strength</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;color:#f3f3f3}
+    .card{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .card h3{margin:0 0 16px;font-size:20px}
+    .pw-wrap{position:relative;margin-bottom:14px}
+    .pw-wrap input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid #ccc;border-radius:8px;font-size:17px;font-family:monospace;box-sizing:border-box;letter-spacing:.06em}
+    .pw-wrap input:focus{outline:none;border-color:#8a611c}
+    .pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:0}
+    .strength-bar-wrap{height:8px;background:#eee;border-radius:4px;margin-bottom:10px;overflow:hidden}
+    .strength-bar{height:100%;border-radius:4px;transition:width .3s,background .3s}
+    .strength-label{font-size:15px;font-weight:700;margin-bottom:16px}
+    .entropy-box{background:#f7f7f7;border:1.5px solid #eee;border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:20px;flex-wrap:wrap}
+    .ent-item{text-align:center;flex:1;min-width:80px}
+    .ent-val{font-size:26px;font-weight:800;color:#8a611c;font-family:monospace}
+    .ent-lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.05em}
+    .criteria{display:flex;flex-direction:column;gap:8px}
+    .criterion{display:flex;align-items:center;gap:10px;font-size:14px;color:#555}
+    .crit-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+    .crit-icon.pass{background:#d4edda;color:#155724}
+    .crit-icon.fail{background:#f0f0f0;color:#aaa}
+    .gen-section{margin-top:4px}
+    .gen-opts{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-size:14px}
+    .gen-opts label{display:flex;align-items:center;gap:6px;cursor:pointer;color:#444}
+    .gen-opts input[type=checkbox]{accent-color:#8a611c;width:15px;height:15px}
+    .len-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:14px;color:#555}
+    .len-row input[type=range]{flex:1;accent-color:#8a611c}
+    .len-val{font-size:16px;font-weight:800;color:#8a611c;min-width:28px}
+    .gen-btn{background:#111;color:white;border:none;border-radius:8px;padding:10px 22px;font-size:14px;font-family:Georgia,serif;cursor:pointer;transition:.15s}
+    .gen-btn:hover{background:#333}
+    .gen-output{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .gen-output input{flex:1;padding:10px;border:1.5px solid #ccc;border-radius:8px;font-family:monospace;font-size:15px;background:#f9f9f9}
+    .copy-btn{padding:9px 16px;border:1.5px solid #ccc;border-radius:7px;background:white;font-size:13px;cursor:pointer;font-family:Georgia,serif;transition:.15s;white-space:nowrap}
+    .copy-btn:hover{border-color:#8a611c;color:#8a611c}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Password Strength</h2>
+        <p>Check how strong your password is and generate secure ones.</p>
+      </div>
+      <div class="card">
+        <h3>Check a Password</h3>
+        <div class="pw-wrap">
+          <input type="password" id="pwInput" oninput="checkPw()" placeholder="Enter a password to analyze...">
+          <button class="pw-eye" onclick="toggleVis()" id="eyeBtn">👁</button>
+        </div>
+        <div class="strength-bar-wrap"><div class="strength-bar" id="strengthBar" style="width:0%"></div></div>
+        <div class="strength-label" id="strengthLabel" style="color:#aaa">Enter a password above.</div>
+        <div class="entropy-box">
+          <div class="ent-item"><div class="ent-val" id="entropyVal">—</div><div class="ent-lbl">Entropy (bits)</div></div>
+          <div class="ent-item"><div class="ent-val" id="poolVal">—</div><div class="ent-lbl">Charset Pool</div></div>
+          <div class="ent-item"><div class="ent-val" id="lengthVal">—</div><div class="ent-lbl">Length</div></div>
+          <div class="ent-item"><div class="ent-val" id="crackVal">—</div><div class="ent-lbl">Est. Crack Time</div></div>
+        </div>
+        <div class="criteria" id="criteria"></div>
+      </div>
+      <div class="card">
+        <h3>Generate a Password</h3>
+        <div class="gen-section">
+          <div class="len-row">
+            <span>Length:</span>
+            <input type="range" id="genLen" min="8" max="64" value="16" oninput="document.getElementById('lenVal').textContent=this.value">
+            <span class="len-val" id="lenVal">16</span>
+          </div>
+          <div class="gen-opts">
+            <label><input type="checkbox" id="optUpper" checked>Uppercase (A-Z)</label>
+            <label><input type="checkbox" id="optLower" checked>Lowercase (a-z)</label>
+            <label><input type="checkbox" id="optDigits" checked>Digits (0-9)</label>
+            <label><input type="checkbox" id="optSymbols" checked>Symbols (!@#...)</label>
+          </div>
+          <button class="gen-btn" onclick="generatePw()">Generate</button>
+          <div class="gen-output">
+            <input type="text" id="genOutput" readonly placeholder="Generated password will appear here">
+            <button class="copy-btn" onclick="copyGen()">Copy</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Password Strength');</script>
+  <script>
+  const CRITERIA=[
+    {id:'cLen',label:'At least 12 characters',test:p=>p.length>=12},
+    {id:'cUpper',label:'Contains uppercase letters (A-Z)',test:p=>/[A-Z]/.test(p)},
+    {id:'cLower',label:'Contains lowercase letters (a-z)',test:p=>/[a-z]/.test(p)},
+    {id:'cDigit',label:'Contains digits (0-9)',test:p=>/\d/.test(p)},
+    {id:'cSymbol',label:'Contains symbols (!@#$...)',test:p=>/[^a-zA-Z0-9]/.test(p)},
+    {id:'cNoRepeat',label:'No repeated sequences (aaa, 123)',test:p=>!/(.)\1{2,}/.test(p)&&!/(012|123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/i.test(p)},
+    {id:'cLong',label:'16+ characters (excellent length)',test:p=>p.length>=16},
+  ];
+
+  function buildCriteriaHtml(pw){
+    return CRITERIA.map(c=>{
+      const pass=c.test(pw);
+      return`<div class="criterion"><div class="crit-icon ${pass?'pass':'fail'}">${pass?'✓':'·'}</div><span>${c.label}</span></div>`;
+    }).join('');
+  }
+
+  function getPool(pw){
+    let p=0;
+    if(/[a-z]/.test(pw))p+=26;
+    if(/[A-Z]/.test(pw))p+=26;
+    if(/\d/.test(pw))p+=10;
+    if(/[^a-zA-Z0-9]/.test(pw))p+=32;
+    return p||1;
+  }
+
+  function entropy(pw){
+    return Math.round(pw.length*Math.log2(getPool(pw)));
+  }
+
+  function crackTime(bits){
+    // Assume 10 billion guesses/sec (fast offline attack)
+    const guesses=Math.pow(2,bits);
+    const secs=guesses/1e10;
+    if(secs<60)return '<1 min';
+    if(secs<3600)return Math.round(secs/60)+' min';
+    if(secs<86400)return Math.round(secs/3600)+' hr';
+    if(secs<31536000)return Math.round(secs/86400)+' days';
+    if(secs<31536000*1000)return Math.round(secs/31536000)+' yrs';
+    if(secs<31536000*1e6)return Math.round(secs/31536000/1000)+'K yrs';
+    return 'Centuries';
+  }
+
+  const STRENGTHS=[
+    {min:0,label:'Very Weak',color:'#c0392b',pct:15},
+    {min:28,label:'Weak',color:'#e74c3c',pct:30},
+    {min:40,label:'Fair',color:'#e0a020',pct:50},
+    {min:56,label:'Good',color:'#27ae60',pct:70},
+    {min:72,label:'Strong',color:'#1a8a4a',pct:85},
+    {min:90,label:'Very Strong',color:'#0d6e35',pct:100},
+  ];
+
+  function checkPw(){
+    const pw=document.getElementById('pwInput').value;
+    document.getElementById('criteria').innerHTML=buildCriteriaHtml(pw);
+    if(!pw){
+      document.getElementById('strengthBar').style.width='0%';
+      document.getElementById('strengthLabel').textContent='Enter a password above.';
+      document.getElementById('strengthLabel').style.color='#aaa';
+      document.getElementById('entropyVal').textContent='—';
+      document.getElementById('poolVal').textContent='—';
+      document.getElementById('lengthVal').textContent='—';
+      document.getElementById('crackVal').textContent='—';
+      return;
+    }
+    const bits=entropy(pw);
+    const pool=getPool(pw);
+    const s=[...STRENGTHS].reverse().find(s=>bits>=s.min)||STRENGTHS[0];
+    document.getElementById('strengthBar').style.width=s.pct+'%';
+    document.getElementById('strengthBar').style.background=s.color;
+    document.getElementById('strengthLabel').textContent=s.label;
+    document.getElementById('strengthLabel').style.color=s.color;
+    document.getElementById('entropyVal').textContent=bits;
+    document.getElementById('poolVal').textContent=pool;
+    document.getElementById('lengthVal').textContent=pw.length;
+    document.getElementById('crackVal').textContent=crackTime(bits);
+  }
+
+  function toggleVis(){
+    const inp=document.getElementById('pwInput');
+    inp.type=inp.type==='password'?'text':'password';
+  }
+
+  function generatePw(){
+    const len=parseInt(document.getElementById('genLen').value);
+    let chars='';
+    if(document.getElementById('optUpper').checked)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if(document.getElementById('optLower').checked)chars+='abcdefghijklmnopqrstuvwxyz';
+    if(document.getElementById('optDigits').checked)chars+='0123456789';
+    if(document.getElementById('optSymbols').checked)chars+='!@#$%^&*()-_=+[]{}|;:,.<>?';
+    if(!chars)chars='abcdefghijklmnopqrstuvwxyz';
+    const arr=new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    const pw=Array.from(arr).map(b=>chars[b%chars.length]).join('');
+    document.getElementById('genOutput').value=pw;
+  }
+
+  function copyGen(){
+    const val=document.getElementById('genOutput').value;
+    if(val)navigator.clipboard.writeText(val).catch(()=>{});
+  }
+
+  buildCriteriaHtml('');
+  document.getElementById('criteria').innerHTML=CRITERIA.map(c=>`<div class="criterion"><div class="crit-icon fail">·</div><span>${c.label}</span></div>`).join('');
+  </script>
+</body>
+</html>

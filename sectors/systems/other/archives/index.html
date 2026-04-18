@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+    crossorigin="anonymous"></script>
+
+  <title>Pergamon Atlas | Archives</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+
+  <style>
+
+    /* ── INTRO OVERLAY ─────────────────────────────────────── */
+    #archiveIntro {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      transition: opacity 0.9s ease;
+    }
+    #archiveIntro.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes introTextFlicker {
+      0%,  42%, 44%, 100% { opacity: 1; }
+      43%                  { opacity: 0.4; }
+    }
+    .intro-text {
+      font-family: Georgia, serif;
+      font-size: clamp(18px, 3vw, 28px);
+      color: #c28a2b;
+      letter-spacing: 0.06em;
+      text-align: center;
+      padding: 0 24px;
+      animation: introTextFlicker 1.8s ease-in-out;
+    }
+
+    /* ── FLICKER OVERLAY (persistent, very subtle) ─────────── */
+    @keyframes pageFlicker {
+      0%,  91%, 93.5%, 100% { opacity: 0; }
+      92%                    { opacity: 0.025; }
+      93%                    { opacity: 0; }
+    }
+    #flickerOverlay {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      pointer-events: none;
+      z-index: 9000;
+      animation: pageFlicker 9s ease-in-out infinite;
+    }
+
+    /* ── BODY JITTER ───────────────────────────────────────── */
+    /* Applied via JS so it doesn't run during the intro */
+    @keyframes bodyJitter {
+      0%,  94%,    100% { transform: translate(0, 0); }
+      94.5%              { transform: translate(0.5px, 0.3px); }
+      95%                { transform: translate(-0.3px, 0.1px); }
+      95.5%              { transform: translate(0, 0); }
+    }
+    body.archives-loaded {
+      animation: bodyJitter 16s ease-in-out infinite;
+    }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    .arc-hero {
+      background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+      color: #fff;
+      border: 2px solid #5a3e1a;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .arc-hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4.5vw, 44px);
+      color: #b8892a;
+    }
+    .arc-hero p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #aaa;
+      max-width: 620px;
+    }
+
+    /* ── GRID ──────────────────────────────────────────────── */
+    .arc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    /* ── CARDS ─────────────────────────────────────────────── */
+    .arc-card {
+      background: #fff;
+      border: 2px solid #111;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.1);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Slight instability: one card has a 1px left nudge via class */
+    .arc-card--nudge { position: relative; left: 1px; }
+
+    .arc-name {
+      margin: 0 0 0;
+      font-size: 22px;
+      color: #111;
+    }
+    .arc-desc {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.6;
+      margin: 0;
+      flex: 1;
+    }
+    .arc-btn {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #7a5a20;
+      text-decoration: none;
+      letter-spacing: .03em;
+      transition: color 0.2s;
+    }
+    .arc-btn:hover { color: #c28a2b; }
+
+    /* ── NOTICE ─────────────────────────────────────────────── */
+    .arc-notice {
+      font-size: 13px;
+      color: #888;
+      border-top: 1px solid #ddd;
+      padding-top: 18px;
+      margin-top: 4px;
+      line-height: 1.7;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .arc-hero { padding: 20px; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Intro overlay -->
+  <div id="archiveIntro">
+    <p class="intro-text">You've entered the archives...</p>
+  </div>
+
+  <!-- Persistent subtle flicker -->
+  <div id="flickerOverlay"></div>
+
+  <div id="header-placeholder"></div>
+
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="arc-hero">
+        <h2>Archives</h2>
+        <p>Things left behind. Not everything here still works.</p>
+      </section>
+
+      <!-- ARCHIVE CARDS -->
+      <div class="arc-grid">
+
+        <!-- Chess Forge -->
+        <div class="arc-card">
+          <h3 class="arc-name">Chess Forge</h3>
+          <p class="arc-desc">An older build. Castling didn't work. Neither did a few other things. Left here.</p>
+          <a href="/sectors/archives/chess-forge-v1" class="arc-btn">Open →</a>
+        </div>
+
+        <!-- Atlas Runner -->
+        <div class="arc-card arc-card--nudge">
+          <h3 class="arc-name">Atlas Runner</h3>
+          <p class="arc-desc">Found in the development folder. Playable. Not sure when it's from.</p>
+          <a href="/sectors/archives/atlas-runner-v1" class="arc-btn">Open →</a>
+        </div>
+
+      </div>
+
+      <p class="arc-notice">
+        These pages are preserved as-is. Some things may not work.
+      </p>
+
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Archives');</script>
+
+  <script>
+    // ── INTRO ──────────────────────────────────────────────────
+    // Show intro overlay for ~2s, then fade out and start body jitter
+    const intro = document.getElementById('archiveIntro');
+
+    setTimeout(() => {
+      intro.classList.add('fade-out');
+      setTimeout(() => {
+        intro.style.display = 'none';
+        // Start body jitter after intro clears
+        document.body.classList.add('archives-loaded');
+      }, 950);
+    }, 2100);
+  </script>
+
+</body>
+</html>

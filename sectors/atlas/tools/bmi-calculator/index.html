@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+    crossorigin="anonymous"></script>
+
+  <title>Pergamon Atlas | BMI Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+
+  <style>
+    .bmi-page{
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hero-card{
+      background: linear-gradient(135deg, #111 0%, #1b1b1b 100%);
+      color: #f4ead7;
+      border: 2px solid #8a611c;
+      border-radius: 18px;
+      padding: 26px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+    }
+
+    .hero-card h2{
+      margin: 0 0 10px 0;
+      font-size: clamp(30px, 4vw, 42px);
+      color: white;
+    }
+
+    .hero-card p{
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #eadab8;
+      max-width: 760px;
+    }
+
+    .page-grid{
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .tool-card{
+      background: white;
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .tool-card h3{
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      color: #111;
+    }
+
+    .tool-card p{
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #222;
+    }
+
+    .stack{
+      display: grid;
+      gap: 24px;
+    }
+
+    .input-grid{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .field{
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field label{
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .field input,
+    .field select{
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #b9b9b9;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      background: #fff;
+      color: #111;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .field input:focus,
+    .field select:focus{
+      border-color: #c28a2b;
+      box-shadow: 0 0 0 3px rgba(194, 138, 43, 0.18);
+      background: #fffdf8;
+    }
+
+    .full-width{
+      grid-column: 1 / -1;
+    }
+
+    .sub-grid{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .button-row{
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn{
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .primary-btn{
+      border: 1.5px solid #8a611c;
+      background: #111;
+      color: #f1dfb3;
+    }
+
+    .primary-btn:hover{
+      background: #1b1b1b;
+      border-color: #c28a2b;
+      color: white;
+    }
+
+    .secondary-btn{
+      border: 1.5px solid #999;
+      background: white;
+      color: #111;
+    }
+
+    .secondary-btn:hover{
+      background: #f3f3f3;
+    }
+
+    .hidden{
+      display: none;
+    }
+
+    .error-box{
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #d59b9b;
+      background: #fff4f4;
+      color: #7b1f1f;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .results-grid{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .result-card{
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .result-card h4{
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .big-number{
+      font-size: clamp(34px, 4vw, 48px);
+      font-weight: 700;
+      color: #111;
+      line-height: 1;
+    }
+
+    .category-badge{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 20px;
+      font-weight: 700;
+      background: #eee5d2;
+      color: #5c4314;
+      border: 1px solid #d9bf8b;
+    }
+
+    .span-2{
+      grid-column: 1 / -1;
+    }
+
+    .scale-wrap{
+      margin-top: 18px;
+    }
+
+    .scale-labels{
+      display: grid;
+      grid-template-columns: 18.5fr 6.5fr 5fr 10fr;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #555;
+      font-weight: 700;
+    }
+
+    .scale-bar{
+      position: relative;
+      display: grid;
+      grid-template-columns: 18.5fr 6.5fr 5fr 10fr;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #cfcfcf;
+      background: #eee;
+    }
+
+    .scale-under{ background: #d8e7ff; }
+    .scale-normal{ background: #d8f0d2; }
+    .scale-over{ background: #f7e3b5; }
+    .scale-obese{ background: #f4c7c7; }
+
+    .scale-marker{
+      position: absolute;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #111;
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.12);
+      transform: translate(-50%, -50%);
+      left: 0%;
+      transition: left 0.25s ease;
+    }
+
+    .scale-note{
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .info-list{
+      margin: 14px 0 0 0;
+      padding-left: 20px;
+      color: #222;
+    }
+
+    .info-list li{
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .muted{
+      color: #555;
+    }
+
+    .range-text{
+      font-size: 24px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.25;
+    }
+
+    .mini-note{
+      margin-top: 14px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px){
+      .page-grid{
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px){
+      .input-grid,
+      .sub-grid,
+      .results-grid{
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card,
+      .tool-card{
+        padding: 20px;
+      }
+
+      .category-badge{
+        width: 100%;
+        justify-content: center;
+      }
+
+      .range-text{
+        font-size: 22px;
+      }
+
+      .scale-labels{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content">
+      <div class="bmi-page">
+        <section class="hero-card">
+          <h2>BMI Calculator</h2>
+          <p>
+            Quickly calculate your Body Mass Index using either U.S. or metric units.
+          </p>
+        </section>
+
+        <div class="page-grid">
+          <div class="stack">
+            <section class="tool-card">
+              <h3>Enter Your Info</h3>
+              <p class="muted">
+                Use feet/inches and pounds, or switch to centimeters and kilograms.
+              </p>
+
+              <div class="input-grid">
+                <div class="field full-width">
+                  <label for="unitType">Unit System</label>
+                  <select id="unitType">
+                    <option value="us">U.S. Units (feet, inches, pounds)</option>
+                    <option value="metric">Metric (centimeters, kilograms)</option>
+                  </select>
+                </div>
+
+                <div id="usFields" class="full-width">
+                  <div class="sub-grid">
+                    <div class="field">
+                      <label for="heightFeet">Height (Feet)</label>
+                      <input type="number" id="heightFeet" min="0" max="9" placeholder="Feet">
+                    </div>
+
+                    <div class="field">
+                      <label for="heightInches">Height (Inches)</label>
+                      <input type="number" id="heightInches" min="0" max="11" step="0.1" placeholder="Inches">
+                    </div>
+
+                    <div class="field full-width">
+                      <label for="weightPounds">Weight (Pounds)</label>
+                      <input type="number" id="weightPounds" min="0" step="0.1" placeholder="Pounds">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="metricFields" class="full-width hidden">
+                  <div class="sub-grid">
+                    <div class="field">
+                      <label for="heightCm">Height (Centimeters)</label>
+                      <input type="number" id="heightCm" min="0" step="0.1" placeholder="Centimeters">
+                    </div>
+
+                    <div class="field">
+                      <label for="weightKg">Weight (Kilograms)</label>
+                      <input type="number" id="weightKg" min="0" step="0.1" placeholder="Kilograms">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button class="primary-btn" type="button" id="calculateBtn">Calculate BMI</button>
+                <button class="secondary-btn" type="button" id="resetBtn">Reset</button>
+              </div>
+
+              <div id="errorBox" class="error-box hidden"></div>
+            </section>
+
+            <section class="tool-card">
+              <h3>About BMI</h3>
+              <p>
+                BMI uses height and weight to estimate whether someone falls into a general weight category.
+                It is useful as a quick screening tool, but it does not directly measure body fat, muscle mass,
+                athletic build, or overall health.
+              </p>
+
+              <ul class="info-list">
+                <li><strong>Underweight:</strong> below 18.5</li>
+                <li><strong>Normal:</strong> 18.5 to 24.9</li>
+                <li><strong>Overweight:</strong> 25.0 to 29.9</li>
+                <li><strong>Obese:</strong> 30.0 and above</li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="stack">
+            <section class="tool-card">
+              <h3>Your Results</h3>
+              <p class="muted">Your numbers will appear here instantly.</p>
+
+              <div class="results-grid">
+                <div class="result-card">
+                  <h4>BMI</h4>
+                  <div class="big-number" id="bmiResult">0.0</div>
+                </div>
+
+                <div class="result-card">
+                  <h4>Category</h4>
+                  <div class="category-badge" id="bmiCategory">--</div>
+                </div>
+
+                <div class="result-card span-2">
+                  <h4>Healthy Weight Range</h4>
+                  <div class="range-text" id="healthyRange">--</div>
+                </div>
+              </div>
+
+              <div class="scale-wrap">
+                <div class="scale-labels">
+                  <span>Underweight</span>
+                  <span>Normal</span>
+                  <span>Overweight</span>
+                  <span>Obese</span>
+                </div>
+
+                <div class="scale-bar">
+                  <div class="scale-under"></div>
+                  <div class="scale-normal"></div>
+                  <div class="scale-over"></div>
+                  <div class="scale-obese"></div>
+                  <div class="scale-marker" id="scaleMarker"></div>
+                </div>
+
+                <div class="scale-note" id="scaleNote">
+                  BMI is a screening tool, not a full health diagnosis.
+                </div>
+              </div>
+
+              <p class="mini-note">
+                Healthy range is based on BMI 18.5 through 24.9 for your entered height.
+              </p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script>
+    const pageName = "";
+    const pageHeaderSuffix = pageName ? " | " + pageName : "";
+
+    fetch('/function/snippets/header.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+        const pageTitleText = document.querySelector('.page-title-text');
+        if (pageTitleText) {
+          pageTitleText.textContent = pageHeaderSuffix;
+        }
+      });
+
+    fetch('/function/snippets/sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('sidebar-placeholder').innerHTML = data;
+
+        const path = window.location.pathname;
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+          link.classList.remove('active');
+
+          if (path === "/" && link.getAttribute("href") === "/") {
+            link.classList.add('active');
+          }
+          else if (( path.startsWith("/sectors/systems/tools") || path.startsWith("/sectors/atlas/tools") ) && link.getAttribute("href") === "/sectors/systems/tools") {
+            link.classList.add('active');
+          }
+          else if (( path.startsWith("/sectors/systems/games") || path.startsWith("/sectors/atlas/games") ) && link.getAttribute("href") === "/sectors/systems/games") {
+            link.classList.add('active');
+          }
+          else if (
+            (path.startsWith("/help") || path.startsWith("/sectors/systems/other/help")) &&
+            link.getAttribute("href") === "/sectors/systems/other/help"
+          ) {
+            link.classList.add('active');
+          }
+        });
+
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      });
+
+    fetch('/function/snippets/footer.html')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+      });
+
+    const unitType = document.getElementById("unitType");
+    const usFields = document.getElementById("usFields");
+    const metricFields = document.getElementById("metricFields");
+    const errorBox = document.getElementById("errorBox");
+
+    const bmiResult = document.getElementById("bmiResult");
+    const bmiCategory = document.getElementById("bmiCategory");
+    const healthyRange = document.getElementById("healthyRange");
+    const scaleMarker = document.getElementById("scaleMarker");
+    const scaleNote = document.getElementById("scaleNote");
+
+    const usInputs = ["heightFeet", "heightInches", "weightPounds"];
+    const metricInputs = ["heightCm", "weightKg"];
+
+    function toggleUnits() {
+      if (unitType.value === "us") {
+        usFields.classList.remove("hidden");
+        metricFields.classList.add("hidden");
+      } else {
+        usFields.classList.add("hidden");
+        metricFields.classList.remove("hidden");
+      }
+
+      clearError();
+      resetResults();
+    }
+
+    function clearError() {
+      errorBox.classList.add("hidden");
+      errorBox.textContent = "";
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.remove("hidden");
+    }
+
+    function getBMICategory(bmi) {
+      if (bmi < 18.5) return "Underweight";
+      if (bmi < 25) return "Normal";
+      if (bmi < 30) return "Overweight";
+      return "Obese";
+    }
+
+    function getScaleLeftPercent(bmi) {
+      const capped = Math.max(0, Math.min(bmi, 40));
+      return (capped / 40) * 100;
+    }
+
+    function formatRange(low, high, unitLabel) {
+      return `${low.toFixed(1)} – ${high.toFixed(1)} ${unitLabel}`;
+    }
+
+    function resetResults() {
+      bmiResult.textContent = "0.0";
+      bmiCategory.textContent = "--";
+      healthyRange.textContent = "--";
+      scaleMarker.style.left = "0%";
+      scaleNote.textContent = "BMI is a screening tool, not a full health diagnosis.";
+    }
+
+    function resetBMI() {
+      unitType.value = "us";
+
+      [...usInputs, ...metricInputs].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+
+      toggleUnits();
+      clearError();
+      resetResults();
+      document.getElementById("heightFeet").focus();
+    }
+
+    function calculateBMI() {
+      clearError();
+
+      let bmi = 0;
+      let rangeText = "--";
+
+      if (unitType.value === "us") {
+        const feet = parseFloat(document.getElementById("heightFeet").value);
+        const inches = parseFloat(document.getElementById("heightInches").value);
+        const pounds = parseFloat(document.getElementById("weightPounds").value);
+
+        const safeFeet = isNaN(feet) ? 0 : feet;
+        const safeInches = isNaN(inches) ? 0 : inches;
+        const totalInches = (safeFeet * 12) + safeInches;
+
+        if (safeFeet < 0 || safeInches < 0 || pounds < 0) {
+          showError("Please enter positive values only.");
+          resetResults();
+          return;
+        }
+
+        if (safeInches >= 12) {
+          showError("For U.S. units, inches should be less than 12.");
+          resetResults();
+          return;
+        }
+
+        if (!totalInches || !pounds) {
+          showError("Enter your full height and weight before calculating.");
+          resetResults();
+          return;
+        }
+
+        bmi = (pounds / (totalInches * totalInches)) * 703;
+
+        const lowWeight = (18.5 * totalInches * totalInches) / 703;
+        const highWeight = (24.9 * totalInches * totalInches) / 703;
+        rangeText = formatRange(lowWeight, highWeight, "lbs");
+      } else {
+        const heightCm = parseFloat(document.getElementById("heightCm").value);
+        const weightKg = parseFloat(document.getElementById("weightKg").value);
+
+        if (heightCm < 0 || weightKg < 0) {
+          showError("Please enter positive values only.");
+          resetResults();
+          return;
+        }
+
+        if (!heightCm || !weightKg) {
+          showError("Enter your height and weight before calculating.");
+          resetResults();
+          return;
+        }
+
+        const heightM = heightCm / 100;
+
+        bmi = weightKg / (heightM * heightM);
+
+        const lowWeight = 18.5 * heightM * heightM;
+        const highWeight = 24.9 * heightM * heightM;
+        rangeText = formatRange(lowWeight, highWeight, "kg");
+      }
+
+      if (!isFinite(bmi) || bmi <= 0) {
+        showError("Something went wrong with the calculation. Check your inputs and try again.");
+        resetResults();
+        return;
+      }
+
+      const category = getBMICategory(bmi);
+
+      bmiResult.textContent = bmi.toFixed(1);
+      bmiCategory.textContent = category;
+      healthyRange.textContent = rangeText;
+      scaleMarker.style.left = `${getScaleLeftPercent(bmi)}%`;
+      scaleNote.textContent = `Your BMI falls in the ${category.toLowerCase()} range.`;
+    }
+
+    document.getElementById("calculateBtn").addEventListener("click", calculateBMI);
+    document.getElementById("resetBtn").addEventListener("click", resetBMI);
+    unitType.addEventListener("change", toggleUnits);
+
+    document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          calculateBMI();
+        }
+      });
+    });
+
+    toggleUnits();
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Case Converter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 14px;font-size:24px}
+    textarea{width:100%;height:180px;padding:14px;border:1.5px solid #ccc;border-radius:10px;font-size:16px;font-family:Georgia,serif;resize:vertical;box-sizing:border-box;line-height:1.6}
+    textarea:focus{outline:none;border-color:#8a611c}
+    .btn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:16px}
+    .case-btn{border:1.5px solid #ccc;border-radius:10px;padding:12px 14px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:white;transition:.15s;text-align:left}
+    .case-btn:hover{border-color:#8a611c;color:#8a611c;background:#fffaf4}
+    .case-btn strong{display:block;font-size:15px;margin-bottom:2px}
+    .case-btn span{font-size:12px;color:#888;font-family:monospace}
+    .result-area{position:relative}
+    .copy-badge{position:absolute;top:10px;right:10px;background:#111;color:white;border:none;border-radius:8px;padding:7px 12px;font-size:13px;font-family:Georgia,serif;cursor:pointer}
+    .copy-badge:hover{background:#333}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Case Converter</h2>
+        <p>Transform text into uppercase, lowercase, title case, camelCase, snake_case, and more.</p>
+      </div>
+      <div class="panel">
+        <h3>Input Text</h3>
+        <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+        <div class="btn-grid">
+          <button class="case-btn" onclick="convert('upper')"><strong>UPPER CASE</strong><span>HELLO WORLD</span></button>
+          <button class="case-btn" onclick="convert('lower')"><strong>lower case</strong><span>hello world</span></button>
+          <button class="case-btn" onclick="convert('title')"><strong>Title Case</strong><span>Hello World</span></button>
+          <button class="case-btn" onclick="convert('sentence')"><strong>Sentence case</strong><span>Hello world</span></button>
+          <button class="case-btn" onclick="convert('camel')"><strong>camelCase</strong><span>helloWorld</span></button>
+          <button class="case-btn" onclick="convert('pascal')"><strong>PascalCase</strong><span>HelloWorld</span></button>
+          <button class="case-btn" onclick="convert('snake')"><strong>snake_case</strong><span>hello_world</span></button>
+          <button class="case-btn" onclick="convert('kebab')"><strong>kebab-case</strong><span>hello-world</span></button>
+          <button class="case-btn" onclick="convert('constant')"><strong>CONSTANT_CASE</strong><span>HELLO_WORLD</span></button>
+          <button class="case-btn" onclick="convert('alternate')"><strong>aLtErNaTe</strong><span>hElLo WoRlD</span></button>
+          <button class="case-btn" onclick="convert('reverse')"><strong>esreveR</strong><span>dlroW olleH</span></button>
+          <button class="case-btn" onclick="convert('trim')"><strong>Trim Whitespace</strong><span>removes extra spaces</span></button>
+        </div>
+      </div>
+      <div class="panel result-area">
+        <h3>Result</h3>
+        <button class="copy-badge" onclick="copyResult()">Copy</button>
+        <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Case Converter');
+
+    function words(str) { return str.trim().replace(/[\s_-]+/g,' ').split(' ').filter(Boolean); }
+
+    const converters = {
+      upper: s => s.toUpperCase(),
+      lower: s => s.toLowerCase(),
+      title: s => words(s).map(w => w[0].toUpperCase()+w.slice(1).toLowerCase()).join(' '),
+      sentence: s => s.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase()),
+      camel: s => words(s).map((w,i) => i===0 ? w.toLowerCase() : w[0].toUpperCase()+w.slice(1).toLowerCase()).join(''),
+      pascal: s => words(s).map(w => w[0].toUpperCase()+w.slice(1).toLowerCase()).join(''),
+      snake: s => words(s).map(w => w.toLowerCase()).join('_'),
+      kebab: s => words(s).map(w => w.toLowerCase()).join('-'),
+      constant: s => words(s).map(w => w.toUpperCase()).join('_'),
+      alternate: s => s.split('').map((c,i) => i%2===0?c.toLowerCase():c.toUpperCase()).join(''),
+      reverse: s => s.split('').reverse().join(''),
+      trim: s => s.replace(/\s+/g,' ').trim()
+    };
+
+    function convert(type) {
+      const input = document.getElementById('inputText').value;
+      document.getElementById('outputText').value = converters[type](input);
+    }
+
+    function copyResult() {
+      const val = document.getElementById('outputText').value;
+      navigator.clipboard.writeText(val).then(() => {
+        const btn = document.querySelector('.copy-badge');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      });
+    }
+  </script>
+</body>
+</html>

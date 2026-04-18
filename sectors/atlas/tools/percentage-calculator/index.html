@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Percentage Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+    .card{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .card h3{margin:0 0 6px;font-size:20px}
+    .card .desc{font-size:14px;color:#666;margin:0 0 16px}
+    .inline-form{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .inline-form input{width:90px;padding:10px;border:1.5px solid #ccc;border-radius:8px;font-size:16px;font-family:Georgia,serif}
+    .inline-form input:focus{outline:none;border-color:#8a611c}
+    .inline-form span{font-size:15px;color:#444}
+    .calc-btn{background:#111;color:white;border:none;border-radius:8px;padding:10px 16px;font-size:15px;font-family:Georgia,serif;cursor:pointer}
+    .calc-btn:hover{background:#333}
+    .result{background:#f7f7f7;border:1px solid #ddd;border-radius:10px;padding:12px 16px;font-size:22px;font-weight:800;color:#111;min-height:44px}
+    .result small{font-size:14px;font-weight:400;color:#555;display:block;margin-top:2px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Percentage Calculator</h2>
+        <p>Six quick percentage calculators for every common use case.</p>
+      </div>
+      <div class="cards-grid">
+
+        <div class="card">
+          <h3>What is X% of Y?</h3>
+          <p class="desc">Find a percentage of a number</p>
+          <div class="inline-form">
+            <input type="number" id="p1a" placeholder="%"> <span>% of</span>
+            <input type="number" id="p1b" placeholder="Y">
+          </div>
+          <button class="calc-btn" onclick="calc1()">Calculate</button>
+          <div class="result" id="r1">—</div>
+        </div>
+
+        <div class="card">
+          <h3>X is what % of Y?</h3>
+          <p class="desc">Find what percentage X is of Y</p>
+          <div class="inline-form">
+            <input type="number" id="p2a" placeholder="X"> <span>is what % of</span>
+            <input type="number" id="p2b" placeholder="Y">
+          </div>
+          <button class="calc-btn" onclick="calc2()">Calculate</button>
+          <div class="result" id="r2">—</div>
+        </div>
+
+        <div class="card">
+          <h3>Percentage Change</h3>
+          <p class="desc">% increase or decrease from A to B</p>
+          <div class="inline-form">
+            <span>From</span><input type="number" id="p3a" placeholder="A">
+            <span>to</span><input type="number" id="p3b" placeholder="B">
+          </div>
+          <button class="calc-btn" onclick="calc3()">Calculate</button>
+          <div class="result" id="r3">—</div>
+        </div>
+
+        <div class="card">
+          <h3>Add X% to a Number</h3>
+          <p class="desc">Useful for tips, markups, tax</p>
+          <div class="inline-form">
+            <input type="number" id="p4a" placeholder="Number"> <span>+</span>
+            <input type="number" id="p4b" placeholder="%"> <span>%</span>
+          </div>
+          <button class="calc-btn" onclick="calc4()">Calculate</button>
+          <div class="result" id="r4">—</div>
+        </div>
+
+        <div class="card">
+          <h3>Subtract X% from a Number</h3>
+          <p class="desc">Useful for discounts, reductions</p>
+          <div class="inline-form">
+            <input type="number" id="p5a" placeholder="Number"> <span>−</span>
+            <input type="number" id="p5b" placeholder="%"> <span>%</span>
+          </div>
+          <button class="calc-btn" onclick="calc5()">Calculate</button>
+          <div class="result" id="r5">—</div>
+        </div>
+
+        <div class="card">
+          <h3>What % is the Increase?</h3>
+          <p class="desc">Find original value from final and % change</p>
+          <div class="inline-form">
+            <span>Final</span><input type="number" id="p6a" placeholder="Final">
+            <span>after</span><input type="number" id="p6b" placeholder="%"> <span>%</span>
+          </div>
+          <button class="calc-btn" onclick="calc6()">Calculate</button>
+          <div class="result" id="r6">—</div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Percentage Calculator');
+
+    function fmt(n) { return isNaN(n)||!isFinite(n) ? 'Invalid input' : parseFloat(n.toFixed(6)).toLocaleString(); }
+    function set(id, val, note) {
+      const el = document.getElementById(id);
+      el.innerHTML = val + (note ? '<small>' + note + '</small>' : '');
+    }
+    function calc1() {
+      const p=parseFloat(document.getElementById('p1a').value), y=parseFloat(document.getElementById('p1b').value);
+      set('r1', fmt(p/100*y));
+    }
+    function calc2() {
+      const x=parseFloat(document.getElementById('p2a').value), y=parseFloat(document.getElementById('p2b').value);
+      set('r2', fmt(x/y*100) + '%');
+    }
+    function calc3() {
+      const a=parseFloat(document.getElementById('p3a').value), b=parseFloat(document.getElementById('p3b').value);
+      const change = (b-a)/Math.abs(a)*100;
+      set('r3', (change>=0?'+':'')+fmt(change)+'%', change>=0?'Increase':'Decrease');
+    }
+    function calc4() {
+      const n=parseFloat(document.getElementById('p4a').value), p=parseFloat(document.getElementById('p4b').value);
+      const res = n*(1+p/100);
+      set('r4', fmt(res), '+' + fmt(n*p/100) + ' added');
+    }
+    function calc5() {
+      const n=parseFloat(document.getElementById('p5a').value), p=parseFloat(document.getElementById('p5b').value);
+      const res = n*(1-p/100);
+      set('r5', fmt(res), '−' + fmt(n*p/100) + ' removed');
+    }
+    function calc6() {
+      const f=parseFloat(document.getElementById('p6a').value), p=parseFloat(document.getElementById('p6b').value);
+      set('r6', fmt(f/(1+p/100)), 'Original value');
+    }
+  </script>
+</body>
+</html>

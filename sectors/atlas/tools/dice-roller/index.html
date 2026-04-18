@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Dice Roller</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .dice-quick{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+    .dice-btn{width:72px;height:72px;background:#111;color:#f0d39b;border:2px solid #8a611c;border-radius:14px;font-size:18px;font-weight:800;cursor:pointer;transition:.15s;font-family:Georgia,serif}
+    .dice-btn:hover{background:#1e1e1e;transform:translateY(-2px)}
+    .dice-btn:active{transform:scale(.95)}
+    .custom-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:13px;font-weight:700;color:#333}
+    .field input{padding:11px;border:1.5px solid #ccc;border-radius:9px;font-size:16px;font-family:Georgia,serif;width:80px}
+    .field input:focus{outline:none;border-color:#8a611c}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 20px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;align-self:flex-end;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .result-area{background:#111;border-radius:14px;padding:24px;text-align:center;margin-bottom:16px}
+    .dice-display{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-bottom:16px;min-height:60px}
+    .die{width:56px;height:56px;background:white;border:2px solid #f0d39b;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#111;animation:pop .2s ease}
+    @keyframes pop{0%{transform:scale(.6) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+    .roll-total{font-size:48px;font-weight:800;color:#f0d39b}
+    .roll-desc{font-size:15px;color:#aaa;margin-top:4px}
+    .history-list{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+    .hist-item{background:#f7f7f7;border:1px solid #eee;border-radius:9px;padding:10px 14px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+    .hist-dice{color:#888;font-family:monospace}
+    .hist-total{font-size:18px;font-weight:800;color:#111}
+    .coin-row{display:flex;gap:12px;align-items:center;margin-top:14px}
+    .coin-btn{background:#c28a2b;color:#111;border:none;border-radius:12px;padding:14px 22px;font-size:16px;font-weight:700;cursor:pointer;transition:.15s;font-family:Georgia,serif}
+    .coin-btn:hover{background:#d49a30}
+    .coin-result{font-size:22px;font-weight:800;color:#111}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Dice Roller</h2>
+        <p>Roll any standard dice — D4, D6, D8, D10, D12, D20, D100 — or roll multiple at once.</p>
+      </div>
+      <div class="layout2">
+        <div>
+          <div class="panel">
+            <h3>Quick Roll</h3>
+            <div class="dice-quick">
+              <button class="dice-btn" onclick="roll(1,4)">D4</button>
+              <button class="dice-btn" onclick="roll(1,6)">D6</button>
+              <button class="dice-btn" onclick="roll(1,8)">D8</button>
+              <button class="dice-btn" onclick="roll(1,10)">D10</button>
+              <button class="dice-btn" onclick="roll(1,12)">D12</button>
+              <button class="dice-btn" onclick="roll(1,20)">D20</button>
+              <button class="dice-btn" onclick="roll(1,100)">D100</button>
+            </div>
+            <h3>Custom Roll</h3>
+            <div class="custom-row">
+              <div class="field"><label>Number of Dice</label><input type="number" id="numDice" value="2" min="1" max="20"></div>
+              <div class="field"><label>Sides</label><input type="number" id="numSides" value="6" min="2" max="1000"></div>
+              <div class="field"><label>Modifier (+/-)</label><input type="number" id="modifier" value="0"></div>
+              <button class="atlas-btn" onclick="rollCustom()">Roll</button>
+            </div>
+            <div class="result-area">
+              <div class="dice-display" id="diceDisplay"></div>
+              <div class="roll-total" id="rollTotal">—</div>
+              <div class="roll-desc" id="rollDesc">Click a die to roll</div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Coin Flip</h3>
+            <div class="coin-row">
+              <button class="coin-btn" onclick="flipCoin()">Flip Coin</button>
+              <div class="coin-result" id="coinResult">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Roll History</h3>
+          <div class="history-list" id="histList"><div style="color:#aaa;font-size:14px">No rolls yet.</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Dice Roller');
+
+    let rollHistory = [];
+
+    function roll(count, sides, modifier=0) {
+      const results = Array.from({length:count}, ()=>Math.floor(Math.random()*sides)+1);
+      const sum = results.reduce((a,b)=>a+b,0) + modifier;
+
+      const display = document.getElementById('diceDisplay');
+      display.innerHTML = results.map(r=>`<div class="die">${r}</div>`).join('');
+      document.getElementById('rollTotal').textContent = sum;
+      const modStr = modifier!==0 ? (modifier>0?' +'+modifier:' '+modifier) : '';
+      document.getElementById('rollDesc').textContent = count+'d'+sides + modStr + ' → ['+results.join(', ')+']' + (modifier!==0?' '+modifier:'');
+
+      rollHistory.unshift({label:count+'d'+sides+(modifier!==0?(modifier>0?'+'+modifier:modifier):''), results, total:sum});
+      if (rollHistory.length > 30) rollHistory.pop();
+      renderHistory();
+    }
+
+    function rollCustom() {
+      const n=parseInt(document.getElementById('numDice').value)||1;
+      const s=parseInt(document.getElementById('numSides').value)||6;
+      const m=parseInt(document.getElementById('modifier').value)||0;
+      roll(n,s,m);
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('histList');
+      list.innerHTML = rollHistory.map(h=>`
+        <div class="hist-item">
+          <div><span class="hist-dice">${h.label}</span><br><span style="font-size:12px;color:#aaa">[${h.results.join(', ')}]</span></div>
+          <span class="hist-total">${h.total}</span>
+        </div>
+      `).join('');
+    }
+
+    function flipCoin() {
+      const faces = ['Heads','Tails'];
+      const result = faces[Math.floor(Math.random()*2)];
+      document.getElementById('coinResult').textContent = result;
+    }
+  </script>
+</body>
+</html>

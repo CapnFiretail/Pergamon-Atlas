@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Metronome</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;color:#f3f3f3}
+    .card{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .card h3{margin:0 0 18px;font-size:20px}
+    .metro-center{display:flex;flex-direction:column;align-items:center;gap:18px}
+    .pendulum-box{width:120px;height:160px;position:relative;display:flex;justify-content:center}
+    .pendulum-line{width:3px;height:130px;background:#8a611c;border-radius:2px;transform-origin:top center;position:absolute;top:0;left:50%;margin-left:-1.5px;transition:transform 0s}
+    .pendulum-bob{width:22px;height:22px;background:#8a611c;border-radius:50%;position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+    @keyframes swingLeft{from{transform:rotate(25deg)}to{transform:rotate(-25deg)}}
+    @keyframes swingRight{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
+    .pendulum-line.swing-l{animation:swingLeft var(--beat-dur) ease-in-out forwards}
+    .pendulum-line.swing-r{animation:swingRight var(--beat-dur) ease-in-out forwards}
+    .bpm-display{font-size:72px;font-weight:800;color:#111;font-family:monospace;line-height:1;text-align:center}
+    .bpm-label{font-size:13px;color:#888;text-transform:uppercase;letter-spacing:.08em;text-align:center}
+    .bpm-slider{width:280px;accent-color:#8a611c}
+    .bpm-controls{display:flex;gap:10px;align-items:center}
+    .bpm-btn{width:36px;height:36px;border:1.5px solid #ccc;border-radius:7px;background:white;font-size:18px;cursor:pointer;font-family:Georgia,serif;transition:.15s;display:flex;align-items:center;justify-content:center}
+    .bpm-btn:hover{border-color:#8a611c;color:#8a611c}
+    .start-btn{padding:12px 36px;background:#111;color:white;border:none;border-radius:10px;font-size:17px;font-family:Georgia,serif;cursor:pointer;transition:.15s;letter-spacing:.04em}
+    .start-btn:hover{background:#333}
+    .start-btn.running{background:#8a611c}
+    .tap-btn{padding:11px 28px;border:2px solid #8a611c;background:white;color:#8a611c;border-radius:10px;font-size:15px;font-family:Georgia,serif;cursor:pointer;transition:.15s}
+    .tap-btn:hover,.tap-btn:active{background:#8a611c;color:white}
+    .beat-row{display:flex;gap:8px;align-items:center}
+    .beat-lbl{font-size:13px;font-weight:700;color:#555}
+    .beat-sel{padding:7px 10px;border:1.5px solid #ccc;border-radius:8px;font-family:Georgia,serif;font-size:14px}
+    .beat-sel:focus{outline:none;border-color:#8a611c}
+    .beat-dots{display:flex;gap:6px}
+    .beat-dot{width:14px;height:14px;border-radius:50%;background:#eee;border:1.5px solid #ccc;transition:.1s}
+    .beat-dot.active{background:#8a611c;border-color:#8a611c}
+    .beat-dot.accent{background:#f0d39b;border-color:#8a611c}
+    .tempo-name{font-size:15px;font-weight:700;color:#8a611c;text-align:center;min-height:22px}
+    .presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+    .preset-btn{padding:6px 14px;border:1.5px solid #ddd;border-radius:6px;background:#f5f5f5;font-size:13px;cursor:pointer;font-family:Georgia,serif;transition:.15s}
+    .preset-btn:hover{border-color:#8a611c;color:#8a611c}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Metronome</h2>
+        <p>Keep time at any tempo. Use tap tempo to match a song, or dial in exact BPM.</p>
+      </div>
+      <div class="card">
+        <h3>Tempo</h3>
+        <div class="metro-center">
+          <div class="pendulum-box">
+            <div class="pendulum-line" id="pendulum"><div class="pendulum-bob"></div></div>
+          </div>
+          <div class="bpm-display" id="bpmDisplay">120</div>
+          <div class="bpm-label">BPM</div>
+          <div class="tempo-name" id="tempoName">Allegretto</div>
+          <div class="bpm-controls">
+            <button class="bpm-btn" onclick="addBpm(-10)">−10</button>
+            <button class="bpm-btn" onclick="addBpm(-1)">−</button>
+            <input type="range" class="bpm-slider" id="bpmSlider" min="20" max="240" value="120" oninput="setBpm(this.value)">
+            <button class="bpm-btn" onclick="addBpm(1)">+</button>
+            <button class="bpm-btn" onclick="addBpm(10)">+10</button>
+          </div>
+          <div class="beat-row">
+            <span class="beat-lbl">Beat:</span>
+            <select class="beat-sel" id="beatSel" onchange="setBeatCount(this.value)">
+              <option value="2">2/4</option>
+              <option value="3">3/4</option>
+              <option value="4" selected>4/4</option>
+              <option value="6">6/8</option>
+            </select>
+            <div class="beat-dots" id="beatDots"></div>
+          </div>
+          <div style="display:flex;gap:12px">
+            <button class="start-btn" id="startBtn" onclick="toggleMetronome()">Start</button>
+            <button class="tap-btn" onclick="tapTempo()">Tap</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Presets</h3>
+        <div class="presets" id="presets"></div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Metronome');</script>
+  <script>
+  let bpm=120, beatCount=4, currentBeat=0, running=false;
+  let schedulerTimer=null, audioCtx=null;
+  let nextNoteTime=0, beatPhase=0;
+  let tapTimes=[];
+
+  const TEMPOS=[
+    {name:'Grave',max:39},{name:'Largo',max:59},{name:'Larghetto',max:65},
+    {name:'Adagio',max:75},{name:'Andante',max:107},{name:'Moderato',max:119},
+    {name:'Allegretto',max:155},{name:'Allegro',max:167},{name:'Vivace',max:199},
+    {name:'Presto',max:219},{name:'Prestissimo',max:999}
+  ];
+  const PRESETS=[
+    {name:'Slow (60)',bpm:60},{name:'Waltz (96)',bpm:96},{name:'Allegro (120)',bpm:120},
+    {name:'Fast (140)',bpm:140},{name:'Molto (168)',bpm:168},{name:'Presto (192)',bpm:192}
+  ];
+
+  function getTempoName(b){return TEMPOS.find(t=>b<=t.max)?.name||'Prestissimo';}
+
+  function setBpm(val){
+    bpm=Math.min(240,Math.max(20,parseInt(val)));
+    document.getElementById('bpmDisplay').textContent=bpm;
+    document.getElementById('bpmSlider').value=bpm;
+    document.getElementById('tempoName').textContent=getTempoName(bpm);
+    if(running)restart();
+  }
+  function addBpm(d){setBpm(bpm+d);}
+  function setBeatCount(v){beatCount=parseInt(v);buildDots();}
+
+  function buildDots(){
+    const el=document.getElementById('beatDots');
+    el.innerHTML='';
+    for(let i=0;i<beatCount;i++){
+      const d=document.createElement('div');
+      d.className='beat-dot'+(i===0?' accent':'');
+      d.id='dot'+i;
+      el.appendChild(d);
+    }
+  }
+
+  function buildPresets(){
+    const el=document.getElementById('presets');
+    PRESETS.forEach(p=>{
+      const b=document.createElement('button');
+      b.className='preset-btn';b.textContent=p.name;
+      b.onclick=()=>setBpm(p.bpm);
+      el.appendChild(b);
+    });
+  }
+
+  function getAudioCtx(){
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function scheduleBeep(time,isAccent){
+    const ctx=getAudioCtx();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=isAccent?1100:880;
+    gain.gain.setValueAtTime(isAccent?0.35:0.2,time);
+    gain.gain.exponentialRampToValueAtTime(0.001,time+0.08);
+    osc.start(time);osc.stop(time+0.1);
+  }
+
+  function swingPendulum(phase){
+    const p=document.getElementById('pendulum');
+    p.classList.remove('swing-l','swing-r');
+    void p.offsetWidth;
+    const dur=(60/bpm)+'s';
+    p.style.setProperty('--beat-dur',dur);
+    p.classList.add(phase%2===0?'swing-l':'swing-r');
+  }
+
+  function scheduler(){
+    const ctx=getAudioCtx();
+    while(nextNoteTime<ctx.currentTime+0.1){
+      const isAccent=beatPhase%beatCount===0;
+      scheduleBeep(nextNoteTime,isAccent);
+      // Update UI on next frame
+      const b=beatPhase%beatCount;
+      const delay=(nextNoteTime-ctx.currentTime)*1000;
+      setTimeout(()=>{
+        document.querySelectorAll('.beat-dot').forEach((d,i)=>{
+          d.classList.toggle('active',i===b);
+        });
+        swingPendulum(beatPhase);
+      },Math.max(0,delay));
+      nextNoteTime+=60/bpm;
+      beatPhase++;
+    }
+    schedulerTimer=setTimeout(scheduler,25);
+  }
+
+  function toggleMetronome(){
+    running=!running;
+    const btn=document.getElementById('startBtn');
+    if(running){
+      btn.textContent='Stop';btn.classList.add('running');
+      beatPhase=0;
+      const ctx=getAudioCtx();
+      nextNoteTime=ctx.currentTime+0.05;
+      scheduler();
+    }else{
+      btn.textContent='Start';btn.classList.remove('running');
+      clearTimeout(schedulerTimer);
+      document.querySelectorAll('.beat-dot').forEach(d=>d.classList.remove('active'));
+      const p=document.getElementById('pendulum');
+      p.classList.remove('swing-l','swing-r');
+    }
+  }
+
+  function restart(){
+    if(!running)return;
+    clearTimeout(schedulerTimer);
+    const ctx=getAudioCtx();
+    nextNoteTime=ctx.currentTime+0.05;
+    scheduler();
+  }
+
+  function tapTempo(){
+    const now=performance.now();
+    tapTimes.push(now);
+    if(tapTimes.length>8)tapTimes.shift();
+    if(tapTimes.length>=2){
+      const gaps=[];
+      for(let i=1;i<tapTimes.length;i++)gaps.push(tapTimes[i]-tapTimes[i-1]);
+      const avg=gaps.reduce((a,b)=>a+b,0)/gaps.length;
+      setBpm(Math.round(60000/avg));
+    }
+    // Reset tap if gap > 3s
+    setTimeout(()=>{if(tapTimes.length&&performance.now()-tapTimes[tapTimes.length-1]>2500)tapTimes=[];},2600);
+  }
+
+  buildDots();buildPresets();
+  document.getElementById('tempoName').textContent=getTempoName(bpm);
+  </script>
+</body>
+</html>

@@ -9,11 +9,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="/styles/header.css">
-  <link rel="stylesheet" href="/styles/sidebar.css">
-  <link rel="stylesheet" href="/styles/main.css">
-  <link rel="stylesheet" href="/styles/footer.css">
-  <link rel="stylesheet" href="/styles/updates.css">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <link rel="stylesheet" href="/function/styles/updates.css">
 
   <style>
     .hero-section{
@@ -216,12 +216,12 @@
       <section class="hero-section">
         <div class="hero-card">
           <p class="hero-eyebrow">A growing digital world</p>
-          <h2>Welcome to Pergamon Atlas<a href="/pages/archives" class="archive-glyph" aria-label="Archives" tabindex="-1">📚</a></h2>
+          <h2>Welcome to Pergamon Atlas<a href="/sectors/systems/other/archives" class="archive-glyph" aria-label="Archives" tabindex="-1">📚</a></h2>
           <p class="hero-text">The Internet's Living Library</p>
 
           <div class="hero-buttons">
-            <a href="/tools" class="atlas-button primary-button">Explore Tools</a>
-            <a href="/games" class="atlas-button secondary-button">Play Games</a>
+            <a href="/sectors/systems/tools" class="atlas-button primary-button">Explore Tools</a>
+            <a href="/sectors/systems/games" class="atlas-button secondary-button">Play Games</a>
           </div>
         </div>
       </section>
@@ -233,17 +233,17 @@
         </div>
 
         <div class="feature-grid">
-          <a href="/tools" class="feature-box">
+          <a href="/sectors/systems/tools" class="feature-box">
             <h3>Tools</h3>
             <p>Enter the Tools Wing of Pergamon Atlas.</p>
           </a>
 
-          <a href="/games" class="feature-box">
+          <a href="/sectors/systems/games" class="feature-box">
             <h3>Games</h3>
             <p>Enter the Gaming Wing of Pergamon Atlas.</p>
           </a>
 
-          <a href="/pages/help" class="feature-box">
+          <a href="/sectors/systems/other/help" class="feature-box">
             <h3>Suggestions</h3>
             <p>Help build the Atlas.</p>
           </a>
@@ -259,7 +259,7 @@
         <div id="updates-placeholder" class="updates-wrap"></div>
 
         <div class="updates-footer">
-          <a href="/pages/updates" class="suggestions-link">View Full Update Log</a>
+          <a href="/sectors/systems/other/updates" class="suggestions-link">View Full Update Log</a>
         </div>
       </section>
 
@@ -271,7 +271,7 @@
             pages, and ideas get added next. If there is something you want to see built,
             this is where to say it.
           </p>
-          <a href="/pages/suggestions" class="suggestions-link">Leave a Suggestion</a>
+          <a href="/sectors/systems/other/suggestions" class="suggestions-link">Leave a Suggestion</a>
         </div>
       </section>
 
@@ -280,8 +280,8 @@
 
   <div id="footer-placeholder"></div>
 
-  <script src="/systems/nav-codes.js"></script>
-  <script src="/data/updates.js"></script>
+  <script src="/pergamon-data/indexing/nav-codes.js"></script>
+  <script src="/pergamon-data/update-logs/updates.js"></script>
 
   <script>
     const pageHeaderSuffix = "";
@@ -312,7 +312,7 @@
       `).join("");
     }
 
-    fetch('/snippets/header.html')
+    fetch('/function/snippets/header.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('header-placeholder').innerHTML = data;
@@ -323,7 +323,7 @@
         }
       });
 
-    fetch('/snippets/sidebar.html')
+    fetch('/function/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('sidebar-placeholder').innerHTML = data;
@@ -336,13 +336,13 @@
           if (path === "/" && link.getAttribute("href") === "/") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/tools") && link.getAttribute("href") === "/tools") {
+          else if ((path.startsWith("/sectors/systems/tools") || path.startsWith("/sectors/atlas/tools")) && link.getAttribute("href") === "/sectors/systems/tools") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/games") && link.getAttribute("href") === "/games") {
+          else if ((path.startsWith("/sectors/systems/games") || path.startsWith("/sectors/atlas/games")) && link.getAttribute("href") === "/sectors/systems/games") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/pages/help") && link.getAttribute("href") === "/pages/help") {
+          else if (path.startsWith("/sectors/systems/other/help") && link.getAttribute("href") === "/sectors/systems/other/help") {
             link.classList.add('active');
           }
         });
@@ -368,7 +368,7 @@
         }
       });
 
-    fetch('/snippets/footer.html')
+    fetch('/function/snippets/footer.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('footer-placeholder').innerHTML = data;
