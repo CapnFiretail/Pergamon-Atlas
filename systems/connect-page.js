@@ -1,8 +1,8 @@
-import { systemEntries } from "./entries.js";
+import { systemNav } from "./navigation.js";
 
 export function getSystemCode() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
-  const entry = systemEntries.find(e => e.slug === path);
+  const entry = systemNav.find(e => e.slug === path);
   if (!entry) return null;
-  return `SYSTEM-${entry.type}-Z0-Y0-X0-${entry.hex}`;
+  return `SYSTEM-NAV-${entry.z}-${entry.y}-${entry.x}-${entry.hex}`;
 }

@@ -181,17 +181,5 @@
 <script src="/scripts/atlas.js"></script>
 <script>loadSnippets('Tools');</script>
 
-<script type="module">
-  import { getSystemCode } from '/systems/connect-page.js';
-  const code = getSystemCode();
-  if (code) {
-    console.log('[Atlas System]', code);
-    const el = document.createElement('p');
-    el.textContent = code;
-    el.style.cssText = 'text-align:center;font-size:11px;color:#888;margin:24px 0 8px;';
-    document.querySelector('.main-content').appendChild(el);
-  }
-</script>
-
 </body>
 </html>
