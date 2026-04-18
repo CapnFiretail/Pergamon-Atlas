@@ -39,8 +39,8 @@
   function datestamp() {
     const now = new Date();
     const m = String(now.getMonth() + 1).padStart(2, '0');
-    const d = String(now.getDate()).padStart(2, '0');
-    return m + d;
+    const y = String(now.getFullYear()).slice(-2);
+    return m + y;
   }
 
   // Each hex opens three independent seeded threads
