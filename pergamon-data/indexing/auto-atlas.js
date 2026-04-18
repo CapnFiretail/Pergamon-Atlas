@@ -17,7 +17,7 @@
     if (!window.atlasGenerator) return false;
     const el = document.getElementById('atlas-code-display');
     if (!el) return false;
-    el.textContent = window.atlasGenerator.generate(systemCode, chamber) || '';
+    el.textContent = window.atlasGenerator.generateFromPath(path, chamber) || '';
     return true;
   }
 

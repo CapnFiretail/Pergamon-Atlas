@@ -43,17 +43,21 @@
     return m + y;
   }
 
-  // Each hex opens three independent seeded threads
-  function generate(systemCode, chamber) {
-    const hex = extractHex(systemCode);
-    if (!hex) return null;
+  // Hash a string (e.g. a URL path) into a stable numeric seed
+  function hashPath(str) {
+    let h = 0x12345678;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 0x9e3779b9);
+      h ^= h >>> 16;
+    }
+    return h >>> 0;
+  }
 
-    const base = hexToSeed(hex);
-
-    // Three streams, each salted independently so they diverge
-    const xStream = mulberry32(base ^ 0xDEAD);
-    const yStream = mulberry32(base ^ 0xBEEF);
-    const zStream = mulberry32(base ^ 0xCAFE);
+  // Build an ATLAS code from any numeric seed
+  function buildCode(seed, chamber) {
+    const xStream = mulberry32(seed ^ 0xDEAD);
+    const yStream = mulberry32(seed ^ 0xBEEF);
+    const zStream = mulberry32(seed ^ 0xCAFE);
 
     const x = inRange(xStream, RANGES.X.min, RANGES.X.max);
     const y = inRange(yStream, RANGES.Y.min, RANGES.Y.max);
@@ -62,6 +66,18 @@
     return `ATLAS-${chamber}-Z${z}-Y${y}-X${x}-${datestamp()}`;
   }
 
-  window.atlasGenerator = { generate };
+  // For nav/system pages: seed comes from the SYSTEM code hex
+  function generate(systemCode, chamber) {
+    const hex = extractHex(systemCode);
+    if (!hex) return null;
+    return buildCode(hexToSeed(hex), chamber);
+  }
+
+  // For individual pages: seed comes from the page's unique URL path
+  function generateFromPath(path, chamber) {
+    return buildCode(hashPath(path), chamber);
+  }
+
+  window.atlasGenerator = { generate, generateFromPath };
 
 })();
