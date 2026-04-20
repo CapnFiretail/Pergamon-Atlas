@@ -25,6 +25,7 @@ function loadSnippets(pageName) {
         if (href === '/' && path === '/') link.classList.add('active');
         else if (href === '/sectors/systems/tools' && (path.startsWith('/sectors/systems/tools') || path.startsWith('/sectors/atlas/tools'))) link.classList.add('active');
         else if (href === '/sectors/systems/games' && (path.startsWith('/sectors/systems/games') || path.startsWith('/sectors/atlas/games'))) link.classList.add('active');
+        else if (href === '/atlas-explorer/prototype.html' && path.startsWith('/atlas-explorer')) link.classList.add('active');
         else if (href === '/sectors/systems/other/help' && path.startsWith('/sectors/systems/other/help')) link.classList.add('active');
       });
 
