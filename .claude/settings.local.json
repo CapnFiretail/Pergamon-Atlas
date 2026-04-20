@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(git push *)",
-      "Bash(xargs sed *)"
+      "Bash(xargs sed *)",
+      "Bash(node pergamon-data/indexing/indexer.js)",
+      "Bash(where node *)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(\"/c/Program Files/nodejs/node.exe\" pergamon-data/indexing/indexer.js)",
+      "Bash(git -C /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas status)",
+      "Bash(git -C /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas diff --stat HEAD)",
+      "Bash(git *)"
     ]
   }
 }
