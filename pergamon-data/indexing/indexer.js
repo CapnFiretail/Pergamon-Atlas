@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 
-const fs   = require('fs');
+const fs  = require('fs');
 const path = require('path');
+const PA  = require('../pergamon-address');
 
 const ROOT    = path.resolve(__dirname, '../../');
 const SECTORS = {
-  tools: { dir: path.join(ROOT, 'sectors/atlas/tools'), hex: 'B100', chamber: 'TL' },
-  games: { dir: path.join(ROOT, 'sectors/atlas/games'), hex: 'C100', chamber: 'GM' }
+  tools: { dir: path.join(ROOT, 'sectors/atlas/tools'), chamber: 'TL' },
+  games: { dir: path.join(ROOT, 'sectors/atlas/games'), chamber: 'GM' }
 };
 const ENTRIES_OUT   = path.join(__dirname, 'entries.js');
 const COLLISION_OUT = path.join(ROOT, 'pergamon-data', 'collisions.json');
 
-// --- RNG (mirrors browser generator.js exactly) ---
+// --- RNG ---
 
 function mulberry32(seed) {
   return function () {
@@ -23,8 +24,6 @@ function mulberry32(seed) {
   };
 }
 
-function hexToSeed(hex) { return parseInt(hex, 16) || 1; }
-
 function hashPath(str) {
   let h = 0x12345678;
   for (let i = 0; i < str.length; i++) {
@@ -34,18 +33,17 @@ function hashPath(str) {
   return h >>> 0;
 }
 
-const RANGES = {
-  X: { min: 0, max: 9999 },
-  Y: { min: 0, max: 999  },
-  Z: { min: 1, max: 3    }
-};
+// Coordinate space: ±16,777,215 per axis (from pergamon-address.js)
+const CMAX = PA.COORD_MAX; // 16,777,215
 
 function inRange(rng, min, max) {
   return Math.floor(rng() * (max - min + 1)) + min;
 }
 
-function computeSeed(sectorHex, pagePath) {
-  return (hexToSeed(sectorHex) ^ hashPath(pagePath)) >>> 0;
+// Seed is derived from path only — type/sector does not influence position.
+// This prevents content type from clustering in coordinate space.
+function computeSeed(pagePath) {
+  return hashPath(pagePath) >>> 0;
 }
 
 function computeCoords(seed) {
@@ -53,9 +51,9 @@ function computeCoords(seed) {
   const yStream = mulberry32((seed ^ 0xBEEF) >>> 0);
   const zStream = mulberry32((seed ^ 0xCAFE) >>> 0);
   return {
-    z: inRange(zStream, RANGES.Z.min, RANGES.Z.max),
-    y: inRange(yStream, RANGES.Y.min, RANGES.Y.max),
-    x: inRange(xStream, RANGES.X.min, RANGES.X.max)
+    x: inRange(xStream, -CMAX, CMAX),
+    y: inRange(yStream, -CMAX, CMAX),
+    z: inRange(zStream, -CMAX, CMAX)
   };
 }
 
@@ -112,15 +110,17 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     const pagePath     = `/sectors/atlas/${type}/${dir}`;
     const existing     = extractMeta(html) || {};
 
-    const seed   = computeSeed(sector.hex, pagePath);
-    const coords = computeCoords(seed);
+    const seed    = computeSeed(pagePath);
+    const coords  = computeCoords(seed);
+    const address = PA.coordsToAddress(coords.x, coords.y, coords.z);
 
     const meta = {
       name:    existing.name    || toTitleCase(dir),
-      date:    existing.date    || today(),        // preserved on re-index
+      date:    existing.date    || today(),
       chamber: sector.chamber,
       seed,
-      coords
+      coords,
+      address
     };
     if (existing.description) meta.description = existing.description;
     if (existing.tags)        meta.tags        = existing.tags;
@@ -159,7 +159,7 @@ const tools = allEntries.filter(e => e.type === 'tools');
 const games = allEntries.filter(e => e.type === 'games');
 
 function formatEntry(e) {
-  let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", chamber: "${e.chamber}", seed: ${e.seed}, coords: { z: ${e.coords.z}, y: ${e.coords.y}, x: ${e.coords.x} }`;
+  let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", chamber: "${e.chamber}", seed: ${e.seed}, address: "${e.address}", coords: { x: ${e.coords.x}, y: ${e.coords.y}, z: ${e.coords.z} }`;
   if (e.description) s += `, description: "${e.description}"`;
   if (e.tags)        s += `, tags: ${JSON.stringify(e.tags)}`;
   s += ' }';
