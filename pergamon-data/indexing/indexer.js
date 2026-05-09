@@ -75,6 +75,22 @@ function injectOrUpdateMeta(html, meta) {
   return html.replace('<head>', '<head>\n  ' + tag);
 }
 
+const ATLAS_SCRIPTS = [
+  '/pergamon-data/pergamon-address.js',
+  '/pergamon-data/indexing/entries.js',
+  '/pergamon-data/atlas-reference.js',
+];
+
+function ensureAtlasScripts(html) {
+  let result = html;
+  for (const src of ATLAS_SCRIPTS) {
+    if (!result.includes(src)) {
+      result = result.replace('</body>', `<script src="${src}"></script>\n</body>`);
+    }
+  }
+  return result;
+}
+
 // --- Utilities ---
 
 const ACRONYMS = new Set(['gpa', 'bmi', 'qr', 'json', 'url', 'rng', 'rgb', 'dna']);
@@ -125,7 +141,9 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     if (existing.description) meta.description = existing.description;
     if (existing.tags)        meta.tags        = existing.tags;
 
-    fs.writeFileSync(htmlPath, injectOrUpdateMeta(html, meta));
+    let updated = injectOrUpdateMeta(html, meta);
+    updated = ensureAtlasScripts(updated);
+    fs.writeFileSync(htmlPath, updated);
 
     // Collision tracking
     const key = `${coords.z},${coords.y},${coords.x}`;
