@@ -192,12 +192,14 @@
     });
 
     // Jump
-    const jumpInput = el.querySelector('#ar-jump-input');
-    const jumpBtn   = el.querySelector('#ar-jump-btn');
-    const jumpErr   = el.querySelector('#ar-jump-error');
+    const jumpS1  = el.querySelector('#ar-jump-s1');
+    const jumpS2  = el.querySelector('#ar-jump-s2');
+    const jumpS3  = el.querySelector('#ar-jump-s3');
+    const jumpBtn = el.querySelector('#ar-jump-btn');
+    const jumpErr = el.querySelector('#ar-jump-error');
 
     function doJump() {
-      const raw = jumpInput.value.trim().toUpperCase();
+      const raw = (jumpS1.value + '-' + jumpS2.value + '-' + jumpS3.value).trim().toUpperCase();
       jumpErr.textContent = '';
       try {
         PA.addressToCoords(raw);
@@ -213,7 +215,9 @@
     }
 
     jumpBtn.addEventListener('click', doJump);
-    jumpInput.addEventListener('keydown', e => { if (e.key === 'Enter') doJump(); });
+    [jumpS1, jumpS2, jumpS3].forEach(inp => {
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') doJump(); });
+    });
 
     // Random jump
     const randomBtn = el.querySelector('#ar-random-btn');
@@ -266,10 +270,16 @@
 
   function buildJumpPanel() {
     return `
+      <div class="ar-jump-label">Enter Atlas Address</div>
       <div class="ar-jump-row">
-        <input id="ar-jump-input" class="ar-input" type="text"
-          placeholder="XXXXX-YYYYY-ZZZZZ" maxlength="17"
-          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9\\-]/g,'')">
+        <input id="ar-jump-s1" class="ar-input ar-seg" type="text" maxlength="5" placeholder="XXXXX"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9]/g,'');if(this.value.length===5)document.getElementById('ar-jump-s2').focus()">
+        <span class="ar-seg-sep">·</span>
+        <input id="ar-jump-s2" class="ar-input ar-seg" type="text" maxlength="5" placeholder="XXXXX"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9]/g,'');if(this.value.length===5)document.getElementById('ar-jump-s3').focus()">
+        <span class="ar-seg-sep">·</span>
+        <input id="ar-jump-s3" class="ar-input ar-seg" type="text" maxlength="5" placeholder="XXXXX"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9]/g,'')">
         <button id="ar-jump-btn" class="ar-btn">Jump</button>
       </div>
       <div id="ar-jump-error" class="ar-error"></div>`;
@@ -538,11 +548,34 @@
 }
 
 /* ── Jump ── */
+.ar-jump-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: #6a5a3a;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+
 .ar-jump-row {
   display: flex;
-  gap: 10px;
-  align-items: stretch;
-  margin-top: 4px;
+  gap: 6px;
+  align-items: center;
+  margin-top: 0;
+}
+
+.ar-seg {
+  width: 80px;
+  text-align: center;
+  flex: none;
+}
+
+.ar-seg-sep {
+  color: #4a3a28;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  flex-shrink: 0;
 }
 
 .ar-input {
@@ -628,8 +661,8 @@
   .ar-tab { padding: 10px 14px 8px; font-size: 10px; }
   .ar-neighbor { grid-template-columns: 34px 1fr; }
   .ar-n-addr, .ar-n-badge { display: none; }
-  .ar-input { width: 100%; }
-  .ar-jump-row { flex-direction: column; }
+  .ar-seg { width: 56px; }
+  .ar-jump-row { flex-wrap: wrap; }
 }
     `;
     document.head.appendChild(s);

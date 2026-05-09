@@ -174,7 +174,7 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     if (!coordMap[key]) coordMap[key] = [];
     coordMap[key].push(pagePath);
 
-    allEntries.push({ type, ...meta, path: pagePath });
+    allEntries.push({ type, ...meta, path: pagePath, code_seed: meta.code_seed, time: meta.time });
   }
 }
 
@@ -201,7 +201,7 @@ const tools = allEntries.filter(e => e.type === 'tools');
 const games = allEntries.filter(e => e.type === 'games');
 
 function formatEntry(e) {
-  let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", chamber: "${e.chamber}", seed: ${e.seed}, address: "${e.address}", coords: { x: ${e.coords.x}, y: ${e.coords.y}, z: ${e.coords.z} }`;
+  let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", time: "${e.time || ''}", chamber: "${e.chamber}", seed: ${e.seed}, code_seed: ${e.code_seed || 0}, address: "${e.address}", coords: { x: ${e.coords.x}, y: ${e.coords.y}, z: ${e.coords.z} }`;
   if (e.description) s += `, description: "${e.description}"`;
   if (e.tags)        s += `, tags: ${JSON.stringify(e.tags)}`;
   s += ' }';
