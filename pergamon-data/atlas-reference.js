@@ -33,7 +33,6 @@
       ? [...window.atlasEntries.tools, ...window.atlasEntries.games]
       : [];
 
-    // Match current path to entries record
     const currentPath = window.location.pathname
       .replace(/\/index\.html$/, '')
       .replace(/\/$/, '');
@@ -51,7 +50,6 @@
     const typeMap  = { TL: 'Tool', GM: 'Game', AR: 'Archive' };
     const typeName = typeMap[chamber] || chamber;
 
-    // Artifact code — placeholder derived from seed until code system is defined
     const hex     = seed.toString(16).toUpperCase().padStart(8, '0');
     const artCode = `ART-${hex.slice(0, 4)}-${hex.slice(4)}`;
 
@@ -106,11 +104,10 @@
     if (footer) footer.parentNode.insertBefore(section, footer);
     else document.body.appendChild(section);
 
-    // Update sidebar address display
     updateSidebarDisplay(address);
   }
 
-  // ── Sidebar display ───────────────────────────────────────────────────────
+  // ── Sidebar ───────────────────────────────────────────────────────────────
 
   function updateSidebarDisplay(address) {
     function trySet() {
@@ -120,9 +117,7 @@
       return true;
     }
     if (!trySet()) {
-      const obs = new MutationObserver(function (_, o) {
-        if (trySet()) o.disconnect();
-      });
+      const obs = new MutationObserver(function (_, o) { if (trySet()) o.disconnect(); });
       obs.observe(document.body, { childList: true, subtree: true });
     }
   }
@@ -132,37 +127,56 @@
   function buildSection({ name, artCode, typeName, address, neighbors, catalogs, PA, all }) {
     const el = document.createElement('section');
     el.id = 'atlas-reference';
+    el.classList.add('ar-collapsed');
 
     el.innerHTML = `
-      <div class="ar-inner">
-
-        <div class="ar-wordmark">Pergamon Atlas</div>
-
-        <div class="ar-header">
-          <div class="ar-hl">
-            <div class="ar-name">${esc(name)}</div>
-            <div class="ar-type">${esc(typeName)}</div>
-          </div>
-          <div class="ar-hr">
-            <div class="ar-code">${esc(artCode)}</div>
-            <div class="ar-address">${esc(address)}</div>
-          </div>
+      <div class="ar-toggle-bar">
+        <div class="ar-bar-inner">
+          <span class="ar-bar-wordmark">Pergamon Atlas</span>
+          <span class="ar-bar-sep">·</span>
+          <span class="ar-bar-name">${esc(name)}</span>
+          <span class="ar-bar-sep ar-bar-sep-addr">·</span>
+          <span class="ar-bar-addr">${esc(address)}</span>
+          <button class="ar-toggle-btn" aria-label="Toggle Atlas Reference">
+            Atlas Reference <span class="ar-arrow">▾</span>
+          </button>
         </div>
+      </div>
 
-        <nav class="ar-tabs" role="tablist">
-          <button class="ar-tab active" data-tab="nearby"   role="tab">Explore Nearby</button>
-          <button class="ar-tab"        data-tab="jump"     role="tab">Jump to Address</button>
-          <button class="ar-tab"        data-tab="random"   role="tab">Random Jump</button>
-          <button class="ar-tab"        data-tab="catalogs" role="tab">View Catalogs</button>
-        </nav>
+      <div class="ar-body">
+        <div class="ar-inner">
 
-        <div class="ar-panel"        id="ar-panel-nearby"  >${buildNearbyPanel(neighbors)}</div>
-        <div class="ar-panel ar-hidden" id="ar-panel-jump"    >${buildJumpPanel()}</div>
-        <div class="ar-panel ar-hidden" id="ar-panel-random"  >${buildRandomPanel()}</div>
-        <div class="ar-panel ar-hidden" id="ar-panel-catalogs">${buildCatalogsPanel(catalogs)}</div>
+          <div class="ar-header">
+            <div class="ar-hl">
+              <div class="ar-name">${esc(name)}</div>
+              <div class="ar-type">${esc(typeName)}</div>
+            </div>
+            <div class="ar-hr">
+              <div class="ar-code">${esc(artCode)}</div>
+              <div class="ar-address">${esc(address)}</div>
+            </div>
+          </div>
 
+          <nav class="ar-tabs" role="tablist">
+            <button class="ar-tab active" data-tab="nearby"   role="tab">Explore Nearby</button>
+            <button class="ar-tab"        data-tab="jump"     role="tab">Jump to Address</button>
+            <button class="ar-tab"        data-tab="random"   role="tab">Random Jump</button>
+            <button class="ar-tab"        data-tab="catalogs" role="tab">View Catalogs</button>
+          </nav>
+
+          <div class="ar-panel"           id="ar-panel-nearby"  >${buildNearbyPanel(neighbors)}</div>
+          <div class="ar-panel ar-hidden" id="ar-panel-jump"    >${buildJumpPanel()}</div>
+          <div class="ar-panel ar-hidden" id="ar-panel-random"  >${buildRandomPanel()}</div>
+          <div class="ar-panel ar-hidden" id="ar-panel-catalogs">${buildCatalogsPanel(catalogs)}</div>
+
+        </div>
       </div>
     `;
+
+    // Toggle collapse
+    el.querySelector('.ar-toggle-bar').addEventListener('click', () => {
+      el.classList.toggle('ar-collapsed');
+    });
 
     // Tab switching
     el.querySelectorAll('.ar-tab').forEach(tab => {
@@ -211,7 +225,6 @@
 
       randomOut.textContent = rAddr;
 
-      // Nearest artifact to the random position
       let nearest = null, nearestDist = Infinity;
       for (const e of all) {
         const d = hypot3(e.coords.x, e.coords.y, e.coords.z, rx, ry, rz);
@@ -281,11 +294,106 @@
     s.textContent = `
 #atlas-reference {
   background: #09080a;
-  border-top: 2px solid #1e1a14;
+  border-top: 2px solid #3a3020;
   font-family: Georgia, serif;
   color: #d6c89a;
-  padding: 48px 0 56px;
   margin-top: 56px;
+}
+
+/* ── Toggle bar ── */
+.ar-toggle-bar {
+  padding: 0 32px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.ar-toggle-bar:hover { border-bottom-color: #3a3020; }
+
+.ar-bar-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+}
+
+.ar-bar-wordmark {
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  color: #8a7a5a;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ar-bar-sep {
+  color: #4a4030;
+  font-size: 12px;
+}
+
+.ar-bar-name {
+  font-size: 13px;
+  color: #c9a84c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.ar-bar-addr {
+  font-size: 12px;
+  color: #8a7a5a;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.ar-bar-sep-addr { flex-shrink: 0; }
+
+.ar-toggle-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid #3a3020;
+  color: #8a7a5a;
+  font-family: Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+
+.ar-toggle-bar:hover .ar-toggle-btn {
+  border-color: #c9a84c;
+  color: #c9a84c;
+}
+
+.ar-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  margin-left: 4px;
+}
+
+#atlas-reference:not(.ar-collapsed) .ar-arrow {
+  transform: rotate(180deg);
+}
+
+/* ── Body (collapsible) ── */
+.ar-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.28s ease, padding 0.28s ease;
+  padding: 0;
+}
+
+#atlas-reference:not(.ar-collapsed) .ar-body {
+  max-height: 900px;
+  padding-bottom: 48px;
 }
 
 .ar-inner {
@@ -294,35 +402,27 @@
   padding: 0 32px;
 }
 
-.ar-wordmark {
-  font-size: 9px;
-  letter-spacing: 0.45em;
-  color: #3a3020;
-  text-transform: uppercase;
-  margin-bottom: 28px;
-}
-
+/* ── Header ── */
 .ar-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #1e1a14;
-  margin-bottom: 0;
+  padding: 28px 0 24px;
+  border-bottom: 1px solid #2e2820;
 }
 
 .ar-name {
   font-size: 22px;
   color: #c9a84c;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   font-weight: normal;
 }
 
 .ar-type {
   font-size: 10px;
   letter-spacing: 0.3em;
-  color: #5a5040;
+  color: #8a7a5a;
   text-transform: uppercase;
 }
 
@@ -330,7 +430,7 @@
 
 .ar-code {
   font-size: 10px;
-  color: #3a3020;
+  color: #6a5a3a;
   letter-spacing: 0.12em;
   font-family: 'Courier New', monospace;
   margin-bottom: 5px;
@@ -343,19 +443,18 @@
   font-family: 'Courier New', monospace;
 }
 
-/* Tabs */
+/* ── Tabs ── */
 .ar-tabs {
   display: flex;
-  border-bottom: 1px solid #1e1a14;
+  border-bottom: 1px solid #2e2820;
   margin-bottom: 20px;
-  gap: 0;
 }
 
 .ar-tab {
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #3a3020;
+  color: #7a6a4a;
   font-family: Georgia, serif;
   font-size: 11px;
   letter-spacing: 0.2em;
@@ -366,25 +465,25 @@
   transition: color 0.12s, border-color 0.12s;
 }
 
-.ar-tab:hover { color: #7a6530; }
+.ar-tab:hover { color: #a89060; }
 
 .ar-tab.active {
   color: #c9a84c;
   border-bottom-color: #c9a84c;
 }
 
-/* Panels */
-.ar-panel { min-height: 80px; }
+/* ── Panels ── */
+.ar-panel { min-height: 60px; }
 .ar-hidden { display: none; }
 
-/* Nearby */
+/* ── Nearby ── */
 .ar-neighbor {
   display: grid;
   grid-template-columns: 40px 1fr auto auto;
   align-items: center;
   gap: 20px;
   padding: 13px 16px;
-  border: 1px solid #1a1710;
+  border: 1px solid #2e2820;
   margin-bottom: 5px;
   text-decoration: none;
   color: inherit;
@@ -392,13 +491,13 @@
 }
 
 .ar-neighbor:hover {
-  border-color: #3a3020;
+  border-color: #6a5a3a;
   background: #0e0c09;
 }
 
 .ar-n-dir {
-  font-size: 10px;
-  color: #3a3020;
+  font-size: 11px;
+  color: #8a7a5a;
   font-family: 'Courier New', monospace;
   letter-spacing: 0.05em;
 }
@@ -413,7 +512,7 @@
 
 .ar-n-addr {
   font-size: 11px;
-  color: #3a3020;
+  color: #6a5a3a;
   font-family: 'Courier New', monospace;
   letter-spacing: 0.07em;
 }
@@ -422,20 +521,20 @@
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #3a3020;
-  border: 1px solid #1a1710;
+  color: #8a7a5a;
+  border: 1px solid #3a3020;
   padding: 2px 7px;
 }
 
 .ar-empty {
-  color: #3a3020;
+  color: #6a5a3a;
   font-size: 12px;
   font-style: italic;
   letter-spacing: 0.08em;
   padding: 20px 0;
 }
 
-/* Jump */
+/* ── Jump ── */
 .ar-jump-row {
   display: flex;
   gap: 10px;
@@ -445,7 +544,7 @@
 
 .ar-input {
   background: #0d0b0f;
-  border: 1px solid #1e1a14;
+  border: 1px solid #2e2820;
   color: #c9a84c;
   font-family: 'Courier New', monospace;
   font-size: 14px;
@@ -456,12 +555,12 @@
   transition: border-color 0.12s;
 }
 
-.ar-input:focus { border-color: #5a5040; }
-.ar-input::placeholder { color: #2a2018; letter-spacing: 0.03em; }
+.ar-input:focus { border-color: #7a6a4a; }
+.ar-input::placeholder { color: #4a3a28; letter-spacing: 0.03em; }
 
 .ar-btn {
   background: transparent;
-  border: 1px solid #5a5040;
+  border: 1px solid #6a5a3a;
   color: #c9a84c;
   font-family: Georgia, serif;
   font-size: 11px;
@@ -474,37 +573,34 @@
 
 .ar-btn:hover {
   border-color: #c9a84c;
-  background: rgba(201,168,76,0.05);
+  background: rgba(201,168,76,0.07);
 }
 
-.ar-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
+.ar-btn:disabled { opacity: 0.4; cursor: default; }
 
 .ar-error {
   font-size: 11px;
-  color: #7a3a3a;
+  color: #9a5a5a;
   margin-top: 8px;
   min-height: 16px;
   font-family: 'Courier New', monospace;
 }
 
-/* Random */
+/* ── Random ── */
 .ar-random-out {
   margin-top: 14px;
   font-size: 13px;
-  color: #5a5040;
+  color: #8a7a5a;
   letter-spacing: 0.1em;
   font-family: 'Courier New', monospace;
   min-height: 20px;
 }
 
-/* Catalogs */
+/* ── Catalogs ── */
 .ar-catalog-link {
   display: block;
   padding: 12px 16px;
-  border: 1px solid #1a1710;
+  border: 1px solid #2e2820;
   color: #d6c89a;
   text-decoration: none;
   font-size: 13px;
@@ -513,11 +609,16 @@
 }
 
 .ar-catalog-link:hover {
-  border-color: #3a3020;
+  border-color: #6a5a3a;
   color: #c9a84c;
 }
 
+/* ── Responsive ── */
 @media (max-width: 640px) {
+  .ar-toggle-bar { padding: 0 16px; }
+  .ar-bar-sep-addr, .ar-bar-addr { display: none; }
+  .ar-bar-name { max-width: 140px; }
+  .ar-inner { padding: 0 16px; }
   .ar-header { flex-direction: column; }
   .ar-hr { text-align: left; }
   .ar-tabs { flex-wrap: wrap; }
