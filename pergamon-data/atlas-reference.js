@@ -50,8 +50,10 @@
     const typeMap  = { TL: 'Tool', GM: 'Game', AR: 'Archive' };
     const typeName = typeMap[chamber] || chamber;
 
-    const hex     = seed.toString(16).toUpperCase().padStart(8, '0');
-    const artCode = `ART-${hex.slice(0, 4)}-${hex.slice(4)}`;
+    const codeSeed  = meta.code_seed || 0;
+    const fixedHex  = codeSeed.toString(16).toUpperCase().padStart(8, '0');
+    const dynSegment = address.split('-')[0] || '?????';
+    const artCode   = `ART-${fixedHex}-${dynSegment}`;
 
     // ── 6 directional neighbors ───────────────────────────────────────────
 
@@ -113,7 +115,7 @@
     function trySet() {
       const el = document.getElementById('atlas-code-display');
       if (!el) return false;
-      el.textContent = address;
+      el.textContent = 'ATLAS-' + address;
       return true;
     }
     if (!trySet()) {
@@ -136,7 +138,7 @@
           <span class="ar-bar-sep">·</span>
           <span class="ar-bar-name">${esc(name)}</span>
           <span class="ar-bar-sep ar-bar-sep-addr">·</span>
-          <span class="ar-bar-addr">${esc(address)}</span>
+          <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
           <button class="ar-toggle-btn" aria-label="Toggle Atlas Reference">
             Atlas Reference <span class="ar-arrow">▾</span>
           </button>
@@ -153,7 +155,7 @@
             </div>
             <div class="ar-hr">
               <div class="ar-code">${esc(artCode)}</div>
-              <div class="ar-address">${esc(address)}</div>
+              <div class="ar-address">ATLAS-${esc(address)}</div>
             </div>
           </div>
 
@@ -235,6 +237,8 @@
         randomBtn.disabled = true;
         randomBtn.textContent = 'Resolving…';
         setTimeout(() => { window.location.href = nearest.path; }, 700);
+      } else {
+        randomOut.textContent = 'No artifacts in catalog.';
       }
     });
 
@@ -253,7 +257,7 @@
         <a class="ar-neighbor" href="${esc(n.artifact.path)}">
           <span class="ar-n-arrow">→</span>
           <span class="ar-n-name">${esc(n.artifact.name)}</span>
-          <span class="ar-n-addr">${esc(n.artifact.address || '—')}</span>
+          <span class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</span>
           <span class="ar-n-badge">${esc(t)}</span>
         </a>`;
     }).join('');
@@ -392,7 +396,7 @@
 }
 
 #atlas-reference:not(.ar-collapsed) .ar-body {
-  max-height: 900px;
+  max-height: 2000px;
   padding-bottom: 48px;
 }
 

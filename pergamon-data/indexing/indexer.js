@@ -81,6 +81,19 @@ const ATLAS_SCRIPTS = [
   '/pergamon-data/atlas-reference.js',
 ];
 
+const OLD_SCRIPTS = [
+  '/pergamon-data/indexing/generator.js',
+  '/pergamon-data/indexing/auto-atlas.js',
+];
+
+function stripOldScripts(html) {
+  let result = html;
+  for (const src of OLD_SCRIPTS) {
+    result = result.replace(new RegExp(`<script[^>]+src="${src.replace(/\//g, '\\/')}"[^>]*><\\/script>`, 'g'), '');
+  }
+  return result;
+}
+
 function ensureAtlasScripts(html) {
   let result = html;
   for (const src of ATLAS_SCRIPTS) {
@@ -103,6 +116,10 @@ function toTitleCase(slug) {
 
 function today() {
   return new Date().toISOString().split('T')[0];
+}
+
+function nowSeconds() {
+  return Math.floor(Date.now() / 1000);
 }
 
 // --- Index ---
@@ -131,10 +148,11 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     const address = PA.coordsToAddress(coords.x, coords.y, coords.z);
 
     const meta = {
-      name:    existing.name    || toTitleCase(dir),
-      date:    existing.date    || today(),
-      chamber: sector.chamber,
+      name:      existing.name      || toTitleCase(dir),
+      date:      existing.date      || today(),
+      chamber:   sector.chamber,
       seed,
+      code_seed: existing.code_seed || nowSeconds(),
       coords,
       address
     };
@@ -142,6 +160,7 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     if (existing.tags)        meta.tags        = existing.tags;
 
     let updated = injectOrUpdateMeta(html, meta);
+    updated = stripOldScripts(updated);
     updated = ensureAtlasScripts(updated);
     fs.writeFileSync(htmlPath, updated);
 

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is the Pergamon Atlas?</title>
+<link rel="stylesheet" href="/function/styles/main.css">
+<style>
+  .atlas-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+    font-family: Georgia, serif;
+    color: #d6c89a;
+  }
+
+  .atlas-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.45em;
+    color: #6a5a3a;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .atlas-title {
+    font-size: 32px;
+    font-weight: normal;
+    color: #c9a84c;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+
+  .atlas-subtitle {
+    font-size: 13px;
+    color: #8a7a5a;
+    letter-spacing: 0.12em;
+    margin-bottom: 56px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .atlas-section {
+    margin-bottom: 48px;
+  }
+
+  .atlas-section-title {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: #8a7a5a;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2e2820;
+    font-family: 'Courier New', monospace;
+  }
+
+  .atlas-section p {
+    font-size: 15px;
+    line-height: 1.85;
+    color: #c8ba8a;
+    margin-bottom: 18px;
+  }
+
+  .atlas-section p:last-child { margin-bottom: 0; }
+
+  .constant-block {
+    border: 1px solid #2e2820;
+    background: #0e0c09;
+    padding: 24px 28px;
+    margin: 28px 0;
+    text-align: center;
+  }
+
+  .constant-label {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    color: #6a5a3a;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .constant-value {
+    font-size: 20px;
+    color: #c9a84c;
+    letter-spacing: 0.08em;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 10px;
+  }
+
+  .constant-chars {
+    font-size: 11px;
+    color: #6a5a3a;
+    letter-spacing: 0.4em;
+    font-family: 'Courier New', monospace;
+  }
+
+  .addr-example {
+    display: inline-block;
+    font-size: 18px;
+    color: #c9a84c;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.1em;
+    border: 1px solid #2e2820;
+    padding: 10px 20px;
+    background: #0e0c09;
+    margin: 12px 0;
+  }
+
+  .addr-prefix {
+    color: #6a5a3a;
+  }
+
+  .rule-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .rule-list li {
+    font-size: 14px;
+    line-height: 1.75;
+    color: #c8ba8a;
+    padding: 10px 0 10px 20px;
+    border-bottom: 1px solid #1e1a14;
+    position: relative;
+  }
+
+  .rule-list li:last-child { border-bottom: none; }
+
+  .rule-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #4a3a28;
+  }
+
+  .atlas-divider {
+    border: none;
+    border-top: 1px solid #2e2820;
+    margin: 48px 0;
+  }
+
+  .atlas-footer-note {
+    font-size: 11px;
+    color: #4a3a28;
+    letter-spacing: 0.1em;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    margin-top: 64px;
+  }
+</style>
+</head>
+<body>
+<div id="sidebar-placeholder"></div>
+<main class="atlas-page">
+
+  <div class="atlas-eyebrow">Pergamon Atlas</div>
+  <h1 class="atlas-title">What is the Pergamon Atlas?</h1>
+  <div class="atlas-subtitle">A permanent archive without a center</div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">The Premise</div>
+    <p>
+      The Pergamon Atlas is an infinite archival space. Every page on this site — every tool,
+      every game, every artifact — exists simultaneously as a webpage and as a fixed point
+      in a vast coordinate system. No artifact is at the center. No artifact is more central
+      than any other. The Atlas simply extends in all directions without boundary.
+    </p>
+    <p>
+      When you navigate here, you are not browsing a website in the conventional sense.
+      You are visiting artifacts. Each one occupies a permanent location, has a permanent
+      identity, and can be reached from any other artifact by traversing the space between them.
+    </p>
+  </div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">Coordinate Space</div>
+    <p>
+      The Atlas spans ±16,777,215 units on each of three axes. This yields roughly
+      37.7 sextillion distinct positions — far more than this site will ever need.
+      Positions are assigned deterministically by hashing each artifact's path,
+      so every artifact's location is permanent and reproducible from its URL alone.
+    </p>
+    <p>
+      Artifacts do not cluster by type. A tool and a game are equally likely to be
+      neighbors in the Atlas. Proximity in the Atlas does not imply meaning —
+      it is pure spatial chance, like stars that appear near each other in the sky
+      but exist in no real relation.
+    </p>
+  </div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">Atlas Addresses</div>
+    <p>
+      Every artifact is assigned an Atlas Address: a permanent, encoded string that
+      encodes its exact position in the coordinate space. Addresses take the form:
+    </p>
+    <div class="addr-example">
+      <span class="addr-prefix">ATLAS-</span>BKCM2-NR4QF-WVTJ8
+    </div>
+    <p>
+      The three segments each encode one axis (X, Y, Z) using a base-32 alphabet
+      that excludes visually ambiguous characters (no O, I, 0, or 1). The encoding
+      is XOR-scrambled using the Pergamon Constant, ensuring that nearby coordinates
+      produce very different-looking addresses.
+    </p>
+    <p>
+      An address can be decoded back to exact coordinates. This means knowing an
+      address is sufficient to locate any artifact precisely — even an artifact that
+      doesn't exist yet. The address space is the Atlas; artifacts merely occupy points within it.
+    </p>
+  </div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">The Pergamon Constant</div>
+    <p>
+      The Atlas is shaped by its own name. The Pergamon Constant is the hexadecimal
+      encoding of the word "PERGAMON" in ASCII:
+    </p>
+    <div class="constant-block">
+      <div class="constant-label">Pergamon Constant</div>
+      <div class="constant-value">0x50455247414D4F4E</div>
+      <div class="constant-chars">P · E · R · G · A · M · O · N</div>
+    </div>
+    <p>
+      This constant is used as the scrambling key throughout the address system.
+      It encodes the coordinate axes, scrambles position data, and seeds certain
+      computations. The Atlas is not shaped by an arbitrary number — it is shaped
+      by its own identity.
+    </p>
+    <p>
+      This reflects a deeper principle the Atlas is built around: the phenomenon
+      of reference points. In physics, there is no absolute reference frame.
+      Every position is defined relative to other positions, and no position
+      is privileged. The Pergamon Atlas operates the same way. The constant
+      does not mark the center. It is simply the medium through which the space
+      is measured.
+    </p>
+  </div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">Artifact Identity</div>
+    <p>
+      Each artifact carries two forms of identity. The Atlas Address encodes where
+      it is. The Artifact Code encodes when and under what conditions it was first
+      registered — a fixed fingerprint of its creation moment, combined with a
+      dynamic segment derived from its current address.
+    </p>
+    <p>
+      If the Atlas ever expands — if space between artifacts is stretched to make
+      room for new ones — an artifact's address may change to reflect its new
+      position. The artifact code records what was true at the moment of creation,
+      while the address records what is true now. Both together form a complete identity.
+    </p>
+  </div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">Navigation</div>
+    <p>
+      At the bottom of every artifact page you will find the Atlas Reference panel.
+      It shows the artifact's identity, its nearest neighbors in the coordinate space,
+      and options to jump to any address directly or travel to a random position.
+      Catalogs show all the places a given artifact is formally listed.
+    </p>
+    <ul class="rule-list">
+      <li><strong>Explore Nearby</strong> — artifacts closest to the six cardinal directions from your current position.</li>
+      <li><strong>Jump to Address</strong> — enter any valid Atlas Address to travel directly to that artifact.</li>
+      <li><strong>Random Jump</strong> — generate a random position and resolve to the nearest artifact.</li>
+      <li><strong>View Catalogs</strong> — see where this artifact is formally cataloged.</li>
+    </ul>
+  </div>
+
+  <div class="atlas-section">
+    <div class="atlas-section-title">Archives</div>
+    <p>
+      Some artifacts are archived. They remain in the Atlas — their coordinates and
+      addresses are permanent — but they are marked as compressed. Archived artifacts
+      do not display the Atlas Reference panel and are not listed as neighbors.
+      They exist in the Atlas as silent, fixed points. They do not disappear.
+    </p>
+  </div>
+
+  <hr class="atlas-divider">
+
+  <div class="atlas-footer-note">
+    The Atlas is not a map. It is the space the map describes.
+  </div>
+
+</main>
+<div id="footer-placeholder"></div>
+<script src="/function/snippets/sidebar.js"></script>
+<script src="/function/snippets/footer.js"></script>
+</body>
+</html>
