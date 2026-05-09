@@ -26,7 +26,7 @@ function loadSnippets(pageName) {
         else if (href === '/tools' && path.startsWith('/tools')) link.classList.add('active');
         else if (href === '/games' && path.startsWith('/games')) link.classList.add('active');
         else if (href === '/atlas-explorer/' && path.startsWith('/atlas-explorer')) link.classList.add('active');
-        else if (href === '/sectors/systems/other/help' && path.startsWith('/sectors/systems/other/help')) link.classList.add('active');
+        else if (href === '/other/help' && path.startsWith('/other/help')) link.classList.add('active');
       });
 
       // Sidebar collapse toggle

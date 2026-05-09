@@ -15,7 +15,9 @@
       "Bash(node *)",
       "Bash(start *)",
       "Bash(sed -i 's|/sectors/atlas/tools/|/tools/|g' /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/tools/index.html)",
-      "Bash(sed -i 's|/sectors/atlas/games/|/games/|g' /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/games/index.html)"
+      "Bash(sed -i 's|/sectors/atlas/games/|/games/|g' /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/games/index.html)",
+      "Bash(sed -i 's|border: 2px solid #000;|border: 2px solid #8a611c;|g' /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/tools/gpa-calculator/index.html)",
+      "Bash(sed -i 's|/sectors/systems/other/archives|/other/archives|g' /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/index.html)"
     ]
   }
 }

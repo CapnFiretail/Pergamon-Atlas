@@ -155,7 +155,9 @@
               <div class="ar-type">${esc(typeName)}</div>
             </div>
             <div class="ar-hr">
+              <div class="ar-meta-label">Artifact Code</div>
               <div class="ar-code">${esc(artCode)}</div>
+              <div class="ar-meta-label" style="margin-top:10px">Atlas Address</div>
               <div class="ar-address">ATLAS-${esc(address)}</div>
             </div>
           </div>
@@ -256,16 +258,13 @@
     if (!neighbors.length) {
       return `<p class="ar-empty">No artifacts detected in adjacent space.</p>`;
     }
-    return neighbors.map(n => {
-      const t = n.artifact.chamber === 'TL' ? 'Tool' : 'Game';
-      return `
+    return neighbors.map(n => `
         <a class="ar-neighbor" href="${esc(n.artifact.path)}">
           <span class="ar-n-arrow">→</span>
           <span class="ar-n-name">${esc(n.artifact.name)}</span>
           <span class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</span>
-          <span class="ar-n-badge">${esc(t)}</span>
-        </a>`;
-    }).join('');
+        </a>`
+    ).join('');
   }
 
   function buildJumpPanel() {
@@ -443,12 +442,21 @@
 
 .ar-hr { text-align: right; }
 
-.ar-code {
-  font-size: 10px;
+.ar-meta-label {
+  font-size: 8px;
+  letter-spacing: 0.4em;
   color: #6a5a3a;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 4px;
+}
+
+.ar-code {
+  font-size: 14px;
+  color: #c9a84c;
   letter-spacing: 0.12em;
   font-family: 'Courier New', monospace;
-  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .ar-address {
@@ -494,7 +502,7 @@
 /* ── Nearby ── */
 .ar-neighbor {
   display: grid;
-  grid-template-columns: 40px 1fr auto auto;
+  grid-template-columns: 40px 1fr auto;
   align-items: center;
   gap: 20px;
   padding: 13px 16px;
@@ -530,14 +538,6 @@
   letter-spacing: 0.07em;
 }
 
-.ar-n-badge {
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #8a7a5a;
-  border: 1px solid #3a3020;
-  padding: 2px 7px;
-}
 
 .ar-empty {
   color: #6a5a3a;
@@ -660,7 +660,7 @@
   .ar-tabs { flex-wrap: wrap; }
   .ar-tab { padding: 10px 14px 8px; font-size: 10px; }
   .ar-neighbor { grid-template-columns: 34px 1fr; }
-  .ar-n-addr, .ar-n-badge { display: none; }
+  .ar-n-addr { display: none; }
   .ar-seg { width: 56px; }
   .ar-jump-row { flex-wrap: wrap; }
 }
