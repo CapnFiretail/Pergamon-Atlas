@@ -10,7 +10,10 @@
       "Bash(\"/c/Program Files/nodejs/node.exe\" pergamon-data/indexing/indexer.js)",
       "Bash(git -C /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas status)",
       "Bash(git -C /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas diff --stat HEAD)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(node indexer.js)",
+      "Bash(node *)",
+      "Bash(start *)"
     ]
   }
 }
