@@ -251,7 +251,7 @@
       const t = n.artifact.chamber === 'TL' ? 'Tool' : 'Game';
       return `
         <a class="ar-neighbor" href="${esc(n.artifact.path)}">
-          <span class="ar-n-dir">${esc(n.dir)}</span>
+          <span class="ar-n-arrow">→</span>
           <span class="ar-n-name">${esc(n.artifact.name)}</span>
           <span class="ar-n-addr">${esc(n.artifact.address || '—')}</span>
           <span class="ar-n-badge">${esc(t)}</span>
@@ -495,11 +495,9 @@
   background: #0e0c09;
 }
 
-.ar-n-dir {
-  font-size: 11px;
-  color: #8a7a5a;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.05em;
+.ar-n-arrow {
+  font-size: 13px;
+  color: #6a5a3a;
 }
 
 .ar-n-name {
