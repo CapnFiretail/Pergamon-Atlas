@@ -50,10 +50,11 @@
     const typeMap  = { TL: 'Tool', GM: 'Game', AR: 'Archive' };
     const typeName = typeMap[chamber] || chamber;
 
-    const codeSeed  = meta.code_seed || 0;
-    const fixedHex  = codeSeed.toString(16).toUpperCase().padStart(8, '0');
+    const codeSeed   = meta.code_seed || 0;
+    const fixedVal   = (codeSeed ^ seed) >>> 0;
+    const fixedHex   = fixedVal.toString(16).toUpperCase().padStart(8, '0');
     const dynSegment = address.split('-')[0] || '?????';
-    const artCode   = `ART-${fixedHex}-${dynSegment}`;
+    const artCode    = `${fixedHex}-${dynSegment}`;
 
     // ── 6 directional neighbors ───────────────────────────────────────────
 

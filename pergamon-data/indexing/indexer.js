@@ -118,6 +118,10 @@ function today() {
   return new Date().toISOString().split('T')[0];
 }
 
+function nowTime() {
+  return new Date().toISOString().split('T')[1].split('.')[0];
+}
+
 function nowSeconds() {
   return Math.floor(Date.now() / 1000);
 }
@@ -150,6 +154,7 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     const meta = {
       name:      existing.name      || toTitleCase(dir),
       date:      existing.date      || today(),
+      time:      existing.time      || nowTime(),
       chamber:   sector.chamber,
       seed,
       code_seed: existing.code_seed || nowSeconds(),
