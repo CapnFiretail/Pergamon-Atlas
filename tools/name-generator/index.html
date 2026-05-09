@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Name Generator",
+  "date": "2026-04-18",
+  "time": "23:29:24",
+  "chamber": "TL",
+  "seed": 114626948,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 4530393,
+    "y": 5376878,
+    "z": -10094291
+  },
+  "address": "SA6W9-B8TBD-Y53BF"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Name Generator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 14px;font-size:22px}
+    .cat-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+    .cat-tab{padding:8px 16px;border:1.5px solid #ccc;border-radius:999px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:white;transition:.15s}
+    .cat-tab.active{background:#111;color:white;border-color:#111}
+    .cat-tab:hover:not(.active){border-color:#8a611c;color:#8a611c}
+    .controls{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:13px;font-weight:700;color:#333}
+    .field select,.field input[type=number]{padding:10px;border:1.5px solid #ccc;border-radius:9px;font-size:15px;font-family:Georgia,serif}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s;align-self:flex-end}
+    .atlas-btn:hover{background:#222}
+    .names-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+    .name-item{background:#f7f7f7;border:1px solid #ddd;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:700;cursor:pointer;transition:.15s}
+    .name-item:hover{border-color:#c28a2b;background:#fffaf4}
+    .name-item .save-star{font-size:18px;color:#ccc;transition:.15s}
+    .name-item.saved .save-star{color:#c28a2b}
+    .saved-list{display:flex;flex-wrap:wrap;gap:8px;min-height:36px}
+    .saved-tag{background:#111;color:#f0d39b;border-radius:8px;padding:7px 14px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .saved-tag button{background:none;border:none;color:#f0d39b;cursor:pointer;font-size:16px;padding:0;line-height:1}
+    .empty-saved{color:#aaa;font-size:14px;font-style:italic}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Name Generator</h2>
+        <p>Generate random names for people, characters, businesses, bands, and more.</p>
+      </div>
+      <div class="panel">
+        <div class="cat-tabs" id="catTabs"></div>
+        <div class="controls">
+          <div class="field"><label>How Many</label><input type="number" id="count" value="12" min="1" max="50" style="width:80px"></div>
+          <button class="atlas-btn" onclick="generate()">Generate Names</button>
+        </div>
+        <div class="names-grid" id="nameGrid"></div>
+      </div>
+      <div class="panel">
+        <h3>Saved Names</h3>
+        <div class="saved-list" id="savedList"><div class="empty-saved">Click a name to save it.</div></div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Name Generator');
+
+    const data = {
+      'First Names': {
+        male:['James','Oliver','Ethan','Lucas','Mason','Logan','Aiden','Elijah','Liam','Noah','Henry','Caleb','Owen','Carter','Wyatt','Leo','Finn','Miles','Jack','Theo','Ezra','Asher','Jasper','Reid','Flynn','Cole','Blake','Wade','Grant','Seth','Marcus','Felix','Adrian','Dominic','Ivan','Silas','Hugo','Emil','Nico','Soren'],
+        female:['Emma','Olivia','Ava','Sophia','Isabella','Mia','Luna','Aria','Chloe','Layla','Zoe','Nora','Lily','Eleanor','Isla','Stella','Aurora','Violet','Grace','Hazel','Ivy','Aurora','Clara','Penelope','Wren','Piper','Scarlett','Freya','Adeline','Margot','Elara','Sera','Lyra','Nova','Quinn','Skye','Vera','Iris','Selene','Nadia'],
+        neutral:['Riley','Jordan','Casey','Morgan','Taylor','Cameron','Avery','Jamie','Drew','Sage','River','Phoenix','Rowan','Finley','Parker','Hayden','Blake','Emerson','Quinn','Reese','Elliot','Alex','Charlie','Jude','Lane','Scout','Shay','Tatum','Kendall','Remi']
+      },
+      'Full Names': {
+        fn: ()=>{
+          const firsts = ['James','Oliver','Ethan','Lucas','Mason','Emma','Olivia','Ava','Sophia','Isabella','Riley','Jordan','Morgan','Taylor'];
+          const lasts = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Martinez','Taylor','Anderson','Wilson','Thomas','Harris','Clark','Lewis','Young','Walker','Hall','Allen','King','Wright','Scott','Torres'];
+          const f = firsts[Math.floor(Math.random()*firsts.length)];
+          const l = lasts[Math.floor(Math.random()*lasts.length)];
+          return f + ' ' + l;
+        }
+      },
+      'Fantasy': {
+        fn: ()=>{
+          const pref = ['Aer','Vel','Thor','Zar','Eld','Mor','Syn','Kar','Dra','Lun','Ash','Bry','Cor','Dag','Eth','Fen','Gor','Hel','Ith','Jyn'];
+          const suf = ['ian','iel','oth','ara','ix','on','en','wyn','ast','ora','rin','val','ond','ath','eis','orn','ax','yx','an','as'];
+          return pref[Math.floor(Math.random()*pref.length)] + suf[Math.floor(Math.random()*suf.length)];
+        }
+      },
+      'Business': {
+        fn: ()=>{
+          const a = ['Peak','Nova','Core','Apex','Bright','Swift','Blue','True','Clear','Bold','Fresh','One','Open','Smart','Next','Pure','Rise','Iron','Arc','Echo'];
+          const b = ['Solutions','Labs','Group','Partners','Works','Studio','Digital','Systems','Media','Ventures','Tech','Hub','Cloud','Forge','Base','Flow','Edge','Gate','Minds','Point'];
+          return a[Math.floor(Math.random()*a.length)] + ' ' + b[Math.floor(Math.random()*b.length)];
+        }
+      },
+      'Band Names': {
+        fn: ()=>{
+          const adj = ['Hollow','Silent','Electric','Burning','Frozen','Dark','Neon','Wasted','Rising','Phantom','Broken','Cosmic','Velvet','Silver','Golden','Iron','Static','Midnight','Fading','Lost'];
+          const noun = ['Wolves','Signal','Echo','Tide','Storm','Hearts','Ghosts','Satellites','Machines','Serpents','Suns','Bridges','Mirrors','Rivers','Shadows','Engines','Architects','Pilots','Prophets','Sirens'];
+          return adj[Math.floor(Math.random()*adj.length)] + ' ' + noun[Math.floor(Math.random()*noun.length)];
+        }
+      },
+      'Usernames': {
+        fn: ()=>{
+          const adj = ['fast','cool','dark','wild','bright','quick','lazy','silent','clever','brave','swift','chill','epic','lone','iron'];
+          const noun = ['wolf','fox','hawk','panda','eagle','tiger','cobra','raven','lynx','bear','shark','falcon','otter','viper','moose'];
+          const num = Math.floor(Math.random()*9999);
+          return adj[Math.floor(Math.random()*adj.length)] + noun[Math.floor(Math.random()*noun.length)] + num;
+        }
+      }
+    };
+
+    let currentCat = 'First Names';
+    let saved = [];
+
+    function buildTabs() {
+      const tabs = document.getElementById('catTabs');
+      Object.keys(data).forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-tab' + (cat===currentCat?' active':'');
+        btn.textContent = cat;
+        btn.onclick = () => { currentCat=cat; document.querySelectorAll('.cat-tab').forEach((b,i)=>b.classList.toggle('active',Object.keys(data)[i]===cat)); generate(); };
+        tabs.appendChild(btn);
+      });
+    }
+
+    function generateName() {
+      const cat = data[currentCat];
+      if (cat.fn) return cat.fn();
+      const all = [...(cat.male||[]),...(cat.female||[]),...(cat.neutral||[])];
+      return all[Math.floor(Math.random()*all.length)];
+    }
+
+    function generate() {
+      const count = Math.max(1,Math.min(50,parseInt(document.getElementById('count').value)||12));
+      const names = Array.from({length:count}, generateName);
+      const grid = document.getElementById('nameGrid');
+      grid.innerHTML = '';
+      names.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'name-item';
+        const isSaved = saved.includes(name);
+        if (isSaved) item.classList.add('saved');
+        item.innerHTML = `<span>${name}</span><span class="save-star">${isSaved?'★':'☆'}</span>`;
+        item.onclick = () => toggleSave(name, item);
+        grid.appendChild(item);
+      });
+    }
+
+    function toggleSave(name, el) {
+      const idx = saved.indexOf(name);
+      if (idx === -1) { saved.push(name); el.classList.add('saved'); el.querySelector('.save-star').textContent='★'; }
+      else { saved.splice(idx,1); el.classList.remove('saved'); el.querySelector('.save-star').textContent='☆'; }
+      renderSaved();
+    }
+
+    function renderSaved() {
+      const list = document.getElementById('savedList');
+      if (!saved.length) { list.innerHTML='<div class="empty-saved">Click a name to save it.</div>'; return; }
+      list.innerHTML = saved.map((n,i)=>`<div class="saved-tag">${n}<button onclick="removeSaved(${i})">×</button></div>`).join('');
+    }
+
+    function removeSaved(i) { saved.splice(i,1); renderSaved(); }
+
+    buildTabs(); generate();
+  </script>
+
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>

@@ -6,8 +6,8 @@ const PA  = require('../pergamon-address');
 
 const ROOT    = path.resolve(__dirname, '../../');
 const SECTORS = {
-  tools: { dir: path.join(ROOT, 'sectors/atlas/tools'), chamber: 'TL' },
-  games: { dir: path.join(ROOT, 'sectors/atlas/games'), chamber: 'GM' }
+  tools: { dir: path.join(ROOT, 'tools'), chamber: 'TL' },
+  games: { dir: path.join(ROOT, 'games'), chamber: 'GM' }
 };
 const ENTRIES_OUT   = path.join(__dirname, 'entries.js');
 const COLLISION_OUT = path.join(ROOT, 'pergamon-data', 'collisions.json');
@@ -144,7 +144,7 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     if (!fs.existsSync(htmlPath)) continue;
 
     const html         = fs.readFileSync(htmlPath, 'utf-8');
-    const pagePath     = `/sectors/atlas/${type}/${dir}`;
+    const pagePath     = `/${type}/${dir}`;
     const existing     = extractMeta(html) || {};
 
     const seed    = computeSeed(pagePath);

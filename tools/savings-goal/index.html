@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Savings Goal",
+  "date": "2026-04-18",
+  "time": "23:29:24",
+  "chamber": "TL",
+  "seed": 130824746,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -13915963,
+    "y": 4846675,
+    "z": 15918960
+  },
+  "address": "G78WD-AKQ26-RX8VG"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Savings Goal Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .field label{font-size:14px;font-weight:700;color:#333}
+    .input-prefix{position:relative}
+    .input-prefix::before{content:'$';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#888;font-size:16px;pointer-events:none}
+    .input-prefix input{padding-left:28px}
+    .field input,.field select{padding:12px;border:1.5px solid #ccc;border-radius:10px;font-size:16px;font-family:Georgia,serif;width:100%;box-sizing:border-box}
+    .field input:focus,.field select:focus{outline:none;border-color:#8a611c}
+    .atlas-btn{width:100%;border:none;border-radius:10px;padding:13px;font-size:16px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .result-big{background:#111;color:#f0d39b;border-radius:14px;padding:28px;text-align:center;margin-bottom:16px}
+    .result-num{font-size:52px;font-weight:800;line-height:1}
+    .result-sub{font-size:15px;color:#aaa;margin-top:8px}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .detail-box{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:16px;text-align:center}
+    .detail-box .num{font-size:24px;font-weight:800;color:#111}
+    .detail-box .lbl{font-size:12px;color:#666;margin-top:3px}
+    .progress-wrap{margin-top:14px}
+    .progress-label{display:flex;justify-content:space-between;font-size:14px;color:#555;margin-bottom:6px}
+    .progress-bar{height:14px;background:#eee;border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;background:#c28a2b;border-radius:999px;transition:.5s}
+    .schedule-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:4px}
+    .schedule-table th{background:#111;color:#f0d39b;padding:9px 12px;text-align:right;font-size:12px}
+    .schedule-table th:first-child{text-align:left}
+    .schedule-table td{padding:8px 12px;text-align:right;border-bottom:1px solid #eee}
+    .schedule-table td:first-child{text-align:left;font-weight:700}
+    .schedule-scroll{max-height:320px;overflow-y:auto;border:1px solid #eee;border-radius:10px}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Savings Goal Calculator</h2>
+        <p>How long until you reach your goal? Or how much do you need to save per month?</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <h3>Your Goal</h3>
+          <div class="field"><label>Goal Amount</label><div class="input-prefix"><input type="number" id="goal" value="10000" min="0"></div></div>
+          <div class="field"><label>Current Savings</label><div class="input-prefix"><input type="number" id="current" value="0" min="0"></div></div>
+          <div class="field"><label>Monthly Contribution</label><div class="input-prefix"><input type="number" id="monthly" value="500" min="0"></div></div>
+          <div class="field"><label>Annual Interest Rate (APY)</label>
+            <div style="position:relative"><input type="number" id="rate" value="4.5" min="0" max="50" step="0.1" style="padding-right:32px"><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#888;font-size:16px;pointer-events:none">%</span></div>
+          </div>
+          <button class="atlas-btn" onclick="calculate()">Calculate</button>
+        </div>
+        <div id="resultSection" style="display:none">
+          <div class="result-big">
+            <div class="result-num" id="resultMonths">—</div>
+            <div class="result-sub" id="resultSub">months to reach your goal</div>
+          </div>
+          <div class="panel">
+            <div class="detail-grid">
+              <div class="detail-box"><div class="num" id="dTotal">—</div><div class="lbl">Total Saved</div></div>
+              <div class="detail-box"><div class="num" id="dInterest">—</div><div class="lbl">Interest Earned</div></div>
+              <div class="detail-box"><div class="num" id="dContrib">—</div><div class="lbl">Contributions</div></div>
+              <div class="detail-box"><div class="num" id="dDate">—</div><div class="lbl">Target Date</div></div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-label"><span>Current Progress</span><span id="progressPct">0%</span></div>
+              <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel" id="schedulePanel" style="display:none">
+        <h3>Savings Schedule</h3>
+        <div class="schedule-scroll">
+          <table class="schedule-table">
+            <thead><tr><th>Month</th><th>Balance</th><th>Interest</th><th>Contribution</th></tr></thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Savings Goal');
+
+    function fmt(n){ return '$'+Math.round(n).toLocaleString(); }
+
+    function calculate() {
+      const goal=parseFloat(document.getElementById('goal').value)||0;
+      const current=parseFloat(document.getElementById('current').value)||0;
+      const monthly=parseFloat(document.getElementById('monthly').value)||0;
+      const annualRate=parseFloat(document.getElementById('rate').value)||0;
+      const monthlyRate=annualRate/100/12;
+
+      if(monthly<=0){alert('Enter a monthly contribution greater than 0');return;}
+
+      let balance=current, months=0, totalInterest=0, totalContrib=0;
+      const schedule=[];
+      while(balance<goal&&months<1200){
+        months++;
+        const interest=balance*monthlyRate;
+        balance+=interest+monthly;
+        totalInterest+=interest;
+        totalContrib+=monthly;
+        schedule.push({month:months,balance,interest,contrib:monthly});
+      }
+
+      const finalBalance=balance;
+      const targetDate=new Date();
+      targetDate.setMonth(targetDate.getMonth()+months);
+
+      document.getElementById('resultMonths').textContent=months;
+      document.getElementById('resultSub').textContent='months to reach $'+goal.toLocaleString();
+      document.getElementById('dTotal').textContent=fmt(finalBalance);
+      document.getElementById('dInterest').textContent=fmt(totalInterest);
+      document.getElementById('dContrib').textContent=fmt(totalContrib+current);
+      document.getElementById('dDate').textContent=targetDate.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+
+      const pct=Math.min(100,Math.round(current/goal*100));
+      document.getElementById('progressPct').textContent=pct+'%';
+      document.getElementById('progressFill').style.width=pct+'%';
+
+      document.getElementById('scheduleBody').innerHTML=schedule.slice(0,120).map(r=>
+        `<tr><td>${r.month}</td><td>${fmt(r.balance)}</td><td>${fmt(r.interest)}</td><td>${fmt(r.contrib)}</td></tr>`
+      ).join('');
+
+      document.getElementById('resultSection').style.display='block';
+      document.getElementById('schedulePanel').style.display='block';
+    }
+    calculate();
+  </script>
+
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>

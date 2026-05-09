@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Type Speed",
+  "date": "2026-04-18",
+  "time": "23:29:24",
+  "chamber": "GM",
+  "seed": 761901597,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -14917540,
+    "y": 12648320,
+    "z": -13588991
+  },
+  "address": "FUNS6-J5NBT-VTQ2K"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Type Speed Test</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .hud{display:flex;justify-content:center;gap:28px;margin-bottom:16px;font-size:15px;font-weight:700;text-align:center}
+    .hud .val{font-size:30px;display:block;color:#8a611c;font-family:monospace}
+    .time-bar{height:8px;background:#eee;border-radius:999px;overflow:hidden;margin-bottom:16px}
+    .time-fill{height:100%;background:#8a611c;border-radius:999px;transition:.1s linear}
+    .text-display{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:18px;font-size:18px;line-height:1.8;font-family:monospace;margin-bottom:14px;letter-spacing:.5px}
+    .char{color:#bbb}
+    .char.correct{color:#111}
+    .char.wrong{color:#e74c3c;background:#fdf0f0;border-radius:2px}
+    .char.cursor{border-left:2px solid #8a611c}
+    .type-input{width:100%;padding:12px;border:2px solid #ccc;border-radius:10px;font-size:16px;font-family:monospace;box-sizing:border-box;outline:none;transition:border .15s}
+    .type-input:focus{border-color:#8a611c}
+    .type-input:disabled{background:#f7f7f7;color:#aaa}
+    .result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:16px 0}
+    .res-box{background:#111;color:white;border-radius:12px;padding:16px;text-align:center}
+    .res-box .val{font-size:28px;font-weight:800;color:#f0d39b}
+    .res-box .lbl{font-size:12px;color:#888;margin-top:3px}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 24px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .dur-row{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+    .dur-btn{padding:7px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
+    .dur-btn.active{background:#111;color:white;border-color:#111}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Type Speed Test</h2>
+        <p>How fast can you type? Find your WPM and accuracy.</p>
+      </div>
+      <div class="panel">
+        <div class="dur-row">
+          <button class="dur-btn" onclick="setDur(30,this)">30s</button>
+          <button class="dur-btn active" onclick="setDur(60,this)">60s</button>
+          <button class="dur-btn" onclick="setDur(120,this)">2 min</button>
+        </div>
+        <div class="hud">
+          <span><span class="val" id="timeVal">60</span>Time</span>
+          <span><span class="val" id="wpmVal">0</span>WPM</span>
+          <span><span class="val" id="accVal">100</span>Acc%</span>
+        </div>
+        <div class="time-bar"><div class="time-fill" id="timeFill" style="width:100%"></div></div>
+        <div class="text-display" id="textDisplay"></div>
+        <input class="type-input" id="typeInput" placeholder="Click here and start typing..." oninput="handleInput()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div class="result-grid" id="resultGrid" style="display:none"></div>
+        <button class="atlas-btn" style="margin-top:12px" onclick="reset()">Reset</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Type Speed Test');
+
+    const PASSAGES=[
+      "the quick brown fox jumps over the lazy dog and the dog just watched without any concern at all",
+      "practice makes perfect and every great typist started somewhere learning one key at a time with patience",
+      "technology has changed the way we communicate and typing has become an essential skill for modern life",
+      "the sun was setting behind the mountains casting long golden shadows across the valley floor below",
+      "a good programmer writes code that humans can read and machines can execute efficiently and correctly",
+      "coffee is the fuel that powers countless developers through long nights of debugging and problem solving",
+      "the best way to learn something new is to break it into small steps and practice each one carefully",
+      "every journey begins with a single step and every great achievement starts with one small decision",
+    ];
+
+    let text,pos,errors,startTime,timerInt,duration,running,best;
+    duration=60;best=parseInt(localStorage.getItem('type_best')||0);
+
+    function setDur(s,btn){duration=s;document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');reset();}
+
+    function reset(){
+      clearInterval(timerInt);running=false;pos=0;errors=0;
+      text=PASSAGES[Math.floor(Math.random()*PASSAGES.length)];
+      document.getElementById('timeVal').textContent=duration;
+      document.getElementById('wpmVal').textContent=0;
+      document.getElementById('accVal').textContent=100;
+      document.getElementById('timeFill').style.width='100%';
+      document.getElementById('resultGrid').style.display='none';
+      const inp=document.getElementById('typeInput');inp.value='';inp.disabled=false;inp.placeholder='Click here and start typing...';
+      renderText();
+    }
+
+    function renderText(typed=''){
+      const disp=document.getElementById('textDisplay');
+      disp.innerHTML=text.split('').map((c,i)=>{
+        let cls='char';
+        if(i<typed.length) cls+= typed[i]===c?' correct':' wrong';
+        if(i===typed.length) cls+=' cursor';
+        return `<span class="${cls}">${c==='&'?'&amp;':c}</span>`;
+      }).join('');
+    }
+
+    function handleInput(){
+      const inp=document.getElementById('typeInput');
+      const val=inp.value;
+      if(!running&&val.length>0){
+        running=true;startTime=Date.now();
+        timerInt=setInterval(tick,100);
+      }
+      renderText(val);
+      let errs=0;
+      for(let i=0;i<val.length;i++)if(val[i]!==text[i])errs++;
+      errors=errs;
+      const cor=val.length-errs;
+      const acc=val.length?Math.round(cor/val.length*100):100;
+      document.getElementById('accVal').textContent=acc;
+      if(val===text) finish();
+    }
+
+    function tick(){
+      const elapsed=(Date.now()-startTime)/1000;
+      const remaining=Math.max(0,duration-elapsed);
+      document.getElementById('timeVal').textContent=Math.ceil(remaining);
+      document.getElementById('timeFill').style.width=(remaining/duration*100)+'%';
+      const typed=document.getElementById('typeInput').value;
+      const words=(typed.trim().split(/\s+/).filter(Boolean).length);
+      const wpm=Math.round(words/(elapsed/60));
+      document.getElementById('wpmVal').textContent=wpm;
+      if(remaining<=0) finish();
+    }
+
+    function finish(){
+      clearInterval(timerInt);running=false;
+      const inp=document.getElementById('typeInput');
+      inp.disabled=true;
+      const elapsed=(Date.now()-startTime)/1000;
+      const typed=inp.value;
+      const words=typed.trim().split(/\s+/).filter(Boolean).length;
+      const wpm=Math.round(words/(elapsed/60));
+      const acc=typed.length?Math.round((typed.length-errors)/typed.length*100):0;
+      if(wpm>best){best=wpm;localStorage.setItem('type_best',best);}
+      document.getElementById('resultGrid').style.display='grid';
+      document.getElementById('resultGrid').innerHTML=`
+        <div class="res-box"><div class="val">${wpm}</div><div class="lbl">WPM</div></div>
+        <div class="res-box"><div class="val">${acc}%</div><div class="lbl">Accuracy</div></div>
+        <div class="res-box"><div class="val">${errors}</div><div class="lbl">Errors</div></div>
+        <div class="res-box"><div class="val">${best}</div><div class="lbl">Best WPM</div></div>`;
+    }
+
+    reset();
+  </script>
+
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>

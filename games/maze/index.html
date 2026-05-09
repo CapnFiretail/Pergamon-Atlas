@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Maze",
+  "date": "2026-04-18",
+  "time": "23:29:24",
+  "chamber": "GM",
+  "seed": 4034271088,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 6146610,
+    "y": -5066567,
+    "z": -9949769
+  },
+  "address": "TTGDY-9999Y-YANF9"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Maze</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .maze-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+    #mazeCanvas{border:3px solid #8a611c;border-radius:6px;display:block;max-width:100%}
+    .maze-stats{display:flex;gap:20px;background:#111;border-radius:10px;padding:12px 24px;color:white}
+    .maze-stat .val{font-size:24px;font-weight:800;color:#f0d39b;font-family:monospace;text-align:center}
+    .maze-stat .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;text-align:center}
+    .maze-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+    .maze-btn{padding:10px 18px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .maze-btn:hover{background:#8a611c;color:white}
+    .maze-btn.active{background:#8a611c;color:white}
+    .maze-dpad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:4px;margin-top:6px}
+    .dpad-btn{width:44px;height:44px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+    .dpad-btn:hover{background:#8a611c}
+    .maze-msg{font-size:16px;font-weight:700;color:#f0d39b;min-height:22px;text-align:center}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Maze</h2>
+        <p>Navigate from the green start to the red exit. Use arrow keys or WASD, or the buttons below.</p>
+      </div>
+      <div class="maze-wrap">
+        <div class="maze-stats">
+          <div class="maze-stat"><div class="val" id="timeEl">0:00</div><div class="lbl">Time</div></div>
+          <div class="maze-stat"><div class="val" id="movesEl">0</div><div class="lbl">Steps</div></div>
+        </div>
+        <canvas id="mazeCanvas"></canvas>
+        <div class="maze-msg" id="mazeMsg"></div>
+        <div class="maze-dpad">
+          <div></div>
+          <button class="dpad-btn" onclick="move(-1,0)">↑</button>
+          <div></div>
+          <button class="dpad-btn" onclick="move(0,-1)">←</button>
+          <button class="dpad-btn" onclick="move(1,0)">↓</button>
+          <button class="dpad-btn" onclick="move(0,1)">→</button>
+        </div>
+        <div class="maze-btns">
+          <button class="maze-btn active" id="dEasy"   onclick="newGame(10,10)">Easy</button>
+          <button class="maze-btn"        id="dMed"    onclick="newGame(16,16)">Medium</button>
+          <button class="maze-btn"        id="dHard"   onclick="newGame(22,22)">Hard</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Maze');</script>
+  <script>
+  let cells,W,H,player,timerSec,timerInt,won,steps;
+  const DIRS=[{dr:-1,dc:0,wall:0,opp:2},{dr:0,dc:1,wall:1,opp:3},{dr:1,dc:0,wall:2,opp:0},{dr:0,dc:-1,wall:3,opp:1}];
+  // cell walls: [N,E,S,W] booleans (true = wall present)
+
+  function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+  function generate(w,h){
+    W=w;H=h;
+    cells=Array(H).fill(null).map(()=>Array(W).fill(null).map(()=>({walls:[true,true,true,true]})));
+    const vis=Array(H).fill(null).map(()=>Array(W).fill(false));
+    function carve(r,c){
+      vis[r][c]=true;
+      for(const{dr,dc,wall,opp}of shuffle(DIRS)){
+        const nr=r+dr,nc=c+dc;
+        if(nr>=0&&nr<H&&nc>=0&&nc<W&&!vis[nr][nc]){
+          cells[r][c].walls[wall]=false;
+          cells[nr][nc].walls[opp]=false;
+          carve(nr,nc);
+        }
+      }
+    }
+    carve(0,0);
+  }
+
+  function newGame(w,h){
+    clearInterval(timerInt);
+    generate(w,h);
+    player={r:0,c:0}; timerSec=0; won=false; steps=0;
+    document.getElementById('movesEl').textContent='0';
+    document.getElementById('timeEl').textContent='0:00';
+    document.getElementById('mazeMsg').textContent='';
+    timerInt=setInterval(()=>{if(!won){timerSec++;document.getElementById('timeEl').textContent=Math.floor(timerSec/60)+':'+(timerSec%60+'').padStart(2,'0');}},1000);
+    ['dEasy','dMed','dHard'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    const ids={10:'dEasy',16:'dMed',22:'dHard'};
+    document.getElementById(ids[w]).classList.add('active');
+    draw();
+  }
+
+  function move(dr,dc){
+    if(won)return;
+    const{r,c}=player;
+    const dirIdx=dr===-1?0:dc===1?1:dr===1?2:3;
+    if(cells[r][c].walls[dirIdx])return;
+    player.r+=dr; player.c+=dc; steps++;
+    document.getElementById('movesEl').textContent=steps;
+    if(player.r===H-1&&player.c===W-1){
+      won=true; clearInterval(timerInt);
+      document.getElementById('mazeMsg').textContent=`Escaped in ${steps} steps!`;
+    }
+    draw();
+  }
+
+  function draw(){
+    const canvas=document.getElementById('mazeCanvas');
+    const maxSize=Math.min(560,window.innerWidth-64);
+    const cell=Math.floor(maxSize/Math.max(W,H));
+    canvas.width=W*cell; canvas.height=H*cell;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#f5ead0'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='#2a1a08'; ctx.lineWidth=2;
+    // Draw walls
+    for(let r=0;r<H;r++)for(let c=0;c<W;c++){
+      const x=c*cell,y=r*cell;
+      const w=cells[r][c].walls;
+      if(w[0]){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+cell,y);ctx.stroke();}
+      if(w[1]){ctx.beginPath();ctx.moveTo(x+cell,y);ctx.lineTo(x+cell,y+cell);ctx.stroke();}
+      if(w[2]){ctx.beginPath();ctx.moveTo(x,y+cell);ctx.lineTo(x+cell,y+cell);ctx.stroke();}
+      if(w[3]){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+cell);ctx.stroke();}
+    }
+    // Exit
+    ctx.fillStyle='rgba(200,60,60,.35)'; ctx.fillRect((W-1)*cell+2,(H-1)*cell+2,cell-4,cell-4);
+    ctx.fillStyle='#c0392b'; ctx.font=`${Math.floor(cell*.55)}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('⚑',(W-.5)*cell,(H-.5)*cell);
+    // Player
+    ctx.fillStyle='#2a9d3a';
+    const pr=player.r,pc=player.c;
+    const pad=Math.floor(cell*.2);
+    ctx.beginPath();ctx.arc(pc*cell+cell/2,pr*cell+cell/2,cell/2-pad,0,Math.PI*2);ctx.fill();
+  }
+
+  document.addEventListener('keydown',e=>{
+    const map={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1],w:[-1,0],s:[1,0],a:[0,-1],d:[0,1]};
+    const mv=map[e.key];
+    if(mv){e.preventDefault();move(...mv);}
+  });
+
+  newGame(10,10);
+  </script>
+
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>

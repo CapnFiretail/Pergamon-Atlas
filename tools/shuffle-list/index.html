@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Shuffle List",
+  "date": "2026-04-18",
+  "time": "23:29:24",
+  "chamber": "TL",
+  "seed": 3502576568,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 14326283,
+    "y": 11186724,
+    "z": 14128407
+  },
+  "address": "39UCP-QR9MP-P9CA9"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Shuffle List</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;color:#f3f3f3}
+    .card{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .card h3{margin:0 0 16px;font-size:20px}
+    label{display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:4px}
+    textarea{width:100%;padding:12px;border:1.5px solid #ccc;border-radius:8px;font-size:15px;font-family:Georgia,serif;box-sizing:border-box;resize:vertical;min-height:160px}
+    textarea:focus{outline:none;border-color:#8a611c}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .action-btn{padding:9px 20px;border:none;border-radius:8px;background:#111;color:white;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .action-btn:hover{background:#333}
+    .action-btn.gold{background:#8a611c}
+    .action-btn.gold:hover{background:#a07030}
+    .action-btn.outline{background:white;color:#111;border:1.5px solid #ccc}
+    .action-btn.outline:hover{border-color:#8a611c;color:#8a611c}
+    .sep-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14px;color:#555}
+    .sep-row select,.sep-row input{padding:7px 10px;border:1.5px solid #ccc;border-radius:7px;font-family:Georgia,serif;font-size:14px}
+    .sep-row select:focus,.sep-row input:focus{outline:none;border-color:#8a611c}
+    .pick-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:14px;color:#555}
+    .pick-row input[type=number]{width:60px;padding:7px;border:1.5px solid #ccc;border-radius:7px;font-size:14px;font-family:Georgia,serif}
+    .pick-row input:focus{outline:none;border-color:#8a611c}
+    .pick-result{background:#f0e8d0;border:1.5px solid #d4b870;border-radius:10px;padding:16px;margin-top:12px;font-family:monospace;font-size:16px;color:#5a3e0a;min-height:40px;word-break:break-word}
+    .item-count{font-size:13px;color:#888;margin-bottom:8px}
+    .output-list{counter-reset:items}
+    .output-item{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:15px}
+    .output-item:last-child{border-bottom:none}
+    .output-item::before{counter-increment:items;content:counter(items)'.';color:#aaa;font-size:12px;min-width:24px;text-align:right;flex-shrink:0}
+    .copy-link{font-size:12px;color:#8a611c;cursor:pointer;text-decoration:underline;margin-left:auto;flex-shrink:0}
+    .copy-link:hover{color:#a07030}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Shuffle List</h2>
+        <p>Randomize a list, pick random items, or sort alphabetically.</p>
+      </div>
+      <div class="card">
+        <h3>Input List</h3>
+        <div class="sep-row">
+          <span>Separator:</span>
+          <select id="sepSel" onchange="updateSepInput()">
+            <option value="newline">New line</option>
+            <option value="comma">Comma</option>
+            <option value="semicolon">Semicolon</option>
+            <option value="custom">Custom</option>
+          </select>
+          <input type="text" id="customSep" style="width:60px;display:none" placeholder="sep">
+        </div>
+        <label>Items (one per line by default)</label>
+        <textarea id="inputList" placeholder="Alice&#10;Bob&#10;Charlie&#10;Diana&#10;Eve"></textarea>
+        <div class="item-count" id="itemCount">0 items</div>
+        <div class="btn-row">
+          <button class="action-btn gold" onclick="shuffle()">Shuffle</button>
+          <button class="action-btn outline" onclick="sortAZ()">Sort A→Z</button>
+          <button class="action-btn outline" onclick="sortZA()">Sort Z→A</button>
+          <button class="action-btn outline" onclick="removeDupes()">Remove Dupes</button>
+          <button class="action-btn outline" onclick="reverseList()">Reverse</button>
+          <button class="action-btn outline" onclick="copyOutput()">Copy Output</button>
+        </div>
+        <div id="outputArea" style="display:none">
+          <label>Result</label>
+          <div class="output-list" id="outputList"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Pick Random Item(s)</h3>
+        <div class="pick-row">
+          <span>Pick</span>
+          <input type="number" id="pickCount" value="1" min="1">
+          <span>item(s) at random</span>
+          <button class="action-btn gold" onclick="pickRandom()">Pick</button>
+        </div>
+        <div class="pick-result" id="pickResult" style="display:none"></div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Shuffle List');</script>
+  <script>
+  let lastResult=[];
+
+  document.getElementById('inputList').addEventListener('input',updateCount);
+
+  function updateCount(){
+    const items=getItems();
+    document.getElementById('itemCount').textContent=items.length+' item'+(items.length===1?'':'s');
+  }
+
+  function getSep(){
+    const sel=document.getElementById('sepSel').value;
+    if(sel==='newline')return '\n';
+    if(sel==='comma')return ',';
+    if(sel==='semicolon')return ';';
+    return document.getElementById('customSep').value||'\n';
+  }
+
+  function updateSepInput(){
+    document.getElementById('customSep').style.display=document.getElementById('sepSel').value==='custom'?'inline':'none';
+    updateCount();
+  }
+
+  function getItems(){
+    const sep=getSep();
+    return document.getElementById('inputList').value.split(sep).map(s=>s.trim()).filter(s=>s!=='');
+  }
+
+  function fisherYates(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+  }
+
+  function showResult(items){
+    lastResult=items;
+    const area=document.getElementById('outputArea');
+    area.style.display='block';
+    document.getElementById('outputList').innerHTML=items.map(item=>`<div class="output-item">${item}</div>`).join('');
+  }
+
+  function shuffle(){showResult(fisherYates(getItems()));}
+  function sortAZ(){showResult([...getItems()].sort((a,b)=>a.localeCompare(b)));}
+  function sortZA(){showResult([...getItems()].sort((a,b)=>b.localeCompare(a)));}
+  function removeDupes(){const seen=new Set();showResult(getItems().filter(i=>{if(seen.has(i.toLowerCase()))return false;seen.add(i.toLowerCase());return true;}));}
+  function reverseList(){showResult([...getItems()].reverse());}
+
+  function copyOutput(){
+    const sep=getSep();
+    navigator.clipboard.writeText(lastResult.join(sep)).catch(()=>{});
+  }
+
+  function pickRandom(){
+    const items=getItems();
+    if(!items.length){document.getElementById('pickResult').style.display='none';return;}
+    const n=Math.min(parseInt(document.getElementById('pickCount').value)||1,items.length);
+    const picked=fisherYates(items).slice(0,n);
+    const el=document.getElementById('pickResult');
+    el.style.display='block';
+    el.innerHTML=picked.map(p=>`<strong>${p}</strong>`).join('<br>');
+  }
+
+  updateCount();
+  </script>
+
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>

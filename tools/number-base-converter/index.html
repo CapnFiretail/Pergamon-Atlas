@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Number Base Converter",
+  "date": "2026-04-18",
+  "time": "23:29:24",
+  "chamber": "TL",
+  "seed": 3201438271,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -6242631,
+    "y": 12130403,
+    "z": 15180892
+  },
+  "address": "QM5H9-RJX3N-Q9QLU"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Number Base Converter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .base-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    .base-box{background:#f7f7f7;border:2px solid #ddd;border-radius:14px;padding:18px;transition:.15s}
+    .base-box.active-input{border-color:#c28a2b;background:#fffaf4}
+    .base-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .base-name{font-size:15px;font-weight:700;color:#333}
+    .base-num{font-size:13px;color:#888;background:#e0e0e0;border-radius:999px;padding:2px 10px}
+    .base-input{width:100%;padding:12px;border:1.5px solid #ccc;border-radius:9px;font-size:18px;font-family:monospace;box-sizing:border-box}
+    .base-input:focus{outline:none;border-color:#8a611c}
+    .copy-btn{margin-top:8px;background:none;border:1.5px solid #ccc;border-radius:7px;padding:5px 12px;font-size:13px;font-family:Georgia,serif;cursor:pointer;color:#666}
+    .copy-btn:hover{border-color:#8a611c;color:#8a611c}
+    .custom-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;padding-top:16px;border-top:2px solid #eee;margin-top:8px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:13px;font-weight:700;color:#333}
+    .field input{padding:11px;border:1.5px solid #ccc;border-radius:9px;font-size:15px;font-family:monospace}
+    .field input:focus{outline:none;border-color:#8a611c}
+    .atlas-btn{border:none;border-radius:9px;padding:11px 18px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;align-self:flex-end}
+    .error{color:#c00;font-size:13px;margin-top:6px;min-height:18px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Number Base Converter</h2>
+        <p>Convert numbers between Binary, Octal, Decimal, Hexadecimal, and any custom base.</p>
+      </div>
+      <div class="panel">
+        <h3>Convert</h3>
+        <div class="base-grid">
+          <div class="base-box" id="box-2">
+            <div class="base-label"><span class="base-name">Binary</span><span class="base-num">Base 2</span></div>
+            <input class="base-input" id="inp-2" type="text" placeholder="e.g. 1010" oninput="convertFrom(2)">
+            <button class="copy-btn" onclick="copyVal('inp-2')">Copy</button>
+          </div>
+          <div class="base-box" id="box-8">
+            <div class="base-label"><span class="base-name">Octal</span><span class="base-num">Base 8</span></div>
+            <input class="base-input" id="inp-8" type="text" placeholder="e.g. 12" oninput="convertFrom(8)">
+            <button class="copy-btn" onclick="copyVal('inp-8')">Copy</button>
+          </div>
+          <div class="base-box" id="box-10">
+            <div class="base-label"><span class="base-name">Decimal</span><span class="base-num">Base 10</span></div>
+            <input class="base-input" id="inp-10" type="text" placeholder="e.g. 255" oninput="convertFrom(10)">
+            <button class="copy-btn" onclick="copyVal('inp-10')">Copy</button>
+          </div>
+          <div class="base-box" id="box-16">
+            <div class="base-label"><span class="base-name">Hexadecimal</span><span class="base-num">Base 16</span></div>
+            <input class="base-input" id="inp-16" type="text" placeholder="e.g. FF" oninput="convertFrom(16)">
+            <button class="copy-btn" onclick="copyVal('inp-16')">Copy</button>
+          </div>
+        </div>
+        <div id="errorMsg" class="error"></div>
+        <div class="custom-row">
+          <div class="field"><label>Custom Input</label><input type="text" id="custInput" placeholder="Value"></div>
+          <div class="field"><label>From Base</label><input type="number" id="custFrom" value="10" min="2" max="36" style="width:70px"></div>
+          <div class="field"><label>To Base</label><input type="number" id="custTo" value="2" min="2" max="36" style="width:70px"></div>
+          <button class="atlas-btn" onclick="customConvert()">Convert</button>
+          <div id="custResult" style="align-self:flex-end;font-size:20px;font-family:monospace;font-weight:700;color:#111"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Number Base Converter');
+
+    const bases = [2, 8, 10, 16];
+
+    function convertFrom(fromBase) {
+      const val = document.getElementById('inp-'+fromBase).value.trim().toUpperCase();
+      document.getElementById('errorMsg').textContent = '';
+      bases.forEach(b => document.getElementById('box-'+b).classList.toggle('active-input', b===fromBase));
+
+      if (!val) { bases.filter(b=>b!==fromBase).forEach(b=>document.getElementById('inp-'+b).value=''); return; }
+
+      const decimal = parseInt(val, fromBase);
+      if (isNaN(decimal)) {
+        document.getElementById('errorMsg').textContent = 'Invalid value for base ' + fromBase;
+        return;
+      }
+      bases.forEach(b => {
+        if (b !== fromBase) {
+          const el = document.getElementById('inp-'+b);
+          el.value = decimal.toString(b).toUpperCase();
+        }
+      });
+    }
+
+    function copyVal(id) {
+      const val = document.getElementById(id).value;
+      if (!val) return;
+      navigator.clipboard.writeText(val);
+    }
+
+    function customConvert() {
+      const val = document.getElementById('custInput').value.trim().toUpperCase();
+      const fromBase = parseInt(document.getElementById('custFrom').value);
+      const toBase = parseInt(document.getElementById('custTo').value);
+      if (!val) return;
+      const dec = parseInt(val, fromBase);
+      if (isNaN(dec)) { document.getElementById('custResult').textContent = 'Invalid'; return; }
+      document.getElementById('custResult').textContent = dec.toString(toBase).toUpperCase();
+    }
+  </script>
+
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>
