@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Account</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .account-hero {
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+    .account-hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 5vw, 42px);
+      color: #f0d39b;
+    }
+    .account-hero p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #f3f3f3;
+      max-width: 680px;
+    }
+
+    .account-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 860px;
+    }
+
+    .auth-card {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    .auth-card h3 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      color: #111;
+    }
+    .auth-card .card-sub {
+      margin: 0 0 22px;
+      font-size: 15px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #222;
+      font-family: Georgia, serif;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      font-family: Georgia, serif;
+      font-size: 15px;
+      color: #111;
+      background: #fafafa;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #8a611c;
+      background: #fff;
+    }
+
+    .auth-btn {
+      font-family: Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: #111;
+      border: 2px solid #8a611c;
+      border-radius: 8px;
+      padding: 11px 28px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s, transform 0.12s;
+      margin-top: 4px;
+    }
+    .auth-btn:hover {
+      background: #1e1e1e;
+      transform: translateY(-1px);
+    }
+    .auth-btn.secondary {
+      background: white;
+      color: #111;
+      border-color: #999;
+    }
+    .auth-btn.secondary:hover {
+      background: #f3f3f3;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0;
+      color: #aaa;
+      font-size: 13px;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+
+    .notice-box {
+      margin-top: 20px;
+      background: #f8f5ee;
+      border: 1px solid #e0c98a;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #6a5210;
+      line-height: 1.6;
+    }
+
+    .coming-soon-card {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      max-width: 860px;
+      margin-top: 24px;
+    }
+    .coming-soon-card h3 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      color: #111;
+    }
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+    }
+    .feature-list li {
+      font-size: 15px;
+      color: #333;
+      line-height: 1.6;
+      padding-left: 18px;
+      position: relative;
+    }
+    .feature-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: #8a611c;
+    }
+
+    @media (max-width: 720px) {
+      .account-layout { grid-template-columns: 1fr; }
+      .feature-list { grid-template-columns: 1fr; }
+      .auth-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+
+      <section class="account-hero">
+        <h2>Your Account</h2>
+        <p>Sign in or create an account to save your progress, bookmark artifacts, and access your Atlas history.</p>
+      </section>
+
+      <div class="account-layout">
+        <div class="auth-card">
+          <h3>Sign In</h3>
+          <p class="card-sub">Access your existing Pergamon Atlas account.</p>
+
+          <form id="signin-form">
+            <div class="field-group">
+              <label for="signin-email">Email</label>
+              <input type="email" id="signin-email" name="email" placeholder="your@email.com">
+            </div>
+            <div class="field-group">
+              <label for="signin-password">Password</label>
+              <input type="password" id="signin-password" name="password" placeholder="••••••••">
+            </div>
+            <button type="submit" class="auth-btn">Sign In</button>
+          </form>
+
+          <div class="notice-box">
+            Account login is not yet active. Backend support is coming soon.
+          </div>
+        </div>
+
+        <div class="auth-card">
+          <h3>Create Account</h3>
+          <p class="card-sub">Register to get the most out of the Atlas.</p>
+
+          <form id="signup-form">
+            <div class="field-group">
+              <label for="signup-name">Display Name</label>
+              <input type="text" id="signup-name" name="name" placeholder="Your name or handle">
+            </div>
+            <div class="field-group">
+              <label for="signup-email">Email</label>
+              <input type="email" id="signup-email" name="email" placeholder="your@email.com">
+            </div>
+            <div class="field-group">
+              <label for="signup-password">Password</label>
+              <input type="password" id="signup-password" name="password" placeholder="Choose a password">
+            </div>
+            <button type="submit" class="auth-btn">Create Account</button>
+          </form>
+
+          <div class="notice-box">
+            Registration is not yet active. Backend support is coming soon.
+          </div>
+        </div>
+      </div>
+
+      <div class="coming-soon-card">
+        <h3>What Your Account Will Do</h3>
+        <ul class="feature-list">
+          <li>Bookmark artifacts and return to them later</li>
+          <li>Track which pages you've visited in the Atlas</li>
+          <li>Save custom notes on any artifact</li>
+          <li>View your full Atlas exploration history</li>
+          <li>Unlock account-exclusive Atlas features</li>
+          <li>Sync your data across devices</li>
+        </ul>
+      </div>
+
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Account');
+
+    document.getElementById('signin-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
