@@ -194,7 +194,7 @@
         <p class="panel-sub">Enter an artifact code (format: XXXXXXXX-XXXXX) to look up the artifact.</p>
         <div class="input-row">
           <input id="code-input" class="dec-input" type="text" placeholder="XXXXXXXX-XXXXX" maxlength="14"
-            oninput="this.value=this.value.toUpperCase().replace(/[^A-F0-9\-]/g,'')">
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9\-]/g,'')">
           <button class="dec-btn" onclick="decodeArtCode()">Decode</button>
         </div>
         <div id="code-result" class="result-box"></div>
