@@ -152,7 +152,6 @@
           <div class="ar-header">
             <div class="ar-hl">
               <div class="ar-name">${esc(name)}</div>
-              <div class="ar-type">${esc(typeName)}</div>
             </div>
             <div class="ar-hr">
               <div class="ar-meta-label">Artifact Code</div>
@@ -433,12 +432,6 @@
   font-weight: normal;
 }
 
-.ar-type {
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  color: #8a7a5a;
-  text-transform: uppercase;
-}
 
 .ar-hr { text-align: right; }
 
