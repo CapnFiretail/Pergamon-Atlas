@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Search</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <style>
+    .search-hero {
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+    .search-hero h2 {
+      margin: 0 0 14px;
+      font-size: clamp(26px, 4vw, 38px);
+      color: #f0d39b;
+    }
+    .search-bar-wrap {
+      display: flex;
+      gap: 10px;
+      max-width: 600px;
+    }
+    .search-bar-wrap input {
+      flex: 1;
+      font-family: Georgia, serif;
+      font-size: 16px;
+      padding: 11px 14px;
+      border: 2px solid #8a611c;
+      border-radius: 8px;
+      background: #1e1e1e;
+      color: #f3f3f3;
+      outline: none;
+    }
+    .search-bar-wrap input::placeholder { color: #888; }
+    .search-bar-wrap input:focus { border-color: #c9a84c; }
+    .search-bar-wrap button {
+      font-family: Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 11px 22px;
+      background: #8a611c;
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .search-bar-wrap button:hover { background: #a87422; }
+
+    .results-panel {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    .results-header {
+      font-size: 15px;
+      color: #555;
+      margin: 0 0 20px;
+    }
+    .results-header strong { color: #111; }
+
+    .result-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .result-card:hover {
+      border-color: #8a611c;
+      box-shadow: 0 2px 8px rgba(138,97,28,0.1);
+    }
+    .result-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #111;
+    }
+    .result-type {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #f0e8d4;
+      color: #8a611c;
+      white-space: nowrap;
+    }
+    .result-type.game { background: #e8eef5; color: #2a4a7a; }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .no-results strong { color: #111; display: block; font-size: 20px; margin-bottom: 8px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+
+      <section class="search-hero">
+        <h2>Search</h2>
+        <div class="search-bar-wrap">
+          <input type="text" id="searchInput" placeholder="Search tools and games...">
+          <button id="searchBtn">Search</button>
+        </div>
+      </section>
+
+      <div class="results-panel">
+        <p class="results-header" id="resultsHeader"></p>
+        <div id="resultsList"></div>
+      </div>
+
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+
+  <script src="/pergamon-data/indexing/entries.js"></script>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Search');
+
+    const input = document.getElementById('searchInput');
+    const btn = document.getElementById('searchBtn');
+    const header = document.getElementById('resultsHeader');
+    const list = document.getElementById('resultsList');
+
+    function getQuery() {
+      return new URLSearchParams(window.location.search).get('q') || '';
+    }
+
+    function runSearch(q) {
+      const term = q.trim().toLowerCase();
+      if (!term) {
+        header.innerHTML = '';
+        list.innerHTML = '<div class="empty-state">Enter a search term above.</div>';
+        return;
+      }
+
+      const entries = window.atlasEntries || { tools: [], games: [] };
+      const tools = (entries.tools || []).filter(e => e.name.toLowerCase().includes(term));
+      const games = (entries.games || []).filter(e => e.name.toLowerCase().includes(term));
+      const all = [
+        ...tools.map(e => ({ ...e, kind: 'Tool' })),
+        ...games.map(e => ({ ...e, kind: 'Game' }))
+      ];
+
+      const count = all.length;
+      header.innerHTML = count > 0
+        ? `Showing <strong>${count}</strong> result${count !== 1 ? 's' : ''} for <strong>"${q.trim()}"</strong>`
+        : '';
+
+      if (count === 0) {
+        list.innerHTML = `<div class="no-results"><strong>No results found</strong>No tools or games matched "${q.trim()}". Try a different search.</div>`;
+        return;
+      }
+
+      list.innerHTML = all.map(e => `
+        <a class="result-card" href="${e.path}">
+          <span class="result-name">${e.name}</span>
+          <span class="result-type${e.kind === 'Game' ? ' game' : ''}">${e.kind}</span>
+        </a>
+      `).join('');
+    }
+
+    function submitSearch() {
+      const q = input.value.trim();
+      if (!q) return;
+      const url = new URL(window.location.href);
+      url.searchParams.set('q', q);
+      window.history.replaceState(null, '', url);
+      runSearch(q);
+    }
+
+    btn.addEventListener('click', submitSearch);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submitSearch(); });
+
+    const initialQuery = getQuery();
+    if (initialQuery) {
+      input.value = initialQuery;
+      runSearch(initialQuery);
+    } else {
+      list.innerHTML = '<div class="empty-state">Enter a search term above.</div>';
+    }
+  </script>
+</body>
+</html>

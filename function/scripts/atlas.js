@@ -10,6 +10,15 @@ function loadSnippets(pageName) {
       document.getElementById('header-placeholder').innerHTML = html;
       const el = document.querySelector('.page-title-text');
       if (el) el.textContent = suffix;
+
+      const searchInput = document.querySelector('.search-wrap input');
+      if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && this.value.trim()) {
+            window.location.href = '/search?q=' + encodeURIComponent(this.value.trim());
+          }
+        });
+      }
     });
 
   fetch('/function/snippets/sidebar.html')
@@ -27,6 +36,7 @@ function loadSnippets(pageName) {
         else if (href === '/games' && path.startsWith('/games')) link.classList.add('active');
         else if (href === '/atlas-explorer/' && path.startsWith('/atlas-explorer')) link.classList.add('active');
         else if (href === '/other/help' && path.startsWith('/other/help')) link.classList.add('active');
+        else if (href === '/other/suggestions' && path.startsWith('/other/suggestions')) link.classList.add('active');
       });
 
       // Sidebar collapse toggle
