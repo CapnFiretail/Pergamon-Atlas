@@ -9,7 +9,7 @@ const atlasUpdates = [
       "Header, sidebar, and footer now load consistently across all 90+ pages via a centralized system",
       "Archives catalog built — deprecated artifacts preserved with their addresses and codes",
       "Chess Forge (v1) and Atlas Runner (v1) restored to the archives",
-      "Atlas Decoder input fixed — no longer strips valid base-32 characters"
+      "FLushed out the Atlas Navigation System"
     ]
   },
   {
