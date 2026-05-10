@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Update Log",
+  "date": "2026-05-10",
+  "time": "01:41:24",
+  "chamber": "PG",
+  "seed": 1452473123,
+  "code_seed": 1778377284,
+  "coords": {
+    "x": 6692842,
+    "y": -18716,
+    "z": -15911150
+  },
+  "address": "UGVPQ-5F8PP-SLLS2"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Update Log</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/function/styles/header.css">
+  <link rel="stylesheet" href="/function/styles/sidebar.css">
+  <link rel="stylesheet" href="/function/styles/main.css">
+  <link rel="stylesheet" href="/function/styles/footer.css">
+  <link rel="stylesheet" href="/function/styles/updates.css">
+  <style>
+    .log-hero {
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+    .log-hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 5vw, 42px);
+      color: #f0d39b;
+    }
+    .log-hero p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #f3f3f3;
+      max-width: 680px;
+    }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+
+      <section class="log-hero">
+        <h2>Update Log</h2>
+        <p>A running record of everything being built, changed, and added to the Atlas.</p>
+      </section>
+
+      <section class="updates-section">
+        <div id="updates-all" class="updates-wrap"></div>
+      </section>
+
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+
+  <script src="/pergamon-data/update-logs/updates.js"></script>
+  <script src="/function/scripts/atlas.js"></script>
+  <script>loadSnippets('Update Log');</script>
+  <script>
+    (function () {
+      const container = document.getElementById('updates-all');
+      if (!container || !window.atlasUpdates) return;
+      container.innerHTML = atlasUpdates.map(update => `
+        <article class="update-card">
+          <div class="update-meta">
+            <span class="update-date">${update.date}</span>
+            <span class="update-tag">${update.tag}</span>
+          </div>
+          <h3>${update.title}</h3>
+          ${update.text ? `<p>${update.text}</p>` : ''}
+          ${update.list ? `
+            <ul class="update-list">
+              ${update.list.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          ` : ''}
+        </article>
+      `).join('');
+    })();
+  </script>
+<script src="/pergamon-data/pergamon-address.js"></script>
+<script src="/pergamon-data/indexing/entries.js"></script>
+<script src="/pergamon-data/atlas-reference.js"></script>
+</body>
+</html>

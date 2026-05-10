@@ -103,6 +103,7 @@ window.atlasEntries = {
     { path: "/other/help", name: "Help", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 418145593, code_seed: 1778374433, address: "HEWHW-PYXKG-JB8LZ", coords: { x: -13172044, y: 9837161, z: 8971359 } },
     { path: "/other/suggestions", name: "Suggestions", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 1779867927, code_seed: 1778374433, address: "FT4RH-D3N4K-PM4Q4", coords: { x: -14828639, y: 7470088, z: 14546132 } },
     { path: "/other/account", name: "Account", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 3437978101, code_seed: 1778374433, address: "9QNFG-43V4H-B6CKR", coords: { x: 11690722, y: -1998838, z: 1446951 } },
+    { path: "/other/updates", name: "Update Log", date: "2026-05-10", time: "01:41:24", chamber: "PG", seed: 1452473123, code_seed: 1778377284, address: "UGVPQ-5F8PP-SLLS2", coords: { x: 6692842, y: -18716, z: -15911150 } },
     { path: "/archives", name: "Archives", date: "2026-05-10", time: "01:13:33", chamber: "PG", seed: 46203695, code_seed: 1778375613, address: "XVNBT-2AA3B-GFVXH", coords: { x: 1892983, y: -3322768, z: 7001007 } }
   ],
 

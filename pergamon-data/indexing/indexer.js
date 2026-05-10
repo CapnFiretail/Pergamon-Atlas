@@ -18,6 +18,7 @@ const PAGES = [
   { file: path.join(ROOT, 'other', 'help', 'index.html'),        pagePath: '/other/help',        name: 'Help'           },
   { file: path.join(ROOT, 'other', 'suggestions', 'index.html'), pagePath: '/other/suggestions', name: 'Suggestions'    },
   { file: path.join(ROOT, 'other', 'account', 'index.html'),     pagePath: '/other/account',     name: 'Account'        },
+  { file: path.join(ROOT, 'other', 'updates', 'index.html'),     pagePath: '/other/updates',     name: 'Update Log'     },
   { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',                name: 'Archives'          },
   { file: path.join(ROOT, 'archives', 'chess-forge-v1', 'index.html'),  pagePath: '/archives/chess-forge-v1',  name: 'Chess Forge (v1)'  },
   { file: path.join(ROOT, 'archives', 'atlas-runner-v1', 'index.html'), pagePath: '/archives/atlas-runner-v1', name: 'Atlas Runner (v1)' },

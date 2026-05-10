@@ -1,5 +1,18 @@
 const atlasUpdates = [
   {
+    date: "May 10, 2026",
+    tag: "Atlas System",
+    title: "Atlas Addresses for All Pages",
+    text: "Every page in the Atlas now has a coordinate and an ATLAS address — not just tools and games.",
+    list: [
+      "Homepage, Search, Help, Suggestions, Account, Archives, and Update Log are all indexed in the Atlas",
+      "Header, sidebar, and footer now load consistently across all 90+ pages via a centralized system",
+      "Archives catalog built — deprecated artifacts preserved with their addresses and codes",
+      "Chess Forge (v1) and Atlas Runner (v1) restored to the archives",
+      "Atlas Decoder input fixed — no longer strips valid base-32 characters"
+    ]
+  },
+  {
     date: "April 17, 2026",
     tag: "Features",
     title: "The Archives",
