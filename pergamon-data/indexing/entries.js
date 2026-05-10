@@ -107,7 +107,8 @@ window.atlasEntries = {
   ],
 
   archived: [
-
+    { path: "/archives/chess-forge-v1", name: "Chess Forge (v1)", date: "2026-05-10", time: "01:18:17", chamber: "PG", seed: 2356144952, code_seed: 1778375897, address: "H4DK3-GB9HN-GL432", coords: { x: -13082753, y: 2995107, z: 7173682 }, archived: true, archive_date: "2026-04-17" },
+    { path: "/archives/atlas-runner-v1", name: "Atlas Runner (v1)", date: "2026-05-10", time: "01:18:17", chamber: "PG", seed: 1047212260, code_seed: 1778375897, address: "WHH2V-SF2GX-NCNZP", coords: { x: 445781, y: -11554916, z: 13184997 }, archived: true, archive_date: "2026-04-17" }
   ]
 
 };
