@@ -94,6 +94,15 @@ window.atlasEntries = {
     { path: "/games/whack-a-mole", name: "Whack A Mole", date: "2026-04-18", time: "23:29:24", chamber: "GM", seed: 3333820714, code_seed: 1778368695, address: "Y4AY9-LQBZZ-DKBVV", coords: { x: 2642073, y: 15354298, z: 3971963 } },
     { path: "/games/word-scramble", name: "Word Scramble", date: "2026-04-18", time: "23:29:24", chamber: "GM", seed: 2105009340, code_seed: 1778368695, address: "KCE29-NUBLW-BBCW6", coords: { x: -2866855, y: 8669723, z: 1611670 } },
     { path: "/games/wordle", name: "Wordle", date: "2026-04-18", time: "23:29:24", chamber: "GM", seed: 1955390097, code_seed: 1778368695, address: "MCNN7-N2VF7-R9N6Z", coords: { x: -760869, y: 8455156, z: 16232095 } }
+  ],
+
+  pages: [
+    { path: "/", name: "Pergamon Atlas", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 592617613, code_seed: 1778374433, address: "UG3SS-Y3VFC-U9JF9", coords: { x: 6698072, y: -14580755, z: -14172745 } },
+    { path: "/atlas-explorer", name: "Atlas Explorer", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 3398776258, code_seed: 1778374433, address: "2N54V-5FEEB-T2EZD", coords: { x: 12795157, y: -8240, z: -15462421 } },
+    { path: "/search", name: "Search", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 4170431147, code_seed: 1778374433, address: "3VJ6D-Q8QA9-JA2J5", coords: { x: 14479813, y: 10647378, z: 8944659 } },
+    { path: "/other/help", name: "Help", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 418145593, code_seed: 1778374433, address: "HEWHW-PYXKG-JB8LZ", coords: { x: -13172044, y: 9837161, z: 8971359 } },
+    { path: "/other/suggestions", name: "Suggestions", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 1779867927, code_seed: 1778374433, address: "FT4RH-D3N4K-PM4Q4", coords: { x: -14828639, y: 7470088, z: 14546132 } },
+    { path: "/other/account", name: "Account", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 3437978101, code_seed: 1778374433, address: "9QNFG-43V4H-B6CKR", coords: { x: 11690722, y: -1998838, z: 1446951 } }
   ]
 
 };

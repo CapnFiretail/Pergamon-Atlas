@@ -9,6 +9,16 @@ const SECTORS = {
   tools: { dir: path.join(ROOT, 'tools'), chamber: 'TL' },
   games: { dir: path.join(ROOT, 'games'), chamber: 'GM' }
 };
+
+// Individual pages indexed as PG (Page) chamber — not directory-scanned
+const PAGES = [
+  { file: path.join(ROOT, 'index.html'),                         pagePath: '/',                  name: 'Pergamon Atlas' },
+  { file: path.join(ROOT, 'atlas-explorer', 'index.html'),       pagePath: '/atlas-explorer',    name: 'Atlas Explorer' },
+  { file: path.join(ROOT, 'search', 'index.html'),               pagePath: '/search',            name: 'Search'         },
+  { file: path.join(ROOT, 'other', 'help', 'index.html'),        pagePath: '/other/help',        name: 'Help'           },
+  { file: path.join(ROOT, 'other', 'suggestions', 'index.html'), pagePath: '/other/suggestions', name: 'Suggestions'    },
+  { file: path.join(ROOT, 'other', 'account', 'index.html'),     pagePath: '/other/account',     name: 'Account'        },
+];
 const ENTRIES_OUT   = path.join(__dirname, 'entries.js');
 const COLLISION_OUT = path.join(ROOT, 'pergamon-data', 'collisions.json');
 
@@ -178,6 +188,41 @@ for (const [type, sector] of Object.entries(SECTORS)) {
   }
 }
 
+// --- Index individual pages ---
+
+for (const page of PAGES) {
+  if (!fs.existsSync(page.file)) continue;
+
+  const html     = fs.readFileSync(page.file, 'utf-8');
+  const existing = extractMeta(html) || {};
+
+  const seed    = computeSeed(page.pagePath);
+  const coords  = computeCoords(seed);
+  const address = PA.coordsToAddress(coords.x, coords.y, coords.z);
+
+  const meta = {
+    name:      page.name,
+    date:      existing.date      || today(),
+    time:      existing.time      || nowTime(),
+    chamber:   'PG',
+    seed,
+    code_seed: existing.code_seed || nowSeconds(),
+    coords,
+    address
+  };
+
+  let updated = injectOrUpdateMeta(html, meta);
+  updated = stripOldScripts(updated);
+  updated = ensureAtlasScripts(updated);
+  fs.writeFileSync(page.file, updated);
+
+  const key = `${coords.z},${coords.y},${coords.x}`;
+  if (!coordMap[key]) coordMap[key] = [];
+  coordMap[key].push(page.pagePath);
+
+  allEntries.push({ type: 'pages', ...meta, path: page.pagePath, code_seed: meta.code_seed, time: meta.time });
+}
+
 // --- Collision report ---
 
 for (const [key, pages] of Object.entries(coordMap)) {
@@ -199,6 +244,7 @@ if (collisions.length > 0) {
 
 const tools = allEntries.filter(e => e.type === 'tools');
 const games = allEntries.filter(e => e.type === 'games');
+const pages = allEntries.filter(e => e.type === 'pages');
 
 function formatEntry(e) {
   let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", time: "${e.time || ''}", chamber: "${e.chamber}", seed: ${e.seed}, code_seed: ${e.code_seed || 0}, address: "${e.address}", coords: { x: ${e.coords.x}, y: ${e.coords.y}, z: ${e.coords.z} }`;
@@ -217,10 +263,14 @@ ${tools.map(formatEntry).join(',\n')}
 
   games: [
 ${games.map(formatEntry).join(',\n')}
+  ],
+
+  pages: [
+${pages.map(formatEntry).join(',\n')}
   ]
 
 };
 `;
 
 fs.writeFileSync(ENTRIES_OUT, output);
-console.log(`✓  Indexed ${tools.length} tools, ${games.length} games → entries.js`);
+console.log(`✓  Indexed ${tools.length} tools, ${games.length} games, ${pages.length} pages → entries.js`);

@@ -30,7 +30,11 @@
 
     const PA  = window.PergamonAddress;
     const all = (typeof window.atlasEntries !== 'undefined')
-      ? [...window.atlasEntries.tools, ...window.atlasEntries.games]
+      ? [
+          ...window.atlasEntries.tools,
+          ...window.atlasEntries.games,
+          ...(window.atlasEntries.pages || [])
+        ]
       : [];
 
     const currentPath = window.location.pathname
@@ -47,7 +51,7 @@
 
     if (!coords) return;
 
-    const typeMap  = { TL: 'Tool', GM: 'Game', AR: 'Archive' };
+    const typeMap  = { TL: 'Tool', GM: 'Game', AR: 'Archive', PG: 'Page' };
     const typeName = typeMap[chamber] || chamber;
 
     const codeSeed   = meta.code_seed || 0;
@@ -92,8 +96,8 @@
     // ── Catalogs ─────────────────────────────────────────────────────────
 
     const catalogs = [];
-    if (chamber === 'TL') catalogs.push({ name: 'Tools Catalog', path: '/sectors/systems/tools' });
-    if (chamber === 'GM') catalogs.push({ name: 'Games Catalog', path: '/sectors/systems/games' });
+    if (chamber === 'TL') catalogs.push({ name: 'Tools Catalog', path: '/tools' });
+    if (chamber === 'GM') catalogs.push({ name: 'Games Catalog', path: '/games' });
 
     // ── Inject ───────────────────────────────────────────────────────────
 
