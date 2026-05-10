@@ -365,58 +365,7 @@
   <div id="footer-placeholder"></div>
 
   <script>
-    const pageName = "";
-    const pageHeaderSuffix = pageName ? " | " + pageName : "";
-
-    fetch('/function/snippets/header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header-placeholder').innerHTML = data;
-        const pageTitleText = document.querySelector('.page-title-text');
-        if (pageTitleText) {
-          pageTitleText.textContent = pageHeaderSuffix;
-        }
-      });
-
-    fetch('/function/snippets/sidebar.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('sidebar-placeholder').innerHTML = data;
-
-        const path = window.location.pathname;
-
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-
-          if (path === "/" && link.getAttribute("href") === "/") {
-            link.classList.add('active');
-          }
-          else if (( path.startsWith("/sectors/systems/tools") || path.startsWith("/sectors/atlas/tools") ) && link.getAttribute("href") === "/sectors/systems/tools") {
-            link.classList.add('active');
-          }
-          else if (( path.startsWith("/sectors/systems/games") || path.startsWith("/sectors/atlas/games") ) && link.getAttribute("href") === "/sectors/systems/games") {
-            link.classList.add('active');
-          }
-          else if (
-            (path.startsWith("/help") || path.startsWith("/sectors/systems/other/help")) &&
-            link.getAttribute("href") === "/sectors/systems/other/help"
-          ) {
-            link.classList.add('active');
-          }
-        });
-
-        try {
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {}
-      });
-
-    fetch('/function/snippets/footer.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('footer-placeholder').innerHTML = data;
-      });
-
-    const billAmountInput = document.getElementById("billAmount");
+const billAmountInput = document.getElementById("billAmount");
     const customTipInput = document.getElementById("customTip");
     const peopleCountInput = document.getElementById("peopleCount");
     const errorBox = document.getElementById("errorBox");
@@ -535,5 +484,7 @@
 <script src="/pergamon-data/pergamon-address.js"></script>
 <script src="/pergamon-data/indexing/entries.js"></script>
 <script src="/pergamon-data/atlas-reference.js"></script>
+<script src="/function/scripts/atlas.js"></script>
+<script>loadSnippets('Tip Calculator');</script>
 </body>
 </html>

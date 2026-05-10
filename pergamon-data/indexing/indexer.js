@@ -89,6 +89,7 @@ function injectOrUpdateMeta(html, meta) {
 }
 
 const ATLAS_SCRIPTS = [
+  '/function/scripts/atlas.js',
   '/pergamon-data/pergamon-address.js',
   '/pergamon-data/indexing/entries.js',
   '/pergamon-data/atlas-reference.js',
@@ -115,6 +116,30 @@ function ensureAtlasScripts(html) {
     }
   }
   return result;
+}
+
+function stripInlineFetches(html) {
+  const marker = "fetch('/function/snippets/header.html')";
+  const marker2 = 'fetch("/function/snippets/header.html")';
+  if (!html.includes(marker) && !html.includes(marker2)) return html;
+
+  let result = html;
+  result = result.replace(/[ \t]*const pageName\s*=\s*[^;]+;\s*\n/g, '');
+  result = result.replace(/[ \t]*const pageHeaderSuffix\s*=\s*[^;]+;\s*\n/g, '');
+  result = result.replace(
+    /\n?[ \t]*fetch\(['"]\/function\/snippets\/header\.html['"]\)[\s\S]*?getElementById\(['"]footer-placeholder['"]\)\.innerHTML\s*=\s*\w+;\s*\n?[ \t]*\}\);\s*\n?/,
+    '\n'
+  );
+  return result;
+}
+
+function ensureLoadSnippets(html, name) {
+  if (html.includes('loadSnippets(')) return html;
+  const safe = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return html.replace(
+    '<script src="/function/scripts/atlas.js"></script>',
+    `<script src="/function/scripts/atlas.js"></script>\n<script>loadSnippets('${safe}');</script>`
+  );
 }
 
 // --- Utilities ---
@@ -180,7 +205,9 @@ for (const [type, sector] of Object.entries(SECTORS)) {
 
     let updated = injectOrUpdateMeta(html, meta);
     updated = stripOldScripts(updated);
+    updated = stripInlineFetches(updated);
     updated = ensureAtlasScripts(updated);
+    updated = ensureLoadSnippets(updated, meta.name);
     fs.writeFileSync(htmlPath, updated);
 
     // Collision tracking
@@ -219,7 +246,9 @@ for (const page of PAGES) {
 
   let updated = injectOrUpdateMeta(html, meta);
   updated = stripOldScripts(updated);
+  updated = stripInlineFetches(updated);
   updated = ensureAtlasScripts(updated);
+  updated = ensureLoadSnippets(updated, meta.name);
   fs.writeFileSync(page.file, updated);
 
   const key = `${coords.z},${coords.y},${coords.x}`;

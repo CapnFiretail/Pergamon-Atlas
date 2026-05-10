@@ -378,38 +378,7 @@
 
   <script>
     // ── SNIPPET LOADING ───────────────────────────────────────
-    const pageName = "Atlas Runner";
-    const pageHeaderSuffix = " | " + pageName;
-
-    fetch('/function/snippets/header.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('header-placeholder').innerHTML = html;
-        const el = document.querySelector('.page-title-text');
-        if (el) el.textContent = pageHeaderSuffix;
-      });
-
-    fetch('/function/snippets/sidebar.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('sidebar-placeholder').innerHTML = html;
-        const path = window.location.pathname;
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-          const href = link.getAttribute('href');
-          if (href === '/' && path === '/') link.classList.add('active');
-          else if (href === '/tools' && path.startsWith('/tools')) link.classList.add('active');
-          else if (href === '/games' && path.startsWith('/games')) link.classList.add('active');
-          else if ((href === '/pages/help' || href === '/help') &&
-                   (path.startsWith('/pages/help') || path.startsWith('/help'))) link.classList.add('active');
-        });
-        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
-      });
-
-    fetch('/function/snippets/footer.html')
-      .then(r => r.text())
-      .then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
-  </script>
+</script>
 
   <script>
     // ── CANVAS & CONTEXT ──────────────────────────────────────
@@ -842,5 +811,7 @@
 <script src="/pergamon-data/pergamon-address.js"></script>
 <script src="/pergamon-data/indexing/entries.js"></script>
 <script src="/pergamon-data/atlas-reference.js"></script>
+<script src="/function/scripts/atlas.js"></script>
+<script>loadSnippets('Atlas Runner');</script>
 </body>
 </html>

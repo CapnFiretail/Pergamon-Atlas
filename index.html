@@ -301,8 +301,6 @@
   <script src="/pergamon-data/update-logs/updates.js"></script>
 
   <script>
-    const pageHeaderSuffix = "";
-
     function renderUpdates(updates, containerId, limit = null){
       const container = document.getElementById(containerId);
       if (!container) return;
@@ -329,76 +327,7 @@
       `).join("");
     }
 
-    fetch('/function/snippets/header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header-placeholder').innerHTML = data;
-
-        const pageTitleText = document.querySelector('.page-title-text');
-        if (pageTitleText) {
-          pageTitleText.textContent = pageHeaderSuffix;
-        }
-      });
-
-    fetch('/function/snippets/sidebar.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('sidebar-placeholder').innerHTML = data;
-
-        const path = window.location.pathname;
-
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-
-          if (path === "/" && link.getAttribute("href") === "/") {
-            link.classList.add('active');
-          }
-          else if ((path.startsWith("/tools") || path.startsWith("/tools")) && link.getAttribute("href") === "/tools") {
-            link.classList.add('active');
-          }
-          else if ((path.startsWith("/games") || path.startsWith("/games")) && link.getAttribute("href") === "/games") {
-            link.classList.add('active');
-          }
-          else if (path.startsWith("/other/help") && link.getAttribute("href") === "/other/help") {
-            link.classList.add('active');
-          }
-        });
-
-        const sidebar = document.getElementById('mainSidebar');
-        const toggleBtn = document.getElementById('sidebarToggle');
-        if (sidebar && toggleBtn) {
-          if (localStorage.getItem('sidebarCollapsed') === '1') {
-            sidebar.classList.add('collapsed');
-            toggleBtn.textContent = '›';
-          }
-          toggleBtn.addEventListener('click', function () {
-            const collapsed = sidebar.classList.toggle('collapsed');
-            toggleBtn.textContent = collapsed ? '›' : '‹';
-            localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
-          });
-        }
-
-        if (window.atlasNavCodes) {
-          const slug = window.location.pathname.replace(/\/$/, '') || '/';
-          const systemCode = window.atlasNavCodes[slug] || '';
-          const sysEl = document.getElementById('system-code-display');
-          if (sysEl) sysEl.textContent = systemCode;
-
-          const meta = window.atlasNavMeta && window.atlasNavMeta[slug];
-          const atlasEl = document.getElementById('atlas-code-display');
-          if (atlasEl && meta && window.atlasGenerator) {
-            atlasEl.textContent = window.atlasGenerator.generate(systemCode, meta.chamber) || '';
-          }
-        }
-      });
-
-    fetch('/function/snippets/footer.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('footer-placeholder').innerHTML = data;
-      });
-
-    renderUpdates(atlasUpdates, 'updates-placeholder', 2);
+renderUpdates(atlasUpdates, 'updates-placeholder', 2);
 
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
@@ -406,5 +335,7 @@
 <script src="/pergamon-data/pergamon-address.js"></script>
 <script src="/pergamon-data/indexing/entries.js"></script>
 <script src="/pergamon-data/atlas-reference.js"></script>
+<script src="/function/scripts/atlas.js"></script>
+<script>loadSnippets('Pergamon Atlas');</script>
 </body>
 </html>

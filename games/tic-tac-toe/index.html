@@ -490,9 +490,6 @@
   <div id="footer-placeholder"></div>
 
   <script>
-    const pageName = "Tic Tac Toe";
-    const pageHeaderSuffix = pageName ? " | " + pageName : "";
-
     fetch('/function/snippets/header.html')
       .then(res => res.text())
       .then(data => {
@@ -1138,5 +1135,7 @@
 <script src="/pergamon-data/pergamon-address.js"></script>
 <script src="/pergamon-data/indexing/entries.js"></script>
 <script src="/pergamon-data/atlas-reference.js"></script>
+<script src="/function/scripts/atlas.js"></script>
+<script>loadSnippets('Tic Tac Toe');</script>
 </body>
 </html>
