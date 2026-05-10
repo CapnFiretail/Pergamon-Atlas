@@ -75,7 +75,7 @@
   <script>
     (function () {
       const container = document.getElementById('updates-all');
-      if (!container || !window.atlasUpdates) return;
+      if (!container || typeof atlasUpdates === 'undefined') return;
       container.innerHTML = atlasUpdates.map(update => `
         <article class="update-card">
           <div class="update-meta">
