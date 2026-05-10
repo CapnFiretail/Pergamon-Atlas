@@ -27,106 +27,94 @@
   <link rel="stylesheet" href="/function/styles/footer.css">
   <style>
     .arc-hero {
-      background: linear-gradient(135deg, #080608 0%, #100c08 100%);
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
       color: white;
-      border: 2px solid #4a3018;
+      border: 2px solid #8a611c;
       border-radius: 16px;
       padding: 28px;
       margin-bottom: 28px;
-      box-shadow: 0 6px 28px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
     }
     .arc-hero h2 {
       margin: 0 0 10px;
-      font-size: clamp(26px, 4vw, 38px);
-      color: #7a5a30;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.08em;
+      font-size: clamp(28px, 5vw, 42px);
+      color: #f0d39b;
     }
     .arc-hero p {
       margin: 0;
-      font-size: 15px;
-      line-height: 1.8;
-      color: #4a3a28;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #f3f3f3;
       max-width: 680px;
-      font-family: 'Courier New', monospace;
     }
 
     .arc-access-note {
-      background: #0a080a;
-      border: 1px solid #2a1a08;
-      border-radius: 10px;
-      padding: 16px 20px;
+      background: #f8f5ee;
+      border: 1px solid #e0c98a;
+      border-radius: 8px;
+      padding: 14px 18px;
       margin-bottom: 24px;
-      font-size: 12px;
-      color: #4a3a28;
-      font-family: 'Courier New', monospace;
-      line-height: 1.8;
-      letter-spacing: 0.03em;
+      font-size: 14px;
+      color: #6a5210;
+      line-height: 1.7;
     }
-    .arc-access-note strong {
-      color: #7a5a30;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-size: 10px;
-      display: block;
-      margin-bottom: 6px;
+    .arc-access-note a {
+      color: #8a611c;
+      text-decoration: none;
     }
+    .arc-access-note a:hover { text-decoration: underline; }
 
     .arc-panel {
-      background: #09080a;
-      border: 1px solid #2a1a08;
+      background: white;
+      border: 2px solid #000;
       border-radius: 14px;
-      padding: 0;
       overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
     }
 
     .arc-panel-header {
       display: grid;
       grid-template-columns: 2fr 1.4fr 1fr 1fr;
-      gap: 0;
       padding: 10px 20px;
-      border-bottom: 1px solid #1e1208;
-      font-size: 8px;
-      letter-spacing: 0.4em;
-      color: #3a2010;
+      border-bottom: 2px solid #f0e8d4;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #888;
       text-transform: uppercase;
-      font-family: 'Courier New', monospace;
+      font-family: Georgia, serif;
     }
 
     .arc-empty {
       padding: 48px 20px;
       text-align: center;
-      font-family: 'Courier New', monospace;
-      color: #2a1a08;
-      font-size: 13px;
+      color: #aaa;
+      font-size: 15px;
       line-height: 1.8;
-      letter-spacing: 0.06em;
     }
     .arc-empty strong {
       display: block;
-      color: #3a2810;
-      font-size: 11px;
-      letter-spacing: 0.5em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      color: #555;
+      font-size: 17px;
+      margin-bottom: 8px;
     }
 
     .arc-record {
       display: grid;
       grid-template-columns: 2fr 1.4fr 1fr 1fr;
-      gap: 0;
       padding: 14px 20px;
-      border-bottom: 1px solid #140e06;
-      font-family: 'Courier New', monospace;
+      border-bottom: 1px solid #f0f0f0;
       transition: background 0.12s;
+      align-items: center;
     }
     .arc-record:last-child { border-bottom: none; }
-    .arc-record:hover { background: #0d0a06; }
+    .arc-record:hover { background: #faf8f4; }
 
     .arc-rec-name {
-      font-size: 13px;
-      color: #6a4a28;
-      letter-spacing: 0.04em;
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      font-family: Georgia, serif;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -134,7 +122,8 @@
     }
     .arc-rec-addr {
       font-size: 11px;
-      color: #4a3018;
+      color: #8a611c;
+      font-family: 'Courier New', monospace;
       letter-spacing: 0.06em;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -142,22 +131,22 @@
       padding-right: 12px;
     }
     .arc-rec-code {
-      font-size: 10px;
-      color: #3a2010;
-      letter-spacing: 0.06em;
+      font-size: 11px;
+      color: #888;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.04em;
     }
     .arc-rec-date {
-      font-size: 10px;
-      color: #3a2010;
-      letter-spacing: 0.04em;
+      font-size: 13px;
+      color: #555;
+      font-family: Georgia, serif;
     }
 
     .arc-count {
-      margin-top: 14px;
-      font-size: 10px;
-      color: #2a1a08;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.2em;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #aaa;
+      font-family: Georgia, serif;
       text-align: right;
     }
 
@@ -175,13 +164,12 @@
     <main class="main-content">
 
       <section class="arc-hero">
-        <h2>// ARCHIVES //</h2>
-        <p>Compressed artifacts. Deprecated, replaced, or removed from active Atlas space. Their addresses and identities are preserved. They no longer participate in standard navigation.</p>
+        <h2>Archives</h2>
+        <p>Artifacts that have been deprecated, replaced, or removed from active Atlas space. Their addresses and identities are preserved here. They no longer appear in standard navigation.</p>
       </section>
 
       <div class="arc-access-note">
-        <strong>Access Protocol</strong>
-        Archived artifacts are not directly linked. To visit one, copy its Atlas Address and enter it via Jump to Address on any active artifact, or use the <a href="/tools/atlas-decoder" style="color:#6a4a28;text-decoration:none;">Atlas Decoder</a>.
+        Archived artifacts are not directly linked. To visit one, copy its Atlas Address and enter it via Jump to Address on any active artifact, or use the <a href="/tools/atlas-decoder">Atlas Decoder</a>.
       </div>
 
       <div class="arc-panel">
@@ -223,8 +211,8 @@
       if (!archived.length) {
         list.innerHTML = `
           <div class="arc-empty">
-            <strong>// No Records //</strong>
-            The archives contain no compressed artifacts at this time.
+            <strong>No Archived Artifacts</strong>
+            Nothing has been archived yet.
           </div>`;
         count.textContent = '';
         return;
