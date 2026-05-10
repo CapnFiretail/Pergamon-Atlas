@@ -56,18 +56,6 @@ function loadSnippets(pageName) {
 
       try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
 
-      if (window.atlasNavCodes) {
-        const slug = window.location.pathname.replace(/\/$/, '') || '/';
-        const systemCode = window.atlasNavCodes[slug] || '';
-        const sysEl = document.getElementById('system-code-display');
-        if (sysEl) sysEl.textContent = systemCode;
-
-        const meta = window.atlasNavMeta && window.atlasNavMeta[slug];
-        const atlasEl = document.getElementById('atlas-code-display');
-        if (atlasEl && meta && window.atlasGenerator) {
-          atlasEl.textContent = window.atlasGenerator.generate(systemCode, meta.chamber) || '';
-        }
-      }
     });
 
   fetch('/function/snippets/footer.html')
