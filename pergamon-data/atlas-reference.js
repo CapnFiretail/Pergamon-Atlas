@@ -28,13 +28,16 @@
 
     if (meta.archived) return;
 
-    const PA  = window.PergamonAddress;
+    const PA = window.PergamonAddress;
     const all = (typeof window.atlasEntries !== 'undefined')
       ? [
           ...window.atlasEntries.tools,
           ...window.atlasEntries.games,
           ...(window.atlasEntries.pages || [])
         ]
+      : [];
+    const allArchived = (typeof window.atlasEntries !== 'undefined')
+      ? (window.atlasEntries.archived || [])
       : [];
 
     const currentPath = window.location.pathname
@@ -72,9 +75,11 @@
       { label: '−Z', dx:  0, dy:  0, dz: -1 },
     ];
 
-    const others = all.filter(e => e.path !== currentPath);
-    const seen   = new Set();
-    const neighbors = [];
+    const othersActive   = all.filter(e => e.path !== currentPath);
+    const othersArchived = allArchived.filter(e => e.path !== currentPath);
+    const othersAll      = [...othersActive, ...othersArchived];
+    const seen           = new Set();
+    const neighbors      = [];
 
     for (const dir of DIRS) {
       const px = coords.x + dir.dx * STEP;
@@ -82,15 +87,28 @@
       const pz = coords.z + dir.dz * STEP;
 
       let closest = null, closestDist = Infinity;
-      for (const e of others) {
+      for (const e of othersAll) {
         const d = hypot3(e.coords.x, e.coords.y, e.coords.z, px, py, pz);
         if (d < closestDist) { closestDist = d; closest = e; }
       }
 
       if (closest && !seen.has(closest.path)) {
         seen.add(closest.path);
-        neighbors.push({ dir: dir.label, artifact: closest });
+        neighbors.push({ dir: dir.label, artifact: closest, trace: !!closest.archived });
       }
+    }
+
+    // ── Inject ───────────────────────────────────────────────────────────
+
+    injectStyles();
+
+    if (meta.archived) {
+      const section = buildArchivedSection({ name, artCode, address, meta });
+      const footer = document.getElementById('footer-placeholder');
+      if (footer) footer.parentNode.insertBefore(section, footer);
+      else document.body.appendChild(section);
+      updateSidebarDisplay(address);
+      return;
     }
 
     // ── Catalogs ─────────────────────────────────────────────────────────
@@ -98,10 +116,6 @@
     const catalogs = [];
     if (chamber === 'TL') catalogs.push({ name: 'Tools Catalog', path: '/tools' });
     if (chamber === 'GM') catalogs.push({ name: 'Games Catalog', path: '/games' });
-
-    // ── Inject ───────────────────────────────────────────────────────────
-
-    injectStyles();
 
     const section = buildSection({
       name, artCode, typeName, address, neighbors, catalogs, PA, all
@@ -261,13 +275,66 @@
     if (!neighbors.length) {
       return `<p class="ar-empty">No artifacts detected in adjacent space.</p>`;
     }
-    return neighbors.map(n => `
+    return neighbors.map(n => {
+      if (n.trace) {
+        return `
+        <div class="ar-neighbor ar-neighbor-trace">
+          <span class="ar-n-arrow">→</span>
+          <span class="ar-n-name ar-n-trace-name">${esc(n.artifact.name)}</span>
+          <span class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</span>
+        </div>`;
+      }
+      return `
         <a class="ar-neighbor" href="${esc(n.artifact.path)}">
           <span class="ar-n-arrow">→</span>
           <span class="ar-n-name">${esc(n.artifact.name)}</span>
           <span class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</span>
-        </a>`
-    ).join('');
+        </a>`;
+    }).join('');
+  }
+
+  function buildArchivedSection({ name, artCode, address, meta }) {
+    const el = document.createElement('section');
+    el.id = 'atlas-reference';
+    el.classList.add('ar-archived');
+
+    el.innerHTML = `
+      <div class="ar-toggle-bar">
+        <div class="ar-bar-inner">
+          <span class="ar-bar-wordmark">Pergamon Atlas</span>
+          <span class="ar-bar-sep">·</span>
+          <span class="ar-bar-name ar-archived-label">ARCHIVED ARTIFACT</span>
+          <span class="ar-bar-sep ar-bar-sep-addr">·</span>
+          <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
+          <button class="ar-toggle-btn" aria-label="Toggle Archive Record">
+            Archive Record <span class="ar-arrow">▾</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="ar-body">
+        <div class="ar-inner">
+          <div class="ar-arc-marker">// COMPRESSED EXISTENCE //</div>
+          <div class="ar-arc-name">${esc(name)}</div>
+          <div class="ar-arc-grid">
+            <div class="ar-arc-field"><span class="ar-af-key">ARTIFACT CODE</span><span class="ar-af-val">${esc(artCode)}</span></div>
+            <div class="ar-arc-field"><span class="ar-af-key">ATLAS ADDRESS</span><span class="ar-af-val">ATLAS-${esc(address)}</span></div>
+            <div class="ar-arc-field"><span class="ar-af-key">REGISTERED</span><span class="ar-af-val">${meta.date || '—'}${meta.time ? ' · ' + meta.time + ' UTC' : ''}</span></div>
+            <div class="ar-arc-field"><span class="ar-af-key">ARCHIVED</span><span class="ar-af-val">${meta.archive_date || '—'}</span></div>
+            <div class="ar-arc-field"><span class="ar-af-key">ORIGINAL CHAMBER</span><span class="ar-af-val">${meta.chamber || '—'} → AR</span></div>
+            <div class="ar-arc-field"><span class="ar-af-key">STATUS</span><span class="ar-af-val">COMPRESSED</span></div>
+          </div>
+          <p class="ar-arc-note">This artifact has collapsed into the Archives. Its address and identity are preserved. It no longer participates in active Atlas navigation.</p>
+          <a class="ar-arc-catalog-link" href="/archives">← View Archives Catalog</a>
+        </div>
+      </div>
+    `;
+
+    el.querySelector('.ar-toggle-bar').addEventListener('click', () => {
+      el.classList.toggle('ar-collapsed');
+    });
+
+    return el;
   }
 
   function buildJumpPanel() {
@@ -644,6 +711,88 @@
 .ar-catalog-link:hover {
   border-color: #6a5a3a;
   color: #c9a84c;
+}
+
+/* ── Archived artifact panel ── */
+.ar-archived .ar-toggle-bar { border-bottom-color: #1e1208; }
+.ar-archived-label { color: #7a4a1c !important; font-size: 10px !important; letter-spacing: 0.3em !important; text-transform: uppercase; }
+
+.ar-arc-marker {
+  font-size: 9px;
+  letter-spacing: 0.55em;
+  color: #3a2010;
+  font-family: 'Courier New', monospace;
+  padding: 28px 0 18px;
+  text-transform: uppercase;
+}
+.ar-arc-name {
+  font-size: 20px;
+  color: #7a5a30;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 22px;
+  letter-spacing: 0.04em;
+}
+.ar-arc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 32px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #1e1208;
+}
+.ar-arc-field { display: flex; flex-direction: column; gap: 4px; }
+.ar-af-key {
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  color: #3a2010;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+}
+.ar-af-val {
+  font-size: 13px;
+  color: #7a5a30;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.06em;
+}
+.ar-arc-note {
+  font-size: 12px;
+  color: #3a2810;
+  line-height: 1.8;
+  margin-bottom: 18px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+.ar-arc-catalog-link {
+  font-size: 10px;
+  color: #5a3a18;
+  text-decoration: none;
+  letter-spacing: 0.2em;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  transition: color 0.12s;
+  padding-bottom: 48px;
+  display: inline-block;
+}
+.ar-arc-catalog-link:hover { color: #c9a84c; }
+
+/* ── Archive traces in nearby panel ── */
+.ar-neighbor-trace {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 13px 16px;
+  border: 1px solid #1a1008;
+  margin-bottom: 5px;
+  opacity: 0.4;
+  cursor: default;
+  user-select: none;
+}
+.ar-n-trace-name {
+  font-size: 13px;
+  color: #4a3a28;
+  font-style: italic;
+  letter-spacing: 0.04em;
 }
 
 /* ── Responsive ── */

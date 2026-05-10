@@ -18,6 +18,7 @@ const PAGES = [
   { file: path.join(ROOT, 'other', 'help', 'index.html'),        pagePath: '/other/help',        name: 'Help'           },
   { file: path.join(ROOT, 'other', 'suggestions', 'index.html'), pagePath: '/other/suggestions', name: 'Suggestions'    },
   { file: path.join(ROOT, 'other', 'account', 'index.html'),     pagePath: '/other/account',     name: 'Account'        },
+  { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',          name: 'Archives'       },
 ];
 const ENTRIES_OUT   = path.join(__dirname, 'entries.js');
 const COLLISION_OUT = path.join(ROOT, 'pergamon-data', 'collisions.json');
@@ -165,12 +166,13 @@ for (const [type, sector] of Object.entries(SECTORS)) {
       name:      existing.name      || toTitleCase(dir),
       date:      existing.date      || today(),
       time:      existing.time      || nowTime(),
-      chamber:   sector.chamber,
+      chamber:   existing.archived  ? existing.chamber : sector.chamber,
       seed,
       code_seed: existing.code_seed || nowSeconds(),
       coords,
       address
     };
+    if (existing.archived)    { meta.archived = true; meta.archive_date = existing.archive_date; }
     if (existing.description) meta.description = existing.description;
     if (existing.tags)        meta.tags        = existing.tags;
 
@@ -184,7 +186,8 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     if (!coordMap[key]) coordMap[key] = [];
     coordMap[key].push(pagePath);
 
-    allEntries.push({ type, ...meta, path: pagePath, code_seed: meta.code_seed, time: meta.time });
+    const entryType = existing.archived ? 'archived' : type;
+    allEntries.push({ type: entryType, ...meta, path: pagePath, code_seed: meta.code_seed, time: meta.time });
   }
 }
 
@@ -204,12 +207,13 @@ for (const page of PAGES) {
     name:      page.name,
     date:      existing.date      || today(),
     time:      existing.time      || nowTime(),
-    chamber:   'PG',
+    chamber:   existing.archived  ? existing.chamber : 'PG',
     seed,
     code_seed: existing.code_seed || nowSeconds(),
     coords,
     address
   };
+  if (existing.archived) { meta.archived = true; meta.archive_date = existing.archive_date; }
 
   let updated = injectOrUpdateMeta(html, meta);
   updated = stripOldScripts(updated);
@@ -220,7 +224,8 @@ for (const page of PAGES) {
   if (!coordMap[key]) coordMap[key] = [];
   coordMap[key].push(page.pagePath);
 
-  allEntries.push({ type: 'pages', ...meta, path: page.pagePath, code_seed: meta.code_seed, time: meta.time });
+  const pageEntryType = existing.archived ? 'archived' : 'pages';
+  allEntries.push({ type: pageEntryType, ...meta, path: page.pagePath, code_seed: meta.code_seed, time: meta.time });
 }
 
 // --- Collision report ---
@@ -242,12 +247,14 @@ if (collisions.length > 0) {
 
 // --- Write entries.js ---
 
-const tools = allEntries.filter(e => e.type === 'tools');
-const games = allEntries.filter(e => e.type === 'games');
-const pages = allEntries.filter(e => e.type === 'pages');
+const tools    = allEntries.filter(e => e.type === 'tools');
+const games    = allEntries.filter(e => e.type === 'games');
+const pages    = allEntries.filter(e => e.type === 'pages');
+const archived = allEntries.filter(e => e.type === 'archived');
 
 function formatEntry(e) {
   let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", time: "${e.time || ''}", chamber: "${e.chamber}", seed: ${e.seed}, code_seed: ${e.code_seed || 0}, address: "${e.address}", coords: { x: ${e.coords.x}, y: ${e.coords.y}, z: ${e.coords.z} }`;
+  if (e.archived)    s += `, archived: true, archive_date: "${e.archive_date || ''}"`;
   if (e.description) s += `, description: "${e.description}"`;
   if (e.tags)        s += `, tags: ${JSON.stringify(e.tags)}`;
   s += ' }';
@@ -267,10 +274,14 @@ ${games.map(formatEntry).join(',\n')}
 
   pages: [
 ${pages.map(formatEntry).join(',\n')}
+  ],
+
+  archived: [
+${archived.map(formatEntry).join(',\n')}
   ]
 
 };
 `;
 
 fs.writeFileSync(ENTRIES_OUT, output);
-console.log(`✓  Indexed ${tools.length} tools, ${games.length} games, ${pages.length} pages → entries.js`);
+console.log(`✓  Indexed ${tools.length} tools, ${games.length} games, ${pages.length} pages, ${archived.length} archived → entries.js`);
