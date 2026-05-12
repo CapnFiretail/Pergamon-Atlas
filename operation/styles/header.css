@@ -104,6 +104,10 @@ body{
   white-space: nowrap;
 }
 
+.mobile-search-btn{
+  display: none;
+}
+
 /* =========================
    SEARCH BAR
 ========================= */
@@ -257,10 +261,23 @@ body{
     text-overflow: ellipsis;
   }
 
-  /* hide search bar */
+  /* hide search bar, show icon link instead */
   .search-wrap{
     display: none;
   }
+
+  .mobile-search-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    color: #d6d6d6;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .mobile-search-btn:hover{ color: #c28a2b; }
 
   .header-actions{
     flex-shrink: 0;
@@ -305,8 +322,8 @@ body{
   }
 
   .account-btn{
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .account-btn::before{

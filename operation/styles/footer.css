@@ -51,9 +51,16 @@
 
   .footer-inner{
     padding:22px 16px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
   }
 
   .footer-links{
-    display:none;
+    gap:12px;
+  }
+
+  .footer-links a{
+    font-size:15px;
   }
 }
