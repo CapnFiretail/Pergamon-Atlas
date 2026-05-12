@@ -78,7 +78,7 @@
   <script>
     loadSnippets('Games');
 
-    const EMOJIS='🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐸🐵🐔🐧🦋🌺🌸🍎🍕🚀⭐🎸🎭🎪🏆🎯🎲🎡';
+    const SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let flipped=[],matched=0,moves=0,total,locked,timer,elapsed,currentCols;
 
     function startGame(cols,btn){
@@ -91,7 +91,7 @@
       document.getElementById('timeVal').textContent='0:00';
       document.getElementById('winMsg').textContent='';
 
-      const symbols=EMOJIS.slice(0,total).split('');
+      const symbols=SYMBOLS.slice(0,total).split('');
       const deck=[...symbols,...symbols].sort(()=>Math.random()-.5);
       const grid=document.getElementById('grid');
       grid.style.gridTemplateColumns=`repeat(${currentCols},1fr)`;

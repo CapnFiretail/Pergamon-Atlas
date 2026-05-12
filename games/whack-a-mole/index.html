@@ -36,7 +36,7 @@
     .time-fill{height:100%;background:#8a611c;border-radius:999px;transition:.1s linear}
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:360px;margin:0 auto 16px}
     .hole{aspect-ratio:1;background:#2d1a0a;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,7vw,48px);transition:background .15s;border:4px solid #1a0a00;overflow:hidden;position:relative;user-select:none}
-    .hole .mole{position:absolute;bottom:-100%;transition:bottom .15s;font-size:clamp(28px,7vw,48px);line-height:1}
+    .hole .mole{position:absolute;bottom:-100%;transition:bottom .15s;font-size:clamp(22px,6vw,40px);line-height:1;font-weight:800;font-family:ui-monospace,Consolas,monospace;color:#333}
     .hole.active .mole{bottom:10%}
     .hole:active{transform:scale(.93)}
     .hole.whacked .mole{bottom:-100%;transition:bottom .08s}
@@ -81,7 +81,7 @@
   <script>
     loadSnippets('Games');
 
-    const MOLES=['🐭','🐹','🐰','🐻','🦔'];
+    const MOLES=['A','B','C','D','E'];
     let score,misses,timeLeft,gameInt,moleInt,activeMoles,duration,speed,diffKey;
     diffKey='medium';
 

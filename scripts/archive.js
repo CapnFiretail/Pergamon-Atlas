@@ -64,7 +64,7 @@ existing.archive_date = today();
 const updated = injectOrUpdateMeta(html, existing);
 fs.writeFileSync(htmlPath, updated);
 
-console.log(`✓  Archived: ${arg}`);
+console.log(`[OK] Archived: ${arg}`);
 console.log(`   Archive date : ${existing.archive_date}`);
 console.log(`   Atlas Address: ATLAS-${existing.address}`);
 console.log(`   Artifact Code: ${((existing.code_seed ^ existing.seed) >>> 0).toString(16).toUpperCase().padStart(8,'0')}-${existing.address.split('-')[0]}`);

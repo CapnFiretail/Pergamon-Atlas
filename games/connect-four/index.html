@@ -36,7 +36,10 @@
     .p2-score{color:#f1c40f}
     .status{font-size:18px;font-weight:800;margin-bottom:12px;min-height:28px}
     .col-btns{display:flex;justify-content:center;gap:2px;margin:0 auto 4px;max-width:350px}
-    .col-btn{width:46px;height:28px;border:none;background:transparent;cursor:pointer;font-size:18px;transition:.1s}
+    .col-btn{font-size:0}
+    .col-btn .disc-dot{display:inline-block;width:14px;height:14px;border-radius:50%}
+    .col-btn .disc-dot.p1{background:#e74c3c}
+    .col-btn .disc-dot.p2{background:#f1c40f}
     .col-btn:hover{transform:scale(1.2)}
     .board{display:inline-grid;grid-template-columns:repeat(7,46px);gap:4px;background:#2980b9;padding:8px;border-radius:12px;margin-bottom:12px}
     .disc{width:46px;height:46px;border-radius:50%;background:#1a5276;transition:background .2s}
@@ -46,7 +49,7 @@
     .mode-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
     .mode-btn{padding:7px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
     .mode-btn.active{background:#111;color:white;border-color:#111}
-    .atlas-btn{border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     .atlas-btn:hover{background:#222}
   </style>
 </head>
@@ -69,7 +72,7 @@
           <span><span class="num" style="color:#888" id="scoreTie">0</span>Tie</span>
           <span><span class="num p2-score" id="scoreP2">0</span>Player 2</span>
         </div>
-        <div class="status" id="status">🔴 Player 1's turn</div>
+        <div class="status" id="status">Player 1 (red) — your turn</div>
         <div class="col-btns" id="colBtns"></div>
         <div class="board" id="board"></div>
         <button class="atlas-btn" onclick="reset()">New Game</button>
@@ -95,13 +98,13 @@
 
     function setStatus(){
       const el=document.getElementById('status');
-      if(!gameOver) el.textContent=(turn===1?'🔴 Player 1':'🟡 '+(mode==='ai'?'Computer':'Player 2'))+"'s turn";
+      if(!gameOver) el.textContent=(turn===1?'Player 1 (red)':'Player 2 ('+(mode==='ai'?'yellow, computer':'yellow')+')')+' — your turn';
     }
 
     function buildColBtns(){
       const row=document.getElementById('colBtns');
       row.innerHTML=Array.from({length:COLS},(_,c)=>
-        `<button class="col-btn" onclick="drop(${c})">${turn===1?'🔴':'🟡'}</button>`).join('');
+        `<button class="col-btn" onclick="drop(${c})"><span class="disc-dot ${turn===1?'p1':'p2'}" aria-hidden="true"></span><span class="visually-hidden">Drop in column ${c+1}</span></button>`).join('');
     }
 
     function drop(col){
@@ -111,7 +114,8 @@
       renderBoard();
       const win=checkWin(row,col,turn);
       if(win){gameOver=true;highlightWin(win);scores['p'+turn]++;updateScores();
-        document.getElementById('status').textContent=(turn===1?'🔴 Player 1':'🟡 '+(mode==='ai'?'Computer':'Player 2'))+' wins!';return;}
+        document.getElementById('status').textContent=(turn===1?'Player 1 (red)':'Player 2 ('+(mode==='ai'?'yellow, computer':'yellow')+')')+' wins!';
+        return;}
       if(grid[0].every(c=>c!==0)){gameOver=true;scores.tie++;updateScores();document.getElementById('status').textContent="It's a tie!";return;}
       turn=turn===1?2:1;
       setStatus();buildColBtns();

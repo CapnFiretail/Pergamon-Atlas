@@ -272,10 +272,10 @@ for (const [key, pages] of Object.entries(coordMap)) {
 
 if (collisions.length > 0) {
   fs.writeFileSync(COLLISION_OUT, JSON.stringify(collisions, null, 2));
-  console.warn(`⚠  ${collisions.length} collision(s) detected → pergamon-data/collisions.json`);
+  console.warn(`[WARN] ${collisions.length} collision(s) detected → data/collisions.json`);
 } else {
   if (fs.existsSync(COLLISION_OUT)) fs.unlinkSync(COLLISION_OUT);
-  console.log('✓  No coordinate collisions');
+  console.log('[OK] No coordinate collisions');
 }
 
 // --- Write entries.js ---
@@ -317,4 +317,4 @@ ${archived.map(formatEntry).join(',\n')}
 `;
 
 fs.writeFileSync(ENTRIES_OUT, output);
-console.log(`✓  Indexed ${tools.length} tools, ${games.length} games, ${pages.length} pages, ${archived.length} archived → entries.js`);
+console.log(`[OK] Indexed ${tools.length} tools, ${games.length} games, ${pages.length} pages, ${archived.length} archived → entries.js`);

@@ -99,8 +99,12 @@
 
 .nav-icon{
   display:none;
-  font-size:20px;
-  line-height:1;
+  line-height:0;
+  color:#a8a8a8;
+}
+
+.nav-icon svg{
+  display:block;
 }
 
 .nav-label{
@@ -114,6 +118,10 @@
 
 .sidebar a.active{
   background:#16120a;
+  color:#e0b35a;
+}
+
+.sidebar a.active .nav-icon{
   color:#e0b35a;
 }
 
@@ -199,7 +207,11 @@
 
   .nav-icon{
     display:block;
-    font-size:22px;
+    color:#a8a8a8;
+  }
+
+  .sidebar a.active .nav-icon{
+    color:#e0b35a;
   }
 
   .nav-label{
@@ -229,7 +241,7 @@
   }
 
   .nav-icon{
-    font-size:20px;
+    color:#a8a8a8;
   }
 
   .nav-label{

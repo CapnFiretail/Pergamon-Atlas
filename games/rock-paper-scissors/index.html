@@ -39,14 +39,16 @@
     .arena{display:flex;justify-content:center;align-items:center;gap:40px;padding:24px 0;flex-wrap:wrap}
     .arena-side{display:flex;flex-direction:column;align-items:center;gap:8px}
     .arena-side .who{font-size:13px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px}
-    .arena-emoji{font-size:clamp(64px,12vw,100px);line-height:1;transition:.2s;min-height:110px;display:flex;align-items:center}
+    .arena-emoji{font-size:clamp(64px,12vw,100px);line-height:1;transition:.2s;min-height:110px;display:flex;align-items:center;justify-content:center;color:#a8a8a8}
+    .arena-emoji svg{width:clamp(64px,12vw,100px);height:clamp(64px,12vw,100px)}
     .vs{font-size:24px;font-weight:800;color:#ccc}
     .result-msg{font-size:22px;font-weight:800;margin:8px 0 4px;min-height:32px}
     .result-msg.win{color:#2a9d3a}
     .result-msg.lose{color:#c0392b}
     .result-msg.tie{color:#888}
     .choices{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:16px}
-    .choice-btn{background:#111;color:white;border:3px solid transparent;border-radius:16px;padding:16px 24px;font-size:42px;cursor:pointer;transition:.15s;line-height:1}
+    .choice-btn{background:#111;color:#d6d6d6;border:3px solid transparent;border-radius:16px;padding:12px 18px;cursor:pointer;transition:.15s;line-height:0;display:inline-flex;align-items:center;justify-content:center}
+    .choice-btn svg{width:40px;height:40px;display:block}
     .choice-btn:hover{border-color:#8a611c;transform:scale(1.1)}
     .choice-btn:active{transform:scale(.95)}
     .history-row{display:flex;flex-direction:row;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px;max-height:64px;overflow:hidden}
@@ -73,15 +75,15 @@
           <span><div class="num ai" id="scoreAI">0</div><div>CPU</div></span>
         </div>
         <div class="arena">
-          <div class="arena-side"><div class="who">You</div><div class="arena-emoji" id="emojiYou">❓</div></div>
+          <div class="arena-side"><div class="who">You</div><div class="arena-emoji" id="emojiYou" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div></div>
           <div class="vs">VS</div>
-          <div class="arena-side"><div class="who">CPU</div><div class="arena-emoji" id="emojiCPU">❓</div></div>
+          <div class="arena-side"><div class="who">CPU</div><div class="arena-emoji" id="emojiCPU" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div></div>
         </div>
         <div class="result-msg" id="resultMsg">Choose your move!</div>
         <div class="choices">
-          <button class="choice-btn" onclick="play('rock')" title="Rock">🪨</button>
-          <button class="choice-btn" onclick="play('paper')" title="Paper">📄</button>
-          <button class="choice-btn" onclick="play('scissors')" title="Scissors">✂️</button>
+          <button class="choice-btn" onclick="play('rock')" title="Rock" aria-label="Rock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="14" r="7"/></svg></button>
+          <button class="choice-btn" onclick="play('paper')" title="Paper" aria-label="Paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="6" y="5" width="12" height="14" rx="1"/></svg></button>
+          <button class="choice-btn" onclick="play('scissors')" title="Scissors" aria-label="Scissors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="9" r="2.5"/><circle cx="16" cy="15" r="2.5"/><path d="M4 20l5-8M20 4l-5 8"/></svg></button>
         </div>
         <div class="history-row" id="histRow"></div>
         <button class="reset-btn" onclick="reset()">Reset Score</button>
@@ -93,7 +95,13 @@
   <script>
     loadSnippets('Games');
 
-    const emojis = {rock:'🪨', paper:'📄', scissors:'✂️'};
+    const iconHtml = {
+      rock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="14" r="7"/></svg>',
+      paper:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="5" width="12" height="14" rx="1"/></svg>',
+      scissors:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="9" r="2.5"/><circle cx="16" cy="15" r="2.5"/><path d="M4 20l5-8M20 4l-5 8"/></svg>'
+    };
+    const pendingHtml='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    const abbr = {rock:'R',paper:'P',scissors:'S'};
     const moves = ['rock','paper','scissors'];
     let scores = {you:0,tie:0,ai:0};
     let history = [];
@@ -104,8 +112,8 @@
 
     function play(choice) {
       const cpu = moves[Math.floor(Math.random()*3)];
-      document.getElementById('emojiYou').textContent = emojis[choice];
-      document.getElementById('emojiCPU').textContent = emojis[cpu];
+      document.getElementById('emojiYou').innerHTML = iconHtml[choice];
+      document.getElementById('emojiCPU').innerHTML = iconHtml[cpu];
 
       const msg = document.getElementById('resultMsg');
       let result;
@@ -117,13 +125,13 @@
       document.getElementById('scoreTie').textContent=scores.tie;
       document.getElementById('scoreAI').textContent=scores.ai;
 
-      history.unshift({y:emojis[choice],c:emojis[cpu],r:result});
+      history.unshift({y:choice,c:cpu,r:result});
       if(history.length>20) history.pop();
       document.getElementById('histRow').innerHTML=history.map(h=>
-        `<div class="hist-chip ${h.r}">${h.y}vs${h.c}</div>`).join('');
+        `<div class="hist-chip ${h.r}">${abbr[h.y]} vs ${abbr[h.c]}</div>`).join('');
     }
 
-    function reset(){scores={you:0,tie:0,ai:0};history=[];document.getElementById('scoreYou').textContent=0;document.getElementById('scoreTie').textContent=0;document.getElementById('scoreAI').textContent=0;document.getElementById('emojiYou').textContent='❓';document.getElementById('emojiCPU').textContent='❓';document.getElementById('resultMsg').className='result-msg';document.getElementById('resultMsg').textContent='Choose your move!';document.getElementById('histRow').innerHTML='';}
+    function reset(){scores={you:0,tie:0,ai:0};history=[];document.getElementById('scoreYou').textContent=0;document.getElementById('scoreTie').textContent=0;document.getElementById('scoreAI').textContent=0;document.getElementById('emojiYou').innerHTML=pendingHtml;document.getElementById('emojiCPU').innerHTML=pendingHtml;document.getElementById('resultMsg').className='result-msg';document.getElementById('resultMsg').textContent='Choose your move!';document.getElementById('histRow').innerHTML='';}
   </script>
 
 <script src="/data/pergamon-address.js"></script>
