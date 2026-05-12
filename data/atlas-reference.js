@@ -148,19 +148,20 @@
   function buildSection({ name, artCode, typeName, address, neighbors, catalogs, PA, all }) {
     const el = document.createElement('section');
     el.id = 'atlas-reference';
-    el.classList.add('ar-collapsed');
 
     el.innerHTML = `
-      <div class="ar-toggle-bar">
+      <div class="ar-bar">
         <div class="ar-bar-inner">
-          <span class="ar-bar-wordmark">Pergamon Atlas</span>
-          <span class="ar-bar-sep">·</span>
-          <span class="ar-bar-name">${esc(name)}</span>
-          <span class="ar-bar-sep ar-bar-sep-addr">·</span>
-          <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
-          <button class="ar-toggle-btn" aria-label="Toggle Atlas Reference">
-            Atlas Reference <span class="ar-arrow">▾</span>
-          </button>
+          <div class="ar-bar-left">
+            <span class="ar-bar-logo">◈</span>
+            <span class="ar-bar-wordmark">PERGAMON ATLAS</span>
+            <span class="ar-bar-slash">/</span>
+            <span class="ar-bar-name">${esc(name)}</span>
+          </div>
+          <div class="ar-bar-right">
+            <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
+            <span class="ar-bar-label">ATLAS REFERENCE</span>
+          </div>
         </div>
       </div>
 
@@ -170,20 +171,31 @@
           <div class="ar-header">
             <div class="ar-hl">
               <div class="ar-name">${esc(name)}</div>
+              <div class="ar-desc">Explore verified artifact locations, view curated catalogs, and navigate across the Pergamon Atlas.</div>
             </div>
             <div class="ar-hr">
-              <div class="ar-meta-label">Artifact Code</div>
-              <div class="ar-code">${esc(artCode)}</div>
-              <div class="ar-meta-label" style="margin-top:10px">Atlas Address</div>
-              <div class="ar-address">ATLAS-${esc(address)}</div>
+              <div class="ar-info-item">
+                <span class="ar-info-icon">◈</span>
+                <div class="ar-info-text">
+                  <div class="ar-meta-label">Artifact Code</div>
+                  <div class="ar-code">${esc(artCode)}</div>
+                </div>
+              </div>
+              <div class="ar-info-item">
+                <span class="ar-info-icon ar-info-icon-addr">⊙</span>
+                <div class="ar-info-text">
+                  <div class="ar-meta-label">Atlas Address</div>
+                  <div class="ar-address">ATLAS-${esc(address)}</div>
+                </div>
+              </div>
             </div>
           </div>
 
           <nav class="ar-tabs" role="tablist">
-            <button class="ar-tab active" data-tab="nearby"   role="tab">Explore Nearby</button>
-            <button class="ar-tab"        data-tab="jump"     role="tab">Jump to Address</button>
-            <button class="ar-tab"        data-tab="random"   role="tab">Random Jump</button>
-            <button class="ar-tab"        data-tab="catalogs" role="tab">View Catalogs</button>
+            <button class="ar-tab active" data-tab="nearby"   role="tab"><span class="ar-tab-icon">⊕</span> Explore Nearby</button>
+            <button class="ar-tab"        data-tab="jump"     role="tab"><span class="ar-tab-icon">⊳</span> Jump to Address</button>
+            <button class="ar-tab"        data-tab="random"   role="tab"><span class="ar-tab-icon">⊞</span> Random Jump</button>
+            <button class="ar-tab"        data-tab="catalogs" role="tab"><span class="ar-tab-icon">⊟</span> View Catalogs</button>
           </nav>
 
           <div class="ar-panel"           id="ar-panel-nearby"  >${buildNearbyPanel(neighbors)}</div>
@@ -194,11 +206,6 @@
         </div>
       </div>
     `;
-
-    // Toggle collapse
-    el.querySelector('.ar-toggle-bar').addEventListener('click', () => {
-      el.classList.toggle('ar-collapsed');
-    });
 
     // Tab switching
     el.querySelectorAll('.ar-tab').forEach(tab => {
@@ -275,22 +282,34 @@
     if (!neighbors.length) {
       return `<p class="ar-empty">No artifacts detected in adjacent space.</p>`;
     }
-    return neighbors.map(n => {
+    const intro = `
+      <div class="ar-nearby-intro">
+        <div class="ar-nearby-title">Nearby Atlas</div>
+        <div class="ar-nearby-sub">Discover and navigate to neighboring atlas entries.</div>
+      </div>`;
+    const rows = neighbors.map(n => {
+      const initials = n.artifact.name.replace(/[^a-zA-Z0-9 ]/g, '').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '??';
       if (n.trace) {
         return `
         <div class="ar-neighbor ar-neighbor-trace">
-          <span class="ar-n-arrow">→</span>
-          <span class="ar-n-name ar-n-trace-name">${esc(n.artifact.name)}</span>
-          <span class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</span>
+          <div class="ar-n-thumb ar-n-thumb-trace">${initials}</div>
+          <div class="ar-n-info">
+            <div class="ar-n-name ar-n-trace-name">${esc(n.artifact.name)}</div>
+            <div class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</div>
+          </div>
         </div>`;
       }
       return `
         <a class="ar-neighbor" href="${esc(n.artifact.path)}">
-          <span class="ar-n-arrow">→</span>
-          <span class="ar-n-name">${esc(n.artifact.name)}</span>
-          <span class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</span>
+          <div class="ar-n-thumb">${initials}</div>
+          <div class="ar-n-info">
+            <div class="ar-n-name">${esc(n.artifact.name)}</div>
+            <div class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</div>
+          </div>
+          <span class="ar-n-view">VIEW ATLAS →</span>
         </a>`;
     }).join('');
+    return intro + rows;
   }
 
   function buildArchivedSection({ name, artCode, address, meta }) {
@@ -299,16 +318,18 @@
     el.classList.add('ar-archived');
 
     el.innerHTML = `
-      <div class="ar-toggle-bar">
+      <div class="ar-bar ar-bar-archived">
         <div class="ar-bar-inner">
-          <span class="ar-bar-wordmark">Pergamon Atlas</span>
-          <span class="ar-bar-sep">·</span>
-          <span class="ar-bar-name ar-archived-label">ARCHIVED ARTIFACT</span>
-          <span class="ar-bar-sep ar-bar-sep-addr">·</span>
-          <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
-          <button class="ar-toggle-btn" aria-label="Toggle Archive Record">
-            Archive Record <span class="ar-arrow">▾</span>
-          </button>
+          <div class="ar-bar-left">
+            <span class="ar-bar-logo">◈</span>
+            <span class="ar-bar-wordmark">PERGAMON ATLAS</span>
+            <span class="ar-bar-slash">/</span>
+            <span class="ar-bar-name ar-archived-label">ARCHIVED ARTIFACT</span>
+          </div>
+          <div class="ar-bar-right">
+            <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
+            <span class="ar-bar-label">ARCHIVE RECORD</span>
+          </div>
         </div>
       </div>
 
@@ -330,10 +351,6 @@
       </div>
     `;
 
-    el.querySelector('.ar-toggle-bar').addEventListener('click', () => {
-      el.classList.toggle('ar-collapsed');
-    });
-
     return el;
   }
 
@@ -343,10 +360,10 @@
       <div class="ar-jump-row">
         <input id="ar-jump-s1" class="ar-input ar-seg" type="text" maxlength="5" placeholder="XXXXX"
           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9]/g,'');if(this.value.length===5)document.getElementById('ar-jump-s2').focus()">
-        <span class="ar-seg-sep">·</span>
+        <span class="ar-seg-sep">-</span>
         <input id="ar-jump-s2" class="ar-input ar-seg" type="text" maxlength="5" placeholder="XXXXX"
           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9]/g,'');if(this.value.length===5)document.getElementById('ar-jump-s3').focus()">
-        <span class="ar-seg-sep">·</span>
+        <span class="ar-seg-sep">-</span>
         <input id="ar-jump-s3" class="ar-input ar-seg" type="text" maxlength="5" placeholder="XXXXX"
           oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9]/g,'')">
         <button id="ar-jump-btn" class="ar-btn">Jump</button>
@@ -365,7 +382,7 @@
       return `<p class="ar-empty">This artifact has not been cataloged.</p>`;
     }
     return catalogs.map(c =>
-      `<a class="ar-catalog-link" href="${esc(c.path)}">${esc(c.name)}</a>`
+      `<a class="ar-catalog-link" href="${esc(c.path)}">${esc(c.name)} →</a>`
     ).join('');
   }
 
@@ -377,111 +394,101 @@
     s.id = 'ar-styles';
     s.textContent = `
 #atlas-reference {
-  background: #09080a;
-  border-top: 2px solid #3a3020;
+  background: #0d0b08;
+  border-top: 1px solid #2a2218;
   font-family: Georgia, serif;
   color: #d6c89a;
   margin-top: 56px;
 }
 
-/* ── Toggle bar ── */
-.ar-toggle-bar {
+/* ── Top bar ── */
+.ar-bar {
+  border-bottom: 1px solid #2a2218;
   padding: 0 32px;
-  cursor: pointer;
-  user-select: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.15s;
 }
 
-.ar-toggle-bar:hover { border-bottom-color: #3a3020; }
-
 .ar-bar-inner {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 0;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.ar-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ar-bar-logo {
+  font-size: 14px;
+  color: #c9a84c;
+  flex-shrink: 0;
 }
 
 .ar-bar-wordmark {
   font-size: 11px;
-  letter-spacing: 0.18em;
-  color: #8a7a5a;
+  letter-spacing: 0.2em;
+  color: #7a6a4a;
   text-transform: uppercase;
+  font-family: 'Courier New', monospace;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.ar-bar-sep {
-  color: #4a4030;
+.ar-bar-slash {
+  color: #3a3020;
   font-size: 14px;
+  flex-shrink: 0;
 }
 
 .ar-bar-name {
-  font-size: 14px;
+  font-size: 13px;
   color: #c9a84c;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 240px;
 }
 
-.ar-bar-addr {
-  font-size: 13px;
-  color: #7a6a4a;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-
-.ar-bar-sep-addr { flex-shrink: 0; }
-
-.ar-toggle-btn {
-  margin-left: auto;
-  background: transparent;
-  border: 1px solid #3a3020;
-  color: #8a7a5a;
-  font-family: Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 7px 16px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: border-color 0.12s, color 0.12s;
+.ar-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   flex-shrink: 0;
 }
 
-.ar-toggle-bar:hover .ar-toggle-btn {
-  border-color: #c9a84c;
-  color: #c9a84c;
+.ar-bar-addr {
+  font-size: 12px;
+  color: #6a5a3a;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
 }
 
-.ar-arrow {
-  display: inline-block;
-  transition: transform 0.2s ease;
-  margin-left: 6px;
+.ar-bar-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: #6a5a3a;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+  border: 1px solid #2a2218;
+  padding: 5px 12px;
+  border-radius: 4px;
 }
 
-#atlas-reference:not(.ar-collapsed) .ar-arrow {
-  transform: rotate(180deg);
-}
-
-/* ── Body (collapsible) ── */
+/* ── Body ── */
 .ar-body {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.28s ease, padding 0.28s ease;
-  padding: 0;
-}
-
-#atlas-reference:not(.ar-collapsed) .ar-body {
-  max-height: 2000px;
   padding-bottom: 52px;
 }
 
 .ar-inner {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 0 32px;
 }
@@ -491,121 +498,241 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 24px;
-  padding: 28px 0 22px;
-  border-bottom: 1px solid #2e2820;
+  gap: 32px;
+  padding: 32px 0 26px;
+  border-bottom: 1px solid #2a2218;
 }
+
+.ar-hl { flex: 1; min-width: 0; }
 
 .ar-name {
-  font-size: 24px;
+  font-size: 26px;
   color: #c9a84c;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   font-weight: normal;
+  line-height: 1.2;
 }
 
-.ar-hr { text-align: right; }
+.ar-desc {
+  font-size: 14px;
+  color: #7a6a4a;
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.ar-hr {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.ar-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #111008;
+  border: 1px solid #2a2218;
+  border-radius: 8px;
+  padding: 14px 18px;
+  min-width: 240px;
+}
+
+.ar-info-icon {
+  font-size: 16px;
+  color: #c9a84c;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.ar-info-icon-addr {
+  color: #8a7a5a;
+}
+
+.ar-info-text { min-width: 0; }
 
 .ar-meta-label {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: #7a6a4a;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #5a4a30;
   text-transform: uppercase;
   font-family: 'Courier New', monospace;
   margin-bottom: 5px;
 }
 
 .ar-code {
-  font-size: 14px;
+  font-size: 13px;
   color: #c9a84c;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   font-family: 'Courier New', monospace;
   font-weight: bold;
 }
 
 .ar-address {
-  font-size: 18px;
+  font-size: 13px;
   color: #c9a84c;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   font-family: 'Courier New', monospace;
 }
 
 /* ── Tabs ── */
 .ar-tabs {
   display: flex;
-  border-bottom: 1px solid #2e2820;
-  margin-top: 24px;
-  margin-bottom: 22px;
-  gap: 4px;
+  border-bottom: 1px solid #2a2218;
+  margin-top: 26px;
+  margin-bottom: 20px;
+  gap: 0;
 }
 
 .ar-tab {
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #8a7a5a;
+  color: #6a5a3a;
   font-family: Georgia, serif;
   font-size: 13px;
-  letter-spacing: 0.06em;
-  padding: 12px 18px 10px;
+  letter-spacing: 0.05em;
+  padding: 12px 20px 10px;
   cursor: pointer;
   margin-bottom: -1px;
   transition: color 0.12s, border-color 0.12s;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
-.ar-tab:hover { color: #b09060; }
+.ar-tab-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.ar-tab:hover { color: #a08848; }
 
 .ar-tab.active {
   color: #c9a84c;
   border-bottom-color: #c9a84c;
 }
 
+.ar-tab.active .ar-tab-icon { opacity: 1; }
+
 /* ── Panels ── */
 .ar-panel { min-height: 60px; }
 .ar-hidden { display: none; }
 
-/* ── Nearby ── */
+/* ── Nearby intro ── */
+.ar-nearby-intro {
+  padding: 4px 0 16px;
+}
+
+.ar-nearby-title {
+  font-size: 15px;
+  color: #c9a84c;
+  margin-bottom: 4px;
+}
+
+.ar-nearby-sub {
+  font-size: 13px;
+  color: #5a4a30;
+  line-height: 1.5;
+}
+
+/* ── Neighbor rows ── */
 .ar-neighbor {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
+  display: flex;
   align-items: center;
   gap: 16px;
   padding: 14px 16px;
-  border: 1px solid #272218;
-  border-radius: 4px;
-  margin-bottom: 6px;
+  background: #111008;
+  border: 1px solid #2a2218;
+  border-radius: 6px;
+  margin-bottom: 8px;
   text-decoration: none;
   color: inherit;
   transition: border-color 0.12s, background 0.12s;
 }
 
 .ar-neighbor:hover {
-  border-color: #6a5a3a;
-  background: #0e0c09;
+  border-color: #5a4a28;
+  background: #161208;
 }
 
-.ar-n-arrow {
-  font-size: 15px;
-  color: #7a6a4a;
+.ar-n-thumb {
+  width: 48px;
+  height: 48px;
+  background: #1a1610;
+  border: 1px solid #2a2218;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  color: #6a5a3a;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.ar-n-thumb-trace {
+  opacity: 0.4;
+}
+
+.ar-n-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .ar-n-name {
   font-size: 15px;
   color: #d6c89a;
+  margin-bottom: 4px;
   transition: color 0.12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ar-neighbor:hover .ar-n-name { color: #c9a84c; }
 
 .ar-n-addr {
   font-size: 12px;
-  color: #7a6a4a;
+  color: #5a4a30;
   font-family: 'Courier New', monospace;
   letter-spacing: 0.05em;
 }
 
-.ar-empty {
+.ar-n-view {
+  font-size: 11px;
+  letter-spacing: 0.12em;
   color: #7a6a4a;
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid #2a2218;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.ar-neighbor:hover .ar-n-view {
+  color: #c9a84c;
+  border-color: #5a4a28;
+}
+
+.ar-n-trace-name {
+  font-size: 14px;
+  color: #4a3a20;
+  font-style: italic;
+}
+
+.ar-neighbor-trace {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.ar-empty {
+  color: #5a4a30;
   font-size: 14px;
   font-style: italic;
   padding: 20px 0;
@@ -614,12 +741,12 @@
 /* ── Jump ── */
 .ar-jump-label {
   font-size: 11px;
-  letter-spacing: 0.18em;
-  color: #7a6a4a;
+  letter-spacing: 0.2em;
+  color: #5a4a30;
   text-transform: uppercase;
   font-family: 'Courier New', monospace;
-  margin-bottom: 10px;
-  margin-top: 6px;
+  margin-bottom: 12px;
+  margin-top: 8px;
 }
 
 .ar-jump-row {
@@ -636,32 +763,32 @@
 }
 
 .ar-seg-sep {
-  color: #5a4a38;
-  font-size: 16px;
+  color: #3a2e20;
+  font-size: 18px;
   font-family: 'Courier New', monospace;
   flex-shrink: 0;
 }
 
 .ar-input {
-  background: #0d0b0f;
-  border: 1px solid #2e2820;
-  border-radius: 3px;
+  background: #111008;
+  border: 1px solid #2a2218;
+  border-radius: 4px;
   color: #c9a84c;
   font-family: 'Courier New', monospace;
-  font-size: 15px;
+  font-size: 14px;
   padding: 10px 12px;
   outline: none;
   letter-spacing: 0.06em;
   transition: border-color 0.12s;
 }
 
-.ar-input:focus { border-color: #7a6a4a; }
-.ar-input::placeholder { color: #3a2e20; }
+.ar-input:focus { border-color: #6a5a3a; }
+.ar-input::placeholder { color: #2e2416; }
 
 .ar-btn {
   background: transparent;
-  border: 1px solid #6a5a3a;
-  border-radius: 3px;
+  border: 1px solid #4a3a20;
+  border-radius: 4px;
   color: #c9a84c;
   font-family: Georgia, serif;
   font-size: 13px;
@@ -674,7 +801,7 @@
 
 .ar-btn:hover {
   border-color: #c9a84c;
-  background: rgba(201,168,76,0.07);
+  background: rgba(201,168,76,0.06);
 }
 
 .ar-btn:disabled { opacity: 0.4; cursor: default; }
@@ -682,7 +809,7 @@
 .ar-error {
   font-size: 12px;
   color: #9a5a5a;
-  margin-top: 8px;
+  margin-top: 10px;
   min-height: 18px;
   font-family: 'Courier New', monospace;
 }
@@ -691,7 +818,7 @@
 .ar-random-out {
   margin-top: 16px;
   font-size: 14px;
-  color: #8a7a5a;
+  color: #7a6a4a;
   letter-spacing: 0.08em;
   font-family: 'Courier New', monospace;
   min-height: 20px;
@@ -699,46 +826,49 @@
 
 /* ── Catalogs ── */
 .ar-catalog-link {
-  display: block;
-  padding: 13px 16px;
-  border: 1px solid #272218;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #111008;
+  border: 1px solid #2a2218;
+  border-radius: 6px;
   color: #d6c89a;
   text-decoration: none;
   font-size: 15px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   transition: border-color 0.12s, color 0.12s;
 }
 
 .ar-catalog-link:hover {
-  border-color: #6a5a3a;
+  border-color: #5a4a28;
   color: #c9a84c;
 }
 
-/* ── Archived artifact panel ── */
-.ar-archived .ar-toggle-bar { border-bottom-color: #1e1208; }
-.ar-archived-label {
-  color: #9a5a2a !important;
-  font-size: 12px !important;
-  letter-spacing: 0.15em !important;
-  text-transform: uppercase;
-}
+/* ── Archived panel ── */
+.ar-bar-archived .ar-bar-logo { color: #7a4a20; }
+.ar-bar-archived .ar-bar-name { color: #7a4a20; }
+.ar-bar-archived .ar-bar-label { color: #5a3a18; border-color: #1e1208; }
+
+.ar-archived-label { color: #7a4a20 !important; }
 
 .ar-arc-marker {
   font-size: 11px;
   letter-spacing: 0.35em;
-  color: #4a2a14;
+  color: #3a2010;
   font-family: 'Courier New', monospace;
   padding: 28px 0 18px;
   text-transform: uppercase;
 }
+
 .ar-arc-name {
   font-size: 22px;
-  color: #8a6a3a;
+  color: #7a5a2a;
   font-family: 'Courier New', monospace;
   margin-bottom: 22px;
   letter-spacing: 0.03em;
 }
+
 .ar-arc-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -747,30 +877,35 @@
   padding-bottom: 24px;
   border-bottom: 1px solid #1e1208;
 }
+
 .ar-arc-field { display: flex; flex-direction: column; gap: 5px; }
+
 .ar-af-key {
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: #5a3a1a;
+  color: #4a2a10;
   text-transform: uppercase;
   font-family: 'Courier New', monospace;
 }
+
 .ar-af-val {
   font-size: 14px;
-  color: #8a6a3a;
+  color: #7a5a2a;
   font-family: 'Courier New', monospace;
   letter-spacing: 0.05em;
 }
+
 .ar-arc-note {
   font-size: 13px;
-  color: #5a3a20;
+  color: #4a3018;
   line-height: 1.8;
   margin-bottom: 18px;
   font-style: italic;
 }
+
 .ar-arc-catalog-link {
   font-size: 12px;
-  color: #6a4a22;
+  color: #5a3a18;
   text-decoration: none;
   letter-spacing: 0.12em;
   font-family: 'Courier New', monospace;
@@ -779,41 +914,23 @@
   padding-bottom: 48px;
   display: inline-block;
 }
+
 .ar-arc-catalog-link:hover { color: #c9a84c; }
 
-/* ── Archive traces in nearby panel ── */
-.ar-neighbor-trace {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 16px;
-  border: 1px solid #1a1008;
-  border-radius: 4px;
-  margin-bottom: 6px;
-  opacity: 0.45;
-  cursor: default;
-  user-select: none;
-}
-.ar-n-trace-name {
-  font-size: 14px;
-  color: #5a4a30;
-  font-style: italic;
-}
-
 /* ── Responsive ── */
-@media (max-width: 640px) {
-  .ar-toggle-bar { padding: 0 16px; }
-  .ar-bar-sep-addr, .ar-bar-addr { display: none; }
-  .ar-bar-name { max-width: 160px; }
+@media (max-width: 700px) {
+  .ar-bar { padding: 0 16px; }
+  .ar-bar-addr { display: none; }
+  .ar-bar-name { max-width: 140px; }
   .ar-inner { padding: 0 16px; }
-  .ar-header { flex-direction: column; }
-  .ar-hr { text-align: left; }
+  .ar-header { flex-direction: column; gap: 20px; }
+  .ar-info-item { min-width: unset; }
   .ar-tabs { flex-wrap: wrap; gap: 0; }
   .ar-tab { font-size: 12px; padding: 10px 12px 8px; }
-  .ar-neighbor { grid-template-columns: 28px 1fr; }
+  .ar-n-view { display: none; }
   .ar-n-addr { display: none; }
-  .ar-seg { width: 60px; }
+  .ar-seg { width: 64px; }
+  .ar-arc-grid { grid-template-columns: 1fr; }
 }
     `;
     document.head.appendChild(s);
