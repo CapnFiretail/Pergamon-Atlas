@@ -2,7 +2,7 @@ const atlasUpdates = [
   {
     date: "May 11, 2026",
     tag: "Maintenance",
-    title: "Mortimer the Janitor Stops by",
+    title: "Mortimer the Janitor Stops By",
     text: "Some mysterious Janitor entered the Atlas",
     list: [
       "Refined site formatting and layout consistency",
