@@ -4,7 +4,7 @@
 function loadSnippets(pageName) {
   const suffix = pageName ? ' | ' + pageName : '';
 
-  fetch('/function/snippets/header.html')
+  fetch('/shared/snippets/header.html')
     .then(r => r.text())
     .then(html => {
       document.getElementById('header-placeholder').innerHTML = html;
@@ -21,7 +21,7 @@ function loadSnippets(pageName) {
       }
     });
 
-  fetch('/function/snippets/sidebar.html')
+  fetch('/shared/snippets/sidebar.html')
     .then(r => r.text())
     .then(html => {
       document.getElementById('sidebar-placeholder').innerHTML = html;
@@ -35,8 +35,8 @@ function loadSnippets(pageName) {
         else if (href === '/tools' && path.startsWith('/tools')) link.classList.add('active');
         else if (href === '/games' && path.startsWith('/games')) link.classList.add('active');
         else if (href === '/atlas-explorer/' && path.startsWith('/atlas-explorer')) link.classList.add('active');
-        else if (href === '/other/help' && path.startsWith('/other/help')) link.classList.add('active');
-        else if (href === '/other/suggestions' && path.startsWith('/other/suggestions')) link.classList.add('active');
+        else if (href === '/help' && path.startsWith('/help')) link.classList.add('active');
+        else if (href === '/suggestions' && path.startsWith('/suggestions')) link.classList.add('active');
       });
 
       // Sidebar collapse toggle
@@ -58,7 +58,7 @@ function loadSnippets(pageName) {
 
     });
 
-  fetch('/function/snippets/footer.html')
+  fetch('/shared/snippets/footer.html')
     .then(r => r.text())
     .then(html => {
       document.getElementById('footer-placeholder').innerHTML = html;

@@ -100,10 +100,10 @@ window.atlasEntries = {
     { path: "/", name: "Pergamon Atlas", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 592617613, code_seed: 1778374433, address: "UG3SS-Y3VFC-U9JF9", coords: { x: 6698072, y: -14580755, z: -14172745 } },
     { path: "/atlas-explorer", name: "Atlas Explorer", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 3398776258, code_seed: 1778374433, address: "2N54V-5FEEB-T2EZD", coords: { x: 12795157, y: -8240, z: -15462421 } },
     { path: "/search", name: "Search", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 4170431147, code_seed: 1778374433, address: "3VJ6D-Q8QA9-JA2J5", coords: { x: 14479813, y: 10647378, z: 8944659 } },
-    { path: "/other/help", name: "Help", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 418145593, code_seed: 1778374433, address: "HEWHW-PYXKG-JB8LZ", coords: { x: -13172044, y: 9837161, z: 8971359 } },
-    { path: "/other/suggestions", name: "Suggestions", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 1779867927, code_seed: 1778374433, address: "FT4RH-D3N4K-PM4Q4", coords: { x: -14828639, y: 7470088, z: 14546132 } },
-    { path: "/other/account", name: "Account", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 3437978101, code_seed: 1778374433, address: "9QNFG-43V4H-B6CKR", coords: { x: 11690722, y: -1998838, z: 1446951 } },
-    { path: "/other/updates", name: "Update Log", date: "2026-05-10", time: "01:41:24", chamber: "PG", seed: 1452473123, code_seed: 1778377284, address: "UGVPQ-5F8PP-SLLS2", coords: { x: 6692842, y: -18716, z: -15911150 } },
+    { path: "/help", name: "Help", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 484373152, code_seed: 1778374433, address: "VP4PF-X86LN-DGEMN", coords: { x: 7584739, y: -15581693, z: 3869798 } },
+    { path: "/suggestions", name: "Suggestions", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 2124313818, code_seed: 1778374433, address: "Y9CCL-QMVPL-QNZ73", coords: { x: 2808334, y: 11043557, z: 15614641 } },
+    { path: "/account", name: "Account", date: "2026-05-10", time: "00:53:53", chamber: "PG", seed: 2126867460, code_seed: 1778374433, address: "7A2RK-HMUZA-66JSC", coords: { x: 9778095, y: 3704239, z: -3784948 } },
+    { path: "/updates", name: "Update Log", date: "2026-05-10", time: "01:41:24", chamber: "PG", seed: 1115875289, code_seed: 1778377284, address: "XVNXW-PJHS7-25QB7", coords: { x: 1892596, y: 10047828, z: -8018635 } },
     { path: "/archives", name: "Archives", date: "2026-05-10", time: "01:13:33", chamber: "PG", seed: 46203695, code_seed: 1778375613, address: "XVNBT-2AA3B-GFVXH", coords: { x: 1892983, y: -3322768, z: 7001007 } }
   ],
 

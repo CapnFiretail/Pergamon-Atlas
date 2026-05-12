@@ -25,10 +25,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="/function/styles/header.css">
-  <link rel="stylesheet" href="/function/styles/sidebar.css">
-  <link rel="stylesheet" href="/function/styles/main.css">
-  <link rel="stylesheet" href="/function/styles/footer.css">
+  <link rel="stylesheet" href="/shared/styles/header.css">
+  <link rel="stylesheet" href="/shared/styles/sidebar.css">
+  <link rel="stylesheet" href="/shared/styles/main.css">
+  <link rel="stylesheet" href="/shared/styles/footer.css">
 
   <style>
     .ttt-shell{
@@ -490,7 +490,7 @@
   <div id="footer-placeholder"></div>
 
   <script>
-    fetch('/function/snippets/header.html')
+    fetch('/shared/snippets/header.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('header-placeholder').innerHTML = data;
@@ -498,7 +498,7 @@
         if (pageTitleText) pageTitleText.textContent = pageHeaderSuffix;
       });
 
-    fetch('/function/snippets/sidebar.html')
+    fetch('/shared/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('sidebar-placeholder').innerHTML = data;
@@ -516,7 +516,7 @@
           else if (( path.startsWith("/sectors/systems/games") || path.startsWith("/sectors/atlas/games") ) && link.getAttribute("href") === "/sectors/systems/games") {
             link.classList.add('active');
           }
-          else if (path.startsWith("/help") && link.getAttribute("href") === "/sectors/systems/other/help") {
+          else if (path.startsWith("/help") && link.getAttribute("href") === "/sectors/systems/help") {
             link.classList.add('active');
           }
         });
@@ -526,7 +526,7 @@
         } catch(err){}
       });
 
-    fetch('/function/snippets/footer.html')
+    fetch('/shared/snippets/footer.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('footer-placeholder').innerHTML = data;
@@ -1132,10 +1132,10 @@
     updateScores();
   </script>
 
-<script src="/pergamon-data/pergamon-address.js"></script>
-<script src="/pergamon-data/indexing/entries.js"></script>
-<script src="/pergamon-data/atlas-reference.js"></script>
-<script src="/function/scripts/atlas.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+<script src="/shared/scripts/atlas.js"></script>
 <script>loadSnippets('Tic Tac Toe');</script>
 </body>
 </html>

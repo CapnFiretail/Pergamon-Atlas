@@ -25,11 +25,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="/function/styles/header.css">
-  <link rel="stylesheet" href="/function/styles/sidebar.css">
-  <link rel="stylesheet" href="/function/styles/main.css">
-  <link rel="stylesheet" href="/function/styles/footer.css">
-  <link rel="stylesheet" href="/function/styles/updates.css">
+  <link rel="stylesheet" href="/shared/styles/header.css">
+  <link rel="stylesheet" href="/shared/styles/sidebar.css">
+  <link rel="stylesheet" href="/shared/styles/main.css">
+  <link rel="stylesheet" href="/shared/styles/footer.css">
+  <link rel="stylesheet" href="/shared/styles/updates.css">
 
   <style>
     .hero-section{
@@ -259,7 +259,7 @@
             <p>Enter the Gaming Wing of Pergamon Atlas.</p>
           </a>
 
-          <a href="/other/help" class="feature-box">
+          <a href="/help" class="feature-box">
             <h3>Suggestions</h3>
             <p>Help build the Atlas.</p>
           </a>
@@ -275,7 +275,7 @@
         <div id="updates-placeholder" class="updates-wrap"></div>
 
         <div class="updates-footer">
-          <a href="/other/updates" class="suggestions-link">View Full Update Log</a>
+          <a href="/updates" class="suggestions-link">View Full Update Log</a>
         </div>
       </section>
 
@@ -287,7 +287,7 @@
             pages, and ideas get added next. If there is something you want to see built,
             this is where to say it.
           </p>
-          <a href="/other/suggestions" class="suggestions-link">Leave a Suggestion</a>
+          <a href="/suggestions" class="suggestions-link">Leave a Suggestion</a>
         </div>
       </section>
 
@@ -298,7 +298,7 @@
 
   
   
-  <script src="/pergamon-data/update-logs/updates.js"></script>
+  <script src="/data/update-logs/updates.js"></script>
 
   <script>
     function renderUpdates(updates, containerId, limit = null){
@@ -332,10 +332,10 @@ renderUpdates(atlasUpdates, 'updates-placeholder', 2);
     (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
 
-<script src="/pergamon-data/pergamon-address.js"></script>
-<script src="/pergamon-data/indexing/entries.js"></script>
-<script src="/pergamon-data/atlas-reference.js"></script>
-<script src="/function/scripts/atlas.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+<script src="/shared/scripts/atlas.js"></script>
 <script>loadSnippets('Pergamon Atlas');</script>
 </body>
 </html>

@@ -2,9 +2,9 @@
 
 const fs  = require('fs');
 const path = require('path');
-const PA  = require('../pergamon-address');
+const PA  = require('../data/pergamon-address');
 
-const ROOT    = path.resolve(__dirname, '../../');
+const ROOT    = path.resolve(__dirname, '../');
 const SECTORS = {
   tools: { dir: path.join(ROOT, 'tools'), chamber: 'TL' },
   games: { dir: path.join(ROOT, 'games'), chamber: 'GM' }
@@ -15,16 +15,16 @@ const PAGES = [
   { file: path.join(ROOT, 'index.html'),                         pagePath: '/',                  name: 'Pergamon Atlas' },
   { file: path.join(ROOT, 'atlas-explorer', 'index.html'),       pagePath: '/atlas-explorer',    name: 'Atlas Explorer' },
   { file: path.join(ROOT, 'search', 'index.html'),               pagePath: '/search',            name: 'Search'         },
-  { file: path.join(ROOT, 'other', 'help', 'index.html'),        pagePath: '/other/help',        name: 'Help'           },
-  { file: path.join(ROOT, 'other', 'suggestions', 'index.html'), pagePath: '/other/suggestions', name: 'Suggestions'    },
-  { file: path.join(ROOT, 'other', 'account', 'index.html'),     pagePath: '/other/account',     name: 'Account'        },
-  { file: path.join(ROOT, 'other', 'updates', 'index.html'),     pagePath: '/other/updates',     name: 'Update Log'     },
+  { file: path.join(ROOT, 'help', 'index.html'),        pagePath: '/help',        name: 'Help'           },
+  { file: path.join(ROOT, 'suggestions', 'index.html'), pagePath: '/suggestions', name: 'Suggestions'    },
+  { file: path.join(ROOT, 'account', 'index.html'),     pagePath: '/account',     name: 'Account'        },
+  { file: path.join(ROOT, 'updates', 'index.html'),     pagePath: '/updates',     name: 'Update Log'     },
   { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',                name: 'Archives'          },
   { file: path.join(ROOT, 'archives', 'chess-forge-v1', 'index.html'),  pagePath: '/archives/chess-forge-v1',  name: 'Chess Forge (v1)'  },
   { file: path.join(ROOT, 'archives', 'atlas-runner-v1', 'index.html'), pagePath: '/archives/atlas-runner-v1', name: 'Atlas Runner (v1)' },
 ];
-const ENTRIES_OUT   = path.join(__dirname, 'entries.js');
-const COLLISION_OUT = path.join(ROOT, 'pergamon-data', 'collisions.json');
+const ENTRIES_OUT   = path.join(ROOT, 'data', 'entries.js');
+const COLLISION_OUT = path.join(ROOT, 'data', 'collisions.json');
 
 // --- RNG ---
 
@@ -90,15 +90,15 @@ function injectOrUpdateMeta(html, meta) {
 }
 
 const ATLAS_SCRIPTS = [
-  '/function/scripts/atlas.js',
-  '/pergamon-data/pergamon-address.js',
-  '/pergamon-data/indexing/entries.js',
-  '/pergamon-data/atlas-reference.js',
+  '/shared/scripts/atlas.js',
+  '/data/pergamon-address.js',
+  '/data/entries.js',
+  '/data/atlas-reference.js',
 ];
 
 const OLD_SCRIPTS = [
-  '/pergamon-data/indexing/generator.js',
-  '/pergamon-data/indexing/auto-atlas.js',
+  '/data/indexing/generator.js',
+  '/data/indexing/auto-atlas.js',
 ];
 
 function stripOldScripts(html) {
@@ -120,8 +120,8 @@ function ensureAtlasScripts(html) {
 }
 
 function stripInlineFetches(html) {
-  const marker = "fetch('/function/snippets/header.html')";
-  const marker2 = 'fetch("/function/snippets/header.html")';
+  const marker = "fetch('/shared/snippets/header.html')";
+  const marker2 = 'fetch("/shared/snippets/header.html")';
   if (!html.includes(marker) && !html.includes(marker2)) return html;
 
   let result = html;
@@ -138,8 +138,8 @@ function ensureLoadSnippets(html, name) {
   if (html.includes('loadSnippets(')) return html;
   const safe = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
   return html.replace(
-    '<script src="/function/scripts/atlas.js"></script>',
-    `<script src="/function/scripts/atlas.js"></script>\n<script>loadSnippets('${safe}');</script>`
+    '<script src="/shared/scripts/atlas.js"></script>',
+    `<script src="/shared/scripts/atlas.js"></script>\n<script>loadSnippets('${safe}');</script>`
   );
 }
 

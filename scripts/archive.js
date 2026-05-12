@@ -2,12 +2,12 @@
 // Usage: node archive.js <page-path>
 // Example: node archive.js /tools/some-tool
 //          node archive.js /games/snake
-//          node archive.js /other/help
+//          node archive.js /help
 
 const fs   = require('fs');
 const path = require('path');
 
-const ROOT = path.resolve(__dirname, '../../');
+const ROOT = path.resolve(__dirname, '../');
 
 const arg = process.argv[2];
 if (!arg) {

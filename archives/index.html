@@ -21,10 +21,10 @@
   <title>Pergamon Atlas | Archives</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/function/styles/header.css">
-  <link rel="stylesheet" href="/function/styles/sidebar.css">
-  <link rel="stylesheet" href="/function/styles/main.css">
-  <link rel="stylesheet" href="/function/styles/footer.css">
+  <link rel="stylesheet" href="/shared/styles/header.css">
+  <link rel="stylesheet" href="/shared/styles/sidebar.css">
+  <link rel="stylesheet" href="/shared/styles/main.css">
+  <link rel="stylesheet" href="/shared/styles/footer.css">
   <style>
     .arc-hero {
       background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
@@ -184,8 +184,8 @@
   </div>
   <div id="footer-placeholder"></div>
 
-  <script src="/pergamon-data/indexing/entries.js"></script>
-  <script src="/function/scripts/atlas.js"></script>
+  <script src="/data/entries.js"></script>
+  <script src="/shared/scripts/atlas.js"></script>
   <script>
     loadSnippets('Archives');
 
@@ -228,7 +228,7 @@
       count.textContent = `${archived.length} archived artifact${archived.length !== 1 ? 's' : ''} on record`;
     });
   </script>
-<script src="/pergamon-data/pergamon-address.js"></script>
-<script src="/pergamon-data/atlas-reference.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/atlas-reference.js"></script>
 </body>
 </html>
