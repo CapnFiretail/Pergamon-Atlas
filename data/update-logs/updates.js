@@ -1,4 +1,3 @@
-```js
 const atlasUpdates = [
   {
     date: "May 11, 2026",
@@ -126,4 +125,3 @@ const atlasUpdates = [
     text: "The first chamber opens."
   }
 ];
-```
