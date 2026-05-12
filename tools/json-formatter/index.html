@@ -147,9 +147,9 @@
       try {
         JSON.parse(input);
         showError('');
-        document.getElementById('outputArea').textContent = 'Valid JSON.';
+        document.getElementById('outputArea').textContent = '✓ Valid JSON';
         document.getElementById('outputArea').className = 'output-area';
-      } catch(e) { showError('Invalid JSON: ' + e.message); document.getElementById('outputArea').textContent=''; }
+      } catch(e) { showError('✗ Invalid JSON: ' + e.message); document.getElementById('outputArea').textContent=''; }
     }
 
     function clearAll() {

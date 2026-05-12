@@ -132,7 +132,7 @@
         gameOver=true;clearInterval(timerInt);
         cells.forEach((c,j)=>{if(c.mine)revealed.add(j);});
         renderBoard();
-        document.getElementById('statusMsg').textContent='Hit a mine. Game over.';
+        document.getElementById('statusMsg').textContent='💥 Boom! Game over.';
         document.getElementById('statusMsg').className='status-msg lose';
         return;
       }
@@ -151,7 +151,7 @@
     function updateCellsLeft(){
       const left=cfg.rows*cfg.cols-cfg.mines-revealed.size;
       document.getElementById('cellsLeft').textContent=left;
-      if(left===0){clearInterval(timerInt);gameOver=true;document.getElementById('statusMsg').textContent='All clear. You win.';document.getElementById('statusMsg').className='status-msg win';}
+      if(left===0){clearInterval(timerInt);gameOver=true;document.getElementById('statusMsg').textContent='🎉 You win!';document.getElementById('statusMsg').className='status-msg win';}
     }
 
     function renderBoard(){
@@ -160,8 +160,8 @@
       board.innerHTML='';
       cells.forEach((c,i)=>{
         const el=document.createElement('div');el.className='cell';
-        if(gameOver&&c.mine&&!flagged.has(i)){el.className='cell mine';el.innerHTML='<span aria-label="Mine">*</span>';}
-        else if(flagged.has(i)){el.className='cell flagged';el.innerHTML='<span aria-label="Flagged"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 22V4l16 8-16 8"/></svg></span>';}
+        if(gameOver&&c.mine&&!flagged.has(i)){el.className='cell mine';el.textContent='💣';}
+        else if(flagged.has(i)){el.className='cell flagged';el.textContent='🚩';}
         else if(revealed.has(i)){
           el.className='cell revealed'+(c.count>0?' n'+c.count:'');
           el.textContent=c.count>0?c.count:'';

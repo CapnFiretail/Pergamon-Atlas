@@ -144,7 +144,7 @@
         <div class="val-row">
           <span class="val-label">${v.label}</span>
           <span class="val-text">${v.val}</span>
-          <button class="copy-small" onclick="navigator.clipboard.writeText('${v.val.replace(/'/g,"\\'")}');this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)">Copy</button>
+          <button class="copy-small" onclick="navigator.clipboard.writeText('${v.val.replace(/'/g,"\\'")}');this.textContent='✓';setTimeout(()=>this.textContent='Copy',1200)">Copy</button>
         </div>
       `).join('');
 
@@ -154,10 +154,10 @@
       const bContrast = contrastRatio(0, lum);
       document.getElementById('contrastWhite').style.background = hex;
       document.getElementById('contrastWhite').style.color = 'white';
-      document.getElementById('contrastWhite').textContent = 'White: ' + wContrast.toFixed(2) + ':1 ' + (wContrast>=4.5?'AA pass':'fail');
+      document.getElementById('contrastWhite').textContent = 'White: ' + wContrast.toFixed(2) + ':1 ' + (wContrast>=4.5?'✓ AA':'✗');
       document.getElementById('contrastBlack').style.background = hex;
       document.getElementById('contrastBlack').style.color = 'black';
-      document.getElementById('contrastBlack').textContent = 'Black: ' + bContrast.toFixed(2) + ':1 ' + (bContrast>=4.5?'AA pass':'fail');
+      document.getElementById('contrastBlack').textContent = 'Black: ' + bContrast.toFixed(2) + ':1 ' + (bContrast>=4.5?'✓ AA':'✗');
       document.getElementById('contrastScore').textContent = `Best for accessibility: ${bContrast > wContrast ? 'Black' : 'White'} text`;
 
       // tints/shades

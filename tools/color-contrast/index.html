@@ -111,7 +111,7 @@
     return(hi+.05)/(lo+.05);
   }
 
-  function badge(label,pass){return`<div class="badge ${pass?'pass':'fail'}">${pass?'Pass':'Fail'} · ${label}</div>`;}
+  function badge(label,pass){return`<div class="badge ${pass?'pass':'fail'}">${pass?'✓':'✗'} ${label}</div>`;}
 
   function check(){
     const fg=document.getElementById('fgHex').value;

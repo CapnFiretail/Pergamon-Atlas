@@ -36,8 +36,8 @@
     .info-row span{font-weight:700}
     .info-row .score-val{font-size:22px;color:#8a611c}
     .btn-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
-    .hl-btn{border:none;border-radius:12px;padding:16px 36px;font-size:18px;font-weight:700;font-family:Georgia,serif;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:8px}
-    .hl-ico{flex-shrink:0}
+    .hl-btn{border:none;border-radius:12px;padding:16px 36px;font-size:18px;font-weight:700;font-family:Georgia,serif;cursor:pointer;transition:.15s}
+    .hl-btn.lower{background:#c0392b;color:white}
     .hl-btn.higher{background:#2a9d3a;color:white}
     .hl-btn:hover{opacity:.85}
     .hl-btn:disabled{opacity:.3;cursor:default}
@@ -80,8 +80,8 @@
         </div>
         <div class="feedback" id="feedback"></div>
         <div class="btn-row">
-          <button class="hl-btn lower" id="btnLower" onclick="guess('lower')"><svg class="hl-ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg> Lower</button>
-          <button class="hl-btn higher" id="btnHigher" onclick="guess('higher')"><svg class="hl-ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg> Higher</button>
+          <button class="hl-btn lower" id="btnLower" onclick="guess('lower')">⬇ Lower</button>
+          <button class="hl-btn higher" id="btnHigher" onclick="guess('higher')">⬆ Higher</button>
         </div>
         <button class="next-btn" id="nextBtn" onclick="nextRound()" style="display:none">Next →</button>
         <div class="best-score" id="bestScore">Best streak: 0</div>

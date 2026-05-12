@@ -125,7 +125,7 @@
 
     function checkEnd(){
       const flat=grid.flat();
-      if(flat.includes(2048)&&!won){won=true;document.getElementById('status').textContent='You reached 2048.';document.getElementById('status').className='status win';}
+      if(flat.includes(2048)&&!won){won=true;document.getElementById('status').textContent='🎉 You reached 2048!';document.getElementById('status').className='status win';}
       if(!flat.includes(0)){
         for(let r=0;r<4;r++)for(let c=0;c<4;c++){
           if(c<3&&grid[r][c]===grid[r][c+1]) return;

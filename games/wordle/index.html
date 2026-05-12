@@ -141,7 +141,7 @@
       const won=current===secret;
       gameOver=won||guesses.length>=6;
       current='';
-      if(won){setStatus('Brilliant! You solved it.','win');}
+      if(won){setStatus('Brilliant! 🎉','win');}
       else if(guesses.length>=6){setStatus('The word was: '+secret.toUpperCase(),'lose');}
       else setStatus('');
     }

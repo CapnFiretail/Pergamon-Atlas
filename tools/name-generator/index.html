@@ -44,8 +44,8 @@
     .names-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
     .name-item{background:#f7f7f7;border:1px solid #ddd;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:700;cursor:pointer;transition:.15s}
     .name-item:hover{border-color:#c28a2b;background:#fffaf4}
-    .name-item .save-star{font-size:10px;font-weight:700;letter-spacing:0.06em;color:#a8a8a8;text-transform:uppercase;min-width:44px;text-align:right;transition:.15s}
-    .name-item.saved .save-star{color:#8a611c}
+    .name-item .save-star{font-size:18px;color:#ccc;transition:.15s}
+    .name-item.saved .save-star{color:#c28a2b}
     .saved-list{display:flex;flex-wrap:wrap;gap:8px;min-height:36px}
     .saved-tag{background:#111;color:#f0d39b;border-radius:8px;padding:7px 14px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
     .saved-tag button{background:none;border:none;color:#f0d39b;cursor:pointer;font-size:16px;padding:0;line-height:1}
@@ -157,7 +157,7 @@
         item.className = 'name-item';
         const isSaved = saved.includes(name);
         if (isSaved) item.classList.add('saved');
-        item.innerHTML = `<span>${name}</span><span class="save-star" aria-label="${isSaved?'Saved name':''}">${isSaved?'Saved':''}</span>`;
+        item.innerHTML = `<span>${name}</span><span class="save-star">${isSaved?'★':'☆'}</span>`;
         item.onclick = () => toggleSave(name, item);
         grid.appendChild(item);
       });
@@ -165,8 +165,8 @@
 
     function toggleSave(name, el) {
       const idx = saved.indexOf(name);
-      if (idx === -1) { saved.push(name); el.classList.add('saved'); const st=el.querySelector('.save-star'); st.textContent='Saved'; st.setAttribute('aria-label','Saved name'); }
-      else { saved.splice(idx,1); el.classList.remove('saved'); const st=el.querySelector('.save-star'); st.textContent=''; st.removeAttribute('aria-label'); }
+      if (idx === -1) { saved.push(name); el.classList.add('saved'); el.querySelector('.save-star').textContent='★'; }
+      else { saved.splice(idx,1); el.classList.remove('saved'); el.querySelector('.save-star').textContent='☆'; }
       renderSaved();
     }
 

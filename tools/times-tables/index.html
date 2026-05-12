@@ -195,7 +195,7 @@
       const inp=document.getElementById('answerInput');
       if(val===q.answer){
         inp.className='answer-input correct';
-        document.getElementById('feedback').textContent='Correct.';
+        document.getElementById('feedback').textContent='✓ Correct!';
         document.getElementById('feedback').className='feedback correct';
         correct++; streak++;
         document.getElementById('qCorrect').textContent=correct;
@@ -203,7 +203,7 @@
         setTimeout(()=>{qIdx++;showQ();},600);
       } else if(document.getElementById('answerInput').value.length>String(q.answer).length) {
         inp.className='answer-input wrong';
-        document.getElementById('feedback').textContent='Answer: '+q.answer;
+        document.getElementById('feedback').textContent='✗ Answer: '+q.answer;
         document.getElementById('feedback').className='feedback wrong';
         wrong++; streak=0;
         document.getElementById('qWrong').textContent=wrong;

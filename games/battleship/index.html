@@ -197,8 +197,8 @@
 
   function renderShipStatus(){
     const el=document.getElementById('shipStatus');
-    const pLines=playerShips.map(s=>`<span style="color:${s.sunk?'#c0392b':'#333'}">${s.sunk?'Sunk':'Active'} — Your ${s.name}</span>`);
-    const eLines=enemyShips.map(s=>`<span style="color:${s.sunk?'#5a8a3a':'#333'}">${s.sunk?'Sunk':'Unknown'} — Enemy ${s.name}</span>`);
+    const pLines=playerShips.map(s=>`<span style="color:${s.sunk?'#c0392b':'#333'}">${s.sunk?'☠':'🚢'} Your ${s.name}</span>`);
+    const eLines=enemyShips.map(s=>`<span style="color:${s.sunk?'#5a8a3a':'#333'}">${s.sunk?'✓ Sunk':'? '} Enemy ${s.name}</span>`);
     el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px">'+[...pLines,...eLines].map(l=>`<div>${l}</div>`).join('')+'</div>';
   }
 
