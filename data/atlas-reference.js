@@ -234,6 +234,17 @@
       </div>
     `;
 
+    // Collapse toggle
+    const refBtn = el.querySelector('.ar-bar-ref-btn');
+    const body   = el.querySelector('.ar-body');
+    el.classList.add('ar-collapsed');
+    refBtn.setAttribute('aria-expanded', 'false');
+
+    refBtn.addEventListener('click', () => {
+      const collapsed = el.classList.toggle('ar-collapsed');
+      refBtn.setAttribute('aria-expanded', String(!collapsed));
+    });
+
     // Tab switching
     el.querySelectorAll('.ar-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -571,7 +582,23 @@
 
 /* ── Body ── */
 .ar-body {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
   padding-bottom: 52px;
+}
+
+#atlas-reference.ar-collapsed .ar-body {
+  max-height: 0;
+  padding-bottom: 0;
+}
+
+#atlas-reference.ar-collapsed .ar-bar-chevron {
+  transform: rotate(180deg);
+}
+
+.ar-bar-chevron {
+  transition: transform 0.2s ease;
 }
 
 .ar-inner {
