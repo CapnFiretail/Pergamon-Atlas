@@ -55,6 +55,8 @@ body{
   gap: 14px;
   min-width: 0;
   flex: 1 1 auto;
+  text-decoration: none;
+  color: inherit;
 }
 
 .logo-box{
@@ -240,12 +242,17 @@ body{
   .topbar-inner{
     padding: 14px 16px;
     gap: 12px;
+    min-height: unset;
   }
 
   .brand{
     flex: 1 1 auto;
     min-width: 0;
     gap: 10px;
+  }
+
+  .page-title-text{
+    display: none;
   }
 
   .logo-box{
