@@ -2,12 +2,12 @@ const atlasUpdates = [
   {
     date: "May 11, 2026",
     tag: "Maintenance",
-    title: "The Atlas Settles",
-    text: "The structure holds more cleanly than before.",
+    title: "Mortimer the Janitor Stops by",
+    text: "Some mysterious Janitor entered the Atlas",
     list: [
       "Refined site formatting and layout consistency",
-      "Improved spacing, typography, and panel structure",
-      "Stabilized navigation behavior across the Atlas"
+      "Improved overall site structure",
+      "Stabilized navigation behavior"
     ]
   },
   {
