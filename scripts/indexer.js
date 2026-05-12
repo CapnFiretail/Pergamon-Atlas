@@ -208,7 +208,8 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     updated = stripOldScripts(updated);
     updated = stripInlineFetches(updated);
     updated = ensureAtlasScripts(updated);
-    updated = ensureLoadSnippets(updated, meta.name);
+    const sectionName = type === 'tools' ? 'Tools' : 'Games';
+    updated = ensureLoadSnippets(updated, sectionName);
     fs.writeFileSync(htmlPath, updated);
 
     // Collision tracking

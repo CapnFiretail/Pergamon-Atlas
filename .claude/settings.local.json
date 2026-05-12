@@ -20,7 +20,12 @@
       "Bash(sed -i 's|/sectors/systems/other/archives|/other/archives|g' /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/index.html)",
       "Bash(git show *)",
       "Bash(cp /tmp/chess-forge-v1.html /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/archives/chess-forge-v1/index.html)",
-      "Bash(cp /tmp/atlas-runner-v1.html /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/archives/atlas-runner-v1/index.html)"
+      "Bash(cp /tmp/atlas-runner-v1.html /c/Users/cms12/OneDrive/Desktop/atlas_code/Pergamon-Atlas/archives/atlas-runner-v1/index.html)",
+      "Bash(cp /tmp/header.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\header.css\")",
+      "Bash(cp /tmp/sidebar.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\sidebar.css\")",
+      "Bash(cp /tmp/footer.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\footer.css\")",
+      "Bash(cp /tmp/main.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\main.css\")",
+      "Bash(cp /tmp/header.html \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\snippets\\\\header.html\")"
     ]
   }
 }

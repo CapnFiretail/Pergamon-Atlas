@@ -199,24 +199,6 @@
       }
     }
 
-    /* ── Archive glyph — subtle flicker link ── */
-    @keyframes archiveFlicker {
-      0%,  48%, 52%, 100% { opacity: 0.18; }
-      50%                  { opacity: 0.08; }
-    }
-    .archive-glyph {
-      display: inline-block;
-      margin-left: 10px;
-      font-size: 0.6em;
-      vertical-align: middle;
-      text-decoration: none;
-      opacity: 0.18;
-      animation: archiveFlicker 6s ease-in-out infinite;
-      cursor: pointer;
-      transition: opacity 0.3s;
-      line-height: 1;
-    }
-    .archive-glyph:hover { opacity: 0.55; }
   </style>
 </head>
 
@@ -232,7 +214,7 @@
       <section class="hero-section">
         <div class="hero-card">
           <p class="hero-eyebrow">A growing digital world</p>
-          <h2>Welcome to Pergamon Atlas<a href="/archives" class="archive-glyph" aria-label="Archives" tabindex="-1">📚</a></h2>
+          <h2>Welcome to Pergamon Atlas</h2>
           <p class="hero-text">The Internet's Living Library</p>
 
           <div class="hero-buttons">
@@ -336,6 +318,6 @@ renderUpdates(atlasUpdates, 'updates-placeholder', 2);
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>
 <script src="/operation/scripts/atlas.js"></script>
-<script>loadSnippets('Pergamon Atlas');</script>
+<script>loadSnippets('');</script>
 </body>
 </html>
