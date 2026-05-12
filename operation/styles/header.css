@@ -1,6 +1,18 @@
-*, *::before, *::after { box-sizing: border-box; }
+/* =========================
+   GLOBAL / PAGE FRAME
+========================= */
+html{
+  height: 100%;
+  box-sizing: border-box;
+}
 
-body {
+*,
+*::before,
+*::after{
+  box-sizing: inherit;
+}
+
+body{
   margin: 0;
   min-height: 100vh;
   background: #111;
@@ -8,155 +20,285 @@ body {
   font-family: Georgia, serif;
   display: flex;
   flex-direction: column;
+  border: 2px solid #8a611c;
 }
 
-/* ── Topbar ── */
-.topbar {
+/* =========================
+   TOP HEADER
+========================= */
+.topbar{
   width: 100%;
-  background: #0a0a0a;
-  border-bottom: 1px solid #1c1c1c;
-  position: sticky;
-  top: 0;
-  z-index: 200;
+  background: #000000;
+  color: white;
+  border-bottom: 1px solid #111;
 }
 
-.topbar-inner {
+/* =========================
+   HEADER INNER
+========================= */
+.topbar-inner{
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
-  height: 68px;
+  padding: 18px 28px;
   gap: 20px;
+  min-height: 136px;
+  flex-wrap: nowrap; /* 🔥 prevent wrapping */
 }
 
-/* ── Brand ── */
-.brand {
+/* =========================
+   LEFT SIDE
+========================= */
+.brand{
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1 1 auto;
+  gap: 14px;
   min-width: 0;
-  text-decoration: none;
+  flex: 1 1 auto;
 }
 
-.logo-box {
-  width: 40px;
-  height: 40px;
+.logo-box{
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logo-box img {
+.logo-box img{
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
-.brand h1 {
+.brand h1{
   margin: 0;
-  font-size: 19px;
-  font-weight: 700;
+  font-size: clamp(26px, 3.6vw, 48px);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
   color: white;
   white-space: nowrap;
-  letter-spacing: 0.1px;
+  min-width: 0;
 }
 
-.site-title { color: white; }
-
-.page-title-text {
-  color: #7a5518;
-  font-weight: 400;
-  font-size: 0.82em;
+.site-title{
+  white-space: nowrap;
 }
 
-/* ── Actions ── */
-.header-actions {
+.page-title-text{
+  white-space: nowrap;
+}
+
+/* =========================
+   RIGHT SIDE
+========================= */
+.header-actions{
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
+  gap: 14px;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
-/* ── Search ── */
-.search-wrap {
+/* =========================
+   SEARCH BAR
+========================= */
+.search-wrap{
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.search-wrap::before {
+.search-wrap::before{
   content: "🔍";
   position: absolute;
-  left: 12px;
-  font-size: 12px;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  opacity: 0.92;
   pointer-events: none;
-  opacity: 0.55;
 }
 
-.search-wrap input {
-  width: clamp(130px, 16vw, 240px);
-  background: #141414;
-  color: #e0e0e0;
-  border: 1px solid #282828;
+.search-wrap input{
+  width: clamp(160px, 20vw, 300px);
+  background: #1b1b1b;
+  color: white;
+  border: 1.5px solid #8a611c;
   outline: none;
   border-radius: 999px;
-  padding: 8px 16px 8px 34px;
-  font-size: 14px;
+  padding: 14px 20px 14px 46px;
+  font-size: 16px;
   font-family: Georgia, serif;
-  transition: border-color 0.18s, background 0.18s;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.search-wrap input::placeholder { color: #555; }
-
-.search-wrap input:focus {
-  border-color: #7a5518;
-  background: #181818;
+.search-wrap input::placeholder{
+  color: #d8c39a;
+  opacity: 0.88;
 }
 
-/* ── Account ── */
-.account-btn {
-  background: transparent;
-  color: #b8832a;
-  border: 1px solid #2e2310;
+.search-wrap input:focus{
+  background: #202020;
+  border-color: #c28a2b;
+  box-shadow: 0 0 0 2px rgba(194, 138, 43, 0.18);
+}
+
+/* =========================
+   ACCOUNT BUTTON
+========================= */
+.account-btn{
+  background: #1b1b1b;
+  color: #e0c38a;
+  border: 1.5px solid #8a611c;
   border-radius: 999px;
-  padding: 7px 15px;
-  font-size: 13px;
+  padding: 14px 18px;
+  font-size: 16px;
   font-weight: 600;
   font-family: Georgia, serif;
+  line-height: 1.2;
   cursor: pointer;
-  text-decoration: none;
+  transition: all 0.2s ease;
   white-space: nowrap;
-  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  text-decoration: none;
 }
 
-.account-btn:hover {
-  background: #171008;
-  border-color: #7a5518;
-  color: #d4a84b;
+.account-btn:hover{
+  background: #211a10;
+  color: white;
+  border-color: #c28a2b;
 }
 
-/* ── Responsive ── */
-@media (max-width: 960px) {
-  .page-title-text { display: none; }
+/* =========================
+   SMALLER LAPTOP
+========================= */
+@media (max-width: 1250px){
+  .page-title-text{
+    font-size: 0.88em;
+  }
 }
 
-@media (max-width: 700px) {
-  .topbar-inner { padding: 0 14px; height: 58px; }
-  .search-wrap { display: none; }
+/* hide page suffix earlier so layout never breaks */
+@media (max-width: 1200px){
+  .page-title-text{
+    display: none;
+  }
+}
 
-  .account-btn {
-    padding: 0;
+/* =========================
+   TABLET
+========================= */
+@media (max-width: 1100px){
+  .topbar-inner{
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .brand{
+    gap: 12px;
+  }
+
+  .logo-box{
+    width: 82px;
+    height: 82px;
+  }
+
+  .brand h1{
+    font-size: 40px;
+  }
+
+  .search-wrap input{
+    width: 220px;
+  }
+
+  .account-btn{
+    padding: 13px 18px;
+  }
+}
+
+/* =========================
+   PHONE
+========================= */
+@media (max-width: 800px){
+  .topbar-inner{
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .brand{
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .logo-box{
+    width: 64px;
+    height: 64px;
+  }
+
+  .brand h1{
+    font-size: 30px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* hide search bar */
+  .search-wrap{
+    display: none;
+  }
+
+  .header-actions{
+    flex-shrink: 0;
+    gap: 0;
+  }
+
+  .account-btn{
+    padding: 10px;
     font-size: 0;
-    width: 36px;
-    height: 36px;
+    min-width: 44px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
   }
 
-  .account-btn::before {
+  .account-btn::before{
     content: "👤";
-    font-size: 15px;
+    font-size: 18px;
+  }
+}
+
+/* =========================
+   SMALL PHONE
+========================= */
+@media (max-width: 520px){
+  .topbar-inner{
+    padding: 12px 14px;
+  }
+
+  .logo-box{
+    width: 54px;
+    height: 54px;
+  }
+
+  .brand h1{
+    font-size: 24px;
+  }
+
+  .account-btn{
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .account-btn::before{
+    font-size: 16px;
   }
 }
