@@ -1,65 +1,65 @@
 const atlasUpdates = [
   {
     date: "May 11, 2026",
-    tag: "Formatting",
-    title: "Refinement of the Atlas",
-    text: "The Atlas grows more stable with each revision.",
+    tag: "Maintenance",
+    title: "The Atlas Settles",
+    text: "The structure holds more cleanly than before.",
     list: [
-      "Improved overall site formatting and layout consistency",
-      "Refined spacing, typography, and panel structure across the Atlas",
-      "Further stabilized navigation and responsive behavior"
+      "Refined site formatting and layout consistency",
+      "Improved spacing, typography, and panel structure",
+      "Stabilized navigation behavior across the Atlas"
     ]
   },
   {
     date: "May 10, 2026",
-    tag: "Atlas System",
+    tag: "System",
     title: "The Atlas Navigation System",
-    text: "Every artifact now exists within the greater structure.",
+    text: "The map beneath the map has been revealed.",
     list: [
       "Created the Atlas Navigation System",
-      "All pages now possess Atlas coordinates and addresses",
-      "Expanded indexing beyond tools and games into system pages"
+      "Indexed all pages with Atlas coordinates and addresses",
+      "Extended the system beyond tools and games"
     ]
   },
   {
     date: "May 7, 2026",
     tag: "Search",
-    title: "The Search Terminal",
-    text: "A new method of traversing the Atlas has emerged.",
+    title: "The Searchbar Emerges",
+    text: "A new path through the dark shelves has opened.",
     list: [
-      "Added global Atlas search bar",
-      "Improved discovery of tools, games, and archives"
+      "Added the global Atlas search bar",
+      "Improved discovery of tools, games, pages, and archives"
     ]
   },
   {
     date: "May 4, 2026",
     tag: "Tools",
-    title: "Expansion of the Utility Wing",
-    text: "New instruments have been added to the collection.",
+    title: "More Tools Discovered",
+    text: "New instruments surfaced within the Utility Catalog.",
     list: [
-      "Added BMI Calculator",
-      "Added Compound Interest Calculator"
+      "Discovered the BMI Calculator",
+      "Discovered the Compound Interest Calculator"
     ]
   },
   {
     date: "May 1, 2026",
-    tag: "System Pages",
+    tag: "System",
     title: "Administrative Chambers Opened",
-    text: "Several internal Atlas systems are now accessible.",
+    text: "Quiet rooms behind the Atlas are now accessible.",
     list: [
-      "Added Suggestions page",
-      "Added Account page",
-      "Added Help page"
+      "Opened the Suggestions page",
+      "Opened the Account page",
+      "Opened the Help page"
     ]
   },
   {
     date: "April 27, 2026",
     tag: "Games",
     title: "The Forge Awakens",
-    text: "The recreational sectors continue to expand.",
+    text: "New games were discovered; older forms were sealed away.",
     list: [
-      "Added Atlas Runner 2.0",
-      "Added Chess Forge",
+      "Discovered Atlas Runner 2.0",
+      "Discovered Chess Forge",
       "Archived the original Atlas Runner prototype"
     ]
   },
@@ -67,61 +67,59 @@ const atlasUpdates = [
     date: "April 22, 2026",
     tag: "Archives",
     title: "The Archives Open",
-    text: "Not all artifacts are lost when abandoned.",
+    text: "Nothing in the Atlas is truly destroyed.",
     list: [
-      "Introduced the Archives system",
-      "Deprecated artifacts can now be preserved and revisited",
-      "Established long-term archival structure"
+      "Opened the Archives system",
+      "Preserved deprecated artifacts for later discovery"
     ]
   },
   {
     date: "April 16, 2026",
     tag: "Catalogs",
-    title: "Tools & Games Catalog Established",
-    text: "The Atlas begins organizing itself.",
+    title: "The First Catalogs",
+    text: "The scattered artifacts began to arrange themselves.",
     list: [
-      "Created dedicated Tools catalog",
-      "Created dedicated Games catalog",
-      "Added GPA Calculator",
-      "Added Atlas Runner"
+      "Created the Tools Catalog",
+      "Created the Games Catalog",
+      "Discovered the GPA Calculator",
+      "Discovered Atlas Runner"
     ]
   },
   {
     date: "April 10, 2026",
-    tag: "Infrastructure",
-    title: "Structural Expansion",
-    text: "The outer framework of the Atlas continues to form.",
+    tag: "Navigation",
+    title: "The Lower Passage",
+    text: "A second route through the Atlas was carved below.",
     list: [
-      "Added persistent footer system",
-      "Improved global page structure"
+      "Added the site footer",
+      "Expanded navigation from the base of each page"
     ]
   },
   {
     date: "April 3, 2026",
     tag: "Navigation",
-    title: "Sidebar Revision",
-    text: "Traversal within the Atlas has become more efficient.",
+    title: "The Sidebar Takes Shape",
+    text: "The first reliable passage between chambers appeared.",
     list: [
-      "Reworked sidebar navigation",
-      "Improved page-to-page accessibility",
-      "Laid groundwork for future Atlas indexing"
+      "Added sidebar tabs",
+      "Reworked sidebar formatting"
     ]
   },
   {
     date: "March 18, 2026",
     tag: "Homepage",
-    title: "Initial Homepage Expansion",
-    text: "The entrance to the Atlas begins to take shape.",
+    title: "The Entrance Forms",
+    text: "The journey through the Atlas begins here.",
     list: [
-      "Expanded homepage structure",
-      "Established foundational visual identity",
-      "Introduced early update log framework"
+      "Expanded the homepage",
+      "Established the first site formatting rules",
+      "Introduced the update log"
     ]
   },
   {
     date: "March 10, 2026",
-    tag: "Eureka!",
+    tag: "Eureka",
     title: "The Pergamon Atlas is Born",
-    text: "The first chamber opens."
+    text: "The first chamber opened."
   }
 ];
