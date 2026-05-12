@@ -59,6 +59,10 @@ body{
   color: inherit;
 }
 
+.brand:visited{
+  color: inherit;
+}
+
 .logo-box{
   width: 120px;
   height: 120px;
