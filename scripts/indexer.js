@@ -153,12 +153,18 @@ function toTitleCase(slug) {
   ).join(' ');
 }
 
+function estNow() {
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+}
+
 function today() {
-  return new Date().toISOString().split('T')[0];
+  const d = estNow();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
 function nowTime() {
-  return new Date().toISOString().split('T')[1].split('.')[0];
+  const d = estNow();
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
 }
 
 function nowSeconds() {
