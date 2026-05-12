@@ -26,246 +26,725 @@
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
   <style>
-    /* ── Search hero ── */
-    .search-hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    :root {
+      --s-bg: #0a0a0a;
+      --s-gold: #c5a059;
+      --s-gold-dim: rgba(197, 160, 89, 0.45);
+      --s-muted: #888888;
+      --s-line: rgba(197, 160, 89, 0.35);
+      --s-panel: #0e0e0e;
+      --s-serif: Georgia, "Times New Roman", serif;
+      --s-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+      --s-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+    }
+
+    .search-page.main-content {
+      background: var(--s-bg);
+      color: #d4d0c8;
+      font-family: var(--s-sans);
+      padding-bottom: 48px;
+    }
+
+    .search-shell {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    /* ── Hero ── */
+    .s-hero {
       text-align: center;
-      padding: 52px 24px 40px;
+      padding: 40px 16px 28px;
     }
 
-    .search-eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.3em;
+    .s-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: #8a611c;
-      font-family: 'Courier New', monospace;
-      margin-bottom: 18px;
+      color: var(--s-gold);
+      font-weight: 600;
+      margin: 0 0 16px;
     }
 
-    .search-wordmark {
-      font-size: clamp(32px, 5vw, 52px);
-      color: #111;
-      margin: 0 0 8px;
-      line-height: 1.1;
+    .s-title {
+      font-family: var(--s-serif);
+      font-size: clamp(30px, 5vw, 48px);
+      font-weight: 400;
+      color: #e8e4dc;
+      margin: 0 0 12px;
+      line-height: 1.15;
     }
 
-    .search-wordmark span {
-      color: #8a611c;
+    .s-title em {
+      font-style: normal;
+      color: var(--s-gold);
     }
 
-    .search-tagline {
-      font-size: 16px;
-      color: #666;
-      margin: 0 0 36px;
-    }
-
-    .search-form {
-      width: 100%;
-      max-width: 620px;
-      position: relative;
-    }
-
-    .search-input-wrap {
+    .s-divider {
       display: flex;
       align-items: center;
-      background: white;
-      border: 2px solid #ccc;
-      border-radius: 999px;
-      padding: 0 20px;
       gap: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      transition: border-color 0.15s, box-shadow 0.15s;
+      max-width: 420px;
+      margin: 0 auto 18px;
     }
 
-    .search-input-wrap:focus-within {
-      border-color: #8a611c;
-      box-shadow: 0 4px 20px rgba(138,97,28,0.15);
-    }
-
-    .search-icon {
-      color: #aaa;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-input-wrap input {
+    .s-divider::before,
+    .s-divider::after {
+      content: "";
       flex: 1;
-      font-family: Georgia, serif;
-      font-size: 17px;
-      padding: 14px 0;
-      border: none;
-      outline: none;
-      background: transparent;
-      color: #111;
+      height: 1px;
+      background: var(--s-line);
     }
 
-    .search-input-wrap input::placeholder { color: #bbb; }
-
-    .search-submit {
-      flex-shrink: 0;
-      background: #8a611c;
-      color: white;
-      border: none;
-      border-radius: 999px;
-      font-family: Georgia, serif;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 8px 20px;
-      cursor: pointer;
-      transition: background 0.15s;
-      white-space: nowrap;
-    }
-
-    .search-submit:hover { background: #a87422; }
-
-    /* ── Results panel ── */
-    .results-panel {
-      background: white;
-      border: 2px solid #000;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-    }
-
-    .results-header {
-      font-size: 15px;
-      color: #555;
-      margin: 0 0 20px;
-    }
-
-    .results-header strong { color: #111; }
-
-    .result-card {
+    .s-divider-gem {
+      color: var(--s-gold);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px 16px;
-      border: 1.5px solid #e8e8e8;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      justify-content: center;
+      line-height: 0;
     }
 
-    .result-card:hover {
-      border-color: #8a611c;
-      box-shadow: 0 2px 8px rgba(138,97,28,0.1);
+    .s-sub {
+      font-size: 15px;
+      color: var(--s-muted);
+      margin: 0 0 28px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .result-name {
-      font-size: 17px;
-      font-weight: 700;
-      color: #111;
+    .s-search-row {
+      display: flex;
+      align-items: stretch;
+      max-width: 720px;
+      margin: 0 auto;
+      border: 1px solid var(--s-gold);
+      border-radius: 6px;
+      background: #080808;
+      overflow: hidden;
     }
 
-    .result-type {
+    .s-search-row .s-ico-wrap {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      color: var(--s-muted);
+      flex-shrink: 0;
+    }
+
+    .s-search-row input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #e8e4dc;
+      font-family: var(--s-sans);
+      font-size: 15px;
+      padding: 14px 8px;
+      outline: none;
+      min-width: 0;
+    }
+
+    .s-search-row input::placeholder {
+      color: #666;
+    }
+
+    .s-search-btn {
+      flex-shrink: 0;
+      background: var(--s-gold);
+      color: #0a0a0a;
+      border: none;
+      font-family: var(--s-sans);
       font-size: 12px;
       font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: #f0e8d4;
-      color: #8a611c;
-      white-space: nowrap;
+      padding: 0 26px;
+      cursor: pointer;
+      transition: filter 0.15s;
     }
 
-    .result-type.game { background: #e8eef5; color: #2a4a7a; }
+    .s-search-btn:hover {
+      filter: brightness(1.08);
+    }
 
-    .no-results {
+    /* ── Browse strip (notched) ── */
+    .s-browse {
+      margin: 32px 0 28px;
+      border: 1px solid var(--s-gold);
+      border-radius: 2px;
+      background: linear-gradient(180deg, #0c0c0c 0%, #080808 100%);
+      position: relative;
+      clip-path: polygon(
+        0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px,
+        100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px)
+      );
+    }
+
+    .s-browse-label {
       text-align: center;
-      padding: 40px 20px;
-      color: #666;
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--s-gold);
+      font-weight: 600;
+      padding: 16px 12px 8px;
     }
 
-    .no-results strong {
-      color: #111;
-      display: block;
-      font-size: 20px;
-      margin-bottom: 8px;
+    .s-browse-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
     }
 
-    /* ── Empty state — catalog links ── */
-    .empty-state {
+    .s-browse-cell {
+      border-left: 1px solid var(--s-line);
+      padding: 20px 18px 24px;
       text-align: center;
-      padding: 16px 20px 8px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
     }
 
-    .empty-label {
+    .s-browse-cell:first-child {
+      border-left: none;
+    }
+
+    .s-browse-cell:hover {
+      background: rgba(197, 160, 89, 0.06);
+    }
+
+    .s-browse-ico {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 12px;
+      color: var(--s-gold);
+    }
+
+    .s-browse-ico svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .s-browse-cell h3 {
+      font-family: var(--s-serif);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--s-gold);
+      margin: 0 0 8px;
+    }
+
+    .s-browse-cell p {
       font-size: 13px;
-      letter-spacing: 0.15em;
+      color: var(--s-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── Three columns ── */
+    .s-grid {
+      display: grid;
+      grid-template-columns: 240px 1fr 260px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .s-panel {
+      border: 1px solid var(--s-line);
+      background: var(--s-panel);
+      padding: 20px 18px;
+      border-radius: 2px;
+    }
+
+    .s-panel h2 {
+      font-size: 11px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #999;
-      font-family: 'Courier New', monospace;
+      color: var(--s-gold);
+      margin: 0 0 16px;
+      font-weight: 600;
+    }
+
+    .s-filter-block {
       margin-bottom: 20px;
     }
 
-    .catalog-links {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
+    .s-filter-block h3 {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--s-muted);
+      margin: 0 0 10px;
+      font-weight: 600;
     }
 
-    .catalog-link {
+    .s-cb-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 14px 24px;
-      background: white;
-      border: 2px solid #000;
-      border-radius: 12px;
-      text-decoration: none;
-      color: #111;
-      font-size: 16px;
-      font-weight: 700;
-      transition: border-color 0.15s, transform 0.12s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      color: #c8c4bc;
+      margin-bottom: 8px;
     }
 
-    .catalog-link:hover {
-      border-color: #8a611c;
-      transform: translateY(-2px);
+    .s-cb-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
     }
 
-    .catalog-link-icon { font-size: 22px; }
+    .s-cb-row input {
+      accent-color: var(--s-gold);
+      width: 15px;
+      height: 15px;
+    }
 
-    .catalog-link-sub {
+    .s-cb-row .s-count {
+      font-family: var(--s-mono);
+      font-size: 11px;
+      color: var(--s-muted);
+    }
+
+    .s-select {
+      width: 100%;
+      box-sizing: border-box;
+      background: #080808;
+      border: 1px solid var(--s-gold);
+      color: #ddd;
+      font-family: var(--s-sans);
       font-size: 12px;
-      font-weight: 400;
-      color: #777;
-      display: block;
-      margin-top: 2px;
+      padding: 10px 32px 10px 12px;
+      border-radius: 2px;
+      margin-bottom: 12px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23c5a059' fill='none' stroke-width='1.4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
     }
 
-    .archive-note {
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px solid #eee;
-      font-size: 14px;
-      color: #888;
-      line-height: 1.7;
+    .s-range-wrap {
+      margin-top: 8px;
     }
 
-    .archive-note a {
-      color: #8a611c;
-      text-decoration: none;
+    .s-range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--s-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .s-range-track {
+      position: relative;
+      height: 4px;
+      background: var(--s-line);
+      border-radius: 2px;
+      margin: 14px 0 8px;
+    }
+
+    .s-range-track input[type="range"] {
+      position: absolute;
+      width: 100%;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      margin: 0;
+      pointer-events: none;
+      height: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      background: none;
+    }
+
+    .s-range-track input[type="range"]::-webkit-slider-thumb {
+      pointer-events: auto;
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--s-gold);
+      border: 2px solid #0a0a0a;
+      cursor: pointer;
+    }
+
+    .s-range-track input[type="range"]::-moz-range-thumb {
+      pointer-events: auto;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--s-gold);
+      border: 2px solid #0a0a0a;
+      cursor: pointer;
+    }
+
+    .s-range-track input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: transparent;
+    }
+
+    .s-range-track input[type="range"]::-moz-range-track {
+      height: 4px;
+      background: transparent;
+    }
+
+    .s-date-readout {
+      font-size: 11px;
+      color: var(--s-muted);
+      font-family: var(--s-mono);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .s-clear-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--s-gold-dim);
+      color: var(--s-gold);
+      font-family: var(--s-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .s-clear-btn:hover {
+      background: rgba(197, 160, 89, 0.08);
+      border-color: var(--s-gold);
+    }
+
+    /* ── Results ── */
+    .s-results-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .s-results-count {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--s-muted);
+      font-weight: 600;
+    }
+
+    .s-results-count strong {
+      color: #c8c4bc;
       font-weight: 700;
     }
 
-    .archive-note a:hover { text-decoration: underline; }
+    .s-results-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
 
-    @media (max-width: 600px) {
-      .search-hero { padding: 36px 16px 28px; }
-      .catalog-links { flex-direction: column; align-items: center; }
-      .catalog-link { width: 100%; max-width: 280px; justify-content: center; }
+    .s-sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--s-muted);
+    }
+
+    .s-sort-wrap select {
+      background: #080808;
+      border: 1px solid var(--s-gold);
+      color: #ddd;
+      font-size: 12px;
+      padding: 6px 28px 6px 10px;
+      border-radius: 2px;
+      font-family: var(--s-sans);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23c5a059' fill='none' stroke-width='1.4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    .s-view-toggle {
+      display: flex;
+      border: 1px solid var(--s-line);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .s-view-toggle button {
+      background: transparent;
+      border: none;
+      color: var(--s-muted);
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.12s, background 0.12s;
+    }
+
+    .s-view-toggle button[aria-pressed="true"] {
+      background: rgba(197, 160, 89, 0.15);
+      color: var(--s-gold);
+    }
+
+    .s-view-toggle button:hover {
+      color: #ccc;
+    }
+
+    .s-results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .s-results-list.s-grid-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .s-results-list.s-grid-view .s-card {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .s-results-list.s-grid-view .s-card-right {
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+
+    .s-card {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      border: 1px solid var(--s-line);
+      background: #080808;
+      padding: 16px 14px;
+      border-radius: 2px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .s-card:hover {
+      border-color: rgba(197, 160, 89, 0.55);
+      background: #0c0c0c;
+    }
+
+    .s-card-ico {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      border: 1px solid var(--s-gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--s-gold);
+    }
+
+    .s-card-ico svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .s-card-mid {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .s-pill {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--s-gold);
+      border: 1px solid var(--s-gold-dim);
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+
+    .s-card-title {
+      font-family: var(--s-serif);
+      font-size: 19px;
+      font-weight: 400;
+      color: #ece8e0;
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+
+    .s-card-desc {
+      font-size: 13px;
+      color: var(--s-muted);
+      line-height: 1.45;
+      margin: 0 0 10px;
+    }
+
+    .s-card-meta {
+      font-size: 11px;
+      color: #6a6a6a;
+    }
+
+    .s-card-right {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .s-addr-label {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--s-muted);
+      font-weight: 600;
+    }
+
+    .s-addr-val {
+      font-family: var(--s-mono);
+      font-size: 11px;
+      color: var(--s-gold);
+      text-align: right;
+      max-width: 160px;
+      word-break: break-all;
+    }
+
+    .s-ext-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--s-line);
+      background: transparent;
+      color: var(--s-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.12s, border-color 0.12s;
+    }
+
+    .s-ext-btn:hover {
+      color: var(--s-gold);
+      border-color: var(--s-gold-dim);
+    }
+
+    .s-empty,
+    .s-no-results {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--s-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      border: 1px dashed var(--s-line);
+      border-radius: 2px;
+    }
+
+    .s-empty strong,
+    .s-no-results strong {
+      display: block;
+      color: #c8c4bc;
+      font-family: var(--s-serif);
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Did you know ── */
+    .s-aside-star {
+      color: var(--s-gold);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .s-aside p {
+      font-size: 14px;
+      color: var(--s-muted);
+      line-height: 1.6;
+      margin: 0 0 8px;
+    }
+
+    .s-aside .s-big {
+      font-family: var(--s-serif);
+      font-size: 36px;
+      color: var(--s-gold);
+      font-weight: 400;
+      margin: 4px 0 12px;
+    }
+
+    .s-dome {
+      margin-top: 20px;
+      color: var(--s-gold);
+      opacity: 0.9;
+    }
+
+    .s-dome svg {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ── Footer strip ── */
+    .s-foot-note {
+      margin-top: 36px;
+      padding: 16px 20px;
+      border: 1px solid var(--s-line);
+      background: #080808;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--s-muted);
+      line-height: 1.65;
+    }
+
+    .s-foot-note svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--s-gold);
+    }
+
+    .s-foot-note a {
+      color: var(--s-gold);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .s-foot-note a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1024px) {
+      .s-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .s-browse-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .s-browse-cell {
+        border-left: none;
+        border-top: 1px solid var(--s-line);
+      }
+
+      .s-browse-cell:first-child {
+        border-top: none;
+      }
     }
   </style>
 </head>
@@ -273,123 +752,496 @@
   <div id="header-placeholder"></div>
   <div class="layout">
     <div id="sidebar-placeholder"></div>
-    <main class="main-content">
+    <main class="main-content search-page">
 
-      <section class="search-hero">
-        <div class="search-eyebrow">Pergamon Atlas</div>
-        <h2 class="search-wordmark">Search the <span>Atlas</span></h2>
-        <p class="search-tagline">Find tools, games, and artifacts across the catalog.</p>
-
-        <div class="search-form">
-          <div class="search-input-wrap">
-            <span class="search-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <div class="search-shell">
+        <header class="s-hero">
+          <p class="s-eyebrow">Pergamon Atlas</p>
+          <h1 class="s-title">Search the <em>Atlas</em></h1>
+          <div class="s-divider" aria-hidden="true"><span class="s-divider-gem"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1l2.2 3.8L12 6 8.2 7.2 6 11 3.8 7.2 0 6l3.8-2.2L6 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span></div>
+          <p class="s-sub">Find tools, games, and artifacts across the catalog.</p>
+          <div class="s-search-row">
+            <span class="s-ico-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             </span>
-            <input type="text" id="searchInput" placeholder="Search tools, games…" autocomplete="off">
-            <button class="search-submit" id="searchBtn">Search</button>
+            <input type="search" id="searchInput" placeholder="Search tools, games, artifacts…" autocomplete="off" aria-label="Search catalog">
+            <button type="button" class="s-search-btn" id="searchBtn">Search</button>
           </div>
-        </div>
-      </section>
+        </header>
 
-      <div class="results-panel">
-        <p class="results-header" id="resultsHeader"></p>
-        <div id="resultsList"></div>
+        <nav class="s-browse" aria-label="Browse catalog">
+          <div class="s-browse-label">Browse the Atlas</div>
+          <div class="s-browse-grid">
+            <a class="s-browse-cell" href="/tools">
+              <div class="s-browse-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <h3>Tools</h3>
+              <p>Calculators, utilities &amp; more</p>
+            </a>
+            <a class="s-browse-cell" href="/games">
+              <div class="s-browse-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="3"/><line x1="7" y1="12" x2="9" y2="12"/><line x1="8" y1="11" x2="8" y2="13"/><circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="14" r="1" fill="currentColor" stroke="none"/></svg>
+              </div>
+              <h3>Games</h3>
+              <p>Arcade, puzzles &amp; classics</p>
+            </a>
+            <a class="s-browse-cell" href="/archives">
+              <div class="s-browse-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+              <h3>Archives</h3>
+              <p>Explore deprecated artifacts and forgotten relics.</p>
+            </a>
+          </div>
+        </nav>
+
+        <div class="s-grid">
+          <aside class="s-panel" aria-labelledby="refine-heading">
+            <h2 id="refine-heading">Refine your search</h2>
+
+            <div class="s-filter-block">
+              <h3>Type</h3>
+              <div class="s-cb-row">
+                <label><input type="checkbox" id="fTools" checked> Tools</label>
+                <span class="s-count" id="cTools">0</span>
+              </div>
+              <div class="s-cb-row">
+                <label><input type="checkbox" id="fGames" checked> Games</label>
+                <span class="s-count" id="cGames">0</span>
+              </div>
+              <div class="s-cb-row">
+                <label><input type="checkbox" id="fPages" checked> Pages</label>
+                <span class="s-count" id="cPages">0</span>
+              </div>
+              <div class="s-cb-row">
+                <label><input type="checkbox" id="fArchives"> Archives</label>
+                <span class="s-count" id="cArchives">0</span>
+              </div>
+            </div>
+
+            <div class="s-filter-block">
+              <h3>Category</h3>
+              <select class="s-select" id="fCategory" aria-label="Category">
+                <option value="all">All catalogs</option>
+                <option value="tools">Tools</option>
+                <option value="games">Games</option>
+                <option value="pages">Site pages</option>
+                <option value="archives">Archives</option>
+              </select>
+            </div>
+
+            <div class="s-filter-block">
+              <h3>Date discovered</h3>
+              <div class="s-range-labels"><span>Oldest</span><span>Newest</span></div>
+              <div class="s-range-track" id="rangeTrack">
+                <input type="range" id="dateMin" min="0" max="100" value="0" aria-label="Earliest discovery date">
+                <input type="range" id="dateMax" min="0" max="100" value="100" aria-label="Latest discovery date">
+              </div>
+              <div class="s-date-readout" id="dateReadout"></div>
+            </div>
+
+            <button type="button" class="s-clear-btn" id="clearFilters">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              Clear filters
+            </button>
+          </aside>
+
+          <section class="s-panel" aria-labelledby="results-heading">
+            <h2 id="results-heading" class="visually-hidden">Search results</h2>
+            <div class="s-results-head">
+              <div class="s-results-count" id="resultsCount" aria-live="polite"></div>
+              <div class="s-results-tools">
+                <div class="s-sort-wrap">
+                  <span>Sort:</span>
+                  <select id="sortSelect" aria-label="Sort order">
+                    <option value="relevance">Relevance</option>
+                    <option value="name">Name A–Z</option>
+                  </select>
+                </div>
+                <div class="s-view-toggle" role="group" aria-label="Result layout">
+                  <button type="button" id="viewGrid" aria-pressed="false">Grid</button>
+                  <button type="button" id="viewList" aria-pressed="true">List</button>
+                </div>
+              </div>
+            </div>
+            <div class="s-results-list" id="resultsList"></div>
+          </section>
+
+          <aside class="s-panel" aria-labelledby="dyk-heading">
+            <div class="s-aside-star" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 17.8 5.7 21l2.3-7-6-4.6h7.6L12 2z"/></svg>
+            </div>
+            <h2 id="dyk-heading" class="visually-hidden">Did you know</h2>
+            <p>The Atlas contains</p>
+            <div class="s-big" id="totalIndexed">—</div>
+            <p>indexed pages, tools, games, and artifacts.</p>
+            <div class="s-dome" aria-hidden="true">
+              <svg viewBox="0 0 120 100" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M60 8 L108 42 L108 92 L12 92 L12 42 Z"/>
+                <ellipse cx="60" cy="42" rx="36" ry="14"/>
+                <path d="M24 58 Q60 72 96 58"/>
+                <line x1="60" y1="8" x2="60" y2="92"/>
+                <rect x="44" y="68" width="32" height="24" rx="1"/>
+              </svg>
+            </div>
+          </aside>
+        </div>
+
+        <footer class="s-foot-note">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>Looking for something older? Archived artifacts are not searchable here — visit the <a href="/archives">Archives</a> to browse them directly.</p>
+        </footer>
       </div>
 
     </main>
   </div>
   <div id="footer-placeholder"></div>
 
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+
   <script src="/data/entries.js"></script>
   <script src="/operation/scripts/atlas.js"></script>
   <script>
     loadSnippets('Search');
 
-    const input  = document.getElementById('searchInput');
-    const btn    = document.getElementById('searchBtn');
-    const header = document.getElementById('resultsHeader');
-    const list   = document.getElementById('resultsList');
-
-    function getQuery() {
-      return new URLSearchParams(window.location.search).get('q') || '';
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
-    function showEmptyState() {
-      header.innerHTML = '';
-      list.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-label">Browse the Atlas</div>
-          <div class="catalog-links">
-            <a href="/tools" class="catalog-link">
-              <span class="catalog-link-icon">🔧</span>
-              <div>
-                <div>Tools</div>
-                <span class="catalog-link-sub">Calculators, utilities &amp; more</span>
-              </div>
-            </a>
-            <a href="/games" class="catalog-link">
-              <span class="catalog-link-icon">🎮</span>
-              <div>
-                <div>Games</div>
-                <span class="catalog-link-sub">Arcade, puzzles &amp; classics</span>
-              </div>
-            </a>
-          </div>
-          <div class="archive-note">
-            Looking for something older? Archived artifacts are not searchable here —
-            visit the <a href="/archives">Archives</a> to browse them directly.
-          </div>
-        </div>`;
+    function parseDate(str) {
+      if (!str || typeof str !== 'string') return null;
+      const t = Date.parse(str + 'T12:00:00');
+      return Number.isNaN(t) ? null : t;
     }
 
-    function runSearch(q) {
-      const term = q.trim().toLowerCase();
-      if (!term) { showEmptyState(); return; }
+    function buildIndex() {
+      const E = window.atlasEntries || {};
+      const out = [];
+      (E.tools || []).forEach(e => out.push({ ...e, _type: 'tool', _label: 'Tool', _cat: 'Tools' }));
+      (E.games || []).forEach(e => out.push({ ...e, _type: 'game', _label: 'Game', _cat: 'Games' }));
+      (E.pages || []).forEach(e => out.push({ ...e, _type: 'page', _label: 'Page', _cat: 'Pages' }));
+      (E.archived || []).forEach(e => out.push({ ...e, _type: 'archive', _label: 'Archive', _cat: 'Archives' }));
+      return out;
+    }
 
-      const entries = window.atlasEntries || { tools: [], games: [] };
-      const tools = (entries.tools || []).filter(e => e.name.toLowerCase().includes(term));
-      const games = (entries.games || []).filter(e => e.name.toLowerCase().includes(term));
-      const all = [
-        ...tools.map(e => ({ ...e, kind: 'Tool' })),
-        ...games.map(e => ({ ...e, kind: 'Game' }))
-      ];
+    const TYPE_KEYS = ['tool', 'game', 'page', 'archive'];
 
-      const count = all.length;
-      header.innerHTML = count > 0
-        ? `Showing <strong>${count}</strong> result${count !== 1 ? 's' : ''} for <strong>"${q.trim()}"</strong>`
-        : '';
+    const icons = {
+      tool: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>',
+      game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="3"/><line x1="7" y1="12" x2="9" y2="12"/><line x1="8" y1="11" x2="8" y2="13"/><circle cx="16" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="14" r="1" fill="currentColor" stroke="none"/></svg>',
+      page: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/></svg>',
+      archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>'
+    };
 
-      if (count === 0) {
-        list.innerHTML = `<div class="no-results"><strong>No results found</strong>No tools or games matched "${q.trim()}". Try a different search.</div>`;
+    const input = document.getElementById('searchInput');
+    const btn = document.getElementById('searchBtn');
+    const resultsList = document.getElementById('resultsList');
+    const resultsCount = document.getElementById('resultsCount');
+    const fTools = document.getElementById('fTools');
+    const fGames = document.getElementById('fGames');
+    const fPages = document.getElementById('fPages');
+    const fArchives = document.getElementById('fArchives');
+    const fCategory = document.getElementById('fCategory');
+    const sortSelect = document.getElementById('sortSelect');
+    const dateMin = document.getElementById('dateMin');
+    const dateMax = document.getElementById('dateMax');
+    const dateReadout = document.getElementById('dateReadout');
+    const clearBtn = document.getElementById('clearFilters');
+    const viewGrid = document.getElementById('viewGrid');
+    const viewList = document.getElementById('viewList');
+    const totalIndexed = document.getElementById('totalIndexed');
+
+    let index = [];
+    let dateBounds = { min: 0, max: 1, labels: [] };
+
+    function initCounts() {
+      const E = window.atlasEntries || {};
+      document.getElementById('cTools').textContent = String((E.tools || []).length);
+      document.getElementById('cGames').textContent = String((E.games || []).length);
+      document.getElementById('cPages').textContent = String((E.pages || []).length);
+      document.getElementById('cArchives').textContent = String((E.archived || []).length);
+      const n = (E.tools || []).length + (E.games || []).length + (E.pages || []).length + (E.archived || []).length;
+      totalIndexed.textContent = String(n);
+    }
+
+    function setupDates() {
+      index = buildIndex();
+      const ts = [];
+      index.forEach(e => {
+        const t = parseDate(e.date);
+        if (t != null) ts.push(t);
+      });
+      if (!ts.length) {
+        dateMin.disabled = dateMax.disabled = true;
+        dateReadout.textContent = 'No dates in catalog';
+        dateBounds = { min: 0, max: 1, labels: ['—', '—'] };
+        return;
+      }
+      const lo = Math.min(...ts);
+      const hi = Math.max(...ts);
+      dateBounds.min = lo;
+      dateBounds.max = hi;
+      const fmt = d => d.toISOString().slice(0, 10);
+      dateBounds.labels = [fmt(new Date(lo)), fmt(new Date(hi))];
+      const span = Math.max(1, hi - lo);
+      dateMin.max = dateMax.max = 100;
+      dateMin.value = 0;
+      dateMax.value = 100;
+      updateDateReadout();
+    }
+
+    function dateFromSlider(val) {
+      const t = dateBounds.min + (val / 100) * (dateBounds.max - dateBounds.min);
+      return t;
+    }
+
+    function updateDateReadout() {
+      if (dateMin.disabled) return;
+      let lo = Number(dateMin.value);
+      let hi = Number(dateMax.value);
+      if (lo > hi) {
+        const tmp = lo;
+        lo = hi;
+        hi = tmp;
+      }
+      const d0 = new Date(dateFromSlider(lo));
+      const d1 = new Date(dateFromSlider(hi));
+      dateReadout.textContent = d0.toISOString().slice(0, 10) + ' — ' + d1.toISOString().slice(0, 10);
+    }
+
+    function getDateFilterRange() {
+      if (dateMin.disabled) return { lo: null, hi: null };
+      let lo = Number(dateMin.value);
+      let hi = Number(dateMax.value);
+      if (lo > hi) [lo, hi] = [hi, lo];
+      return { lo: dateFromSlider(lo), hi: dateFromSlider(hi) };
+    }
+
+    function passesDateFilter(e) {
+      const { lo, hi } = getDateFilterRange();
+      if (lo == null) return true;
+      const t = parseDate(e.date);
+      if (t == null) {
+        const fullSpan = Number(dateMin.value) === 0 && Number(dateMax.value) === 100;
+        return fullSpan;
+      }
+      return t >= lo && t <= hi;
+    }
+
+    function typeAllowed(t) {
+      if (fCategory.value !== 'all') {
+        return fCategory.value === t || (fCategory.value === 'archives' && t === 'archive');
+      }
+      if (t === 'tool') return fTools.checked;
+      if (t === 'game') return fGames.checked;
+      if (t === 'page') return fPages.checked;
+      if (t === 'archive') return fArchives.checked;
+      return false;
+    }
+
+    function matchesQuery(e, term) {
+      if (!term) return false;
+      const t = term.toLowerCase();
+      const name = (e.name || '').toLowerCase();
+      const path = (e.path || '').toLowerCase();
+      const addr = (e.address || '').toLowerCase();
+      return name.includes(t) || path.includes(t) || addr.includes(t);
+    }
+
+    function relevanceScore(e, term) {
+      const t = term.toLowerCase();
+      const name = (e.name || '').toLowerCase();
+      let s = 0;
+      const ni = name.indexOf(t);
+      if (ni === 0) s += 100;
+      else if (ni >= 0) s += 50;
+      if ((e.path || '').toLowerCase().includes(t)) s += 20;
+      if ((e.address || '').toLowerCase().includes(t)) s += 15;
+      if (e._type === 'tool') s += 2;
+      if (e._type === 'game') s += 1;
+      return s;
+    }
+
+    function descriptionFor(e) {
+      const p = esc(e.path || '/');
+      return 'Indexed artifact at ' + p + '. Open to explore details and coordinates in the Atlas.';
+    }
+
+    function renderResults(items, term) {
+      if (!term.trim()) {
+        resultsCount.innerHTML = '';
+        resultsList.innerHTML = '<div class="s-empty"><strong>Search the catalog</strong>Enter a term above to find tools, games, pages, and (optionally) archives by name, path, or Atlas address.</div>';
         return;
       }
 
-      list.innerHTML = all.map(e => `
-        <a class="result-card" href="${e.path}">
-          <span class="result-name">${e.name}</span>
-          <span class="result-type${e.kind === 'Game' ? ' game' : ''}">${e.kind}</span>
-        </a>
-      `).join('');
+      const n = items.length;
+      resultsCount.innerHTML = '<strong>' + n + '</strong> RESULTS FOUND';
+
+      if (!n) {
+        resultsList.innerHTML = '<div class="s-no-results"><strong>No results found</strong>Nothing matched your search and filters. Try different keywords or clear filters.</div>';
+        return;
+      }
+
+      const sort = sortSelect.value;
+      const sorted = items.slice();
+      if (sort === 'name') {
+        sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+      } else {
+        sorted.sort((a, b) => relevanceScore(b, term) - relevanceScore(a, term));
+      }
+
+      resultsList.innerHTML = sorted.map(e => {
+        const addr = e.address ? 'ATLAS-' + esc(e.address) : '—';
+        const disc = esc(e.date || '—');
+        const cat = esc(e._cat);
+        const href = esc(e.path || '#');
+        const ic = icons[e._type] || icons.page;
+        return (
+          '<a class="s-card" href="' + href + '">' +
+            '<div class="s-card-ico" aria-hidden="true">' + ic + '</div>' +
+            '<div class="s-card-mid">' +
+              '<span class="s-pill">' + esc(e._label) + '</span>' +
+              '<h3 class="s-card-title">' + esc(e.name || 'Untitled') + '</h3>' +
+              '<p class="s-card-desc">' + descriptionFor(e) + '</p>' +
+              '<div class="s-card-meta">Discovered: ' + disc + ' · Category: ' + cat + '</div>' +
+            '</div>' +
+            '<div class="s-card-right">' +
+              '<div><div class="s-addr-label">Atlas address</div><div class="s-addr-val">' + addr + '</div></div>' +
+              '<span class="s-ext-btn" aria-hidden="true" title="Open">' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>' +
+              '</span>' +
+            '</div>' +
+          '</a>'
+        );
+      }).join('');
     }
 
-    function submitSearch() {
-      const q = input.value.trim();
-      if (!q) return;
+    function runSearch() {
+      const term = input.value.trim();
       const url = new URL(window.location.href);
-      url.searchParams.set('q', q);
+      if (term) url.searchParams.set('q', term);
+      else url.searchParams.delete('q');
       window.history.replaceState(null, '', url);
-      runSearch(q);
+
+      if (!term) {
+        renderResults([], '');
+        return;
+      }
+
+      const out = index.filter(e => {
+        if (!typeAllowed(e._type)) return false;
+        if (!passesDateFilter(e)) return false;
+        if (!matchesQuery(e, term)) return false;
+        return true;
+      });
+
+      renderResults(out, term);
     }
 
-    btn.addEventListener('click', submitSearch);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') submitSearch(); });
+    function applyCategoryFromSelect() {
+      const v = fCategory.value;
+      if (v === 'all') {
+        fTools.checked = fGames.checked = fPages.checked = true;
+        fArchives.checked = false;
+        return;
+      }
+      fTools.checked = v === 'tools';
+      fGames.checked = v === 'games';
+      fPages.checked = v === 'pages';
+      fArchives.checked = v === 'archives';
+    }
 
-    const initialQuery = getQuery();
-    if (initialQuery) {
-      input.value = initialQuery;
-      runSearch(initialQuery);
+    function syncCategorySelectFromBoxes() {
+      const t = fTools.checked, g = fGames.checked, p = fPages.checked, a = fArchives.checked;
+      if (t && g && p && !a) fCategory.value = 'all';
+      else if (t && !g && !p && !a) fCategory.value = 'tools';
+      else if (!t && g && !p && !a) fCategory.value = 'games';
+      else if (!t && !g && p && !a) fCategory.value = 'pages';
+      else if (!t && !g && !p && a) fCategory.value = 'archives';
+      else fCategory.value = 'all';
+    }
+
+    function clearFilters() {
+      fTools.checked = fGames.checked = fPages.checked = true;
+      fArchives.checked = false;
+      fCategory.value = 'all';
+      sortSelect.value = 'relevance';
+      if (!dateMin.disabled) {
+        dateMin.value = 0;
+        dateMax.value = 100;
+        updateDateReadout();
+      }
+      runSearch();
+    }
+
+    function setView(listMode) {
+      viewList.setAttribute('aria-pressed', listMode ? 'true' : 'false');
+      viewGrid.setAttribute('aria-pressed', listMode ? 'false' : 'true');
+      resultsList.classList.toggle('s-grid-view', !listMode);
+    }
+
+    fCategory.addEventListener('change', () => {
+      applyCategoryFromSelect();
+      runSearch();
+    });
+
+    [fTools, fGames, fPages, fArchives].forEach(el => {
+      el.addEventListener('change', () => {
+        syncCategorySelectFromBoxes();
+        runSearch();
+      });
+    });
+
+    sortSelect.addEventListener('change', runSearch);
+
+    dateMin.addEventListener('input', () => {
+      if (Number(dateMin.value) > Number(dateMax.value)) dateMax.value = dateMin.value;
+      updateDateReadout();
+      runSearch();
+    });
+
+    dateMax.addEventListener('input', () => {
+      if (Number(dateMax.value) < Number(dateMin.value)) dateMin.value = dateMax.value;
+      updateDateReadout();
+      runSearch();
+    });
+
+    clearBtn.addEventListener('click', clearFilters);
+
+    viewGrid.addEventListener('click', () => setView(false));
+    viewList.addEventListener('click', () => setView(true));
+
+    btn.addEventListener('click', runSearch);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') runSearch();
+    });
+
+    initCounts();
+    setupDates();
+
+    const q = new URLSearchParams(window.location.search).get('q') || '';
+    if (q) {
+      input.value = q;
+      runSearch();
     } else {
-      showEmptyState();
+      renderResults([], '');
     }
   </script>
 <script src="/data/pergamon-address.js"></script>
