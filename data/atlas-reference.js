@@ -467,7 +467,7 @@
   border-top: 1px solid var(--ar-line);
   font-family: Georgia, "Times New Roman", serif;
   color: #d4d0c8;
-  margin-top: 56px;
+  margin-top: 0;
 }
 
 /* ── Top bar ── */
