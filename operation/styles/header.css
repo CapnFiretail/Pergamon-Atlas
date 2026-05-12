@@ -113,18 +113,23 @@ body{
   align-items: center;
 }
 
-.search-wrap::before{
-  content: "";
+.search-icon-btn{
   position: absolute;
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  display: flex;
+  align-items: center;
+  color: #d6d6d6;
   opacity: 0.85;
-  pointer-events: none;
-  background: no-repeat center / contain
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23d6d6d6' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E");
+  text-decoration: none;
+  transition: opacity 0.15s, color 0.15s;
+  z-index: 1;
+}
+
+.search-icon-btn:hover{
+  opacity: 1;
+  color: #c28a2b;
 }
 
 .search-wrap input{
