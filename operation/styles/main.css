@@ -76,29 +76,14 @@ body{
   }
 }
 
-/* --- catalog card icons (tools / games index): inline SVG, muted gray --- */
+/* --- catalog card icons (tools / games index) --- */
 .tool-icon,
 .game-icon{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  font-size:32px;
+  line-height:1;
   margin-bottom:10px;
-  color:#a8a8a8;
-  line-height:0;
 }
 
 .game-icon{
   margin-bottom:12px;
-}
-
-.tool-icon svg,
-.game-icon svg{
-  width:32px;
-  height:32px;
-  flex-shrink:0;
-}
-
-.tool-card:hover .tool-icon,
-.game-card:hover .game-icon{
-  color:#d6d6d6;
 }
