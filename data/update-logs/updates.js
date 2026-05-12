@@ -35,7 +35,7 @@ const atlasUpdates = [
     date: "May 4, 2026",
     tag: "Tools",
     title: "More Tools Discovered",
-    text: "New instruments surfaced within the Utility Catalog.",
+    text: "New instruments surfaced within the Tools Catalog.",
     list: [
       "Discovered the BMI Calculator",
       "Discovered the Compound Interest Calculator"
