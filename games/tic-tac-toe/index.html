@@ -25,10 +25,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="/shared/styles/header.css">
-  <link rel="stylesheet" href="/shared/styles/sidebar.css">
-  <link rel="stylesheet" href="/shared/styles/main.css">
-  <link rel="stylesheet" href="/shared/styles/footer.css">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
 
   <style>
     .ttt-shell{
@@ -490,7 +490,7 @@
   <div id="footer-placeholder"></div>
 
   <script>
-    fetch('/shared/snippets/header.html')
+    fetch('/operation/snippets/header.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('header-placeholder').innerHTML = data;
@@ -498,7 +498,7 @@
         if (pageTitleText) pageTitleText.textContent = pageHeaderSuffix;
       });
 
-    fetch('/shared/snippets/sidebar.html')
+    fetch('/operation/snippets/sidebar.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('sidebar-placeholder').innerHTML = data;
@@ -526,7 +526,7 @@
         } catch(err){}
       });
 
-    fetch('/shared/snippets/footer.html')
+    fetch('/operation/snippets/footer.html')
       .then(res => res.text())
       .then(data => {
         document.getElementById('footer-placeholder').innerHTML = data;
@@ -1135,7 +1135,7 @@
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>
-<script src="/shared/scripts/atlas.js"></script>
+<script src="/operation/scripts/atlas.js"></script>
 <script>loadSnippets('Tic Tac Toe');</script>
 </body>
 </html>

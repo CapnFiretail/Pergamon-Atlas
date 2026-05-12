@@ -4,7 +4,7 @@
 function loadSnippets(pageName) {
   const suffix = pageName ? ' | ' + pageName : '';
 
-  fetch('/shared/snippets/header.html')
+  fetch('/operation/snippets/header.html')
     .then(r => r.text())
     .then(html => {
       document.getElementById('header-placeholder').innerHTML = html;
@@ -21,7 +21,7 @@ function loadSnippets(pageName) {
       }
     });
 
-  fetch('/shared/snippets/sidebar.html')
+  fetch('/operation/snippets/sidebar.html')
     .then(r => r.text())
     .then(html => {
       document.getElementById('sidebar-placeholder').innerHTML = html;
@@ -58,7 +58,7 @@ function loadSnippets(pageName) {
 
     });
 
-  fetch('/shared/snippets/footer.html')
+  fetch('/operation/snippets/footer.html')
     .then(r => r.text())
     .then(html => {
       document.getElementById('footer-placeholder').innerHTML = html;

@@ -90,7 +90,7 @@ function injectOrUpdateMeta(html, meta) {
 }
 
 const ATLAS_SCRIPTS = [
-  '/shared/scripts/atlas.js',
+  '/operation/scripts/atlas.js',
   '/data/pergamon-address.js',
   '/data/entries.js',
   '/data/atlas-reference.js',
@@ -120,8 +120,8 @@ function ensureAtlasScripts(html) {
 }
 
 function stripInlineFetches(html) {
-  const marker = "fetch('/shared/snippets/header.html')";
-  const marker2 = 'fetch("/shared/snippets/header.html")';
+  const marker = "fetch('/operation/snippets/header.html')";
+  const marker2 = 'fetch("/operation/snippets/header.html")';
   if (!html.includes(marker) && !html.includes(marker2)) return html;
 
   let result = html;
@@ -138,8 +138,8 @@ function ensureLoadSnippets(html, name) {
   if (html.includes('loadSnippets(')) return html;
   const safe = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
   return html.replace(
-    '<script src="/shared/scripts/atlas.js"></script>',
-    `<script src="/shared/scripts/atlas.js"></script>\n<script>loadSnippets('${safe}');</script>`
+    '<script src="/operation/scripts/atlas.js"></script>',
+    `<script src="/operation/scripts/atlas.js"></script>\n<script>loadSnippets('${safe}');</script>`
   );
 }
 
