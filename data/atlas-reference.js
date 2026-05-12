@@ -509,8 +509,8 @@
 }
 
 .ar-bar-wordmark {
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  letter-spacing: 0.12em;
   color: var(--ar-gold);
   text-transform: uppercase;
   font-weight: 600;
@@ -525,7 +525,7 @@
 }
 
 .ar-bar-name {
-  font-size: 13px;
+  font-size: 15px;
   color: #c4c0b8;
   white-space: nowrap;
   overflow: hidden;
@@ -533,7 +533,7 @@
 }
 
 .ar-bar-addr-crumb {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--ar-muted);
   font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
   letter-spacing: 0.04em;
