@@ -16,6 +16,9 @@
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
 
+  /** Default neighbor thumbnail; entries may set `thumb` for a custom URL. */
+  var AR_NEIGHBOR_THUMB = '/data/atlas-neighbor-thumb.svg';
+
   // ── Init ─────────────────────────────────────────────────────────────────
 
   function init() {
@@ -25,8 +28,6 @@
     let meta;
     try { meta = JSON.parse(metaEl.textContent); }
     catch { return; }
-
-    if (meta.archived) return;
 
     const PA = window.PergamonAddress;
     const all = (typeof window.atlasEntries !== 'undefined')
@@ -153,14 +154,20 @@
       <div class="ar-bar">
         <div class="ar-bar-inner">
           <div class="ar-bar-left">
-            <span class="ar-bar-logo">◈</span>
+            <span class="ar-bar-logo" aria-hidden="true">
+              <svg class="ar-bar-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.2"/><path d="M10 20c2-6 4-10 6-12 2 2 4 6 6 12M13 14h6M12 18h8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M11 22h10l-1.5 4h-7L11 22z" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+            </span>
             <span class="ar-bar-wordmark">PERGAMON ATLAS</span>
             <span class="ar-bar-slash">/</span>
             <span class="ar-bar-name">${esc(name)}</span>
+            <span class="ar-bar-slash">/</span>
+            <span class="ar-bar-addr-crumb">ATLAS-${esc(address)}</span>
           </div>
           <div class="ar-bar-right">
-            <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
-            <span class="ar-bar-label">ATLAS REFERENCE</span>
+            <button type="button" class="ar-bar-ref-btn" aria-haspopup="menu" aria-expanded="false">
+              <span>ATLAS REFERENCE</span>
+              <svg class="ar-bar-chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -174,34 +181,54 @@
               <div class="ar-desc">Explore verified artifact locations, view curated catalogs, and navigate across the Pergamon Atlas.</div>
             </div>
             <div class="ar-hr">
-              <div class="ar-info-item">
-                <span class="ar-info-icon">◈</span>
-                <div class="ar-info-text">
-                  <div class="ar-meta-label">Artifact Code</div>
-                  <div class="ar-code">${esc(artCode)}</div>
+              <div class="ar-info-card">
+                <div class="ar-info-row">
+                  <span class="ar-info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+                  </span>
+                  <div class="ar-info-text">
+                    <div class="ar-meta-label">Artifact code</div>
+                    <div class="ar-code">${esc(artCode)}</div>
+                  </div>
                 </div>
-              </div>
-              <div class="ar-info-item">
-                <span class="ar-info-icon ar-info-icon-addr">⊙</span>
-                <div class="ar-info-text">
-                  <div class="ar-meta-label">Atlas Address</div>
-                  <div class="ar-address">ATLAS-${esc(address)}</div>
+                <div class="ar-info-row ar-info-row-divider">
+                  <span class="ar-info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s7-4.5 7-11a7 7 0 10-14 0c0 6.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5" fill="currentColor" stroke="none"/></svg>
+                  </span>
+                  <div class="ar-info-text">
+                    <div class="ar-meta-label">Atlas address</div>
+                    <div class="ar-address">ATLAS-${esc(address)}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <nav class="ar-tabs" role="tablist">
-            <button class="ar-tab active" data-tab="nearby"   role="tab"><span class="ar-tab-icon">⊕</span> Explore Nearby</button>
-            <button class="ar-tab"        data-tab="jump"     role="tab"><span class="ar-tab-icon">⊳</span> Jump to Address</button>
-            <button class="ar-tab"        data-tab="random"   role="tab"><span class="ar-tab-icon">⊞</span> Random Jump</button>
-            <button class="ar-tab"        data-tab="catalogs" role="tab"><span class="ar-tab-icon">⊟</span> View Catalogs</button>
+            <button class="ar-tab active" data-tab="nearby" role="tab" aria-selected="true">
+              <span class="ar-tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><polygon points="12,7 14,12 12,17 10,12" fill="currentColor" stroke="none"/><line x1="12" y1="4" x2="12" y2="6"/></svg></span>
+              <span class="ar-tab-txt">Explore nearby</span>
+            </button>
+            <button class="ar-tab" data-tab="jump" role="tab" aria-selected="false">
+              <span class="ar-tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>
+              <span class="ar-tab-txt">Jump to address</span>
+            </button>
+            <button class="ar-tab" data-tab="random" role="tab" aria-selected="false">
+              <span class="ar-tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/><circle cx="7.5" cy="7.5" r="1" fill="currentColor"/><circle cx="16.5" cy="16.5" r="1" fill="currentColor"/></svg></span>
+              <span class="ar-tab-txt">Random jump</span>
+            </button>
+            <button class="ar-tab" data-tab="catalogs" role="tab" aria-selected="false">
+              <span class="ar-tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>
+              <span class="ar-tab-txt">View catalogs</span>
+            </button>
           </nav>
 
-          <div class="ar-panel"           id="ar-panel-nearby"  >${buildNearbyPanel(neighbors)}</div>
-          <div class="ar-panel ar-hidden" id="ar-panel-jump"    >${buildJumpPanel()}</div>
-          <div class="ar-panel ar-hidden" id="ar-panel-random"  >${buildRandomPanel()}</div>
-          <div class="ar-panel ar-hidden" id="ar-panel-catalogs">${buildCatalogsPanel(catalogs)}</div>
+          <div class="ar-panels-shell">
+            <div class="ar-panel" id="ar-panel-nearby">${buildNearbyPanel(neighbors)}</div>
+            <div class="ar-panel ar-hidden" id="ar-panel-jump">${buildJumpPanel()}</div>
+            <div class="ar-panel ar-hidden" id="ar-panel-random">${buildRandomPanel()}</div>
+            <div class="ar-panel ar-hidden" id="ar-panel-catalogs">${buildCatalogsPanel(catalogs)}</div>
+          </div>
 
         </div>
       </div>
@@ -210,9 +237,13 @@
     // Tab switching
     el.querySelectorAll('.ar-tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        el.querySelectorAll('.ar-tab').forEach(t => t.classList.remove('active'));
+        el.querySelectorAll('.ar-tab').forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
         el.querySelectorAll('.ar-panel').forEach(p => p.classList.add('ar-hidden'));
         tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
         el.querySelector(`#ar-panel-${tab.dataset.tab}`).classList.remove('ar-hidden');
       });
     });
@@ -278,21 +309,35 @@
 
   // ── Panel builders ────────────────────────────────────────────────────────
 
+  function neighborThumbSrc(artifact) {
+    if (artifact && artifact.thumb) return String(artifact.thumb);
+    return AR_NEIGHBOR_THUMB;
+  }
+
   function buildNearbyPanel(neighbors) {
     if (!neighbors.length) {
       return `<p class="ar-empty">No artifacts detected in adjacent space.</p>`;
     }
     const intro = `
       <div class="ar-nearby-intro">
-        <div class="ar-nearby-title">Nearby Atlas</div>
-        <div class="ar-nearby-sub">Discover and navigate to neighboring atlas entries.</div>
+        <span class="ar-nearby-compass" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="12,6 14.2,12 12,18 9.8,12" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="5.5"/></svg>
+        </span>
+        <div class="ar-nearby-intro-text">
+          <div class="ar-nearby-title">Nearby Atlas</div>
+          <div class="ar-nearby-sub">Discover and navigate to neighboring atlas entries.</div>
+        </div>
       </div>`;
     const rows = neighbors.map(n => {
       const initials = n.artifact.name.replace(/[^a-zA-Z0-9 ]/g, '').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '??';
+      const thumb = esc(neighborThumbSrc(n.artifact));
       if (n.trace) {
         return `
         <div class="ar-neighbor ar-neighbor-trace">
-          <div class="ar-n-thumb ar-n-thumb-trace">${initials}</div>
+          <div class="ar-n-thumb ar-n-thumb-trace">
+            <img class="ar-n-thumb-img" src="${thumb}" alt="" loading="lazy" onerror="this.classList.add('ar-n-thumb-img--err');"/>
+            <span class="ar-n-thumb-fallback" aria-hidden="true">${initials}</span>
+          </div>
           <div class="ar-n-info">
             <div class="ar-n-name ar-n-trace-name">${esc(n.artifact.name)}</div>
             <div class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</div>
@@ -301,7 +346,10 @@
       }
       return `
         <a class="ar-neighbor" href="${esc(n.artifact.path)}">
-          <div class="ar-n-thumb">${initials}</div>
+          <div class="ar-n-thumb">
+            <img class="ar-n-thumb-img" src="${thumb}" alt="" loading="lazy" onerror="this.classList.add('ar-n-thumb-img--err');"/>
+            <span class="ar-n-thumb-fallback" aria-hidden="true">${initials}</span>
+          </div>
           <div class="ar-n-info">
             <div class="ar-n-name">${esc(n.artifact.name)}</div>
             <div class="ar-n-addr">${n.artifact.address ? 'ATLAS-' + esc(n.artifact.address) : '—'}</div>
@@ -321,14 +369,20 @@
       <div class="ar-bar ar-bar-archived">
         <div class="ar-bar-inner">
           <div class="ar-bar-left">
-            <span class="ar-bar-logo">◈</span>
+            <span class="ar-bar-logo" aria-hidden="true">
+              <svg class="ar-bar-logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.2"/><path d="M10 20c2-6 4-10 6-12 2 2 4 6 6 12M13 14h6M12 18h8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><path d="M11 22h10l-1.5 4h-7L11 22z" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+            </span>
             <span class="ar-bar-wordmark">PERGAMON ATLAS</span>
             <span class="ar-bar-slash">/</span>
             <span class="ar-bar-name ar-archived-label">ARCHIVED ARTIFACT</span>
+            <span class="ar-bar-slash">/</span>
+            <span class="ar-bar-addr-crumb">ATLAS-${esc(address)}</span>
           </div>
           <div class="ar-bar-right">
-            <span class="ar-bar-addr">ATLAS-${esc(address)}</span>
-            <span class="ar-bar-label">ARCHIVE RECORD</span>
+            <button type="button" class="ar-bar-ref-btn ar-bar-ref-btn--archive" aria-haspopup="menu" aria-expanded="false">
+              <span>ARCHIVE RECORD</span>
+              <svg class="ar-bar-chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -394,16 +448,20 @@
     s.id = 'ar-styles';
     s.textContent = `
 #atlas-reference {
-  background: #0d0b08;
-  border-top: 1px solid #2a2218;
-  font-family: Georgia, serif;
-  color: #d6c89a;
+  --ar-gold: #c5a059;
+  --ar-muted: #888888;
+  --ar-bg: #0a0a0a;
+  --ar-line: rgba(197, 160, 89, 0.35);
+  background: var(--ar-bg);
+  border-top: 1px solid var(--ar-line);
+  font-family: Georgia, "Times New Roman", serif;
+  color: #d4d0c8;
   margin-top: 56px;
 }
 
 /* ── Top bar ── */
 .ar-bar {
-  border-bottom: 1px solid #2a2218;
+  border-bottom: 1px solid var(--ar-line);
   padding: 0 32px;
 }
 
@@ -423,63 +481,92 @@
   gap: 10px;
   min-width: 0;
   overflow: hidden;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
 }
 
 .ar-bar-logo {
-  font-size: 14px;
-  color: #c9a84c;
+  color: var(--ar-gold);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ar-bar-logo-svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .ar-bar-wordmark {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #7a6a4a;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ar-gold);
   text-transform: uppercase;
-  font-family: 'Courier New', monospace;
+  font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .ar-bar-slash {
-  color: #3a3020;
-  font-size: 14px;
+  color: #555;
+  font-size: 13px;
   flex-shrink: 0;
 }
 
 .ar-bar-name {
   font-size: 13px;
-  color: #c9a84c;
+  color: #c4c0b8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.ar-bar-addr-crumb {
+  font-size: 11px;
+  color: var(--ar-muted);
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
 .ar-bar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
-.ar-bar-addr {
-  font-size: 12px;
-  color: #6a5a3a;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
+.ar-bar-ref-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ar-muted);
+  background: transparent;
+  border: 1px solid var(--ar-gold);
+  border-radius: 2px;
+  padding: 7px 12px 7px 14px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
 
-.ar-bar-label {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: #6a5a3a;
-  text-transform: uppercase;
-  font-family: 'Courier New', monospace;
-  white-space: nowrap;
-  border: 1px solid #2a2218;
-  padding: 5px 12px;
-  border-radius: 4px;
+.ar-bar-ref-btn:hover {
+  color: var(--ar-gold);
+  background: rgba(197, 160, 89, 0.08);
+}
+
+.ar-bar-chevron {
+  width: 10px;
+  height: 7px;
+  flex-shrink: 0;
+  opacity: 0.85;
 }
 
 /* ── Body ── */
@@ -500,141 +587,207 @@
   align-items: flex-start;
   gap: 32px;
   padding: 32px 0 26px;
-  border-bottom: 1px solid #2a2218;
+  border-bottom: 1px solid var(--ar-line);
 }
 
 .ar-hl { flex: 1; min-width: 0; }
 
 .ar-name {
-  font-size: 26px;
-  color: #c9a84c;
+  font-size: 28px;
+  color: var(--ar-gold);
   margin-bottom: 10px;
   font-weight: normal;
   line-height: 1.2;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .ar-desc {
   font-size: 14px;
-  color: #7a6a4a;
+  color: #c8c4bc;
   line-height: 1.7;
   max-width: 480px;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
 }
 
 .ar-hr {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   flex-shrink: 0;
 }
 
-.ar-info-item {
+.ar-info-card {
+  min-width: 260px;
+  max-width: 340px;
+  border: 1px solid var(--ar-gold);
+  border-radius: 2px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(197, 160, 89, 0.06) 0%, transparent 55%),
+    repeating-conic-gradient(from 0deg at 50% 55%, transparent 0deg 8deg, rgba(197, 160, 89, 0.03) 8deg 9deg),
+    #0c0c0c;
+  padding: 4px 0;
+}
+
+.ar-info-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  background: #111008;
-  border: 1px solid #2a2218;
-  border-radius: 8px;
+  gap: 14px;
   padding: 14px 18px;
-  min-width: 240px;
+}
+
+.ar-info-row-divider {
+  border-top: 1px solid var(--ar-line);
 }
 
 .ar-info-icon {
-  font-size: 16px;
-  color: #c9a84c;
-  margin-top: 1px;
+  color: var(--ar-gold);
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.ar-info-icon-addr {
-  color: #8a7a5a;
+.ar-info-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .ar-info-text { min-width: 0; }
 
 .ar-meta-label {
   font-size: 10px;
-  letter-spacing: 0.2em;
-  color: #5a4a30;
+  letter-spacing: 0.14em;
+  color: var(--ar-muted);
   text-transform: uppercase;
-  font-family: 'Courier New', monospace;
-  margin-bottom: 5px;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  margin-bottom: 6px;
 }
 
 .ar-code {
-  font-size: 13px;
-  color: #c9a84c;
-  letter-spacing: 0.08em;
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
+  font-size: 14px;
+  color: var(--ar-gold);
+  letter-spacing: 0.06em;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-weight: 600;
 }
 
 .ar-address {
   font-size: 13px;
-  color: #c9a84c;
-  letter-spacing: 0.06em;
-  font-family: 'Courier New', monospace;
+  color: var(--ar-gold);
+  letter-spacing: 0.05em;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
 }
 
 /* ── Tabs ── */
 .ar-tabs {
   display: flex;
-  border-bottom: 1px solid #2a2218;
+  align-items: stretch;
   margin-top: 26px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   gap: 0;
 }
 
 .ar-tab {
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: #6a5a3a;
-  font-family: Georgia, serif;
-  font-size: 13px;
-  letter-spacing: 0.05em;
-  padding: 12px 20px 10px;
+  border-bottom: 3px solid transparent;
+  color: var(--ar-muted);
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 14px 18px 12px;
   cursor: pointer;
-  margin-bottom: -1px;
-  transition: color 0.12s, border-color 0.12s;
+  transition: color 0.15s, border-color 0.15s;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  border-left: 1px solid var(--ar-line);
 }
 
-.ar-tab-icon {
-  font-size: 14px;
-  opacity: 0.7;
+.ar-tab:first-child {
+  border-left: none;
+  padding-left: 0;
 }
 
-.ar-tab:hover { color: #a08848; }
+.ar-tab-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.ar-tab-ico svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.ar-tab:hover {
+  color: #b6a878;
+}
 
 .ar-tab.active {
-  color: #c9a84c;
-  border-bottom-color: #c9a84c;
+  color: var(--ar-gold);
+  border-bottom-color: var(--ar-gold);
 }
 
-.ar-tab.active .ar-tab-icon { opacity: 1; }
+.ar-tab.active .ar-tab-ico {
+  color: var(--ar-gold);
+}
 
-/* ── Panels ── */
-.ar-panel { min-height: 60px; }
-.ar-hidden { display: none; }
+/* ── Panel shell ── */
+.ar-panels-shell {
+  border: 1px solid var(--ar-gold);
+  padding: 22px 22px 26px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.ar-panel { min-height: 48px; }
+.ar-hidden { display: none !important; }
 
 /* ── Nearby intro ── */
 .ar-nearby-intro {
-  padding: 4px 0 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 4px 0 18px;
+}
+
+.ar-nearby-compass {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--ar-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ar-gold);
+  background: rgba(197, 160, 89, 0.06);
+}
+
+.ar-nearby-compass svg {
+  width: 22px;
+  height: 22px;
+}
+
+.ar-nearby-intro-text {
+  min-width: 0;
 }
 
 .ar-nearby-title {
-  font-size: 15px;
-  color: #c9a84c;
+  font-size: 17px;
+  color: var(--ar-gold);
   margin-bottom: 4px;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .ar-nearby-sub {
   font-size: 13px;
-  color: #5a4a30;
+  color: var(--ar-muted);
   line-height: 1.5;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
 }
 
 /* ── Neighbor rows ── */
@@ -643,38 +796,63 @@
   align-items: center;
   gap: 16px;
   padding: 14px 16px;
-  background: #111008;
-  border: 1px solid #2a2218;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  background: #0e0e0e;
+  border: 1px solid var(--ar-line);
+  border-radius: 2px;
+  margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.15s, background 0.15s;
 }
 
 .ar-neighbor:hover {
-  border-color: #5a4a28;
-  background: #161208;
+  border-color: rgba(197, 160, 89, 0.55);
+  background: #111;
 }
 
 .ar-n-thumb {
-  width: 48px;
-  height: 48px;
-  background: #1a1610;
-  border: 1px solid #2a2218;
-  border-radius: 6px;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border: 1px solid var(--ar-line);
+  border-radius: 2px;
+  overflow: hidden;
+  background: #141414;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-family: 'Courier New', monospace;
-  color: #6a5a3a;
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
+}
+
+.ar-n-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ar-n-thumb-img--err {
+  display: none !important;
+}
+
+.ar-n-thumb-fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-family: ui-monospace, Consolas, monospace;
+  color: var(--ar-muted);
+  letter-spacing: 0.06em;
+}
+
+.ar-n-thumb:has(.ar-n-thumb-img--err) .ar-n-thumb-fallback {
+  display: flex;
 }
 
 .ar-n-thumb-trace {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .ar-n-info {
@@ -683,70 +861,77 @@
 }
 
 .ar-n-name {
-  font-size: 15px;
-  color: #d6c89a;
+  font-size: 16px;
+  color: var(--ar-gold);
   margin-bottom: 4px;
-  transition: color 0.12s;
+  transition: opacity 0.15s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
-.ar-neighbor:hover .ar-n-name { color: #c9a84c; }
+.ar-neighbor:hover .ar-n-name {
+  opacity: 0.92;
+}
 
 .ar-n-addr {
   font-size: 12px;
-  color: #5a4a30;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.05em;
+  color: var(--ar-muted);
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  letter-spacing: 0.04em;
 }
 
 .ar-n-view {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: #7a6a4a;
-  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--ar-muted);
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
   white-space: nowrap;
   flex-shrink: 0;
-  border: 1px solid #2a2218;
-  padding: 6px 12px;
-  border-radius: 4px;
-  transition: color 0.12s, border-color 0.12s;
+  border: 1px solid var(--ar-gold);
+  padding: 8px 14px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
 
 .ar-neighbor:hover .ar-n-view {
-  color: #c9a84c;
-  border-color: #5a4a28;
+  color: var(--ar-gold);
+  background: rgba(197, 160, 89, 0.08);
 }
 
 .ar-n-trace-name {
   font-size: 14px;
-  color: #4a3a20;
+  color: #666;
   font-style: italic;
+  font-family: Georgia, serif;
 }
 
 .ar-neighbor-trace {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: default;
   pointer-events: none;
 }
 
 .ar-empty {
-  color: #5a4a30;
+  color: var(--ar-muted);
   font-size: 14px;
   font-style: italic;
   padding: 20px 0;
+  font-family: system-ui, sans-serif;
 }
 
 /* ── Jump ── */
 .ar-jump-label {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #5a4a30;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ar-muted);
   text-transform: uppercase;
-  font-family: 'Courier New', monospace;
+  font-family: system-ui, sans-serif;
   margin-bottom: 12px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .ar-jump-row {
@@ -763,64 +948,66 @@
 }
 
 .ar-seg-sep {
-  color: #3a2e20;
+  color: #555;
   font-size: 18px;
-  font-family: 'Courier New', monospace;
+  font-family: ui-monospace, Consolas, monospace;
   flex-shrink: 0;
 }
 
 .ar-input {
-  background: #111008;
-  border: 1px solid #2a2218;
-  border-radius: 4px;
-  color: #c9a84c;
-  font-family: 'Courier New', monospace;
+  background: #0e0e0e;
+  border: 1px solid var(--ar-line);
+  border-radius: 2px;
+  color: var(--ar-gold);
+  font-family: ui-monospace, Consolas, monospace;
   font-size: 14px;
   padding: 10px 12px;
   outline: none;
   letter-spacing: 0.06em;
-  transition: border-color 0.12s;
+  transition: border-color 0.15s;
 }
 
-.ar-input:focus { border-color: #6a5a3a; }
-.ar-input::placeholder { color: #2e2416; }
+.ar-input:focus { border-color: var(--ar-gold); }
+.ar-input::placeholder { color: #444; }
 
 .ar-btn {
   background: transparent;
-  border: 1px solid #4a3a20;
-  border-radius: 4px;
-  color: #c9a84c;
-  font-family: Georgia, serif;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  padding: 10px 22px;
+  border: 1px solid var(--ar-gold);
+  border-radius: 2px;
+  color: var(--ar-gold);
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 20px;
   cursor: pointer;
-  transition: border-color 0.12s, background 0.12s;
+  transition: border-color 0.15s, background 0.15s;
   white-space: nowrap;
 }
 
 .ar-btn:hover {
-  border-color: #c9a84c;
-  background: rgba(201,168,76,0.06);
+  border-color: var(--ar-gold);
+  background: rgba(197, 160, 89, 0.1);
 }
 
 .ar-btn:disabled { opacity: 0.4; cursor: default; }
 
 .ar-error {
   font-size: 12px;
-  color: #9a5a5a;
+  color: #c08080;
   margin-top: 10px;
   min-height: 18px;
-  font-family: 'Courier New', monospace;
+  font-family: ui-monospace, Consolas, monospace;
 }
 
 /* ── Random ── */
 .ar-random-out {
   margin-top: 16px;
   font-size: 14px;
-  color: #7a6a4a;
-  letter-spacing: 0.08em;
-  font-family: 'Courier New', monospace;
+  color: var(--ar-muted);
+  letter-spacing: 0.06em;
+  font-family: ui-monospace, Consolas, monospace;
   min-height: 20px;
 }
 
@@ -830,43 +1017,50 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  background: #111008;
-  border: 1px solid #2a2218;
-  border-radius: 6px;
-  color: #d6c89a;
+  background: #0e0e0e;
+  border: 1px solid var(--ar-line);
+  border-radius: 2px;
+  color: #d4d0c8;
   text-decoration: none;
   font-size: 15px;
   margin-bottom: 8px;
-  transition: border-color 0.12s, color 0.12s;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: system-ui, sans-serif;
 }
 
 .ar-catalog-link:hover {
-  border-color: #5a4a28;
-  color: #c9a84c;
+  border-color: rgba(197, 160, 89, 0.55);
+  color: var(--ar-gold);
 }
 
 /* ── Archived panel ── */
-.ar-bar-archived .ar-bar-logo { color: #7a4a20; }
-.ar-bar-archived .ar-bar-name { color: #7a4a20; }
-.ar-bar-archived .ar-bar-label { color: #5a3a18; border-color: #1e1208; }
+.ar-bar-archived .ar-bar-logo { color: #9a7a4a; }
+.ar-bar-archived .ar-bar-wordmark { color: #9a7a4a; }
+.ar-bar-archived .ar-bar-name { color: #a08050; }
+.ar-bar-archived .ar-bar-addr-crumb { color: #777; }
 
-.ar-archived-label { color: #7a4a20 !important; }
+.ar-bar-ref-btn--archive {
+  border-color: rgba(197, 160, 89, 0.45);
+  color: #777;
+}
+
+.ar-archived-label { color: #a08050 !important; }
 
 .ar-arc-marker {
   font-size: 11px;
-  letter-spacing: 0.35em;
-  color: #3a2010;
-  font-family: 'Courier New', monospace;
+  letter-spacing: 0.28em;
+  color: #555;
+  font-family: ui-monospace, Consolas, monospace;
   padding: 28px 0 18px;
   text-transform: uppercase;
 }
 
 .ar-arc-name {
   font-size: 22px;
-  color: #7a5a2a;
-  font-family: 'Courier New', monospace;
+  color: var(--ar-gold);
+  font-family: Georgia, serif;
   margin-bottom: 22px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
 .ar-arc-grid {
@@ -875,58 +1069,67 @@
   gap: 16px 32px;
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #1e1208;
+  border-bottom: 1px solid var(--ar-line);
 }
 
 .ar-arc-field { display: flex; flex-direction: column; gap: 5px; }
 
 .ar-af-key {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: #4a2a10;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--ar-muted);
   text-transform: uppercase;
-  font-family: 'Courier New', monospace;
+  font-family: system-ui, sans-serif;
 }
 
 .ar-af-val {
   font-size: 14px;
-  color: #7a5a2a;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.05em;
+  color: var(--ar-gold);
+  font-family: ui-monospace, Consolas, monospace;
+  letter-spacing: 0.04em;
 }
 
 .ar-arc-note {
   font-size: 13px;
-  color: #4a3018;
+  color: #777;
   line-height: 1.8;
   margin-bottom: 18px;
   font-style: italic;
+  font-family: system-ui, sans-serif;
 }
 
 .ar-arc-catalog-link {
-  font-size: 12px;
-  color: #5a3a18;
+  font-size: 11px;
+  color: var(--ar-muted);
   text-decoration: none;
   letter-spacing: 0.12em;
-  font-family: 'Courier New', monospace;
+  font-family: system-ui, sans-serif;
   text-transform: uppercase;
-  transition: color 0.12s;
+  transition: color 0.15s;
   padding-bottom: 48px;
   display: inline-block;
 }
 
-.ar-arc-catalog-link:hover { color: #c9a84c; }
+.ar-arc-catalog-link:hover { color: var(--ar-gold); }
 
 /* ── Responsive ── */
 @media (max-width: 700px) {
   .ar-bar { padding: 0 16px; }
-  .ar-bar-addr { display: none; }
-  .ar-bar-name { max-width: 140px; }
+  .ar-bar-addr-crumb { display: none; }
+  .ar-bar-name { max-width: 120px; }
   .ar-inner { padding: 0 16px; }
   .ar-header { flex-direction: column; gap: 20px; }
-  .ar-info-item { min-width: unset; }
-  .ar-tabs { flex-wrap: wrap; gap: 0; }
-  .ar-tab { font-size: 12px; padding: 10px 12px 8px; }
+  .ar-info-card { min-width: unset; max-width: none; width: 100%; }
+  .ar-tabs { flex-wrap: wrap; }
+  .ar-tab {
+    font-size: 9px;
+    padding: 10px 12px 8px;
+    border-left: none;
+    border-bottom: 1px solid var(--ar-line);
+    flex: 1 1 42%;
+  }
+  .ar-tab:first-child { padding-left: 12px; }
+  .ar-panels-shell { padding: 16px; }
   .ar-n-view { display: none; }
   .ar-n-addr { display: none; }
   .ar-seg { width: 64px; }
