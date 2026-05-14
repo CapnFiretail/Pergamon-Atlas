@@ -107,23 +107,23 @@ body{
 .game-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 1.5px 1.5px; }
 .game-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
 
-/* Icon — contained within banner */
+/* Icon — fills banner height, frame sits against border */
 .game-hero-icon {
-  width: 120px;
-  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding-right: 24px;
+  margin: -14px 0 -14px -28px;
+  padding-right: 16px;
   border-right: 1px solid rgba(201,150,30,0.25);
 }
 
 .game-hero-icon img {
-  width: 100%;
-  height: 100%;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
   mix-blend-mode: screen;
+  display: block;
 }
 
 /* Title + subtitle */
