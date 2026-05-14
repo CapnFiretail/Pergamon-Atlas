@@ -31,349 +31,126 @@
   <link rel="stylesheet" href="/operation/styles/footer.css">
 
   <style>
-    .ttt-shell{
-      max-width: 1200px;
+    .ph-shell {
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    .ttt-hero{
+    .ph-hero {
       background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
       color: white;
       border: 2px solid #000;
       border-radius: 18px;
-      padding: 28px;
+      padding: 36px 32px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.18);
       margin-bottom: 24px;
     }
 
-    .ttt-hero h2{
+    .ph-hero h2 {
       margin: 0 0 10px 0;
       font-size: clamp(32px, 5vw, 52px);
       line-height: 1.05;
     }
 
-    .ttt-hero p{
+    .ph-hero p {
       margin: 0;
       font-size: 18px;
       line-height: 1.7;
       color: #e2e2e2;
-      max-width: 850px;
+      max-width: 640px;
     }
 
-    .ttt-grid{
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .ttt-panel,
-    .ttt-stage{
+    .ph-card {
       background: white;
       border: 2px solid #000;
       border-radius: 16px;
+      padding: 36px 32px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      text-align: center;
     }
 
-    .ttt-panel{
-      padding: 20px;
-      position: sticky;
-      top: 24px;
-    }
-
-    .ttt-panel h3,
-    .ttt-stage h3{
-      margin: 0 0 14px 0;
-      font-size: 24px;
-      color: #111;
-    }
-
-    .mode-list{
+    .ph-grid {
       display: grid;
+      grid-template-columns: repeat(3, 80px);
       gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .mode-btn{
-      width: 100%;
-      text-align: left;
-      border: 2px solid #000;
-      background: #f6f6f6;
-      color: #111;
-      border-radius: 12px;
-      padding: 14px 14px;
-      font-family: Georgia, serif;
-      font-size: 16px;
-      cursor: pointer;
-      transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .mode-btn:hover{
-      transform: translateY(-1px);
-      background: #ececec;
-    }
-
-    .mode-btn.active{
-      background: #16120a;
-      color: #e0b35a;
-      border-color: #8a611c;
-    }
-
-    .mode-btn strong{
-      display: block;
-      margin-bottom: 4px;
-      font-size: 17px;
-    }
-
-    .small-note{
-      margin: 12px 0 0 0;
-      color: #444;
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    .control-row{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    .action-btn{
-      border: 2px solid #000;
+      margin: 0 auto 28px;
+      width: fit-content;
       background: #111;
-      color: white;
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-family: Georgia, serif;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
-    }
-
-    .action-btn:hover{
-      background: #222;
-      transform: translateY(-1px);
-    }
-
-    .action-btn.secondary{
-      background: #f3f3f3;
-      color: #111;
-    }
-
-    .action-btn.secondary:hover{
-      background: #e7e7e7;
-    }
-
-    .ttt-stage{
-      padding: 22px;
-    }
-
-    .top-status{
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-start;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .status-box,
-    .score-box{
-      background: #f6f6f6;
-      border: 2px solid #000;
       border-radius: 14px;
-      padding: 14px 16px;
-      min-width: 220px;
-    }
-
-    .status-box h4,
-    .score-box h4{
-      margin: 0 0 8px 0;
-      font-size: 18px;
-      color: #111;
-    }
-
-    .status-text{
-      margin: 0;
-      color: #222;
-      line-height: 1.6;
-      min-height: 48px;
-    }
-
-    .score-line{
-      margin: 4px 0;
-      color: #222;
-    }
-
-    .board-wrap{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 18px 0 10px 0;
-    }
-
-    .board{
-      width: min(100%, 520px);
-      aspect-ratio: 1 / 1;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 10px;
       padding: 10px;
-      background: #111;
-      border: 2px solid #000;
-      border-radius: 18px;
-      position: relative;
-      overflow: hidden;
     }
 
-    .cell{
-      border: none;
+    .ph-cell {
+      width: 80px;
+      height: 80px;
       background: #f4f4f4;
-      border-radius: 16px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: Georgia, serif;
-      font-size: clamp(48px, 8vw, 82px);
+      font-size: 36px;
       font-weight: 700;
       color: #111;
-      cursor: pointer;
-      transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease, opacity 0.25s ease;
-      position: relative;
     }
 
-    .cell:hover{
-      background: #ececec;
-      transform: scale(1.015);
+    .ph-cell.dim {
+      color: #ccc;
     }
 
-    .cell:disabled{
-      cursor: default;
-    }
-
-    .cell.win{
-      background: #ead6ab;
-      box-shadow: inset 0 0 0 2px #8a611c;
-    }
-
-    .cell.cheat-flash{
-      animation: cheatFlash 0.5s ease;
-    }
-
-    .cell.erase-pop{
-      animation: erasePop 0.45s ease;
-    }
-
-    .cell.shake{
-      animation: shake 0.35s ease;
-    }
-
-    .board.glitch{
-      animation: boardGlitch 0.45s ease;
-    }
-
-    .devil-banner{
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: #150909;
-      border: 2px solid #4a1111;
-      color: #f0c7c7;
-      min-height: 56px;
-      line-height: 1.6;
-    }
-
-    .mode-description{
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: #f7f7f7;
-      border: 2px solid #000;
-      color: #222;
-      line-height: 1.7;
-    }
-
-    .legend{
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .legend-card{
-      background: #fafafa;
-      border: 2px solid #000;
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .legend-card h5{
-      margin: 0 0 8px 0;
-      font-size: 17px;
+    .ph-label {
+      font-size: 22px;
+      font-weight: 700;
       color: #111;
+      margin: 0 0 10px;
+      font-family: Georgia, serif;
     }
 
-    .legend-card p{
-      margin: 0;
-      color: #333;
-      line-height: 1.6;
+    .ph-sub {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.7;
+      margin: 0 0 24px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .ph-archive-link {
+      display: inline-block;
+      border: 2px solid #8a611c;
+      background: #f8f3ea;
+      color: #6a4a10;
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-family: Georgia, serif;
       font-size: 15px;
+      text-decoration: none;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
-    @keyframes cheatFlash{
-      0%{ background:#f4f4f4; }
-      50%{ background:#5e1010; color:#fff; }
-      100%{ background:#f4f4f4; }
+    .ph-archive-link:hover {
+      background: #ead6ab;
+      color: #3e2a06;
     }
 
-    @keyframes erasePop{
-      0%{ transform: scale(1); opacity:1; }
-      50%{ transform: scale(0.72); opacity:0.25; }
-      100%{ transform: scale(1); opacity:1; }
-    }
-
-    @keyframes shake{
-      0%{ transform: translateX(0); }
-      25%{ transform: translateX(-4px); }
-      50%{ transform: translateX(4px); }
-      75%{ transform: translateX(-3px); }
-      100%{ transform: translateX(0); }
-    }
-
-    @keyframes boardGlitch{
-      0%{ transform: translateX(0); filter: hue-rotate(0deg); }
-      20%{ transform: translateX(-6px); filter: hue-rotate(40deg); }
-      40%{ transform: translateX(4px); filter: hue-rotate(-30deg); }
-      60%{ transform: translateX(-3px); filter: hue-rotate(20deg); }
-      100%{ transform: translateX(0); filter: hue-rotate(0deg); }
-    }
-
-    @media (max-width: 980px){
-      .ttt-grid{
-        grid-template-columns: 1fr;
+    @media (max-width: 600px) {
+      .ph-hero {
+        padding: 24px 20px;
       }
 
-      .ttt-panel{
-        position: static;
-      }
-    }
-
-    @media (max-width: 700px){
-      .ttt-hero{
-        padding: 22px 18px;
+      .ph-card {
+        padding: 28px 20px;
       }
 
-      .ttt-stage,
-      .ttt-panel{
-        padding: 18px;
+      .ph-grid {
+        grid-template-columns: repeat(3, 64px);
       }
 
-      .legend{
-        grid-template-columns: 1fr;
-      }
-
-      .status-box,
-      .score-box{
-        width: 100%;
+      .ph-cell {
+        width: 64px;
+        height: 64px;
+        font-size: 28px;
       }
     }
   </style>
@@ -387,750 +164,39 @@
     <div id="sidebar-placeholder"></div>
 
     <main class="main-content">
-      <div class="ttt-shell">
+      <div class="ph-shell">
 
-        <section class="ttt-hero">
+        <section class="ph-hero">
           <h2>Tic Tac Toe</h2>
-          <p>
-            A normal game, a baby game, a sinful game, and a local game. Pick your suffering level.
+          <p>A rework is in progress. The old version is preserved in the archives.</p>
+        </section>
+
+        <div class="ph-card">
+          <div class="ph-grid">
+            <div class="ph-cell">X</div>
+            <div class="ph-cell dim">O</div>
+            <div class="ph-cell">X</div>
+            <div class="ph-cell">O</div>
+            <div class="ph-cell">X</div>
+            <div class="ph-cell dim">O</div>
+            <div class="ph-cell dim"></div>
+            <div class="ph-cell dim"></div>
+            <div class="ph-cell dim"></div>
+          </div>
+
+          <p class="ph-label">Coming Soon</p>
+          <p class="ph-sub">
+            This game is being rebuilt. Check back later, or play the original version in the archives.
           </p>
-        </section>
 
-        <section class="ttt-grid">
-          <aside class="ttt-panel">
-            <h3>Modes</h3>
-
-            <div class="mode-list">
-              <button class="mode-btn active" data-mode="baby">
-                <strong>Baby Mode</strong>
-                Bot just throws pieces around randomly.
-              </button>
-
-              <button class="mode-btn" data-mode="normal">
-                <strong>Regular / Normal Mode</strong>
-                Smart bot. Should win or force a tie most of the time.
-              </button>
-
-              <button class="mode-btn" data-mode="devil">
-                <strong>Devil Mode</strong>
-                Plays fair until things get scary, then gets disgusting.
-              </button>
-
-              <button class="mode-btn" data-mode="local">
-                <strong>Local Mode</strong>
-                Pass-and-play against a friend.
-              </button>
-            </div>
-
-            <div class="mode-description" id="mode-description">
-              Baby Mode is active. You are playing against a bot with absolutely no vision for the future.
-            </div>
-
-            <div class="control-row">
-              <button class="action-btn" id="restart-btn">Restart Round</button>
-              <button class="action-btn secondary" id="reset-score-btn">Reset Scores</button>
-            </div>
-
-            <p class="small-note">
-              In Devil Mode, the bot has a stash of devious actions and only starts using them when it feels threatened.
-            </p>
-          </aside>
-
-          <section class="ttt-stage">
-            <div class="top-status">
-              <div class="status-box">
-                <h4>Status</h4>
-                <p class="status-text" id="status-text">Your turn. You are X.</p>
-              </div>
-
-              <div class="score-box">
-                <h4>Score</h4>
-                <p class="score-line" id="score-x">X: 0</p>
-                <p class="score-line" id="score-o">O: 0</p>
-                <p class="score-line" id="score-draw">Draws: 0</p>
-              </div>
-            </div>
-
-            <div class="board-wrap">
-              <div class="board" id="board"></div>
-            </div>
-
-            <div class="devil-banner" id="devil-banner">
-              No devil activity detected.
-            </div>
-
-            <div class="legend">
-              <div class="legend-card">
-                <h5>Baby Mode</h5>
-                <p>Pure random placements. Great if you want easy wins or just a chill version.</p>
-              </div>
-
-              <div class="legend-card">
-                <h5>Normal Mode</h5>
-                <p>Uses minimax, so unless you play perfectly, it should beat you or at least drag you to a draw.</p>
-              </div>
-
-              <div class="legend-card">
-                <h5>Devil Mode</h5>
-                <p>Also smart, but when cornered it can erase moves, steal spaces, take extra turns, and generally act beneath civilized standards.</p>
-              </div>
-
-              <div class="legend-card">
-                <h5>Local Mode</h5>
-                <p>Classic two-player tic tac toe on one screen. No bot, no excuses.</p>
-              </div>
-            </div>
-          </section>
-        </section>
+          <a href="/archives/tic-tac-toe-v1/" class="ph-archive-link">View Archived Version</a>
+        </div>
 
       </div>
     </main>
   </div>
 
   <div id="footer-placeholder"></div>
-
-  <script>
-    fetch('/operation/snippets/header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header-placeholder').innerHTML = data;
-        const pageTitleText = document.querySelector('.page-title-text');
-        if (pageTitleText) pageTitleText.textContent = pageHeaderSuffix;
-      });
-
-    fetch('/operation/snippets/sidebar.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('sidebar-placeholder').innerHTML = data;
-
-        const path = window.location.pathname;
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-
-          if (path === "/" && link.getAttribute("href") === "/") {
-            link.classList.add('active');
-          }
-          else if (( path.startsWith("/sectors/systems/tools") || path.startsWith("/sectors/atlas/tools") ) && link.getAttribute("href") === "/sectors/systems/tools") {
-            link.classList.add('active');
-          }
-          else if (( path.startsWith("/sectors/systems/games") || path.startsWith("/sectors/atlas/games") ) && link.getAttribute("href") === "/sectors/systems/games") {
-            link.classList.add('active');
-          }
-          else if (path.startsWith("/help") && link.getAttribute("href") === "/sectors/systems/help") {
-            link.classList.add('active');
-          }
-        });
-
-        try{
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch(err){}
-      });
-
-    fetch('/operation/snippets/footer.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('footer-placeholder').innerHTML = data;
-      })
-      .catch(() => {
-        document.getElementById('footer-placeholder').innerHTML = `
-          <footer class="site-footer">
-            <div class="footer-inner">
-              <div class="footer-brand">
-                <h3>Pergamon Atlas</h3>
-                <p>The Internet's Living Library</p>
-              </div>
-              <nav class="footer-links">
-                <a href="/">Home</a>
-                <a href="/sectors/systems/tools">Tools</a>
-                <a href="/sectors/systems/games">Games</a>
-                <a href="/help">Suggestions</a>
-              </nav>
-            </div>
-          </footer>
-        `;
-      });
-
-    const boardEl = document.getElementById('board');
-    const statusText = document.getElementById('status-text');
-    const devilBanner = document.getElementById('devil-banner');
-    const modeDescription = document.getElementById('mode-description');
-    const restartBtn = document.getElementById('restart-btn');
-    const resetScoreBtn = document.getElementById('reset-score-btn');
-    const modeButtons = document.querySelectorAll('.mode-btn');
-
-    const scoreX = document.getElementById('score-x');
-    const scoreO = document.getElementById('score-o');
-    const scoreDraw = document.getElementById('score-draw');
-
-    const WIN_LINES = [
-      [0,1,2],[3,4,5],[6,7,8],
-      [0,3,6],[1,4,7],[2,5,8],
-      [0,4,8],[2,4,6]
-    ];
-
-    let board = Array(9).fill('');
-    let currentPlayer = 'X';
-    let gameOver = false;
-    let mode = 'baby';
-    let waitingForBot = false;
-    let lastHumanMove = null;
-    let scores = { X: 0, O: 0, draw: 0 };
-    let devilActionUsedThisRound = false;
-
-    const modeDescriptions = {
-      baby: 'Baby Mode is active. You are playing against a bot with absolutely no vision for the future.',
-      normal: 'Normal Mode is active. You are playing against a proper bot that should usually win or at least force a tie.',
-      devil: 'Devil Mode is active. The bot will act normal until it feels pressure. Then it may do something morally bankrupt.',
-      local: 'Local Mode is active. X and O are both controlled by humans on the same screen.'
-    };
-
-    function initBoard(){
-      boardEl.innerHTML = '';
-      board.forEach((value, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'cell';
-        btn.dataset.index = index;
-        btn.textContent = value;
-        btn.addEventListener('click', () => handleCellClick(index));
-        boardEl.appendChild(btn);
-      });
-      renderBoard();
-    }
-
-    function renderBoard(){
-      const cells = boardEl.querySelectorAll('.cell');
-      cells.forEach((cell, index) => {
-        cell.textContent = board[index];
-        cell.disabled = !!board[index] || gameOver || waitingForBot;
-      });
-    }
-
-    function updateScores(){
-      scoreX.textContent = `X: ${scores.X}`;
-      scoreO.textContent = `O: ${scores.O}`;
-      scoreDraw.textContent = `Draws: ${scores.draw}`;
-    }
-
-    function setMode(newMode){
-      mode = newMode;
-      modeButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-      });
-      modeDescription.textContent = modeDescriptions[mode];
-      restartRound();
-    }
-
-    function restartRound(){
-      board = Array(9).fill('');
-      currentPlayer = 'X';
-      gameOver = false;
-      waitingForBot = false;
-      lastHumanMove = null;
-      devilActionUsedThisRound = false;
-      statusText.textContent = mode === 'local'
-        ? 'Player X turn.'
-        : 'Your turn. You are X.';
-      devilBanner.textContent = mode === 'devil'
-        ? 'The board is quiet for now.'
-        : 'No devil activity detected.';
-      boardEl.classList.remove('glitch');
-      initBoard();
-    }
-
-    function resetScores(){
-      scores = { X: 0, O: 0, draw: 0 };
-      updateScores();
-      restartRound();
-    }
-
-    function handleCellClick(index){
-      if (gameOver || waitingForBot || board[index]) return;
-
-      if (mode === 'local'){
-        board[index] = currentPlayer;
-        finishMove(index);
-        return;
-      }
-
-      if (currentPlayer !== 'X') return;
-
-      board[index] = 'X';
-      lastHumanMove = index;
-      finishMove(index);
-
-      if (!gameOver){
-        waitingForBot = true;
-        renderBoard();
-        statusText.textContent = mode === 'devil'
-          ? 'The bot is thinking suspicious thoughts...'
-          : 'Bot is thinking...';
-
-        setTimeout(() => {
-          botTurn();
-        }, mode === 'baby' ? 380 : 480);
-      }
-    }
-
-    function finishMove(lastIndex){
-      renderBoard();
-
-      const winData = getWinner(board);
-      if (winData){
-        gameOver = true;
-        highlightWinningCells(winData.line);
-        scores[winData.winner]++;
-        updateScores();
-        if (mode === 'local'){
-          statusText.textContent = `Player ${winData.winner} wins.`;
-        } else if (winData.winner === 'X'){
-          statusText.textContent = 'You win.';
-        } else {
-          statusText.textContent = mode === 'devil'
-            ? 'The bot wins. It seems very pleased with itself.'
-            : 'Bot wins.';
-        }
-        renderBoard();
-        return;
-      }
-
-      if (isDraw(board)){
-        gameOver = true;
-        scores.draw++;
-        updateScores();
-        statusText.textContent = 'Draw.';
-        renderBoard();
-        return;
-      }
-
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-
-      if (mode === 'local'){
-        statusText.textContent = `Player ${currentPlayer} turn.`;
-      } else {
-        statusText.textContent = currentPlayer === 'X'
-          ? 'Your turn. You are X.'
-          : 'Bot turn.';
-      }
-    }
-
-    function botTurn(){
-      if (gameOver || mode === 'local') return;
-
-      if (mode === 'devil' && shouldDevilCheat()){
-        const didCheat = performDevilAction();
-        if (didCheat){
-          waitingForBot = false;
-          renderBoard();
-
-          const postCheatWin = getWinner(board);
-          if (postCheatWin){
-            gameOver = true;
-            highlightWinningCells(postCheatWin.line);
-            scores[postCheatWin.winner]++;
-            updateScores();
-            statusText.textContent = postCheatWin.winner === 'O'
-              ? 'The bot wins. It probably should not count, but it does.'
-              : 'You win.';
-            return;
-          }
-
-          if (isDraw(board)){
-            gameOver = true;
-            scores.draw++;
-            updateScores();
-            statusText.textContent = 'Draw.';
-            return;
-          }
-
-          currentPlayer = 'X';
-          statusText.textContent = 'Your turn. The bot has committed an atrocity.';
-          return;
-        }
-      }
-
-      let move;
-      if (mode === 'baby'){
-        move = randomMove(board);
-      } else {
-        move = bestMove(board, 'O').index;
-      }
-
-      if (move !== undefined && move !== null){
-        board[move] = 'O';
-        finishMove(move);
-      }
-
-      waitingForBot = false;
-      renderBoard();
-    }
-
-    function getWinner(state){
-      for (const line of WIN_LINES){
-        const [a,b,c] = line;
-        if (state[a] && state[a] === state[b] && state[a] === state[c]){
-          return { winner: state[a], line };
-        }
-      }
-      return null;
-    }
-
-    function isDraw(state){
-      return state.every(cell => cell !== '') && !getWinner(state);
-    }
-
-    function highlightWinningCells(line){
-      const cells = boardEl.querySelectorAll('.cell');
-      line.forEach(index => {
-        cells[index].classList.add('win');
-      });
-    }
-
-    function emptyIndices(state){
-      return state.map((v,i) => v === '' ? i : null).filter(v => v !== null);
-    }
-
-    function randomMove(state){
-      const empties = emptyIndices(state);
-      if (!empties.length) return null;
-      return empties[Math.floor(Math.random() * empties.length)];
-    }
-
-    function bestMove(state, player){
-      const winnerData = getWinner(state);
-      if (winnerData){
-        if (winnerData.winner === 'O') return { score: 10 };
-        if (winnerData.winner === 'X') return { score: -10 };
-      }
-      if (isDraw(state)) return { score: 0 };
-
-      const empties = emptyIndices(state);
-      const moves = [];
-
-      for (const index of empties){
-        const move = { index };
-        state[index] = player;
-
-        if (player === 'O'){
-          move.score = bestMove(state, 'X').score;
-        } else {
-          move.score = bestMove(state, 'O').score;
-        }
-
-        state[index] = '';
-        moves.push(move);
-      }
-
-      let best;
-      if (player === 'O'){
-        let bestScore = -Infinity;
-        for (const move of moves){
-          if (move.score > bestScore){
-            bestScore = move.score;
-            best = move;
-          }
-        }
-      } else {
-        let bestScore = Infinity;
-        for (const move of moves){
-          if (move.score < bestScore){
-            bestScore = move.score;
-            best = move;
-          }
-        }
-      }
-
-      return best;
-    }
-
-    function getWinningMove(state, player){
-      const empties = emptyIndices(state);
-      for (const index of empties){
-        const clone = [...state];
-        clone[index] = player;
-        if (getWinner(clone)?.winner === player) return index;
-      }
-      return null;
-    }
-
-    function shouldDevilCheat(){
-      if (devilActionUsedThisRound) return false;
-      const humanWinningMove = getWinningMove(board, 'X');
-      const botWinningMove = getWinningMove(board, 'O');
-
-      const humanCount = board.filter(v => v === 'X').length;
-      const botCount = board.filter(v => v === 'O').length;
-
-      if (botWinningMove !== null) return false;
-
-      if (humanWinningMove !== null) return true;
-      if (humanCount >= 3 && botCount >= 2 && Math.random() < 0.6) return true;
-      if (board.filter(v => v === '').length <= 3 && Math.random() < 0.45) return true;
-
-      return false;
-    }
-
-    function flashCell(index){
-      const cell = boardEl.querySelector(`.cell[data-index="${index}"]`);
-      if (!cell) return;
-      cell.classList.remove('cheat-flash','erase-pop','shake');
-      void cell.offsetWidth;
-      cell.classList.add('cheat-flash');
-    }
-
-    function erasePop(index){
-      const cell = boardEl.querySelector(`.cell[data-index="${index}"]`);
-      if (!cell) return;
-      cell.classList.remove('erase-pop');
-      void cell.offsetWidth;
-      cell.classList.add('erase-pop');
-    }
-
-    function shakeCell(index){
-      const cell = boardEl.querySelector(`.cell[data-index="${index}"]`);
-      if (!cell) return;
-      cell.classList.remove('shake');
-      void cell.offsetWidth;
-      cell.classList.add('shake');
-    }
-
-    function boardGlitch(){
-      boardEl.classList.remove('glitch');
-      void boardEl.offsetWidth;
-      boardEl.classList.add('glitch');
-    }
-
-    function performDevilAction(){
-      const actions = [
-        devilEraseLastMove,
-        devilStealCenter,
-        devilTakeWinningMoveAndExtraMark,
-        devilConvertCorner,
-        devilMoveYourMark,
-        devilBlockThenOccupyAnother,
-        devilReviveOwnMark,
-        devilSwapOneOfYours,
-        devilPlaceOverThreat,
-        devilDeleteRandomX,
-        devilDoubleOccupy,
-        devilMirrorSabotage
-      ];
-
-      const available = actions.filter(fn => fn.possible());
-      if (!available.length) return false;
-
-      const action = available[Math.floor(Math.random() * available.length)];
-      devilActionUsedThisRound = true;
-      return action.run();
-    }
-
-    function devilEraseLastMove(){ }
-    devilEraseLastMove.possible = () => lastHumanMove !== null && board[lastHumanMove] === 'X';
-    devilEraseLastMove.run = () => {
-      erasePop(lastHumanMove);
-      setTimeout(() => {
-        board[lastHumanMove] = '';
-        renderBoard();
-      }, 140);
-      devilBanner.textContent = 'Devil action: “That move looked illegal actually.” Your last mark vanished.';
-      boardGlitch();
-
-      const empties = emptyIndices(board);
-      if (empties.length){
-        const move = getWinningMove(board, 'O') ?? randomMove(board);
-        if (move !== null){
-          board[move] = 'O';
-          flashCell(move);
-        }
-      }
-      return true;
-    };
-
-    function devilStealCenter(){ }
-    devilStealCenter.possible = () => board[4] === 'X';
-    devilStealCenter.run = () => {
-      board[4] = 'O';
-      flashCell(4);
-      devilBanner.textContent = 'Devil action: “Central authority has changed hands.” The center is no longer yours.';
-      boardGlitch();
-      return true;
-    };
-
-    function devilTakeWinningMoveAndExtraMark(){ }
-    devilTakeWinningMoveAndExtraMark.possible = () => emptyIndices(board).length >= 2;
-    devilTakeWinningMoveAndExtraMark.run = () => {
-      const move1 = getWinningMove(board, 'O') ?? randomMove(board);
-      if (move1 === null) return false;
-      board[move1] = 'O';
-      flashCell(move1);
-
-      const emptiesAfter = emptyIndices(board);
-      if (emptiesAfter.length){
-        const move2 = getWinningMove(board, 'O') ?? randomMove(board);
-        if (move2 !== null){
-          board[move2] = 'O';
-          flashCell(move2);
-        }
-      }
-
-      devilBanner.textContent = 'Devil action: “I felt like taking two turns.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilConvertCorner(){ }
-    devilConvertCorner.possible = () => [0,2,6,8].some(i => board[i] === 'X');
-    devilConvertCorner.run = () => {
-      const corners = [0,2,6,8].filter(i => board[i] === 'X');
-      const target = corners[Math.floor(Math.random() * corners.length)];
-      board[target] = 'O';
-      flashCell(target);
-      devilBanner.textContent = 'Devil action: “Nice corner. Mine now.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilMoveYourMark(){ }
-    devilMoveYourMark.possible = () => board.includes('X') && emptyIndices(board).length > 0;
-    devilMoveYourMark.run = () => {
-      const xCells = board.map((v,i) => v === 'X' ? i : null).filter(v => v !== null);
-      const from = xCells[Math.floor(Math.random() * xCells.length)];
-      const to = randomMove(board);
-      if (to === null) return false;
-      board[from] = '';
-      board[to] = 'X';
-      erasePop(from);
-      flashCell(to);
-      devilBanner.textContent = 'Devil action: “I slid one of your pieces somewhere less useful.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilBlockThenOccupyAnother(){ }
-    devilBlockThenOccupyAnother.possible = () => {
-      const block = getWinningMove(board, 'X');
-      return block !== null && emptyIndices(board).length >= 2;
-    };
-    devilBlockThenOccupyAnother.run = () => {
-      const block = getWinningMove(board, 'X');
-      if (block === null) return false;
-      board[block] = 'O';
-      flashCell(block);
-
-      const move2 = randomMove(board);
-      if (move2 !== null){
-        board[move2] = 'O';
-        flashCell(move2);
-      }
-
-      devilBanner.textContent = 'Devil action: “I blocked you and helped myself while I was at it.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilReviveOwnMark(){ }
-    devilReviveOwnMark.possible = () => {
-      const empties = emptyIndices(board);
-      const botCount = board.filter(v => v === 'O').length;
-      return empties.length > 0 && botCount >= 1;
-    };
-    devilReviveOwnMark.run = () => {
-      const move = getWinningMove(board, 'O') ?? randomMove(board);
-      if (move === null) return false;
-      board[move] = 'O';
-      flashCell(move);
-      devilBanner.textContent = 'Devil action: “I found an extra piece in my sleeve.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilSwapOneOfYours(){ }
-    devilSwapOneOfYours.possible = () => board.includes('X');
-    devilSwapOneOfYours.run = () => {
-      const xCells = board.map((v,i) => v === 'X' ? i : null).filter(v => v !== null);
-      const target = xCells[Math.floor(Math.random() * xCells.length)];
-      board[target] = 'O';
-      flashCell(target);
-      devilBanner.textContent = 'Devil action: “That X looked better as an O.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilPlaceOverThreat(){ }
-    devilPlaceOverThreat.possible = () => getWinningMove(board, 'X') !== null;
-    devilPlaceOverThreat.run = () => {
-      const target = getWinningMove(board, 'X');
-      if (target === null) return false;
-      board[target] = 'O';
-      flashCell(target);
-      devilBanner.textContent = 'Devil action: “I noticed your winning move and removed that possibility from reality.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilDeleteRandomX(){ }
-    devilDeleteRandomX.possible = () => board.includes('X');
-    devilDeleteRandomX.run = () => {
-      const xCells = board.map((v,i) => v === 'X' ? i : null).filter(v => v !== null);
-      const target = xCells[Math.floor(Math.random() * xCells.length)];
-      erasePop(target);
-      setTimeout(() => {
-        board[target] = '';
-        renderBoard();
-      }, 140);
-      devilBanner.textContent = 'Devil action: “One of your moves has been redacted.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilDoubleOccupy(){ }
-    devilDoubleOccupy.possible = () => emptyIndices(board).length >= 2;
-    devilDoubleOccupy.run = () => {
-      const first = randomMove(board);
-      if (first === null) return false;
-      board[first] = 'O';
-      flashCell(first);
-
-      const second = randomMove(board);
-      if (second !== null){
-        board[second] = 'O';
-        flashCell(second);
-      }
-
-      devilBanner.textContent = 'Devil action: “Turns are a social construct.”';
-      boardGlitch();
-      return true;
-    };
-
-    function devilMirrorSabotage(){ }
-    devilMirrorSabotage.possible = () => {
-      return board.some((v,i) => v === 'X' && board[8 - i] === '');
-    };
-    devilMirrorSabotage.run = () => {
-      const candidates = board
-        .map((v,i) => (v === 'X' && board[8 - i] === '') ? { from:i, to:8-i } : null)
-        .filter(Boolean);
-
-      if (!candidates.length) return false;
-
-      const pick = candidates[Math.floor(Math.random() * candidates.length)];
-      board[pick.to] = 'O';
-      flashCell(pick.to);
-      shakeCell(pick.from);
-      devilBanner.textContent = 'Devil action: “I mirrored your move into a worse universe.”';
-      boardGlitch();
-      return true;
-    };
-
-    modeButtons.forEach(btn => {
-      btn.addEventListener('click', () => setMode(btn.dataset.mode));
-    });
-
-    restartBtn.addEventListener('click', restartRound);
-    resetScoreBtn.addEventListener('click', resetScores);
-
-    initBoard();
-    updateScores();
-  </script>
 
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>

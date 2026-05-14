@@ -22,6 +22,7 @@ const PAGES = [
   { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',                name: 'Archives'          },
   { file: path.join(ROOT, 'archives', 'chess-forge-v1', 'index.html'),  pagePath: '/archives/chess-forge-v1',  name: 'Chess Forge (v1)'  },
   { file: path.join(ROOT, 'archives', 'atlas-runner-v1', 'index.html'), pagePath: '/archives/atlas-runner-v1', name: 'Atlas Runner (v1)' },
+  { file: path.join(ROOT, 'archives', 'tic-tac-toe-v1', 'index.html'), pagePath: '/archives/tic-tac-toe-v1', name: 'Tic Tac Toe (v1)' },
 ];
 const ENTRIES_OUT   = path.join(ROOT, 'data', 'entries.js');
 const COLLISION_OUT = path.join(ROOT, 'data', 'collisions.json');
