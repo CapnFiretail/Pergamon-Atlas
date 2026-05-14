@@ -69,33 +69,7 @@
       pointer-events: none;
     }
 
-    .ttt-hero .game-hero-corner {
-      display: block;
-      width: 34px;
-      height: 34px;
-      z-index: 3;
-      border-color: var(--hero-gold);
-      opacity: 0.95;
-    }
-
-    .ttt-hero .game-hero-corner::before {
-      content: "";
-      position: absolute;
-      width: 34px;
-      height: 34px;
-      border: 1px solid var(--hero-gold);
-      border-radius: 50%;
-    }
-
-    .ttt-hero .game-hero-corner.tl { top: 10px; left: 10px; border-width: 1px 0 0 1px; }
-    .ttt-hero .game-hero-corner.tr { top: 10px; right: 10px; border-width: 1px 1px 0 0; }
-    .ttt-hero .game-hero-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 1px 1px; }
-    .ttt-hero .game-hero-corner.br { bottom: 10px; right: 10px; border-width: 0 1px 1px 0; }
-
-    .ttt-hero .game-hero-corner.tl::before { top: -9px; left: -9px; }
-    .ttt-hero .game-hero-corner.tr::before { top: -9px; right: -9px; }
-    .ttt-hero .game-hero-corner.bl::before { bottom: -9px; left: -9px; }
-    .ttt-hero .game-hero-corner.br::before { bottom: -9px; right: -9px; }
+    .ttt-hero .game-hero-corner { display: none; }
 
     .ttt-hero > * {
       position: relative;
@@ -383,17 +357,6 @@
         padding: 14px 16px;
       }
 
-      .ttt-hero .game-hero-corner,
-      .ttt-hero .game-hero-corner::before {
-        width: 26px;
-        height: 26px;
-      }
-
-      .ttt-hero .game-hero-corner.tl::before { top: -7px; left: -7px; }
-      .ttt-hero .game-hero-corner.tr::before { top: -7px; right: -7px; }
-      .ttt-hero .game-hero-corner.bl::before { bottom: -7px; left: -7px; }
-      .ttt-hero .game-hero-corner.br::before { bottom: -7px; right: -7px; }
-
       .ttt-hero::after {
         inset: 5px;
         border-radius: 11px;
@@ -473,12 +436,6 @@
         min-height: 0;
         padding: 16px 14px;
         border-radius: 16px;
-      }
-
-      .ttt-hero .game-hero-corner,
-      .ttt-hero .game-hero-corner::before {
-        width: 24px;
-        height: 24px;
       }
 
       .ttt-hero .game-hero-emblem {
