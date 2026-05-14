@@ -82,7 +82,7 @@ body{
   background: #111;
   border: 2px solid #c9961e;
   border-radius: 14px;
-  padding: 22px 32px;
+  padding: 14px 28px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
@@ -90,7 +90,6 @@ body{
   margin-bottom: 24px;
   position: relative;
   box-shadow: 0 6px 28px rgba(0,0,0,0.55);
-  overflow: visible;
 }
 
 /* Corner accent brackets */
@@ -108,16 +107,15 @@ body{
 .game-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 1.5px 1.5px; }
 .game-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
 
-/* Icon — floats freely, pops above/below banner */
+/* Icon — contained within banner */
 .game-hero-icon {
-  width: 200px;
-  height: 200px;
-  margin: -30px 0;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding-right: 28px;
+  padding-right: 24px;
   border-right: 1px solid rgba(201,150,30,0.25);
 }
 
@@ -132,6 +130,16 @@ body{
 .game-hero-title {
   text-align: center;
   padding: 0 28px;
+}
+
+/* Gold diamond accent between separator and title */
+.game-hero-title::before {
+  content: "◆";
+  display: block;
+  color: #c9961e;
+  font-size: 9px;
+  opacity: 0.7;
+  margin-bottom: 4px;
 }
 
 .game-hero-title h2 {
