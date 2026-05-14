@@ -25,7 +25,8 @@
       "Bash(cp /tmp/sidebar.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\sidebar.css\")",
       "Bash(cp /tmp/footer.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\footer.css\")",
       "Bash(cp /tmp/main.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\main.css\")",
-      "Bash(cp /tmp/header.html \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\snippets\\\\header.html\")"
+      "Bash(cp /tmp/header.html \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\snippets\\\\header.html\")",
+      "Bash(copy \"C:\\\\Users\\\\cms12\\\\Downloads\\\\Pergamon-Games Icon.png\" \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\images\\\\game-icon.png\")"
     ]
   }
 }
