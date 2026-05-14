@@ -81,8 +81,8 @@ body{
 .game-hero {
   background: #111;
   border: 2px solid #c9961e;
-  border-radius: 14px;
-  padding: 20px 25px;
+  border-radius: 12px;
+  padding: 10px 18px;
   display: grid;
   grid-template-columns: auto auto 1fr auto;
   align-items: center;
@@ -102,23 +102,24 @@ body{
   opacity: 1;
   pointer-events: none;
 }
-.game-hero-corner.tl { top: 7px;    left: 7px;  border-width: 1.5px 0 0 1.5px; }
-.game-hero-corner.tr { top: 7px;    right: 7px; border-width: 1.5px 1.5px 0 0; }
-.game-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 1.5px 1.5px; }
-.game-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
+.game-hero-corner.tl { top: 6px;    left: 6px;  border-width: 1.5px 0 0 1.5px; }
+.game-hero-corner.tr { top: 6px;    right: 6px; border-width: 1.5px 1.5px 0 0; }
+.game-hero-corner.bl { bottom: 6px; left: 6px;  border-width: 0 0 1.5px 1.5px; }
+.game-hero-corner.br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
 
-/* Icon — equally spaced from left border and separator */
+/* Icon — fills banner height, equal spacing left and right */
 .game-hero-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding-right: 25px;
+  margin: -10px 0;
+  padding-right: 18px;
 }
 
 .game-hero-icon img {
-  width: 160px;
-  height: 160px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
   mix-blend-mode: screen;
   display: block;
@@ -131,9 +132,9 @@ body{
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 20px;
+  width: 18px;
   color: #c9961e;
-  font-size: 9px;
+  font-size: 8px;
   flex-shrink: 0;
 }
 
@@ -144,25 +145,25 @@ body{
   left: 50%;
   transform: translateX(-50%);
   width: 1px;
-  background: rgba(201,150,30,0.3);
+  background: rgba(201,150,30,0.35);
 }
 
-.game-hero-sep::before { top: 0;      height: calc(50% - 9px); }
-.game-hero-sep::after  { bottom: 0;   height: calc(50% - 9px); }
+.game-hero-sep::before { top: 0;    height: calc(50% - 8px); }
+.game-hero-sep::after  { bottom: 0; height: calc(50% - 8px); }
 
 /* Title + subtitle */
 .game-hero-title {
   text-align: center;
-  padding: 0 28px;
+  padding: 0 24px;
 }
 
 .game-hero-title h2 {
-  margin: 0 0 7px;
-  font-size: clamp(32px, 5vw, 54px);
+  margin: 0 0 5px;
+  font-size: clamp(28px, 4.5vw, 52px);
   color: white;
   font-family: Georgia, serif;
   font-weight: 700;
-  line-height: 1.05;
+  line-height: 1;
   letter-spacing: 0.01em;
 }
 
@@ -170,9 +171,9 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   color: #c9961e;
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-family: Georgia, serif;
@@ -180,10 +181,10 @@ body{
 
 .game-hero-sub-line {
   flex: 1;
-  max-width: 90px;
+  max-width: 80px;
   height: 1px;
   background: #c9961e;
-  opacity: 0.5;
+  opacity: 0.45;
   display: block;
 }
 
@@ -193,15 +194,15 @@ body{
   background: transparent;
   color: #c9961e;
   border-radius: 8px;
-  padding: 11px 20px;
+  padding: 9px 16px;
   font-family: Georgia, serif;
-  font-size: 13px;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  letter-spacing: 0.08em;
   cursor: pointer;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease;
 }
@@ -214,32 +215,34 @@ body{
 @media (max-width: 700px) {
   .game-hero {
     grid-template-columns: auto auto 1fr;
-    padding: 16px 20px;
-  }
-
-  .game-hero-icon img {
-    width: 80px;
-    height: 80px;
+    padding: 10px 16px;
   }
 
   .game-hero-icon {
-    padding-right: 16px;
+    margin: -10px 0;
+    padding-right: 14px;
+  }
+
+  .game-hero-icon img {
+    width: 72px;
+    height: 72px;
   }
 
   .game-hero-sep {
     width: 14px;
+    font-size: 7px;
   }
 
   .game-hero-title {
-    padding: 0 0 0 16px;
+    padding: 0 0 0 14px;
   }
 
   .game-hero-btn {
     grid-column: 1 / -1;
     justify-content: center;
-    margin-top: 14px;
+    margin-top: 12px;
     border-top: 1px solid rgba(201,150,30,0.2);
-    padding-top: 14px;
+    padding-top: 12px;
     border-radius: 0;
     border-left: none;
     border-right: none;
