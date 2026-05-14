@@ -36,30 +36,6 @@
       margin: 0 auto;
     }
 
-    .ph-hero {
-      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-      color: white;
-      border: 2px solid #000;
-      border-radius: 18px;
-      padding: 36px 32px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      margin-bottom: 24px;
-    }
-
-    .ph-hero h2 {
-      margin: 0 0 10px 0;
-      font-size: clamp(32px, 5vw, 52px);
-      line-height: 1.05;
-    }
-
-    .ph-hero p {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.7;
-      color: #e2e2e2;
-      max-width: 640px;
-    }
-
     .ph-card {
       background: white;
       border: 2px solid #000;
@@ -94,9 +70,7 @@
       color: #111;
     }
 
-    .ph-cell.dim {
-      color: #ccc;
-    }
+    .ph-cell.dim { color: #ccc; }
 
     .ph-label {
       font-size: 22px;
@@ -116,36 +90,10 @@
       margin-right: auto;
     }
 
-    .ph-archive-link {
-      display: inline-block;
-      border: 2px solid #8a611c;
-      background: #f8f3ea;
-      color: #6a4a10;
-      border-radius: 999px;
-      padding: 10px 22px;
-      font-family: Georgia, serif;
-      font-size: 15px;
-      text-decoration: none;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-
-    .ph-archive-link:hover {
-      background: #ead6ab;
-      color: #3e2a06;
-    }
-
     @media (max-width: 600px) {
-      .ph-hero {
-        padding: 24px 20px;
-      }
+      .ph-card { padding: 28px 20px; }
 
-      .ph-card {
-        padding: 28px 20px;
-      }
-
-      .ph-grid {
-        grid-template-columns: repeat(3, 64px);
-      }
+      .ph-grid { grid-template-columns: repeat(3, 64px); }
 
       .ph-cell {
         width: 64px;
@@ -166,10 +114,27 @@
     <main class="main-content">
       <div class="ph-shell">
 
-        <section class="ph-hero">
-          <h2>Tic Tac Toe</h2>
-          <p>A rework is in progress. The old version is preserved in the archives.</p>
-        </section>
+        <div class="game-hero">
+          <span class="game-hero-corner tl"></span>
+          <span class="game-hero-corner tr"></span>
+          <span class="game-hero-corner bl"></span>
+          <span class="game-hero-corner br"></span>
+
+          <div class="game-hero-icon">
+            <img src="/operation/images/game-icon.png" alt="">
+          </div>
+
+          <div class="game-hero-title">
+            <h2>Tic Tac Toe</h2>
+            <div class="game-hero-sub">
+              <span class="game-hero-sub-line"></span>
+              <span>Pergamon Games</span>
+              <span class="game-hero-sub-line"></span>
+            </div>
+          </div>
+
+          <a href="/archives/tic-tac-toe-v1/" class="game-hero-btn">&#9654; View Archive</a>
+        </div>
 
         <div class="ph-card">
           <div class="ph-grid">
@@ -188,8 +153,6 @@
           <p class="ph-sub">
             This game is being rebuilt. Check back later, or play the original version in the archives.
           </p>
-
-          <a href="/archives/tic-tac-toe-v1/" class="ph-archive-link">View Archived Version</a>
         </div>
 
       </div>
