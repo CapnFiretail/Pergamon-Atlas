@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Atlas Navigation",
+  "date": "2026-05-14",
+  "time": "00:00:00",
+  "chamber": "SY",
+  "seed": 0,
+  "code_seed": 1778368695,
+  "coords": { "x": 0, "y": 0, "z": 0 },
+  "address": "00000-00000-00000"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+
+  <title>Pergamon Atlas | Navigation</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+
+  <style>
+    .nav-shell {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────── */
+
+    .nav-hero {
+      background:
+        radial-gradient(circle at 12% 50%, rgba(184, 136, 26, 0.07), transparent 32%),
+        linear-gradient(135deg, #0e0e0e 0%, #141414 50%, #0b0b0b 100%);
+      border: 1.5px solid rgba(191, 125, 8, 0.9);
+      border-radius: 20px;
+      padding: 36px 48px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 0 1px rgba(184, 136, 26, 0.12),
+        inset 0 0 60px rgba(255, 255, 255, 0.018),
+        0 8px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    .nav-hero::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid rgba(191, 125, 8, 0.5);
+      border-radius: 14px;
+      background:
+        repeating-linear-gradient(105deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 5px);
+      pointer-events: none;
+    }
+
+    .nav-hero-inner {
+      position: relative;
+      z-index: 2;
+    }
+
+    .nav-hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(191, 125, 8, 0.8);
+      font-family: Georgia, serif;
+      margin-bottom: 14px;
+    }
+
+    .nav-hero h1 {
+      font-size: clamp(36px, 4vw, 58px);
+      color: #f5f5f5;
+      margin: 0 0 16px;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6), 0 0 20px rgba(255,255,255,0.1);
+      line-height: 1;
+    }
+
+    .nav-hero-sub {
+      font-size: 16px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0;
+    }
+
+    /* ── Panels ──────────────────────────────────────────────── */
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .nav-panel {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    }
+
+    .nav-panel-full {
+      grid-column: 1 / -1;
+    }
+
+    .nav-panel h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111;
+      margin: 0 0 6px;
+      font-family: Georgia, serif;
+    }
+
+    .nav-panel-desc {
+      font-size: 14px;
+      color: #666;
+      margin: 0 0 20px;
+      line-height: 1.6;
+    }
+
+    /* ── Code input ──────────────────────────────────────────── */
+
+    .nav-input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-input {
+      flex: 1;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.06em;
+      color: #111;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .nav-input:focus { border-color: #bf7d08; }
+
+    .nav-input::placeholder { color: #bbb; letter-spacing: 0.04em; }
+
+    .nav-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-family: Georgia, serif;
+      font-weight: 700;
+      cursor: pointer;
+      background: #111;
+      color: white;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover { background: #2a2a2a; }
+
+    /* ── Code anatomy ────────────────────────────────────────── */
+
+    .nav-anatomy {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .nav-anatomy-seg {
+      background: #f4f4f4;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: #111;
+    }
+
+    .nav-anatomy-seg.gold {
+      background: #fdf6e3;
+      border-color: rgba(191, 125, 8, 0.4);
+      color: #8a611c;
+    }
+
+    .nav-anatomy-dash {
+      color: #999;
+      font-size: 18px;
+    }
+
+    .nav-legend {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .nav-legend-item {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .nav-legend-item strong {
+      display: block;
+      color: #111;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    /* ── Links ───────────────────────────────────────────────── */
+
+    .nav-link-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-link-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #111;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .nav-link-item:hover {
+      border-color: #bf7d08;
+      background: #fdf9f0;
+    }
+
+    .nav-link-icon {
+      width: 38px;
+      height: 38px;
+      background: #f4f4f4;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #555;
+    }
+
+    .nav-link-text strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 2px;
+    }
+
+    .nav-link-text span {
+      font-size: 13px;
+      color: #888;
+    }
+
+    @media (max-width: 700px) {
+      .nav-hero { padding: 24px 20px; }
+      .nav-grid { grid-template-columns: 1fr; }
+      .nav-panel-full { grid-column: 1; }
+      .nav-legend { grid-template-columns: 1fr; }
+      .nav-input-row { flex-direction: column; }
+      .nav-anatomy { font-size: 16px; }
+      .nav-anatomy-seg { padding: 6px 10px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content">
+      <div class="nav-shell">
+
+        <div class="nav-hero">
+          <div class="nav-hero-inner">
+            <p class="nav-hero-eyebrow">System &mdash; Atlas</p>
+            <h1>Atlas Navigation</h1>
+            <p class="nav-hero-sub">Every game, tool, and artifact in Pergamon Atlas exists at a unique coordinate in the Atlas space and carries a permanent address code. Use this page to navigate by code, decode coordinates, or explore the system.</p>
+          </div>
+        </div>
+
+        <div class="nav-grid">
+
+          <div class="nav-panel nav-panel-full">
+            <h3>Navigate by Code</h3>
+            <p class="nav-panel-desc">Enter an artifact code (found on any game or tool page) to go directly to that location in the Atlas.</p>
+            <div class="nav-input-row">
+              <input class="nav-input" id="codeInput" type="text" placeholder="XXXXX-XXXXX-XXXXX" maxlength="17" spellcheck="false" autocomplete="off">
+              <button class="nav-btn" onclick="navigateByCode()">Go</button>
+            </div>
+            <p id="codeError" style="display:none;margin:10px 0 0;font-size:13px;color:#c00;"></p>
+          </div>
+
+          <div class="nav-panel">
+            <h3>Code Anatomy</h3>
+            <p class="nav-panel-desc">Each address is three 5-character base-32 segments encoding X, Y, and Z coordinates in Atlas space.</p>
+            <div class="nav-anatomy">
+              <span class="nav-anatomy-seg gold">XXXXX</span>
+              <span class="nav-anatomy-dash">—</span>
+              <span class="nav-anatomy-seg gold">XXXXX</span>
+              <span class="nav-anatomy-dash">—</span>
+              <span class="nav-anatomy-seg gold">XXXXX</span>
+            </div>
+            <div class="nav-legend">
+              <div class="nav-legend-item"><strong>Segment 1</strong>X-axis coordinate, scrambled with the Pergamon Constant</div>
+              <div class="nav-legend-item"><strong>Segment 2</strong>Y-axis coordinate, scrambled with the Pergamon Constant</div>
+              <div class="nav-legend-item"><strong>Segment 3</strong>Z-axis coordinate, scrambled with the Pergamon Constant</div>
+            </div>
+          </div>
+
+          <div class="nav-panel">
+            <h3>Related Tools</h3>
+            <p class="nav-panel-desc">Utilities for working with the Atlas system.</p>
+            <div class="nav-link-list">
+              <a href="/tools/atlas-decoder/" class="nav-link-item">
+                <span class="nav-link-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 4v16M6 8h2M6 12h2M6 16h2M12 8h6M12 12h4"/></svg>
+                </span>
+                <span class="nav-link-text">
+                  <strong>Atlas Decoder</strong>
+                  <span>Decode any address into raw XYZ coordinates</span>
+                </span>
+              </a>
+              <a href="/atlas-explorer/" class="nav-link-item">
+                <span class="nav-link-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                </span>
+                <span class="nav-link-text">
+                  <strong>Atlas Explorer</strong>
+                  <span>Browse and visualise the full Atlas space</span>
+                </span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+<script src="/operation/scripts/atlas.js"></script>
+<script>
+  loadSnippets('Navigation');
+
+  function navigateByCode() {
+    const raw = document.getElementById('codeInput').value.trim().toUpperCase();
+    const err = document.getElementById('codeError');
+    const pattern = /^[A-Z2-9]{5}-[A-Z2-9]{5}-[A-Z2-9]{5}$/;
+    if (!pattern.test(raw)) {
+      err.textContent = 'Enter a valid code in the format XXXXX-XXXXX-XXXXX.';
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+    window.location.href = '/tools/atlas-decoder/?code=' + encodeURIComponent(raw);
+  }
+
+  document.getElementById('codeInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') navigateByCode();
+  });
+</script>
+</body>
+</html>
