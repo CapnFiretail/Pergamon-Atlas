@@ -109,8 +109,8 @@ body{
 
 /* Icon — floats freely, no box */
 .game-hero-icon {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,6 +123,7 @@ body{
   width: 100%;
   height: 100%;
   object-fit: contain;
+  mix-blend-mode: screen;
 }
 
 /* Title + subtitle */
@@ -193,8 +194,8 @@ body{
   }
 
   .game-hero-icon {
-    width: 64px;
-    height: 64px;
+    width: 90px;
+    height: 90px;
     padding-right: 18px;
   }
 
