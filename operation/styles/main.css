@@ -95,17 +95,17 @@ body{
 /* Corner accent brackets */
 .game-hero-corner {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 32px;
+  height: 32px;
   border-color: #c9961e;
   border-style: solid;
   opacity: 1;
   pointer-events: none;
 }
-.game-hero-corner.tl { top: 7px;    left: 7px;  border-width: 1.5px 0 0 1.5px; }
-.game-hero-corner.tr { top: 7px;    right: 7px; border-width: 1.5px 1.5px 0 0; }
-.game-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 1.5px 1.5px; }
-.game-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
+.game-hero-corner.tl { top: 7px;    left: 7px;  border-width: 2.5px 0 0 2.5px; }
+.game-hero-corner.tr { top: 7px;    right: 7px; border-width: 2.5px 2.5px 0 0; }
+.game-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 2.5px 2.5px; }
+.game-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 2.5px 2.5px 0; }
 
 /* Icon — floats freely, no box */
 .game-hero-icon {
