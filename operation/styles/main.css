@@ -79,63 +79,68 @@ body{
 /* === Game / Tool Hero Banner ============================================= */
 
 .game-hero {
-  background: #111;
-  border: 2px solid #c9961e;
-  border-radius: 12px;
-  padding: 10px 18px;
+  background: #131313;
+  border: 1px solid rgba(184,136,26,0.75);
+  border-radius: 20px;
+  padding: 0 28px 0 0;
   display: grid;
   grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: 0;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   position: relative;
-  box-shadow: 0 6px 28px rgba(0,0,0,0.55);
+  min-height: 190px;
+  box-shadow: 0 8px 36px rgba(0,0,0,0.65);
 }
 
-/* Corner accent brackets */
+/* Inner corner ornament lines */
 .game-hero-corner {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  border-color: #c9961e;
+  width: 20px;
+  height: 20px;
+  border-color: rgba(184,136,26,0.7);
   border-style: solid;
-  opacity: 1;
   pointer-events: none;
 }
-.game-hero-corner.tl { top: 6px;    left: 6px;  border-width: 1.5px 0 0 1.5px; }
-.game-hero-corner.tr { top: 6px;    right: 6px; border-width: 1.5px 1.5px 0 0; }
-.game-hero-corner.bl { bottom: 6px; left: 6px;  border-width: 0 0 1.5px 1.5px; }
-.game-hero-corner.br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; }
+.game-hero-corner.tl { top: 8px;    left: 8px;  border-width: 1.5px 0 0 1.5px; }
+.game-hero-corner.tr { top: 8px;    right: 8px; border-width: 1.5px 1.5px 0 0; }
+.game-hero-corner.bl { bottom: 8px; left: 8px;  border-width: 0 0 1.5px 1.5px; }
+.game-hero-corner.br { bottom: 8px; right: 8px; border-width: 0 1.5px 1.5px 0; }
 
-/* Icon — fills banner height, equal spacing left and right */
-.game-hero-icon {
+/* Emblem box — square, dark bg, faint gold border, contains icon */
+.game-hero-emblem {
+  width: 150px;
+  height: 150px;
+  background: #0d0d0d;
+  border: 1px solid rgba(184,136,26,0.28);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin: -10px 0;
-  padding-right: 18px;
+  margin: 20px 0 20px 20px;
+  overflow: hidden;
 }
 
-.game-hero-icon img {
-  width: 110px;
-  height: 110px;
+.game-hero-emblem img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   mix-blend-mode: screen;
   display: block;
 }
 
-/* Separator: vertical line split by centered diamond */
+/* Vertical divider with centered spark */
 .game-hero-sep {
   align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 18px;
-  color: #c9961e;
-  font-size: 8px;
+  width: 40px;
   flex-shrink: 0;
+  color: rgba(184,136,26,0.85);
+  font-size: 10px;
 }
 
 .game-hero-sep::before,
@@ -145,22 +150,22 @@ body{
   left: 50%;
   transform: translateX(-50%);
   width: 1px;
-  background: rgba(201,150,30,0.35);
+  background: rgba(184,136,26,0.3);
 }
 
-.game-hero-sep::before { top: 0;    height: calc(50% - 8px); }
-.game-hero-sep::after  { bottom: 0; height: calc(50% - 8px); }
+.game-hero-sep::before { top: 20px;    height: calc(50% - 26px); }
+.game-hero-sep::after  { bottom: 20px; height: calc(50% - 26px); }
 
 /* Title + subtitle */
 .game-hero-title {
   text-align: center;
-  padding: 0 24px;
+  padding: 0 32px;
 }
 
 .game-hero-title h2 {
-  margin: 0 0 5px;
-  font-size: clamp(28px, 4.5vw, 52px);
-  color: white;
+  margin: 0 0 9px;
+  font-size: clamp(36px, 4.5vw, 58px);
+  color: #ffffff;
   font-family: Georgia, serif;
   font-weight: 700;
   line-height: 1;
@@ -171,82 +176,122 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  color: #c9961e;
+  gap: 12px;
+  color: rgba(184,136,26,0.9);
   font-size: 10px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   font-family: Georgia, serif;
 }
 
 .game-hero-sub-line {
   flex: 1;
-  max-width: 80px;
+  max-width: 100px;
   height: 1px;
-  background: #c9961e;
-  opacity: 0.45;
+  background: rgba(184,136,26,0.5);
   display: block;
 }
 
-/* Action button */
+/* Action button — gold outline, dark fill, hover glow */
 .game-hero-btn {
-  border: 1.5px solid #c9961e;
+  border: 1.5px solid rgba(184,136,26,0.8);
   background: transparent;
-  color: #c9961e;
+  color: rgba(184,136,26,0.9);
   border-radius: 8px;
-  padding: 9px 16px;
+  padding: 10px 18px;
   font-family: Georgia, serif;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .game-hero-btn:hover {
-  background: rgba(201,150,30,0.12);
-  color: #e8b832;
+  background: rgba(184,136,26,0.1);
+  color: #e8c050;
+  box-shadow: 0 0 18px rgba(184,136,26,0.22);
 }
 
-@media (max-width: 700px) {
+/* Tablet */
+@media (max-width: 820px) {
   .game-hero {
     grid-template-columns: auto auto 1fr;
-    padding: 10px 16px;
+    grid-template-rows: 1fr auto;
+    padding: 0 20px 0 0;
+    min-height: 0;
   }
 
-  .game-hero-icon {
-    margin: -10px 0;
-    padding-right: 14px;
-  }
-
-  .game-hero-icon img {
-    width: 72px;
-    height: 72px;
+  .game-hero-emblem {
+    width: 100px;
+    height: 100px;
+    margin: 16px 0 16px 16px;
+    grid-row: 1 / 3;
   }
 
   .game-hero-sep {
-    width: 14px;
-    font-size: 7px;
+    grid-row: 1 / 3;
+    width: 28px;
   }
 
+  .game-hero-sep::before { top: 16px;    height: calc(50% - 22px); }
+  .game-hero-sep::after  { bottom: 16px; height: calc(50% - 22px); }
+
   .game-hero-title {
-    padding: 0 0 0 14px;
+    grid-column: 3;
+    grid-row: 1;
+    padding: 20px 16px 8px;
   }
 
   .game-hero-btn {
-    grid-column: 1 / -1;
+    grid-column: 3;
+    grid-row: 2;
+    margin: 0 0 16px;
     justify-content: center;
-    margin-top: 12px;
-    border-top: 1px solid rgba(201,150,30,0.2);
-    padding-top: 12px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .game-hero {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    padding: 0 14px 0 0;
+  }
+
+  .game-hero-sep { display: none; }
+
+  .game-hero-emblem {
+    width: 72px;
+    height: 72px;
+    margin: 14px 0 14px 14px;
+    border-radius: 10px;
+    grid-row: 1 / 3;
+  }
+
+  .game-hero-title {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 14px 0 6px 14px;
+    text-align: left;
+  }
+
+  .game-hero-title h2 { font-size: clamp(26px, 7vw, 36px); }
+
+  .game-hero-btn {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0 0 14px;
+    padding: 10px 0 0 14px;
+    border: none;
+    border-top: 1px solid rgba(184,136,26,0.2);
     border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    justify-content: flex-start;
   }
 }
 
