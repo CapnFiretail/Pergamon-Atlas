@@ -82,9 +82,9 @@ body{
   background: #111;
   border: 2px solid #c9961e;
   border-radius: 14px;
-  padding: 14px 28px;
+  padding: 20px 25px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: 0;
   margin-bottom: 24px;
@@ -107,39 +107,53 @@ body{
 .game-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 1.5px 1.5px; }
 .game-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
 
-/* Icon — fills banner height, frame sits against border */
+/* Icon — equally spaced from left border and separator */
 .game-hero-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin: -14px 0 -14px -28px;
-  padding-right: 16px;
-  border-right: 1px solid rgba(201,150,30,0.25);
+  padding-right: 25px;
 }
 
 .game-hero-icon img {
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
   mix-blend-mode: screen;
   display: block;
 }
 
+/* Separator: vertical line split by centered diamond */
+.game-hero-sep {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 20px;
+  color: #c9961e;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.game-hero-sep::before,
+.game-hero-sep::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  background: rgba(201,150,30,0.3);
+}
+
+.game-hero-sep::before { top: 0;      height: calc(50% - 9px); }
+.game-hero-sep::after  { bottom: 0;   height: calc(50% - 9px); }
+
 /* Title + subtitle */
 .game-hero-title {
   text-align: center;
   padding: 0 28px;
-}
-
-/* Gold diamond accent between separator and title */
-.game-hero-title::before {
-  content: "◆";
-  display: block;
-  color: #c9961e;
-  font-size: 9px;
-  opacity: 0.7;
-  margin-bottom: 4px;
 }
 
 .game-hero-title h2 {
@@ -199,18 +213,25 @@ body{
 
 @media (max-width: 700px) {
   .game-hero {
-    grid-template-columns: auto 1fr;
-    padding: 18px 20px;
+    grid-template-columns: auto auto 1fr;
+    padding: 16px 20px;
+  }
+
+  .game-hero-icon img {
+    width: 80px;
+    height: 80px;
   }
 
   .game-hero-icon {
-    width: 90px;
-    height: 90px;
-    padding-right: 18px;
+    padding-right: 16px;
+  }
+
+  .game-hero-sep {
+    width: 14px;
   }
 
   .game-hero-title {
-    padding: 0 0 0 18px;
+    padding: 0 0 0 16px;
   }
 
   .game-hero-btn {
