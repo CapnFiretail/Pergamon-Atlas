@@ -63,6 +63,9 @@
     .nav-hero-inner {
       position: relative;
       z-index: 2;
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
     }
 
     .nav-hero-eyebrow {
@@ -87,8 +90,7 @@
       font-size: 16px;
       color: rgba(255,255,255,0.55);
       line-height: 1.7;
-      max-width: 560px;
-      margin: 0;
+      margin: 0 auto;
     }
 
     /* ── Panels ──────────────────────────────────────────────── */
@@ -377,7 +379,17 @@
       return;
     }
     err.style.display = 'none';
-    window.location.href = '/tools/atlas-decoder/?code=' + encodeURIComponent(raw);
+    const all = [
+      ...(window.atlasEntries?.tools || []),
+      ...(window.atlasEntries?.games || [])
+    ];
+    const match = all.find(e => e.address === raw);
+    if (match) {
+      window.location.href = match.path;
+    } else {
+      err.textContent = 'No entry found for “' + raw + '”. Double-check the code and try again.';
+      err.style.display = 'block';
+    }
   }
 
   document.getElementById('codeInput').addEventListener('keydown', function(e) {
