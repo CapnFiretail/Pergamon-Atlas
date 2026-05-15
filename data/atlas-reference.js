@@ -119,7 +119,7 @@
     if (chamber === 'GM') catalogs.push({ name: 'Games Catalog', path: '/games' });
 
     const section = buildSection({
-      name, artCode, typeName, address, neighbors, catalogs, PA, all
+      name, artCode, typeName, address, neighbors, catalogs, PA, all, allArchived
     });
 
     const footer = document.getElementById('footer-placeholder');
@@ -146,7 +146,7 @@
 
   // ── Section builder ───────────────────────────────────────────────────────
 
-  function buildSection({ name, artCode, typeName, address, neighbors, catalogs, PA, all }) {
+  function buildSection({ name, artCode, typeName, address, neighbors, catalogs, PA, all, allArchived }) {
     const el = document.createElement('section');
     el.id = 'atlas-reference';
 
