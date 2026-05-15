@@ -225,7 +225,12 @@
 
     function getAll() {
       if (typeof window.atlasEntries === 'undefined') return [];
-      return [...window.atlasEntries.tools, ...window.atlasEntries.games];
+      return [
+        ...(window.atlasEntries.tools    || []),
+        ...(window.atlasEntries.games    || []),
+        ...(window.atlasEntries.archived || []),
+        ...(window.atlasEntries.pages    || [])
+      ];
     }
 
     function showResult(id, html, type) {

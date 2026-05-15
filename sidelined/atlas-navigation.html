@@ -380,8 +380,10 @@
     }
     err.style.display = 'none';
     const all = [
-      ...(window.atlasEntries?.tools || []),
-      ...(window.atlasEntries?.games || [])
+      ...(window.atlasEntries?.tools    || []),
+      ...(window.atlasEntries?.games    || []),
+      ...(window.atlasEntries?.archived || []),
+      ...(window.atlasEntries?.pages    || [])
     ];
     const match = all.find(e => e.address === raw);
     if (match) {
