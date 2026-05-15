@@ -68,9 +68,10 @@ const atlasUpdates = [
     title: "The Forge Awakens",
     text: "New games were discovered; older forms were sealed away.",
     list: [
-      "Discovered Atlas Runner 2.0",
       "Discovered Chess Forge",
-      "Archived the original Atlas Runner prototype"
+      "Discovered a Password Generator",
+      "Discovered numerous other games and tools!",
+      "Archived the Atlas Runner prototype"
     ]
   },
   {
@@ -80,7 +81,7 @@ const atlasUpdates = [
     text: "Nothing in the Atlas is truly destroyed.",
     list: [
       "Opened the Archives system",
-      "Preserved deprecated artifacts for later discovery"
+      "Preserved deprecated artifacts for later discovery",
     ]
   },
   {
