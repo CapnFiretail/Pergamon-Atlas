@@ -271,7 +271,7 @@
       jumpErr.textContent = '';
       try {
         PA.addressToCoords(raw);
-        const target = all.find(e => e.address === raw);
+        const target = [...all, ...allArchived].find(e => e.address === raw);
         if (target) {
           window.location.href = target.path;
         } else {
