@@ -113,7 +113,8 @@ window.atlasEntries = {
     { path: "/archives/tic-tac-toe-v1", name: "Tic Tac Toe (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3551430766, code_seed: 1778368695, address: "744TB-6JJZV-GM2QF", coords: { x: 9975911, y: -7770690, z: 7208141 }, archived: true, archive_date: "2026-05-14" },
     { path: "/archives/connect-four-v1", name: "Connect Four (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 1842937651, code_seed: 1778368695, address: "QM46L-NRL4E-559R4", coords: { x: -6243890, y: 9102347, z: -4857612 }, archived: true, archive_date: "2026-05-15" },
     { path: "/archives/chess-forge-v2", name: "Chess Forge (v2)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 2967143820, code_seed: 1778368695, address: "VM992-SWQKG-F5YBA", coords: { x: 7384512, y: -12093847, z: 5621034 }, archived: true, archive_date: "2026-05-15" },
-    { path: "/archives/battleship-v1", name: "Battleship (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3712850492, code_seed: 1778368695, address: "C35AX-BE5WW-LALLY", coords: { x: -9847213, y: 6234587, z: 11023456 }, archived: true, archive_date: "2026-05-15" }
+    { path: "/archives/battleship-v1", name: "Battleship (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3712850492, code_seed: 1778368695, address: "C35AX-BE5WW-LALLY", coords: { x: -9847213, y: 6234587, z: 11023456 }, archived: true, archive_date: "2026-05-15" },
+    { path: "/archives/blackjack-v1", name: "Blackjack (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 4089234717, code_seed: 1778368695, address: "ZHWTV-YW6VV-Z9LCH", coords: { x: 3571829, y: -14205634, z: -8932017 }, archived: true, archive_date: "2026-05-15" }
   ]
 
 };
