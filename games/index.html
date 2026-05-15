@@ -11,24 +11,15 @@
   <link rel="stylesheet" href="/operation/styles/footer.css">
   <style>
     .page-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:28px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-    .page-hero h2{margin:0 0 10px;font-size:clamp(32px,5vw,48px);color:#e0b35a}
-    .page-hero p{margin:0;font-size:17px;line-height:1.7;color:#ededed;max-width:820px}
-    .section-title{font-size:22px;font-weight:700;color:#111;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #eee}
-    .games-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:28px}
-    .game-card{background:white;border:2px solid #000;border-radius:14px;padding:20px;text-decoration:none;color:inherit;box-shadow:0 4px 14px rgba(0,0,0,.08);transition:transform .18s,box-shadow .18s,border-color .18s;display:block}
+    .page-hero h2{margin:0;font-size:clamp(32px,5vw,48px);color:#e0b35a}
+    .games-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .game-card{background:white;border:2px solid #000;border-radius:14px;padding:18px 16px;text-decoration:none;color:inherit;box-shadow:0 4px 14px rgba(0,0,0,.08);transition:transform .18s,box-shadow .18s,border-color .18s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
     .game-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.12);border-color:#8a611c}
-    .game-icon{font-size:32px;margin-bottom:12px;line-height:1}
-    .game-card h3{margin:0 0 8px;font-size:20px;color:#111}
-    .game-card p{margin:0 0 12px;font-size:14px;line-height:1.6;color:#444}
-    .game-link{font-size:14px;font-weight:700;color:#8a611c}
-    .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
-    .tag-arcade{background:#fde8d8;color:#a0440c}
-    .tag-puzzle{background:#d8eafd;color:#0c4a9e}
-    .tag-classic{background:#d8fde8;color:#0c6b30}
-    .tag-brain{background:#f0d8fd;color:#6b0c9e}
-    .tag-reflex{background:#fdfbd8;color:#8a7a0c}
-    @media(max-width:1050px){.games-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:700px){.games-grid{grid-template-columns:1fr}}
+    .game-icon{font-size:34px;line-height:1}
+    .game-card h3{margin:0;font-size:17px;color:#111;font-weight:700}
+    @media(max-width:1050px){.games-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:700px){.games-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:400px){.games-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -38,280 +29,153 @@
     <main class="main-content">
       <div class="page-hero">
         <h2>Games</h2>
-        <p>A growing arcade of browser games — classics, brain teasers, reflexes, and more. No downloads, no accounts, just play.</p>
       </div>
 
-      <div class="section-title">Classic &amp; Board</div>
       <div class="games-grid">
         <a href="/games/tic-tac-toe" class="game-card">
           <div class="game-icon">❌</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Tic-Tac-Toe</h3>
-          <p>Play vs a friend or challenge the AI. First to three in a row wins.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/connect-four" class="game-card">
           <div class="game-icon">🔴</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Connect Four</h3>
-          <p>Drop discs to connect four in a row. 2-player or vs AI.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/chess-forge" class="game-card">
           <div class="game-icon">♟️</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Chess Forge</h3>
-          <p>Full chess with move validation, check detection, and game modes.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/battleship" class="game-card">
           <div class="game-icon">🚢</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Battleship</h3>
-          <p>Sink the enemy fleet before they sink yours. Smart AI hunt-and-destroy mode.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/blackjack" class="game-card">
           <div class="game-icon">🃏</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Blackjack</h3>
-          <p>Beat the dealer to 21 without going bust. Hit, stand, or double down.</p>
-          <span class="game-link">Play →</span>
         </a>
-      </div>
-
-      <div class="section-title">Arcade &amp; Action</div>
-      <div class="games-grid">
         <a href="/games/snake" class="game-card">
           <div class="game-icon">🐍</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Snake</h3>
-          <p>Eat food, grow longer, don't crash. Three speed levels.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/breakout" class="game-card">
           <div class="game-icon">🧱</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Breakout</h3>
-          <p>Smash all the bricks with your ball. Multiple levels.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/pong" class="game-card">
           <div class="game-icon">🏓</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Pong</h3>
-          <p>Classic paddle game — 1 player vs AI or local 2-player.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/whack-a-mole" class="game-card">
           <div class="game-icon">🐭</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Whack-a-Mole</h3>
-          <p>Smash the moles as they pop up. Easy, medium, and hard modes.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/atlas-runner" class="game-card">
           <div class="game-icon">🏃</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Atlas Runner</h3>
-          <p>A fast-paced reflex runner — dodge hazards and survive.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/2048" class="game-card">
           <div class="game-icon">🔢</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>2048</h3>
-          <p>Slide tiles to combine them and reach the 2048 tile.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/tetris" class="game-card">
           <div class="game-icon">🟦</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Tetris</h3>
-          <p>Stack falling tetrominoes and clear lines. Ghost piece, hard drop, and levels.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/maze" class="game-card">
           <div class="game-icon">🌀</div>
-          <div><span class="tag tag-arcade">Arcade</span></div>
           <h3>Maze</h3>
-          <p>Navigate a randomly generated maze to the exit. Easy, medium, and hard sizes.</p>
-          <span class="game-link">Play →</span>
         </a>
-      </div>
-
-      <div class="section-title">Word &amp; Puzzle</div>
-      <div class="games-grid">
         <a href="/games/wordle" class="game-card">
           <div class="game-icon">🟩</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Wordle</h3>
-          <p>Guess the 5-letter word in 6 tries. Green, yellow, grey hints.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/hangman" class="game-card">
           <div class="game-icon">✏️</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Hangman</h3>
-          <p>Guess the word letter by letter before the hangman is complete.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/word-scramble" class="game-card">
           <div class="game-icon">🔀</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Word Scramble</h3>
-          <p>Unscramble the jumbled word before the timer runs out.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/minesweeper" class="game-card">
           <div class="game-icon">💣</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Minesweeper</h3>
-          <p>Reveal safe cells and flag the mines. Three difficulty levels.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/trivia" class="game-card">
           <div class="game-icon">❓</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Trivia Quiz</h3>
-          <p>Science, History, Geography, Pop Culture — 10 questions per round.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/memory-match" class="game-card">
           <div class="game-icon">🃏</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Memory Match</h3>
-          <p>Flip cards to find matching pairs. 4×4, 5×4, or 6×4 grids.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/sudoku" class="game-card">
           <div class="game-icon">🔣</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Sudoku</h3>
-          <p>Fill the 9×9 grid so every row, column, and box has each digit 1–9.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/sliding-puzzle" class="game-card">
           <div class="game-icon">🧩</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Sliding Puzzle</h3>
-          <p>Slide tiles into order on a 4×4 grid. The classic 15-puzzle.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/lights-out" class="game-card">
           <div class="game-icon">💡</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Lights Out</h3>
-          <p>Toggle all lights off. Clicking a cell flips it and its neighbors.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/tower-of-hanoi" class="game-card">
           <div class="game-icon">🗼</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Tower of Hanoi</h3>
-          <p>Move the stack of disks to another peg using the fewest moves possible.</p>
-          <span class="game-link">Play →</span>
         </a>
-      </div>
-
-      <div class="section-title">Reflex &amp; Brain</div>
-      <div class="games-grid">
         <a href="/games/reaction-time" class="game-card">
           <div class="game-icon">⚡</div>
-          <div><span class="tag tag-reflex">Reflex</span></div>
           <h3>Reaction Time</h3>
-          <p>Click when the box turns green. How fast are your reflexes?</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/stroop-test" class="game-card">
           <div class="game-icon">🎨</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Stroop Test</h3>
-          <p>Click the ink color, not what the word says. Classic brain challenge.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/type-speed" class="game-card">
           <div class="game-icon">⌨️</div>
-          <div><span class="tag tag-reflex">Reflex</span></div>
           <h3>Type Speed Test</h3>
-          <p>Measure your words-per-minute and accuracy. 30s, 60s, 2min modes.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/simon-says" class="game-card">
           <div class="game-icon">🔵</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Simon Says</h3>
-          <p>Watch and repeat the color sequence. How long can you go?</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/number-memory" class="game-card">
           <div class="game-icon">🔢</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Number Memory</h3>
-          <p>Memorize an ever-growing number and type it back. Each round adds a digit.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/math-blitz" class="game-card">
           <div class="game-icon">➕</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Math Blitz</h3>
-          <p>Solve math problems against the clock. Easy, medium, and hard.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/typing-practice" class="game-card">
           <div class="game-icon">⌨️</div>
-          <div><span class="tag tag-reflex">Reflex</span></div>
           <h3>Typing Practice</h3>
-          <p>Improve accuracy and speed by typing classic passages. Live WPM tracking.</p>
-          <span class="game-link">Play →</span>
         </a>
-      </div>
-
-      <div class="section-title">Quick Games</div>
-      <div class="games-grid">
         <a href="/games/rock-paper-scissors" class="game-card">
           <div class="game-icon">🪨</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Rock Paper Scissors</h3>
-          <p>The timeless hand game against the computer. Track your win rate.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/higher-or-lower" class="game-card">
           <div class="game-icon">📊</div>
-          <div><span class="tag tag-classic">Classic</span></div>
           <h3>Higher or Lower</h3>
-          <p>Is the next number higher or lower? Build your streak.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/color-match" class="game-card">
           <div class="game-icon">🎨</div>
-          <div><span class="tag tag-brain">Brain</span></div>
           <h3>Color Match</h3>
-          <p>Match HEX codes to swatches or swatches to HEX. Train your color eye.</p>
-          <span class="game-link">Play →</span>
         </a>
         <a href="/games/flood-fill" class="game-card">
           <div class="game-icon">🌊</div>
-          <div><span class="tag tag-puzzle">Puzzle</span></div>
           <h3>Flood Fill</h3>
-          <p>Fill the entire grid with one color. Click a color to flood from the corner — 25 moves to win.</p>
-          <span class="game-link">Play →</span>
         </a>
       </div>
     </main>
   </div>
   <div id="footer-placeholder"></div>
-  
+
   <script src="/operation/scripts/atlas.js"></script>
   <script>
     loadSnippets('Games');
-    const _sysCode = window.atlasNavCodes && window.atlasNavCodes[window.location.pathname.replace(/\/$/, '') || '/'];
-    if (_sysCode) {
-      const _i = setInterval(() => {
-        const el = document.getElementById('system-code-display');
-        if (el) { el.textContent = _sysCode; clearInterval(_i); }
-      }, 50);
-    }
   </script>
 </body>
 </html>
