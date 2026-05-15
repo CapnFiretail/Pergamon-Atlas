@@ -110,7 +110,9 @@
     .ttt-hero .game-hero-sep::after { bottom: 28px; height: calc(50% - 40px); }
 
     .ttt-hero .game-hero-title {
-      padding: 0 38px 4px;
+      padding: 0 56px 4px;
+      overflow: hidden;
+      min-width: 0;
     }
 
     .ttt-hero .game-hero-title h2 {
@@ -164,7 +166,6 @@
       column-gap: 14px;
       padding: 10px 22px;
       position: relative;
-      z-index: 3;
       background: rgba(8, 8, 8, 0.26);
       box-shadow: inset 0 0 16px rgba(184, 136, 26, 0.04);
     }
@@ -294,7 +295,7 @@
       }
     }
 
-    @media (max-width: 1180px) {
+    @media (max-width: 1380px) {
       .ttt-hero {
         height: 188px;
         grid-template-columns: 160px 50px minmax(0, 1fr) 250px;
