@@ -1,5 +1,15 @@
 const atlasUpdates = [
   {
+    date: "May 14, 2026",
+    tag: "Archives",
+    title: "Tic-Tac-Bye",
+    text: "Tic-Tac-Toe has been Archived",
+    list: [
+      "Archived Tic Tac Toe",
+      "Updated Games Header"
+    ]
+  },
+  {
     date: "May 11, 2026",
     tag: "Maintenance",
     title: "Mortimer the Janitor Stops By",
