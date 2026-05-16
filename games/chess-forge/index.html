@@ -279,9 +279,7 @@
 
     .chess-sq.light { background: #f0d9b5; }
     .chess-sq.dark  { background: #b58863; }
-
-    .chess-sq .b { color: #1a1a1a; }
-    .chess-sq .w { color: #fff; text-shadow: 0 0 2px #000, 0 1px 4px rgba(0,0,0,0.7); }
+    .chess-sq.hl    { background: #cdd16e; }
 
     .ph-label {
       font-size: 22px;
@@ -476,22 +474,22 @@
 
         <div class="ph-card">
           <div class="chess-board">
-            <!-- Row 0 — black back rank -->
-            <div class="chess-sq dark"><span class="b">♜</span></div><div class="chess-sq light"><span class="b">♞</span></div><div class="chess-sq dark"><span class="b">♝</span></div><div class="chess-sq light"><span class="b">♛</span></div><div class="chess-sq dark"><span class="b">♚</span></div><div class="chess-sq light"><span class="b">♝</span></div><div class="chess-sq dark"><span class="b">♞</span></div><div class="chess-sq light"><span class="b">♜</span></div>
-            <!-- Row 1 — black pawns -->
-            <div class="chess-sq light"><span class="b">♟</span></div><div class="chess-sq dark"><span class="b">♟</span></div><div class="chess-sq light"><span class="b">♟</span></div><div class="chess-sq dark"><span class="b">♟</span></div><div class="chess-sq light"><span class="b">♟</span></div><div class="chess-sq dark"><span class="b">♟</span></div><div class="chess-sq light"><span class="b">♟</span></div><div class="chess-sq dark"><span class="b">♟</span></div>
-            <!-- Row 2 — empty -->
+            <!-- Row 0 -->
             <div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div>
-            <!-- Row 3 — empty -->
+            <!-- Row 1 -->
             <div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div>
-            <!-- Row 4 — empty -->
+            <!-- Row 2 -->
             <div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div>
-            <!-- Row 5 — empty -->
+            <!-- Row 3 — col 4 highlighted (light) -->
+            <div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light hl"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div>
+            <!-- Row 4 — col 4 highlighted (dark) -->
+            <div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark hl"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div>
+            <!-- Row 5 -->
             <div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div>
-            <!-- Row 6 — white pawns -->
-            <div class="chess-sq dark"><span class="w">♙</span></div><div class="chess-sq light"><span class="w">♙</span></div><div class="chess-sq dark"><span class="w">♙</span></div><div class="chess-sq light"><span class="w">♙</span></div><div class="chess-sq dark"><span class="w">♙</span></div><div class="chess-sq light"><span class="w">♙</span></div><div class="chess-sq dark"><span class="w">♙</span></div><div class="chess-sq light"><span class="w">♙</span></div>
-            <!-- Row 7 — white back rank -->
-            <div class="chess-sq light"><span class="w">♖</span></div><div class="chess-sq dark"><span class="w">♘</span></div><div class="chess-sq light"><span class="w">♗</span></div><div class="chess-sq dark"><span class="w">♕</span></div><div class="chess-sq light"><span class="w">♔</span></div><div class="chess-sq dark"><span class="w">♗</span></div><div class="chess-sq light"><span class="w">♘</span></div><div class="chess-sq dark"><span class="w">♖</span></div>
+            <!-- Row 6 -->
+            <div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div>
+            <!-- Row 7 -->
+            <div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div><div class="chess-sq light"></div><div class="chess-sq dark"></div>
           </div>
 
           <p class="ph-label">Coming Soon</p>

@@ -10,16 +10,85 @@
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
   <style>
-    .page-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:28px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-    .page-hero h2{margin:0;font-size:clamp(32px,5vw,48px);color:#e0b35a}
-    .games-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-    .game-card{background:white;border:2px solid #000;border-radius:14px;padding:18px 16px;text-decoration:none;color:inherit;box-shadow:0 4px 14px rgba(0,0,0,.08);transition:transform .18s,box-shadow .18s,border-color .18s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
-    .game-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.12);border-color:#8a611c}
-    .game-icon{font-size:34px;line-height:1}
-    .game-card h3{margin:0;font-size:17px;color:#111;font-weight:700}
-    @media(max-width:1050px){.games-grid{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:700px){.games-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:400px){.games-grid{grid-template-columns:1fr}}
+    .page-hero { background: linear-gradient(135deg,#111 0%,#1a1a1a 100%); color: white; border: 2px solid #8a611c; border-radius: 16px; padding: 28px; margin-bottom: 36px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+    .page-hero h2 { margin: 0; font-size: clamp(32px,5vw,48px); color: #e0b35a; }
+
+    .section-label { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #8a611c; margin: 0 0 16px; }
+    .section-label::after { content: ""; flex: 1; height: 1px; background: #e0d4c4; }
+    .section-gap { margin-top: 48px; }
+
+    /* ── Featured cards ── */
+    .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 0; }
+    .feat-card { display: flex; flex-direction: column; border: 2px solid #000; border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit; transition: transform .18s, box-shadow .18s, border-color .18s; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+    .feat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.14); border-color: #8a611c; }
+    .feat-graphic { background: #111; display: flex; align-items: center; justify-content: center; height: 160px; overflow: hidden; }
+    .feat-info { background: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .feat-name { margin: 0; font-size: 15px; font-weight: 700; color: #111; }
+    .feat-badge { background: #8a611c; color: #f0d39b; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
+
+    /* ── TTT mini ── */
+    .cat-ttt { display: grid; grid-template-columns: repeat(3, 40px); gap: 6px; background: #111; border-radius: 10px; padding: 8px; border: 2px solid #2a2a2a; }
+    .cat-ttt-cell { width: 40px; height: 40px; background: #f4f4f4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #111; }
+    .cat-ttt-cell.dim { color: #ccc; }
+
+    /* ── Connect Four mini ── */
+    .cat-cf { display: grid; grid-template-columns: repeat(7, 22px); gap: 4px; background: #1f6fab; border-radius: 8px; padding: 6px; }
+    .cat-cf-disc { width: 22px; height: 22px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+    .cat-cf-disc.r { background: #e63946; }
+    .cat-cf-disc.y { background: #f4d03f; }
+
+    /* ── Chess mini ── */
+    .cat-ch { display: inline-grid; grid-template-columns: repeat(8, 20px); gap: 0; border: 2px solid #1a1a1a; border-radius: 3px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+    .cat-ch-sq { width: 20px; height: 20px; }
+    .cat-ch-sq.light { background: #f0d9b5; }
+    .cat-ch-sq.dark  { background: #b58863; }
+    .cat-ch-sq.hl    { background: #cdd16e; }
+
+    /* ── Battleship mini ── */
+    .cat-bt { display: grid; grid-template-columns: repeat(10, 14px); gap: 2px; background: #13578a; border-radius: 8px; padding: 5px; }
+    .cat-bt-cell { width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.05); }
+    .cat-bt-cell.ship { background: #6b7280; }
+    .cat-bt-cell.hit  { background: #dc2626; }
+    .cat-bt-cell.miss { background: #5aa0cc; }
+
+    /* ── Blackjack mini ── */
+    .cat-bj { position: relative; width: 179px; height: 66px; }
+    .cat-bj-card { position: absolute; width: 44px; height: 66px; border-radius: 5px; border: 1.5px solid #ccc; background: white; box-shadow: 0 2px 6px rgba(0,0,0,.22); display: flex; flex-direction: column; justify-content: space-between; padding: 3px 4px; font-family: Georgia, serif; font-size: 11px; font-weight: 700; line-height: 1.2; box-sizing: border-box; }
+    .cat-bj-card.face-down { background: #1a3a6b; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 8px); border-color: #1a3a6b; }
+    .cat-bj-card.red   { color: #c0392b; }
+    .cat-bj-card.black { color: #111; }
+    .cat-bj-bot { transform: rotate(180deg); }
+
+    /* ── Snake mini ── */
+    .cat-sn { display: grid; grid-template-columns: repeat(12, 15px); gap: 2px; background: #111; border-radius: 8px; padding: 6px; border: 2px solid #2a2a2a; }
+    .cat-sn-cell { width: 15px; height: 15px; border-radius: 3px; background: #1e1e1e; }
+    .cat-sn-cell.body { background: #8a611c; }
+    .cat-sn-cell.head { background: #f0d39b; }
+    .cat-sn-cell.food { background: #e74c3c; border-radius: 50%; }
+
+    /* ── Breakout mini ── */
+    .cat-bk { display: inline-flex; flex-direction: column; background: #111; border: 2px solid #2a2a2a; border-radius: 8px; padding: 8px; }
+    .cat-bk-bricks { display: grid; grid-template-columns: repeat(8, 22px); gap: 3px; }
+    .cat-bk-brick { height: 10px; border-radius: 2px; }
+    .cat-bk-brick.r0   { background: #e74c3c; }
+    .cat-bk-brick.r1   { background: #e67e22; }
+    .cat-bk-brick.r2   { background: #f1c40f; }
+    .cat-bk-brick.r3   { background: #2ecc71; }
+    .cat-bk-brick.dead { background: transparent; }
+    .cat-bk-field { position: relative; width: 197px; height: 50px; margin-top: 6px; }
+    .cat-bk-ball   { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: white; box-shadow: 0 0 4px rgba(255,255,255,0.5); }
+    .cat-bk-paddle { position: absolute; height: 6px; border-radius: 3px; background: #f0d39b; bottom: 0; }
+
+    /* ── All Games grid ── */
+    .games-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .game-card { background: white; border: 2px solid #000; border-radius: 14px; padding: 18px 16px; text-decoration: none; color: inherit; box-shadow: 0 4px 14px rgba(0,0,0,.08); transition: transform .18s, box-shadow .18s, border-color .18s; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+    .game-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.12); border-color: #8a611c; }
+    .game-icon { font-size: 34px; line-height: 1; }
+    .game-card h3 { margin: 0; font-size: 17px; color: #111; font-weight: 700; }
+
+    @media(max-width:1050px) { .games-grid { grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:700px)  { .games-grid { grid-template-columns: repeat(2,1fr); } .featured-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:400px)  { .games-grid { grid-template-columns: 1fr; } .featured-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -27,155 +96,202 @@
   <div class="layout">
     <div id="sidebar-placeholder"></div>
     <main class="main-content">
+
       <div class="page-hero">
         <h2>Games</h2>
       </div>
 
-      <div class="games-grid">
-        <a href="/games/tic-tac-toe" class="game-card">
-          <div class="game-icon">❌</div>
-          <h3>Tic-Tac-Toe</h3>
+      <p class="section-label">Featured</p>
+      <div class="featured-grid">
+
+        <!-- Tic-Tac-Toe -->
+        <a href="/games/tic-tac-toe/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-ttt">
+              <div class="cat-ttt-cell">X</div><div class="cat-ttt-cell dim">O</div><div class="cat-ttt-cell">X</div>
+              <div class="cat-ttt-cell">O</div><div class="cat-ttt-cell">X</div><div class="cat-ttt-cell dim">O</div>
+              <div class="cat-ttt-cell dim"></div><div class="cat-ttt-cell dim"></div><div class="cat-ttt-cell dim"></div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Tic-Tac-Toe</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/connect-four" class="game-card">
-          <div class="game-icon">🔴</div>
-          <h3>Connect Four</h3>
+
+        <!-- Connect Four -->
+        <a href="/games/connect-four/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-cf">
+              <!-- Row 0 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+              <!-- Row 1 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+              <!-- Row 2 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+              <!-- Row 3 --><div class="cat-cf-disc"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+              <!-- Row 4 --><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+              <!-- Row 5 --><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc"></div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Connect Four</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/chess-forge" class="game-card">
-          <div class="game-icon">♟️</div>
-          <h3>Chess Forge</h3>
+
+        <!-- Chess Forge -->
+        <a href="/games/chess-forge/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-ch">
+              <!-- Row 0 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+              <!-- Row 1 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+              <!-- Row 2 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+              <!-- Row 3 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light hl"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+              <!-- Row 4 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark hl"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+              <!-- Row 5 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+              <!-- Row 6 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+              <!-- Row 7 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Chess Forge</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/battleship" class="game-card">
-          <div class="game-icon">🚢</div>
-          <h3>Battleship</h3>
+
+        <!-- Battleship -->
+        <a href="/games/battleship/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-bt">
+              <!-- Row 0 --><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship hit"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 1 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 2 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 3 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 4 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 5 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 6 --><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 7 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 8 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              <!-- Row 9 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Battleship</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/blackjack" class="game-card">
-          <div class="game-icon">🃏</div>
-          <h3>Blackjack</h3>
+
+        <!-- Blackjack -->
+        <a href="/games/blackjack/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-bj">
+              <div class="cat-bj-card face-down" style="left:0"></div>
+              <div class="cat-bj-card black" style="left:50px">
+                <span>7<br>♠</span>
+                <span class="cat-bj-bot">7<br>♠</span>
+              </div>
+              <div class="cat-bj-card red" style="left:107px">
+                <span>A<br>♥</span>
+                <span class="cat-bj-bot">A<br>♥</span>
+              </div>
+              <div class="cat-bj-card black" style="left:135px">
+                <span>K<br>♣</span>
+                <span class="cat-bj-bot">K<br>♣</span>
+              </div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Blackjack</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/snake" class="game-card">
-          <div class="game-icon">🐍</div>
-          <h3>Snake</h3>
+
+        <!-- Snake -->
+        <a href="/games/snake/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-sn">
+              <!-- Row 0 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 1 --><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 2 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 3 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 4 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 5 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell head"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 6 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell food"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              <!-- Row 7 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Snake</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/breakout" class="game-card">
-          <div class="game-icon">🧱</div>
-          <h3>Breakout</h3>
+
+        <!-- Breakout -->
+        <a href="/games/breakout/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="cat-bk">
+              <div class="cat-bk-bricks">
+                <!-- Row 0 (red) --><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div>
+                <!-- Row 1 (orange) --><div class="cat-bk-brick r1"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick r1"></div>
+                <!-- Row 2 (yellow) --><div class="cat-bk-brick r2"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r2"></div><div class="cat-bk-brick r2"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r2"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r2"></div>
+                <!-- Row 3 (green) --><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick dead"></div>
+              </div>
+              <div class="cat-bk-field">
+                <div class="cat-bk-ball" style="left:108px;top:8px"></div>
+                <div class="cat-bk-paddle" style="left:60px;width:50px"></div>
+              </div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Breakout</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
         </a>
-        <a href="/games/pong" class="game-card">
-          <div class="game-icon">🏓</div>
-          <h3>Pong</h3>
-        </a>
-        <a href="/games/whack-a-mole" class="game-card">
-          <div class="game-icon">🐭</div>
-          <h3>Whack-a-Mole</h3>
-        </a>
-        <a href="/games/atlas-runner" class="game-card">
-          <div class="game-icon">🏃</div>
-          <h3>Atlas Runner</h3>
-        </a>
-        <a href="/games/2048" class="game-card">
-          <div class="game-icon">🔢</div>
-          <h3>2048</h3>
-        </a>
-        <a href="/games/tetris" class="game-card">
-          <div class="game-icon">🟦</div>
-          <h3>Tetris</h3>
-        </a>
-        <a href="/games/maze" class="game-card">
-          <div class="game-icon">🌀</div>
-          <h3>Maze</h3>
-        </a>
-        <a href="/games/wordle" class="game-card">
-          <div class="game-icon">🟩</div>
-          <h3>Wordle</h3>
-        </a>
-        <a href="/games/hangman" class="game-card">
-          <div class="game-icon">✏️</div>
-          <h3>Hangman</h3>
-        </a>
-        <a href="/games/word-scramble" class="game-card">
-          <div class="game-icon">🔀</div>
-          <h3>Word Scramble</h3>
-        </a>
-        <a href="/games/minesweeper" class="game-card">
-          <div class="game-icon">💣</div>
-          <h3>Minesweeper</h3>
-        </a>
-        <a href="/games/trivia" class="game-card">
-          <div class="game-icon">❓</div>
-          <h3>Trivia Quiz</h3>
-        </a>
-        <a href="/games/memory-match" class="game-card">
-          <div class="game-icon">🃏</div>
-          <h3>Memory Match</h3>
-        </a>
-        <a href="/games/sudoku" class="game-card">
-          <div class="game-icon">🔣</div>
-          <h3>Sudoku</h3>
-        </a>
-        <a href="/games/sliding-puzzle" class="game-card">
-          <div class="game-icon">🧩</div>
-          <h3>Sliding Puzzle</h3>
-        </a>
-        <a href="/games/lights-out" class="game-card">
-          <div class="game-icon">💡</div>
-          <h3>Lights Out</h3>
-        </a>
-        <a href="/games/tower-of-hanoi" class="game-card">
-          <div class="game-icon">🗼</div>
-          <h3>Tower of Hanoi</h3>
-        </a>
-        <a href="/games/reaction-time" class="game-card">
-          <div class="game-icon">⚡</div>
-          <h3>Reaction Time</h3>
-        </a>
-        <a href="/games/stroop-test" class="game-card">
-          <div class="game-icon">🎨</div>
-          <h3>Stroop Test</h3>
-        </a>
-        <a href="/games/type-speed" class="game-card">
-          <div class="game-icon">⌨️</div>
-          <h3>Type Speed Test</h3>
-        </a>
-        <a href="/games/simon-says" class="game-card">
-          <div class="game-icon">🔵</div>
-          <h3>Simon Says</h3>
-        </a>
-        <a href="/games/number-memory" class="game-card">
-          <div class="game-icon">🔢</div>
-          <h3>Number Memory</h3>
-        </a>
-        <a href="/games/math-blitz" class="game-card">
-          <div class="game-icon">➕</div>
-          <h3>Math Blitz</h3>
-        </a>
-        <a href="/games/typing-practice" class="game-card">
-          <div class="game-icon">⌨️</div>
-          <h3>Typing Practice</h3>
-        </a>
-        <a href="/games/rock-paper-scissors" class="game-card">
-          <div class="game-icon">🪨</div>
-          <h3>Rock Paper Scissors</h3>
-        </a>
-        <a href="/games/higher-or-lower" class="game-card">
-          <div class="game-icon">📊</div>
-          <h3>Higher or Lower</h3>
-        </a>
-        <a href="/games/color-match" class="game-card">
-          <div class="game-icon">🎨</div>
-          <h3>Color Match</h3>
-        </a>
-        <a href="/games/flood-fill" class="game-card">
-          <div class="game-icon">🌊</div>
-          <h3>Flood Fill</h3>
-        </a>
+
       </div>
+
+      <div class="section-gap"></div>
+      <p class="section-label">All Games</p>
+      <div class="games-grid">
+        <a href="/games/tic-tac-toe/" class="game-card"><div class="game-icon">❌</div><h3>Tic-Tac-Toe</h3></a>
+        <a href="/games/connect-four/" class="game-card"><div class="game-icon">🔴</div><h3>Connect Four</h3></a>
+        <a href="/games/chess-forge/" class="game-card"><div class="game-icon">♟️</div><h3>Chess Forge</h3></a>
+        <a href="/games/battleship/" class="game-card"><div class="game-icon">🚢</div><h3>Battleship</h3></a>
+        <a href="/games/blackjack/" class="game-card"><div class="game-icon">🃏</div><h3>Blackjack</h3></a>
+        <a href="/games/snake/" class="game-card"><div class="game-icon">🐍</div><h3>Snake</h3></a>
+        <a href="/games/breakout/" class="game-card"><div class="game-icon">🧱</div><h3>Breakout</h3></a>
+        <a href="/games/pong/" class="game-card"><div class="game-icon">🏓</div><h3>Pong</h3></a>
+        <a href="/games/whack-a-mole/" class="game-card"><div class="game-icon">🐭</div><h3>Whack-a-Mole</h3></a>
+        <a href="/games/atlas-runner/" class="game-card"><div class="game-icon">🏃</div><h3>Atlas Runner</h3></a>
+        <a href="/games/2048/" class="game-card"><div class="game-icon">🔢</div><h3>2048</h3></a>
+        <a href="/games/tetris/" class="game-card"><div class="game-icon">🟦</div><h3>Tetris</h3></a>
+        <a href="/games/maze/" class="game-card"><div class="game-icon">🌀</div><h3>Maze</h3></a>
+        <a href="/games/wordle/" class="game-card"><div class="game-icon">🟩</div><h3>Wordle</h3></a>
+        <a href="/games/hangman/" class="game-card"><div class="game-icon">✏️</div><h3>Hangman</h3></a>
+        <a href="/games/word-scramble/" class="game-card"><div class="game-icon">🔀</div><h3>Word Scramble</h3></a>
+        <a href="/games/minesweeper/" class="game-card"><div class="game-icon">💣</div><h3>Minesweeper</h3></a>
+        <a href="/games/trivia/" class="game-card"><div class="game-icon">❓</div><h3>Trivia Quiz</h3></a>
+        <a href="/games/memory-match/" class="game-card"><div class="game-icon">🃏</div><h3>Memory Match</h3></a>
+        <a href="/games/sudoku/" class="game-card"><div class="game-icon">🔣</div><h3>Sudoku</h3></a>
+        <a href="/games/sliding-puzzle/" class="game-card"><div class="game-icon">🧩</div><h3>Sliding Puzzle</h3></a>
+        <a href="/games/lights-out/" class="game-card"><div class="game-icon">💡</div><h3>Lights Out</h3></a>
+        <a href="/games/tower-of-hanoi/" class="game-card"><div class="game-icon">🗼</div><h3>Tower of Hanoi</h3></a>
+        <a href="/games/reaction-time/" class="game-card"><div class="game-icon">⚡</div><h3>Reaction Time</h3></a>
+        <a href="/games/stroop-test/" class="game-card"><div class="game-icon">🎨</div><h3>Stroop Test</h3></a>
+        <a href="/games/type-speed/" class="game-card"><div class="game-icon">⌨️</div><h3>Type Speed Test</h3></a>
+        <a href="/games/simon-says/" class="game-card"><div class="game-icon">🔵</div><h3>Simon Says</h3></a>
+        <a href="/games/number-memory/" class="game-card"><div class="game-icon">🔢</div><h3>Number Memory</h3></a>
+        <a href="/games/math-blitz/" class="game-card"><div class="game-icon">➕</div><h3>Math Blitz</h3></a>
+        <a href="/games/typing-practice/" class="game-card"><div class="game-icon">⌨️</div><h3>Typing Practice</h3></a>
+        <a href="/games/rock-paper-scissors/" class="game-card"><div class="game-icon">🪨</div><h3>Rock Paper Scissors</h3></a>
+        <a href="/games/higher-or-lower/" class="game-card"><div class="game-icon">📊</div><h3>Higher or Lower</h3></a>
+        <a href="/games/color-match/" class="game-card"><div class="game-icon">🎨</div><h3>Color Match</h3></a>
+        <a href="/games/flood-fill/" class="game-card"><div class="game-icon">🌊</div><h3>Flood Fill</h3></a>
+      </div>
+
     </main>
   </div>
   <div id="footer-placeholder"></div>
 
   <script src="/operation/scripts/atlas.js"></script>
-  <script>
-    loadSnippets('Games');
-  </script>
+  <script>loadSnippets('Games');</script>
 </body>
 </html>
