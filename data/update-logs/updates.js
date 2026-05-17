@@ -1,5 +1,25 @@
 const atlasUpdates = [
   {
+    date: "May 17, 2026",
+    tag: "Lexicon",
+    title: "Discovered the Lexicon",
+    text: "Language flows here",
+    list: [
+      "Explore indexed definition pages"
+    ]
+  },
+  {
+    date: "May 15, 2026",
+    tag: "Catalogs",
+    title: "New Catalog System",
+    text: "Exploration is easier than before",
+    list: [
+      "Added the Catalogs",
+      "Archived 7 games",
+      "Updated Tools Header",
+    ]
+  },
+  {
     date: "May 14, 2026",
     tag: "Archives",
     title: "Tic-Tac-Bye",
