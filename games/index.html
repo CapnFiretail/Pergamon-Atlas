@@ -21,63 +21,76 @@
     .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 0; }
     .feat-card { display: flex; flex-direction: column; border: 2px solid #000; border-radius: 14px; overflow: hidden; text-decoration: none; color: inherit; transition: transform .18s, box-shadow .18s, border-color .18s; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
     .feat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.14); border-color: #8a611c; }
-    .feat-graphic { background: #111; display: flex; align-items: center; justify-content: center; height: 160px; overflow: hidden; }
+    .feat-graphic { background: #111; display: flex; align-items: center; justify-content: center; aspect-ratio: 1; overflow: hidden; }
+    .feat-preview-frame { width: 130px; height: 130px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .feat-info { background: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .feat-name { margin: 0; font-size: 15px; font-weight: 700; color: #111; }
     .feat-badge { background: #8a611c; color: #f0d39b; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
 
     /* ── TTT mini ── */
-    .cat-ttt { display: grid; grid-template-columns: repeat(3, 40px); gap: 6px; background: #111; border-radius: 10px; padding: 8px; border: 2px solid #2a2a2a; }
+    .cat-ttt { display: grid; grid-template-columns: repeat(3, 40px); gap: 6px; background: #111; border-radius: 10px; padding: 8px; border: 2px solid #2a2a2a; transform: scale(0.855); }
     .cat-ttt-cell { width: 40px; height: 40px; background: #f4f4f4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #111; }
     .cat-ttt-cell.dim { color: #ccc; }
 
     /* ── Connect Four mini ── */
-    .cat-cf { display: grid; grid-template-columns: repeat(7, 22px); gap: 4px; background: #1f6fab; border-radius: 8px; padding: 6px; }
+    .cat-cf { display: grid; grid-template-columns: repeat(7, 22px); gap: 4px; background: #1f6fab; border-radius: 8px; padding: 6px; transform: scale(0.684); }
     .cat-cf-disc { width: 22px; height: 22px; background: rgba(255,255,255,0.08); border-radius: 50%; }
     .cat-cf-disc.r { background: #e63946; }
     .cat-cf-disc.y { background: #f4d03f; }
 
     /* ── Chess mini ── */
-    .cat-ch { display: inline-grid; grid-template-columns: repeat(8, 20px); gap: 0; border: 2px solid #1a1a1a; border-radius: 3px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+    .cat-ch { display: inline-grid; grid-template-columns: repeat(8, 20px); gap: 0; border: 2px solid #1a1a1a; border-radius: 3px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.3); transform: scale(0.793); }
     .cat-ch-sq { width: 20px; height: 20px; }
     .cat-ch-sq.light { background: #f0d9b5; }
     .cat-ch-sq.dark  { background: #b58863; }
-    .cat-ch-sq.hl    { background: #cdd16e; }
 
     /* ── Battleship mini ── */
-    .cat-bt { display: grid; grid-template-columns: repeat(10, 14px); gap: 2px; background: #13578a; border-radius: 8px; padding: 5px; }
+    .cat-bt { display: grid; grid-template-columns: repeat(10, 14px); gap: 2px; background: #13578a; border-radius: 8px; padding: 5px; transform: scale(0.774); }
     .cat-bt-cell { width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.05); }
     .cat-bt-cell.ship { background: #6b7280; }
     .cat-bt-cell.hit  { background: #dc2626; }
     .cat-bt-cell.miss { background: #5aa0cc; }
 
-    /* ── Blackjack mini ── */
-    .cat-bj { position: relative; width: 179px; height: 66px; }
-    .cat-bj-card { position: absolute; width: 44px; height: 66px; border-radius: 5px; border: 1.5px solid #ccc; background: white; box-shadow: 0 2px 6px rgba(0,0,0,.22); display: flex; flex-direction: column; justify-content: space-between; padding: 3px 4px; font-family: Georgia, serif; font-size: 11px; font-weight: 700; line-height: 1.2; box-sizing: border-box; }
-    .cat-bj-card.face-down { background: #1a3a6b; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 8px); border-color: #1a3a6b; }
-    .cat-bj-card.red   { color: #c0392b; }
-    .cat-bj-card.black { color: #111; }
-    .cat-bj-bot { transform: rotate(180deg); }
+    /* ── Blackjack mini (3×2 card grid) ── */
+    .cat-bj2 { display: grid; grid-template-columns: repeat(3, 38px); gap: 5px; background: #1a1a1a; border-radius: 8px; padding: 4px; transform: scale(0.985); }
+    .cat-bj2-card { width: 38px; height: 56px; border-radius: 4px; border: 1px solid #ccc; background: white; box-shadow: 0 2px 5px rgba(0,0,0,.3); display: flex; flex-direction: column; justify-content: space-between; padding: 2px 3px; font-family: Georgia, serif; font-size: 10px; font-weight: 700; line-height: 1.2; box-sizing: border-box; }
+    .cat-bj2-card.fd { background: #1a3a6b; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 8px); border-color: #1a3a6b; }
+    .cat-bj2-card.r { color: #c0392b; }
+    .cat-bj2-card.b { color: #111; }
+    .cat-bj2-bot { transform: rotate(180deg); }
 
     /* ── Snake mini ── */
-    .cat-sn { display: grid; grid-template-columns: repeat(12, 15px); gap: 2px; background: #111; border-radius: 8px; padding: 6px; border: 2px solid #2a2a2a; }
+    .cat-sn { display: grid; grid-template-columns: repeat(12, 15px); gap: 2px; background: #111; border-radius: 8px; padding: 6px; border: 2px solid #2a2a2a; transform: scale(0.596); }
     .cat-sn-cell { width: 15px; height: 15px; border-radius: 3px; background: #1e1e1e; }
     .cat-sn-cell.body { background: #8a611c; }
     .cat-sn-cell.head { background: #f0d39b; }
     .cat-sn-cell.food { background: #e74c3c; border-radius: 50%; }
 
-    /* ── Breakout mini ── */
-    .cat-bk { display: inline-flex; flex-direction: column; background: #111; border: 2px solid #2a2a2a; border-radius: 8px; padding: 8px; }
-    .cat-bk-bricks { display: grid; grid-template-columns: repeat(8, 22px); gap: 3px; }
-    .cat-bk-brick { height: 10px; border-radius: 2px; }
-    .cat-bk-brick.r0   { background: #e74c3c; }
-    .cat-bk-brick.r1   { background: #e67e22; }
-    .cat-bk-brick.r2   { background: #f1c40f; }
-    .cat-bk-brick.r3   { background: #2ecc71; }
-    .cat-bk-brick.dead { background: transparent; }
-    .cat-bk-field { position: relative; width: 197px; height: 50px; margin-top: 6px; }
-    .cat-bk-ball   { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: white; box-shadow: 0 0 4px rgba(255,255,255,0.5); }
-    .cat-bk-paddle { position: absolute; height: 6px; border-radius: 3px; background: #f0d39b; bottom: 0; }
+    /* ── Breakout mini (5×6 brick grid) ── */
+    .cat-bk2 { display: inline-flex; flex-direction: column; background: #111; border: 2px solid #2a2a2a; border-radius: 8px; padding: 5px; }
+    .cat-bk2-bricks { display: grid; grid-template-columns: repeat(5, 20px); gap: 3px; }
+    .cat-bk2-brick { height: 9px; border-radius: 2px; }
+    .cat-bk2-brick.r0 { background: #e74c3c; }
+    .cat-bk2-brick.r1 { background: #e67e22; }
+    .cat-bk2-brick.r2 { background: #f1c40f; }
+    .cat-bk2-brick.r3 { background: #2ecc71; }
+    .cat-bk2-brick.r4 { background: #3498db; }
+    .cat-bk2-brick.r5 { background: #9b59b6; }
+    .cat-bk2-brick.dead { background: transparent; }
+    .cat-bk2-field { position: relative; width: 112px; height: 40px; margin-top: 5px; }
+    .cat-bk2-ball { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: white; box-shadow: 0 0 4px rgba(255,255,255,0.5); }
+    .cat-bk2-paddle { position: absolute; height: 6px; border-radius: 3px; background: #f0d39b; bottom: 0; }
+
+    /* ── Pong mini ── */
+    .cat-pong { position: relative; width: 130px; height: 110px; background: #111; border: 2px solid #2a2a2a; border-radius: 6px; overflow: hidden; box-sizing: border-box; }
+    .cat-pong-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.25) 0 6px, transparent 6px 12px); }
+    .cat-pong-paddle { position: absolute; width: 6px; height: 28px; background: #f0d39b; border-radius: 3px; }
+    .cat-pong-left  { left: 8px; top: 30px; }
+    .cat-pong-right { right: 8px; top: 52px; }
+    .cat-pong-ball { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; left: 62px; top: 48px; box-shadow: 0 0 6px rgba(255,255,255,0.6); }
+    .cat-pong-score { position: absolute; top: 6px; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.4); }
+    .cat-pong-score.left  { left: 38px; }
+    .cat-pong-score.right { right: 38px; }
 
     /* ── All Games grid ── */
     .games-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
@@ -107,10 +120,12 @@
         <!-- Tic-Tac-Toe -->
         <a href="/games/tic-tac-toe/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-ttt">
-              <div class="cat-ttt-cell">X</div><div class="cat-ttt-cell dim">O</div><div class="cat-ttt-cell">X</div>
-              <div class="cat-ttt-cell">O</div><div class="cat-ttt-cell">X</div><div class="cat-ttt-cell dim">O</div>
-              <div class="cat-ttt-cell dim"></div><div class="cat-ttt-cell dim"></div><div class="cat-ttt-cell dim"></div>
+            <div class="feat-preview-frame">
+              <div class="cat-ttt">
+                <div class="cat-ttt-cell">X</div><div class="cat-ttt-cell dim">O</div><div class="cat-ttt-cell">X</div>
+                <div class="cat-ttt-cell">O</div><div class="cat-ttt-cell">X</div><div class="cat-ttt-cell dim">O</div>
+                <div class="cat-ttt-cell dim"></div><div class="cat-ttt-cell dim"></div><div class="cat-ttt-cell dim"></div>
+              </div>
             </div>
           </div>
           <div class="feat-info">
@@ -122,13 +137,15 @@
         <!-- Connect Four -->
         <a href="/games/connect-four/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-cf">
-              <!-- Row 0 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
-              <!-- Row 1 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
-              <!-- Row 2 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
-              <!-- Row 3 --><div class="cat-cf-disc"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
-              <!-- Row 4 --><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
-              <!-- Row 5 --><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc"></div>
+            <div class="feat-preview-frame">
+              <div class="cat-cf">
+                <!-- Row 0 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+                <!-- Row 1 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+                <!-- Row 2 --><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+                <!-- Row 3 --><div class="cat-cf-disc"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+                <!-- Row 4 --><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div><div class="cat-cf-disc"></div>
+                <!-- Row 5 --><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc y"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc r"></div><div class="cat-cf-disc"></div>
+              </div>
             </div>
           </div>
           <div class="feat-info">
@@ -140,15 +157,17 @@
         <!-- Chess Forge -->
         <a href="/games/chess-forge/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-ch">
-              <!-- Row 0 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
-              <!-- Row 1 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
-              <!-- Row 2 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
-              <!-- Row 3 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light hl"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
-              <!-- Row 4 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark hl"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
-              <!-- Row 5 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
-              <!-- Row 6 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
-              <!-- Row 7 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+            <div class="feat-preview-frame">
+              <div class="cat-ch">
+                <!-- Row 0 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 1 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+                <!-- Row 2 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 3 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+                <!-- Row 4 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 5 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+                <!-- Row 6 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 7 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+              </div>
             </div>
           </div>
           <div class="feat-info">
@@ -160,17 +179,19 @@
         <!-- Battleship -->
         <a href="/games/battleship/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-bt">
-              <!-- Row 0 --><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship hit"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 1 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 2 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 3 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 4 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 5 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 6 --><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 7 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 8 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
-              <!-- Row 9 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+            <div class="feat-preview-frame">
+              <div class="cat-bt">
+                <!-- Row 0 --><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship hit"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 1 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 2 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 3 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 4 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 5 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 6 --><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 7 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell miss"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 8 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell ship"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+                <!-- Row 9 --><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div><div class="cat-bt-cell"></div>
+              </div>
             </div>
           </div>
           <div class="feat-info">
@@ -182,19 +203,16 @@
         <!-- Blackjack -->
         <a href="/games/blackjack/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-bj">
-              <div class="cat-bj-card face-down" style="left:0"></div>
-              <div class="cat-bj-card black" style="left:50px">
-                <span>7<br>♠</span>
-                <span class="cat-bj-bot">7<br>♠</span>
-              </div>
-              <div class="cat-bj-card red" style="left:107px">
-                <span>A<br>♥</span>
-                <span class="cat-bj-bot">A<br>♥</span>
-              </div>
-              <div class="cat-bj-card black" style="left:135px">
-                <span>K<br>♣</span>
-                <span class="cat-bj-bot">K<br>♣</span>
+            <div class="feat-preview-frame">
+              <div class="cat-bj2">
+                <!-- Row 1: player hand -->
+                <div class="cat-bj2-card b"><span>A<br>♠</span><span class="cat-bj2-bot">A<br>♠</span></div>
+                <div class="cat-bj2-card r"><span>K<br>♥</span><span class="cat-bj2-bot">K<br>♥</span></div>
+                <div class="cat-bj2-card r"><span>7<br>♦</span><span class="cat-bj2-bot">7<br>♦</span></div>
+                <!-- Row 2: dealer hand -->
+                <div class="cat-bj2-card fd"></div>
+                <div class="cat-bj2-card b"><span>Q<br>♣</span><span class="cat-bj2-bot">Q<br>♣</span></div>
+                <div class="cat-bj2-card fd"></div>
               </div>
             </div>
           </div>
@@ -207,15 +225,17 @@
         <!-- Snake -->
         <a href="/games/snake/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-sn">
-              <!-- Row 0 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 1 --><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 2 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 3 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 4 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 5 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell head"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 6 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell food"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
-              <!-- Row 7 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+            <div class="feat-preview-frame">
+              <div class="cat-sn">
+                <!-- Row 0 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 1 --><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 2 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 3 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 4 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 5 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell body"></div><div class="cat-sn-cell head"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 6 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell food"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+                <!-- Row 7 --><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div><div class="cat-sn-cell"></div>
+              </div>
             </div>
           </div>
           <div class="feat-info">
@@ -227,21 +247,45 @@
         <!-- Breakout -->
         <a href="/games/breakout/" class="feat-card">
           <div class="feat-graphic">
-            <div class="cat-bk">
-              <div class="cat-bk-bricks">
-                <!-- Row 0 (red) --><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div><div class="cat-bk-brick r0"></div>
-                <!-- Row 1 (orange) --><div class="cat-bk-brick r1"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r1"></div><div class="cat-bk-brick r1"></div>
-                <!-- Row 2 (yellow) --><div class="cat-bk-brick r2"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r2"></div><div class="cat-bk-brick r2"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r2"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r2"></div>
-                <!-- Row 3 (green) --><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick dead"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick r3"></div><div class="cat-bk-brick dead"></div>
-              </div>
-              <div class="cat-bk-field">
-                <div class="cat-bk-ball" style="left:108px;top:8px"></div>
-                <div class="cat-bk-paddle" style="left:60px;width:50px"></div>
+            <div class="feat-preview-frame">
+              <div class="cat-bk2">
+                <div class="cat-bk2-bricks">
+                  <!-- Row 0 (red) --><div class="cat-bk2-brick r0"></div><div class="cat-bk2-brick r0"></div><div class="cat-bk2-brick r0"></div><div class="cat-bk2-brick r0"></div><div class="cat-bk2-brick r0"></div>
+                  <!-- Row 1 (orange) --><div class="cat-bk2-brick r1"></div><div class="cat-bk2-brick r1"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick r1"></div><div class="cat-bk2-brick r1"></div>
+                  <!-- Row 2 (yellow) --><div class="cat-bk2-brick r2"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick r2"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick r2"></div>
+                  <!-- Row 3 (green) --><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick r3"></div><div class="cat-bk2-brick r3"></div><div class="cat-bk2-brick r3"></div><div class="cat-bk2-brick dead"></div>
+                  <!-- Row 4 (blue) --><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick r4"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick dead"></div>
+                  <!-- Row 5 (empty) --><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick dead"></div><div class="cat-bk2-brick dead"></div>
+                </div>
+                <div class="cat-bk2-field">
+                  <div class="cat-bk2-ball" style="left:60px;top:12px"></div>
+                  <div class="cat-bk2-paddle" style="left:36px;width:40px"></div>
+                </div>
               </div>
             </div>
           </div>
           <div class="feat-info">
             <h3 class="feat-name">Breakout</h3>
+            <span class="feat-badge">Coming Soon</span>
+          </div>
+        </a>
+
+        <!-- Pong -->
+        <a href="/games/pong/" class="feat-card">
+          <div class="feat-graphic">
+            <div class="feat-preview-frame">
+              <div class="cat-pong">
+                <div class="cat-pong-line"></div>
+                <div class="cat-pong-paddle cat-pong-left"></div>
+                <div class="cat-pong-paddle cat-pong-right"></div>
+                <div class="cat-pong-ball"></div>
+                <span class="cat-pong-score left">3</span>
+                <span class="cat-pong-score right">5</span>
+              </div>
+            </div>
+          </div>
+          <div class="feat-info">
+            <h3 class="feat-name">Pong</h3>
             <span class="feat-badge">Coming Soon</span>
           </div>
         </a>

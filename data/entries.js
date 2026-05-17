@@ -114,7 +114,8 @@ window.atlasEntries = {
     { path: "/archives/connect-four-v1", name: "Connect Four (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 1842937651, code_seed: 1778368695, address: "QM46L-NRL4E-559R4", coords: { x: -6243890, y: 9102347, z: -4857612 }, archived: true, archive_date: "2026-05-15" },
     { path: "/archives/chess-forge-v2", name: "Chess Forge (v2)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 2967143820, code_seed: 1778368695, address: "VM992-SWQKG-F5YBA", coords: { x: 7384512, y: -12093847, z: 5621034 }, archived: true, archive_date: "2026-05-15" },
     { path: "/archives/battleship-v1", name: "Battleship (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3712850492, code_seed: 1778368695, address: "C35AX-BE5WW-LALLY", coords: { x: -9847213, y: 6234587, z: 11023456 }, archived: true, archive_date: "2026-05-15" },
-    { path: "/archives/blackjack-v1", name: "Blackjack (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 4089234717, code_seed: 1778368695, address: "ZHWTV-YW6VV-Z9LCH", coords: { x: 3571829, y: -14205634, z: -8932017 }, archived: true, archive_date: "2026-05-15" }
+    { path: "/archives/blackjack-v1", name: "Blackjack (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 4089234717, code_seed: 1778368695, address: "ZHWTV-YW6VV-Z9LCH", coords: { x: 3571829, y: -14205634, z: -8932017 }, archived: true, archive_date: "2026-05-15" },
+    { path: "/archives/pong-v1", name: "Pong (v1)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 2172602886, code_seed: 1778368695, address: "PYSMA-CPCU5-U49UE", coords: { x: -6417624, y: 7062806, z: -14326962 }, archived: true, archive_date: "2026-05-17" }
   ]
 
 };
