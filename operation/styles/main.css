@@ -297,6 +297,83 @@ body{
 
 /* === end Game / Tool Hero Banner ========================================= */
 
+/* === Catalog Hero (games/index & tools/index) ============================ */
+.catalog-hero {
+  --hero-gold: #bf7d08;
+  --hero-gold-bright: #e2ad35;
+  grid-template-columns: minmax(0, 160px) minmax(0, 50px) minmax(0, 1fr) minmax(0, 240px);
+  padding: 0 24px 0 0;
+  background:
+    radial-gradient(circle at 18% 50%, rgba(184,136,26,0.06), transparent 29%),
+    linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
+  border: 1.5px solid rgba(191,125,8,0.95);
+  box-shadow:
+    inset 0 0 0 1px rgba(184,136,26,0.16),
+    inset 0 0 40px rgba(255,255,255,0.028),
+    0 8px 22px rgba(0,0,0,0.56);
+}
+
+.catalog-count {
+  align-self: center;
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid rgba(191,125,8,0.95);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 12px;
+  position: relative;
+  background: rgba(8,8,8,0.26);
+  box-shadow: inset 0 0 16px rgba(184,136,26,0.04);
+}
+
+.catalog-count::before, .catalog-count::after,
+.catalog-count-inner::before, .catalog-count-inner::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--hero-gold);
+  border-style: solid;
+  pointer-events: none;
+}
+.catalog-count::before       { top: 4px;    left: 4px;   border-width: 1px 0 0 1px; }
+.catalog-count::after        { top: 4px;    right: 4px;  border-width: 1px 1px 0 0; }
+.catalog-count-inner::before { bottom: 4px; left: 4px;   border-width: 0 0 1px 1px; }
+.catalog-count-inner::after  { bottom: 4px; right: 4px;  border-width: 0 1px 1px 0; }
+.catalog-count-inner { position: absolute; inset: 0; pointer-events: none; }
+
+.catalog-count-num {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f7f7f7;
+  font-family: Georgia, serif;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.5);
+}
+
+.catalog-count-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--hero-gold-bright);
+  font-family: Georgia, serif;
+}
+
+@media (max-width: 820px) {
+  .catalog-hero { grid-template-columns: auto auto 1fr; }
+  .catalog-count { display: none; }
+}
+
+@media (max-width: 500px) {
+  .catalog-hero { grid-template-columns: auto 1fr; }
+}
+/* === end Catalog Hero ==================================================== */
+
 /* --- catalog card icons (tools / games index) --- */
 .tool-icon,
 .game-icon{

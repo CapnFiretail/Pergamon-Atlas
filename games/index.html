@@ -10,8 +10,6 @@
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
   <style>
-    .page-hero { background: linear-gradient(135deg,#111 0%,#1a1a1a 100%); color: white; border: 2px solid #8a611c; border-radius: 16px; padding: 28px; margin-bottom: 36px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
-    .page-hero h2 { margin: 0; font-size: clamp(32px,5vw,48px); color: #e0b35a; }
 
     .section-label { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #8a611c; margin: 0 0 16px; }
     .section-label::after { content: ""; flex: 1; height: 1px; background: #e0d4c4; }
@@ -110,9 +108,29 @@
     <div id="sidebar-placeholder"></div>
     <main class="main-content">
 
-      <div class="page-hero">
-        <h2>Games</h2>
-      </div>
+      <section class="game-hero catalog-hero">
+        <span class="game-hero-corner tl"></span>
+        <span class="game-hero-corner tr"></span>
+        <span class="game-hero-corner bl"></span>
+        <span class="game-hero-corner br"></span>
+        <div class="game-hero-emblem">
+          <img src="/operation/images/game-icon-transparent.png" alt="">
+        </div>
+        <div class="game-hero-sep">&#10022;</div>
+        <div class="game-hero-title">
+          <h2>Games</h2>
+          <div class="game-hero-sub">
+            <span class="game-hero-sub-line"></span>
+            <span>Pergamon Catalogs</span>
+            <span class="game-hero-sub-line"></span>
+          </div>
+        </div>
+        <div class="catalog-count">
+          <span class="catalog-count-inner"></span>
+          <span class="catalog-count-num">34</span>
+          <span class="catalog-count-label">Games</span>
+        </div>
+      </section>
 
       <p class="section-label">Featured</p>
       <div class="featured-grid">

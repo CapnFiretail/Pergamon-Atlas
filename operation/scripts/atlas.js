@@ -42,6 +42,13 @@ function loadSnippets(pageName) {
         else if (href === '/suggestions' && path.startsWith('/suggestions')) link.classList.add('active');
       });
 
+      // Open catalog accordion when on /games or /tools
+      const catalog = document.getElementById('navCatalog');
+      if (catalog && (path.startsWith('/games') || path.startsWith('/tools'))) {
+        catalog.open = true;
+        catalog.classList.add('active');
+      }
+
       // Sidebar collapse toggle
       const sidebar = document.getElementById('mainSidebar');
       const toggleBtn = document.getElementById('sidebarToggle');
