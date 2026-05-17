@@ -1,0 +1,781 @@
+/* ===================================================
+   LEXICON — Shared styles for index and record pages
+=================================================== */
+
+/* ── Page Hero ─────────────────────────────────── */
+
+.lex-hero {
+  background: #111;
+  border: 1px solid rgba(184,136,26,0.6);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.lex-hero-corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(184,136,26,0.55);
+  border-style: solid;
+  pointer-events: none;
+}
+.lex-hero-corner.tl { top: 7px;    left: 7px;  border-width: 1.5px 0 0 1.5px; }
+.lex-hero-corner.tr { top: 7px;    right: 7px; border-width: 1.5px 1.5px 0 0; }
+.lex-hero-corner.bl { bottom: 7px; left: 7px;  border-width: 0 0 1.5px 1.5px; }
+.lex-hero-corner.br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
+
+.lex-hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(184,136,26,0.75);
+  font-family: Georgia, serif;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lex-hero-eyebrow::after {
+  content: "";
+  flex: 1;
+  max-width: 60px;
+  height: 1px;
+  background: rgba(184,136,26,0.4);
+}
+
+.lex-hero h2 {
+  margin: 0 0 8px;
+  font-size: clamp(30px, 4vw, 48px);
+  color: #fff;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.lex-hero p {
+  margin: 0;
+  color: rgba(255,255,255,0.55);
+  font-size: 15px;
+  font-family: Georgia, serif;
+  line-height: 1.6;
+}
+
+/* ── Search Bar ─────────────────────────────────── */
+
+.lex-search-wrap {
+  margin-bottom: 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 560px;
+}
+
+.lex-search-icon {
+  position: absolute;
+  left: 16px;
+  color: rgba(184,136,26,0.7);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.lex-search-input {
+  width: 100%;
+  background: #fff;
+  color: #111;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 13px 16px 13px 46px;
+  font-size: 16px;
+  font-family: Georgia, serif;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.lex-search-input::placeholder {
+  color: #aaa;
+}
+
+.lex-search-input:focus {
+  border-color: #8a611c;
+  box-shadow: 0 0 0 3px rgba(138,97,28,0.12);
+}
+
+/* ── Alphabet Bar ───────────────────────────────── */
+
+.lex-alpha-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.lex-alpha-btn {
+  background: white;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 9px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.lex-alpha-btn:hover {
+  background: #f5ede0;
+  border-color: #8a611c;
+  color: #6b4a14;
+}
+
+.lex-alpha-btn.active {
+  background: #8a611c;
+  border-color: #8a611c;
+  color: #f0d39b;
+}
+
+.lex-alpha-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── Word List ──────────────────────────────────── */
+
+.lex-word-list {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+}
+
+.lex-letter-section {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.lex-letter-section:last-child {
+  border-bottom: none;
+}
+
+.lex-letter-header {
+  background: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a611c;
+  font-family: Georgia, serif;
+}
+
+.lex-word-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 20px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.14s;
+  min-width: 0;
+}
+
+.lex-word-row:last-child {
+  border-bottom: none;
+}
+
+.lex-word-row:hover {
+  background: #fdf8f0;
+}
+
+.lex-word-row:hover .lex-row-word {
+  color: #6b4a14;
+}
+
+.lex-row-word {
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 120px;
+  transition: color 0.14s;
+}
+
+.lex-row-pos {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a611c;
+  flex-shrink: 0;
+  font-family: Georgia, serif;
+  padding-top: 1px;
+}
+
+.lex-row-def {
+  font-size: 14px;
+  color: #555;
+  font-family: Georgia, serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.lex-row-dot {
+  color: #ccc;
+  flex-shrink: 0;
+}
+
+/* ── No Results ─────────────────────────────────── */
+
+.lex-no-results {
+  padding: 40px 20px;
+  text-align: center;
+  color: #888;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  display: none;
+}
+
+/* ── Featured Section ───────────────────────────── */
+
+.lex-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.lex-feat-card {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 16px 18px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+.lex-feat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.11);
+  border-color: #8a611c;
+}
+
+.lex-feat-word {
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px;
+}
+
+.lex-feat-pos {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a611c;
+  font-family: Georgia, serif;
+  margin: 0 0 8px;
+}
+
+.lex-feat-snippet {
+  font-size: 13px;
+  color: #555;
+  font-family: Georgia, serif;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Random Entry Button ────────────────────────── */
+
+.lex-random-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid rgba(184,136,26,0.8);
+  background: transparent;
+  color: #8a611c;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  margin-bottom: 24px;
+}
+
+.lex-random-btn:hover {
+  background: rgba(184,136,26,0.08);
+  color: #6b4a14;
+  box-shadow: 0 0 12px rgba(184,136,26,0.15);
+}
+
+/* ══════════════════════════════════════════════════
+   RECORD PAGE STYLES
+══════════════════════════════════════════════════ */
+
+/* ── Word Hero ──────────────────────────────────── */
+
+.lex-word-hero {
+  background: #111;
+  border: 1px solid rgba(184,136,26,0.65);
+  border-radius: 20px;
+  padding: 32px 36px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 36px rgba(0,0,0,0.55);
+  position: relative;
+}
+
+.lex-word-hero h1 {
+  margin: 0 0 6px;
+  font-size: clamp(42px, 6vw, 72px);
+  color: #fff;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.lex-word-pronunciation {
+  font-size: 18px;
+  color: rgba(184,136,26,0.85);
+  font-family: Georgia, serif;
+  margin: 0 0 16px;
+  letter-spacing: 0.04em;
+}
+
+.lex-word-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lex-meta-chip {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: Georgia, serif;
+}
+
+.lex-meta-chip.pos {
+  background: rgba(184,136,26,0.18);
+  color: rgba(184,136,26,0.9);
+  border: 1px solid rgba(184,136,26,0.3);
+}
+
+.lex-meta-chip.cluster {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.lex-meta-chip.syllables {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.lex-address-row {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(184,136,26,0.18);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.lex-address-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(184,136,26,0.5);
+  font-family: Georgia, serif;
+}
+
+.lex-address-code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: rgba(184,136,26,0.8);
+  letter-spacing: 0.08em;
+}
+
+.lex-chamber-code {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-family: Georgia, serif;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 3px 7px;
+  border-radius: 3px;
+}
+
+/* ── Content Panels ─────────────────────────────── */
+
+.lex-panel {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 14px;
+  padding: 22px 26px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+.lex-panel-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a611c;
+  font-family: Georgia, serif;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lex-panel-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e8e0d4;
+}
+
+.lex-definition-text {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  line-height: 1.75;
+  color: #111;
+  margin: 0;
+}
+
+.lex-example-text {
+  font-family: Georgia, serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #444;
+  margin: 0;
+  font-style: italic;
+  padding-left: 16px;
+  border-left: 3px solid rgba(184,136,26,0.4);
+}
+
+/* ── Connection Tags ────────────────────────────── */
+
+.lex-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.lex-tag {
+  display: inline-block;
+  text-decoration: none;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.lex-tag.synonym {
+  background: #f0f8f0;
+  border: 1.5px solid #6aab6a;
+  color: #2d6e2d;
+}
+.lex-tag.synonym:hover {
+  background: #e0f2e0;
+  border-color: #4a8f4a;
+  color: #1e4e1e;
+}
+
+.lex-tag.antonym {
+  background: #fdf0f0;
+  border: 1.5px solid #cc7070;
+  color: #802020;
+}
+.lex-tag.antonym:hover {
+  background: #fbe0e0;
+  border-color: #aa5050;
+  color: #601818;
+}
+
+.lex-tag.related {
+  background: #f5ede0;
+  border: 1.5px solid #c49a50;
+  color: #6b4a14;
+}
+.lex-tag.related:hover {
+  background: #ede0cc;
+  border-color: #a07830;
+  color: #4e340d;
+}
+
+.lex-tag.empty {
+  background: #f5f5f5;
+  border: 1.5px solid #ddd;
+  color: #999;
+  font-weight: 400;
+  font-style: italic;
+  cursor: default;
+  font-size: 13px;
+}
+
+/* ── Connections Grid ───────────────────────────── */
+
+.lex-connections-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .lex-connections-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Navigation (Nearby) ────────────────────────── */
+
+.lex-nav {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  margin-bottom: 16px;
+}
+
+.lex-nav-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  min-height: 64px;
+}
+
+.lex-nav-prev,
+.lex-nav-next {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 16px 20px;
+  gap: 10px;
+  transition: background 0.15s;
+}
+
+.lex-nav-prev:hover,
+.lex-nav-next:hover {
+  background: #fdf8f0;
+}
+
+.lex-nav-next {
+  justify-content: flex-end;
+  text-align: right;
+  border-left: 1px solid #e8e8e8;
+}
+
+.lex-nav-divider {
+  width: 1px;
+  background: #e8e8e8;
+  align-self: stretch;
+}
+
+.lex-nav-dir {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a611c;
+  font-family: Georgia, serif;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.lex-nav-word {
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+  display: block;
+}
+
+.lex-nav-pos {
+  font-size: 11px;
+  color: #888;
+  font-family: Georgia, serif;
+  display: block;
+}
+
+.lex-nav-arrow {
+  color: #8a611c;
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Related in Cluster ─────────────────────────── */
+
+.lex-cluster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.lex-cluster-card {
+  background: #fafafa;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.lex-cluster-card:hover {
+  border-color: #8a611c;
+  background: #fdf8f0;
+}
+
+.lex-cluster-card-word {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.lex-cluster-card-pos {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #8a611c;
+  font-family: Georgia, serif;
+  display: block;
+}
+
+/* ── Not Found State ────────────────────────────── */
+
+.lex-not-found {
+  text-align: center;
+  padding: 60px 20px;
+  font-family: Georgia, serif;
+}
+
+.lex-not-found h2 {
+  color: #111;
+  margin: 0 0 12px;
+}
+
+.lex-not-found p {
+  color: #666;
+  margin: 0 0 24px;
+}
+
+/* ── Section label (reusing game pattern) ───────── */
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a611c;
+  margin: 0 0 14px;
+  font-family: Georgia, serif;
+}
+
+.section-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e0d4c4;
+}
+
+.section-gap {
+  margin-top: 40px;
+}
+
+/* ── Responsive ─────────────────────────────────── */
+
+@media (max-width: 700px) {
+  .lex-featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lex-word-row {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .lex-row-word {
+    min-width: 90px;
+    font-size: 15px;
+  }
+
+  .lex-row-def {
+    display: none;
+  }
+
+  .lex-word-hero {
+    padding: 22px 20px;
+  }
+
+  .lex-word-hero h1 {
+    font-size: clamp(36px, 10vw, 52px);
+  }
+
+  .lex-panel {
+    padding: 16px 18px;
+  }
+
+  .lex-nav-prev,
+  .lex-nav-next {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lex-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lex-alpha-bar {
+    gap: 3px;
+  }
+
+  .lex-alpha-btn {
+    padding: 4px 7px;
+    font-size: 12px;
+  }
+}

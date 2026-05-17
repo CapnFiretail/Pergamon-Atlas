@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | The Lexicon</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Lexicon — a catalog of language within Pergamon Atlas. Every word is an indexed entry with an Atlas address, semantic connections, and neighboring records.">
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "The Lexicon",
+  "date": "2026-05-17",
+  "time": "00:00:00",
+  "chamber": "PG",
+  "seed": 2345678901,
+  "code_seed": 1779177600,
+  "coords": { "x": 1234567, "y": -2345678, "z": 3456789 },
+  "address": "LEXIC-ON000-INDEX"
+}
+</script>
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <link rel="stylesheet" href="/operation/styles/lexicon.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+
+      <!-- Hero -->
+      <div class="lex-hero">
+        <div class="lex-hero-corner tl"></div>
+        <div class="lex-hero-corner tr"></div>
+        <div class="lex-hero-corner bl"></div>
+        <div class="lex-hero-corner br"></div>
+        <p class="lex-hero-eyebrow">Pergamon Atlas — Catalog of Language</p>
+        <h2>The Lexicon</h2>
+        <p>An indexed registry of the English language. Each entry is a cataloged record — carrying an Atlas address, semantic classification, and connections to neighboring words. Browse alphabetically, search by word, or follow the relationships between meanings.</p>
+      </div>
+
+      <!-- Search -->
+      <div class="lex-search-wrap">
+        <span class="lex-search-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </span>
+        <input
+          type="text"
+          class="lex-search-input"
+          id="lexSearch"
+          placeholder="Search the Lexicon..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <!-- Random Entry -->
+      <button class="lex-random-btn" id="randomEntryBtn" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        Random Entry
+      </button>
+
+      <!-- Featured -->
+      <p class="section-label">Featured Records</p>
+      <div class="lex-featured-grid" id="featuredGrid"></div>
+
+      <!-- Alphabet bar -->
+      <div class="section-gap"></div>
+      <p class="section-label">Browse by Letter</p>
+      <div class="lex-alpha-bar" id="alphaBar"></div>
+
+      <!-- Word list -->
+      <div class="lex-word-list" id="wordList"></div>
+      <div class="lex-no-results" id="noResults">No records found for that search.</div>
+
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+
+  <script src="/operation/scripts/atlas.js"></script>
+  <script src="/data/lexicon.js"></script>
+  <script>
+    loadSnippets('The Lexicon');
+
+    const FEATURED_WORDS = ['ocean', 'fire', 'time', 'archive', 'word', 'silence'];
+
+    const entries = window.lexiconData.entries;
+    const sorted  = [...entries].sort((a, b) => a.word.localeCompare(b.word));
+
+    // ── Featured grid ──────────────────────────────
+    const fg = document.getElementById('featuredGrid');
+    FEATURED_WORDS.forEach(w => {
+      const e = entries.find(x => x.word === w);
+      if (!e) return;
+      const card = document.createElement('a');
+      card.href = '/lexicon/record.html?word=' + encodeURIComponent(e.word);
+      card.className = 'lex-feat-card';
+      card.innerHTML = `
+        <p class="lex-feat-word">${e.word}</p>
+        <p class="lex-feat-pos">${e.pos}</p>
+        <p class="lex-feat-snippet">${e.definition}</p>
+      `;
+      fg.appendChild(card);
+    });
+
+    // ── Alphabet bar ───────────────────────────────
+    const letters = [...new Set(sorted.map(e => e.word[0].toUpperCase()))];
+    const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const alphaBar = document.getElementById('alphaBar');
+
+    allLetters.forEach(L => {
+      const btn = document.createElement('button');
+      btn.className = 'lex-alpha-btn';
+      btn.textContent = L;
+      if (!letters.includes(L)) {
+        btn.disabled = true;
+      } else {
+        btn.addEventListener('click', () => {
+          document.getElementById('lexSearch').value = '';
+          renderList(sorted);
+          const section = document.getElementById('section-' + L);
+          if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.querySelectorAll('.lex-alpha-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      }
+      alphaBar.appendChild(btn);
+    });
+
+    // ── Word list ──────────────────────────────────
+    const wordList = document.getElementById('wordList');
+    const noResults = document.getElementById('noResults');
+
+    function truncateDef(def, max = 90) {
+      return def.length > max ? def.slice(0, max).trimEnd() + '…' : def;
+    }
+
+    function renderList(items) {
+      wordList.innerHTML = '';
+      noResults.style.display = 'none';
+
+      if (items.length === 0) {
+        wordList.style.display = 'none';
+        noResults.style.display = 'block';
+        return;
+      }
+
+      wordList.style.display = 'block';
+
+      const groups = {};
+      items.forEach(e => {
+        const L = e.word[0].toUpperCase();
+        if (!groups[L]) groups[L] = [];
+        groups[L].push(e);
+      });
+
+      Object.keys(groups).sort().forEach(L => {
+        const section = document.createElement('div');
+        section.className = 'lex-letter-section';
+        section.id = 'section-' + L;
+
+        const header = document.createElement('div');
+        header.className = 'lex-letter-header';
+        header.textContent = L;
+        section.appendChild(header);
+
+        groups[L].forEach(e => {
+          const row = document.createElement('a');
+          row.href = '/lexicon/record.html?word=' + encodeURIComponent(e.word);
+          row.className = 'lex-word-row';
+          row.innerHTML = `
+            <span class="lex-row-word">${e.word}</span>
+            <span class="lex-row-pos">${e.pos}</span>
+            <span class="lex-row-dot">·</span>
+            <span class="lex-row-def">${truncateDef(e.definition)}</span>
+          `;
+          section.appendChild(row);
+        });
+
+        wordList.appendChild(section);
+      });
+    }
+
+    renderList(sorted);
+
+    // ── Search ─────────────────────────────────────
+    const searchInput = document.getElementById('lexSearch');
+
+    function doSearch(q) {
+      q = q.trim().toLowerCase();
+      document.querySelectorAll('.lex-alpha-btn').forEach(b => b.classList.remove('active'));
+
+      if (!q) {
+        renderList(sorted);
+        return;
+      }
+
+      const filtered = sorted.filter(e =>
+        e.word.toLowerCase().includes(q) ||
+        e.definition.toLowerCase().includes(q)
+      );
+      renderList(filtered);
+    }
+
+    searchInput.addEventListener('input', () => doSearch(searchInput.value));
+
+    searchInput.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const q = searchInput.value.trim().toLowerCase();
+      if (!q) return;
+      const exact = entries.find(x => x.word.toLowerCase() === q);
+      if (exact) {
+        window.location.href = '/lexicon/record.html?word=' + encodeURIComponent(exact.word);
+      }
+    });
+
+    // ── Random entry ───────────────────────────────
+    document.getElementById('randomEntryBtn').addEventListener('click', () => {
+      const e = entries[Math.floor(Math.random() * entries.length)];
+      window.location.href = '/lexicon/record.html?word=' + encodeURIComponent(e.word);
+    });
+  </script>
+</body>
+</html>
