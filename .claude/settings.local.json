@@ -26,7 +26,20 @@
       "Bash(cp /tmp/footer.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\footer.css\")",
       "Bash(cp /tmp/main.css \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\styles\\\\main.css\")",
       "Bash(cp /tmp/header.html \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\snippets\\\\header.html\")",
-      "Bash(copy \"C:\\\\Users\\\\cms12\\\\Downloads\\\\Pergamon-Games Icon.png\" \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\images\\\\game-icon.png\")"
+      "Bash(copy \"C:\\\\Users\\\\cms12\\\\Downloads\\\\Pergamon-Games Icon.png\" \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\\\\operation\\\\images\\\\game-icon.png\")",
+      "Bash(Remove-Item *)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "PowerShell(python -m pip install Pillow -q 2>&1 | Select-Object -Last 3)",
+      "Bash(npm install *)",
+      "Bash(cp \"/c/Users/cms12/Downloads/tool image.png\" \"/tmp/toolimage.png\")",
+      "Read(//tmp/**)",
+      "Bash(cd C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\cms12\\\\OneDrive\\\\Desktop\\\\atlas_code\\\\Pergamon-Atlas\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
     ]
   }
 }
