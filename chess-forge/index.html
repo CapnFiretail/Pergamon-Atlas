@@ -111,17 +111,6 @@
     .cf-artifact.muted::before, .cf-artifact.muted::after,
     .cf-artifact.muted .cf-artifact-inner::before, .cf-artifact.muted .cf-artifact-inner::after { border-color: rgba(255,255,255,0.1); }
 
-    /* Side-by-side app cards */
-    .cf-pair {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;
-    }
-    .cf-pair .cf-module { margin-bottom: 0; grid-template-columns: minmax(0, 140px) 1fr; }
-    .cf-pair .cf-board-area { padding: 12px; }
-    .cf-pair .cf-board { grid-template-columns: repeat(8, 14px); grid-template-rows: repeat(8, 14px); }
-    .cf-pair .cf-sq { width: 14px; height: 14px; }
-    .cf-pair .cf-artifact { display: none; }
-    @media (max-width: 900px) { .cf-pair { grid-template-columns: 1fr; } }
-    @media (max-width: 700px) { .cf-pair .cf-module { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -158,49 +147,28 @@
         </div>
       </section>
 
-      <!-- Apps -->
-      <p class="section-label" style="margin-top:28px">Play &amp; Analyze</p>
+      <!-- Game -->
+      <p class="section-label" style="margin-top:28px">Game</p>
 
-      <div class="cf-pair">
-        <div class="cf-module soon">
-          <div class="cf-board-area"><div class="cf-board" id="bGame"></div></div>
-          <div class="cf-mod-body">
-            <span class="cf-mod-tag">Game</span>
-            <h3 class="cf-mod-title">Chess</h3>
-            <p class="cf-mod-desc">A fully playable chess engine built from scratch. Challenge the AI and refine your game.</p>
-            <div class="cf-mod-foot"><span class="cf-badge muted">Coming Soon</span></div>
-          </div>
-          <div class="cf-artifact muted">
-            <span class="cf-artifact-inner"></span>
-            <svg class="cf-artifact-icon" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="cf-artifact-label">Artifact Code</span>
-            <span class="cf-artifact-code">C443248D-CFCHX</span>
-          </div>
+      <a class="cf-module live" href="/chess-forge/chess/">
+        <div class="cf-board-area"><div class="cf-board" id="bGame"></div></div>
+        <div class="cf-mod-body">
+          <span class="cf-mod-tag">Game</span>
+          <h3 class="cf-mod-title">Chess</h3>
+          <p class="cf-mod-desc">A fully playable chess game with local 2-player and computer opponent modes. Full ruleset — castling, en passant, promotion, and more.</p>
+          <div class="cf-mod-foot"><span class="cf-badge">Play Now</span></div>
         </div>
-        <div class="cf-module soon">
-          <div class="cf-board-area"><div class="cf-board" id="bBoard"></div></div>
-          <div class="cf-mod-body">
-            <span class="cf-mod-tag">Analyzer</span>
-            <h3 class="cf-mod-title">Board Analyzer</h3>
-            <p class="cf-mod-desc">Load any position, replay your games, and explore variations move by move.</p>
-            <div class="cf-mod-foot"><span class="cf-badge muted">Coming Soon</span></div>
-          </div>
-          <div class="cf-artifact muted">
-            <span class="cf-artifact-inner"></span>
-            <svg class="cf-artifact-icon" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="cf-artifact-label">Artifact Code</span>
-            <span class="cf-artifact-code">0B6B24B0-CFBRD</span>
-          </div>
+        <div class="cf-artifact">
+          <span class="cf-artifact-inner"></span>
+          <svg class="cf-artifact-icon" viewBox="0 0 48 48" fill="none">
+            <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="cf-artifact-label">Artifact Code</span>
+          <span class="cf-artifact-code">C443248D-CFCHX</span>
         </div>
-      </div>
+      </a>
 
       <!-- Courses -->
       <p class="section-label" style="margin-top:10px">Courses</p>
@@ -368,18 +336,6 @@
       '♖','♘','♗','♕','♔', '', '', '♖',
     ];
 
-    // Board Analyzer: Queen's Gambit after 1.d4 d5 2.c4
-    const QG = [
-      '♜','♞','♝','♛','♚','♝','♞','♜',
-      '♟','♟','♟', '', '♟','♟','♟','♟',
-      '', '', '', '', '', '', '', '',
-      '', '', '', '♟', '', '', '', '',
-      '', '', '♙','♙', '', '', '', '',
-      '', '', '', '', '', '', '', '',
-      '♙','♙', '', '', '♙','♙','♙','♙',
-      '♖','♘','♗','♕','♔','♗','♘','♖',
-    ];
-
     // London System: 1.d4 d5 2.Bf4
     const LONDON = [
       '♜','♞','♝','♛','♚','♝','♞','♜',
@@ -393,7 +349,6 @@
     ];
 
     makeBoard('bGame',    START);
-    makeBoard('bBoard',   QG);
     makeBoard('bVienna',  VIENNA);
     makeBoard('bKG',      KINGS_GAMBIT);
     makeBoard('bItalian', ITALIAN);
