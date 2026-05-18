@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Chess Forge</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Chess Forge",
+  "date": "2026-05-18",
+  "time": "00:00:00",
+  "chamber": "CF",
+  "seed": 3141592653,
+  "code_seed": 2718281828,
+  "coords": { "x": 8765432, "y": -1234567, "z": 9876543 },
+  "address": "CHESS-FORGE-HUB0"
+}
+</script>
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    /* Knight emblem */
+    .cf-knight-wrap { display: flex; align-items: center; justify-content: center; }
+    .cf-knight {
+      font-size: 120px; line-height: 1; color: #e2ad35;
+      filter: drop-shadow(0 0 14px rgba(226,173,53,0.38));
+      display: block; user-select: none;
+    }
+    @media (max-width: 1300px) { .cf-knight { font-size: 100px; } }
+    @media (max-width: 1200px) { .cf-knight { font-size: 80px; } }
+    @media (max-width: 560px)  { .cf-knight { font-size: 52px; } }
+    @media (max-width: 390px)  { .cf-knight { font-size: 44px; } }
+
+    /* Module cards */
+    .cf-modules { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+    @media (max-width: 680px) { .cf-modules { grid-template-columns: 1fr; } }
+
+    .cf-module {
+      display: flex; flex-direction: column;
+      background: #0d0d0d;
+      border: 1px solid rgba(191,125,8,0.4);
+      border-radius: 14px; overflow: hidden;
+      color: #f7f7f7; text-decoration: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .cf-module.live:hover {
+      border-color: rgba(191,125,8,0.9);
+      box-shadow: 0 0 28px rgba(184,136,26,0.12);
+    }
+    .cf-module.soon { opacity: 0.6; pointer-events: none; }
+
+    /* Mini board */
+    .cf-board-area {
+      background: #161616;
+      display: flex; justify-content: center; align-items: center;
+      padding: 22px;
+      border-bottom: 1px solid rgba(191,125,8,0.18);
+    }
+    .cf-board {
+      display: grid;
+      grid-template-columns: repeat(8, 22px);
+      grid-template-rows: repeat(8, 22px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.55);
+    }
+    .cf-sq { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+    .cf-sq.l { background: #f0d9b5; }
+    .cf-sq.d { background: #b58863; }
+    .cf-sq span { font-size: 13px; line-height: 1; font-family: "Segoe UI Symbol", "Apple SD Gothic Neo", serif; }
+    .cf-sq.l span { color: #111; }
+    .cf-sq.d span { color: #f5f5f5; }
+
+    /* Card body */
+    .cf-mod-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .cf-mod-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #e2ad35; }
+    .cf-mod-title { margin: 0; font-size: 22px; font-family: Georgia, serif; color: #f7f7f7; font-weight: 700; }
+    .cf-mod-desc { margin: 0; font-size: 14px; color: #999; line-height: 1.65; flex: 1; }
+    .cf-mod-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .cf-badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px;
+      background: rgba(191,125,8,0.12);
+      border: 1px solid rgba(191,125,8,0.45);
+      color: #e2ad35;
+    }
+    .cf-badge.muted {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.15);
+      color: #555;
+    }
+    .cf-enter { font-size: 13px; font-weight: 700; color: #e2ad35; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+
+    <main class="main-content">
+
+      <section class="game-hero catalog-hero">
+        <span class="game-hero-corner tl"></span>
+        <span class="game-hero-corner tr"></span>
+        <span class="game-hero-corner bl"></span>
+        <span class="game-hero-corner br"></span>
+        <div class="game-hero-emblem cf-knight-wrap">
+          <span class="cf-knight">♞</span>
+        </div>
+        <div class="game-hero-sep">&#10022;</div>
+        <div class="game-hero-title">
+          <h2>Chess Forge</h2>
+          <div class="game-hero-sub">
+            <span class="game-hero-sub-line"></span>
+            <span>Pergamon Chess</span>
+            <span class="game-hero-sub-line"></span>
+          </div>
+        </div>
+        <div class="catalog-count">
+          <span class="catalog-count-inner"></span>
+          <span class="catalog-count-num">2</span>
+          <span class="catalog-count-label">Modules</span>
+        </div>
+      </section>
+
+      <p class="section-label" style="margin-top:28px">Contents</p>
+      <div class="cf-modules">
+
+        <div class="cf-module soon">
+          <div class="cf-board-area">
+            <div class="cf-board" id="boardGame"></div>
+          </div>
+          <div class="cf-mod-body">
+            <span class="cf-mod-tag">Game</span>
+            <h3 class="cf-mod-title">Chess</h3>
+            <p class="cf-mod-desc">A fully playable chess engine built from scratch. Challenge the AI, analyze positions, and refine your game — coming to the Forge.</p>
+            <div class="cf-mod-foot">
+              <span class="cf-badge muted">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+
+        <a class="cf-module live" href="/chess-forge/vienna/">
+          <div class="cf-board-area">
+            <div class="cf-board" id="boardVienna"></div>
+          </div>
+          <div class="cf-mod-body">
+            <span class="cf-mod-tag">Course</span>
+            <h3 class="cf-mod-title">Vienna Opening</h3>
+            <p class="cf-mod-desc">One of White's sharpest responses to 1...e5. Study the key ideas, critical variations, and tactical patterns of the Vienna Game.</p>
+            <div class="cf-mod-foot">
+              <span class="cf-badge">Course</span>
+              <span class="cf-enter">Enter →</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/data/pergamon-address.js"></script>
+  <script src="/data/entries.js"></script>
+  <script src="/data/atlas-reference.js"></script>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>loadSnippets('Chess Forge');</script>
+
+  <script>
+    function makeBoard(id, pieces) {
+      const el = document.getElementById(id);
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const sq = document.createElement('div');
+          sq.className = 'cf-sq ' + ((r + c) % 2 === 0 ? 'l' : 'd');
+          const p = pieces[r * 8 + c];
+          if (p) { const s = document.createElement('span'); s.textContent = p; sq.appendChild(s); }
+          el.appendChild(sq);
+        }
+      }
+    }
+
+    makeBoard('boardGame', [
+      '♜','♞','♝','♛','♚','♝','♞','♜',
+      '♟','♟','♟','♟','♟','♟','♟','♟',
+      '','','','','','','','',
+      '','','','','','','','',
+      '','','','','','','','',
+      '','','','','','','','',
+      '♙','♙','♙','♙','♙','♙','♙','♙',
+      '♖','♘','♗','♕','♔','♗','♘','♖',
+    ]);
+
+    // Vienna Game: 1.e4 e5 2.Nc3
+    makeBoard('boardVienna', [
+      '♜','♞','♝','♛','♚','♝','♞','♜',
+      '♟','♟','♟','♟', '', '♟','♟','♟',
+      '', '', '', '', '', '', '', '',
+      '', '', '', '', '♟', '', '', '',
+      '', '', '', '', '♙', '', '', '',
+      '', '', '♘', '', '', '', '', '',
+      '♙','♙','♙','♙', '', '♙','♙','♙',
+      '♖', '', '♗','♕','♔','♗','♘','♖',
+    ]);
+  </script>
+
+</body>
+</html>

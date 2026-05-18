@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Vienna Opening</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .vn-hero {
+      --hero-gold: #bf7d08;
+      --hero-gold-bright: #e2ad35;
+      display: grid; position: relative; box-sizing: border-box;
+      width: 100%; max-width: 100%; overflow: hidden;
+      grid-template-columns: minmax(0,190px) minmax(0,68px) minmax(0,1fr);
+      align-items: center; min-height: 210px; padding: 20px 36px;
+      background:
+        radial-gradient(circle at 18% 50%, rgba(184,136,26,0.06), transparent 29%),
+        radial-gradient(circle at 54% 48%, rgba(255,255,255,0.032), transparent 31%),
+        linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
+      border: 1.5px solid rgba(191,125,8,0.95); border-radius: 20px;
+      box-shadow:
+        inset 0 0 0 1px rgba(184,136,26,0.16),
+        inset 0 0 0 8px rgba(0,0,0,0.16),
+        inset 0 0 40px rgba(255,255,255,0.028),
+        0 8px 22px rgba(0,0,0,0.56);
+    }
+    .vn-hero::after {
+      content: ""; position: absolute; z-index: 0; inset: 7px;
+      border: 1px solid rgba(191,125,8,0.62); border-radius: 14px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.035), transparent 12%, transparent 88%, rgba(255,255,255,0.035)),
+        repeating-linear-gradient(105deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 5px);
+      pointer-events: none;
+    }
+    .vn-hero > * { position: relative; z-index: 2; min-width: 0; }
+    .vn-hero .emblem {
+      place-self: center; width: 182px; height: 182px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Vienna position mini board in hero */
+    .vn-hero-board {
+      display: grid;
+      grid-template-columns: repeat(8, 20px);
+      grid-template-rows: repeat(8, 20px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+    }
+    .vn-hero-sq { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+    .vn-hero-sq.l { background: #f0d9b5; }
+    .vn-hero-sq.d { background: #b58863; }
+    .vn-hero-sq span { font-size: 12px; line-height: 1; font-family: "Segoe UI Symbol", "Apple SD Gothic Neo", serif; }
+    .vn-hero-sq.l span { color: #111; }
+    .vn-hero-sq.d span { color: #f5f5f5; }
+
+    .vn-hero .sep { align-self: stretch; width: 100%; font-size: 22px; color: var(--hero-gold-bright); }
+    .vn-hero .sep::before, .vn-hero .sep::after { background: rgba(191,125,8,0.86); }
+    .vn-hero .sep::before { top: 24px; height: calc(50% - 36px); }
+    .vn-hero .sep::after  { bottom: 24px; height: calc(50% - 36px); }
+    .vn-hero .title { overflow: hidden; min-width: 0; padding: 0 24px 4px; container-type: inline-size; }
+    .vn-hero .title h2 { margin: 0 0 18px; font-size: clamp(28px,7cqi,58px); color: #f7f7f7; text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 14px rgba(255,255,255,0.18); overflow: hidden; }
+    .vn-hero .sub { gap: 18px; color: var(--hero-gold-bright); font-size: 15px; font-weight: 700; letter-spacing: 0.15em; }
+    .vn-hero .sub-line { flex: 1; max-width: 100px; background: rgba(191,125,8,0.95); position: relative; }
+    .vn-hero .sub-line::before, .vn-hero .sub-line::after { content: ""; position: absolute; top: 50%; width: 5px; height: 5px; background: var(--hero-gold-bright); border-radius: 50%; transform: translateY(-50%); }
+    .vn-hero .sub-line::before { left: 0; }
+    .vn-hero .sub-line::after  { right: 0; }
+
+    @media (max-width: 1200px) {
+      .vn-hero { grid-template-columns: minmax(0,134px) minmax(0,42px) minmax(0,1fr); min-height: 0; padding: 16px 20px; border-radius: 16px; }
+      .vn-hero::after { inset: 5px; border-radius: 11px; }
+      .vn-hero .emblem { width: 114px; height: 114px; }
+      .vn-hero-board { grid-template-columns: repeat(8, 14px); grid-template-rows: repeat(8, 14px); }
+      .vn-hero-sq { width: 14px; height: 14px; }
+      .vn-hero-sq span { font-size: 9px; }
+      .vn-hero .sep { font-size: 16px; }
+      .vn-hero .sep::before { top: 20px; height: calc(50% - 28px); }
+      .vn-hero .sep::after  { bottom: 20px; height: calc(50% - 28px); }
+      .vn-hero .title { padding: 6px 0 8px; text-align: center; }
+      .vn-hero .title h2 { font-size: clamp(20px,7cqi,40px); margin-bottom: 10px; }
+      .vn-hero .sub { font-size: 11px; gap: 10px; }
+      .vn-hero .sub-line { max-width: 56px; }
+    }
+    @media (max-width: 560px) {
+      .vn-hero { grid-template-columns: minmax(0,76px) minmax(0,1fr); padding: 14px 16px; border-radius: 14px; }
+      .vn-hero .emblem { width: 76px; height: 76px; }
+      .vn-hero-board { grid-template-columns: repeat(8, 9px); grid-template-rows: repeat(8, 9px); }
+      .vn-hero-sq { width: 9px; height: 9px; }
+      .vn-hero-sq span { display: none; }
+      .vn-hero .sep { display: none; }
+      .vn-hero .title { padding: 0 0 8px; text-align: center; }
+      .vn-hero .title h2 { font-size: clamp(14px,7cqi,26px); margin-bottom: 8px; }
+      .vn-hero .sub { font-size: 9px; gap: 8px; }
+      .vn-hero .sub-line { max-width: 36px; }
+    }
+
+    /* Moves display */
+    .vn-moves {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin-top: 24px; padding: 16px 20px;
+      background: #0e0e0e; border: 1px solid rgba(191,125,8,0.3);
+      border-radius: 10px;
+    }
+    .vn-moves-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #666; white-space: nowrap; }
+    .vn-move { font-size: 15px; font-family: "Courier New", monospace; color: #e2ad35; font-weight: 700; }
+    .vn-move-dot { color: #444; font-size: 13px; }
+
+    /* Intro card */
+    .vn-intro {
+      background: #0d0d0d; border: 1px solid rgba(191,125,8,0.3);
+      border-radius: 14px; padding: 28px 30px; margin-top: 20px;
+    }
+    .vn-intro h3 { margin: 0 0 12px; font-size: 18px; color: #f7f7f7; font-family: Georgia, serif; }
+    .vn-intro p { margin: 0 0 12px; font-size: 15px; color: #aaa; line-height: 1.7; }
+    .vn-intro p:last-child { margin-bottom: 0; }
+
+    /* Lesson list */
+    .vn-lessons { margin-top: 24px; }
+    .vn-lesson {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px; background: #0d0d0d;
+      border: 1px solid rgba(191,125,8,0.25);
+      border-radius: 10px; margin-bottom: 10px;
+      opacity: 0.55;
+    }
+    .vn-lesson-num {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      color: #e2ad35; white-space: nowrap; min-width: 28px;
+    }
+    .vn-lesson-title { font-size: 15px; color: #ccc; font-family: Georgia, serif; font-weight: 700; }
+    .vn-lesson-badge {
+      margin-left: auto; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #555; white-space: nowrap;
+    }
+
+    .vn-back { display: inline-block; font-size: 14px; color: #666; text-decoration: none; margin-top: 8px; }
+    .vn-back:hover { color: #e2ad35; }
+  </style>
+</head>
+<body>
+
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+
+      <div class="vn-hero">
+        <div class="emblem">
+          <div class="vn-hero-board" id="vnHeroBoard"></div>
+        </div>
+        <div class="sep game-hero-sep">&#10022;</div>
+        <div class="title">
+          <h2>Vienna Opening</h2>
+          <div class="sub game-hero-sub">
+            <span class="sub-line game-hero-sub-line"></span>
+            <span>Chess Forge</span>
+            <span class="sub-line game-hero-sub-line"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="vn-moves">
+        <span class="vn-moves-label">Opening Line</span>
+        <span class="vn-move">1.</span>
+        <span class="vn-move">e4</span>
+        <span class="vn-move-dot">·</span>
+        <span class="vn-move">e5</span>
+        <span class="vn-move">2.</span>
+        <span class="vn-move">Nc3</span>
+      </div>
+
+      <div class="vn-intro">
+        <h3>About the Vienna Game</h3>
+        <p>The Vienna Game arises after 1.e4 e5 2.Nc3, a move that shores up the center and prepares an aggressive kingside expansion with f4. Unlike the Italian or Ruy Lopez, the Vienna sidesteps a mountain of theory while retaining sharp, fighting positions.</p>
+        <p>White's plans are flexible: the Vienna Gambit (f4), the quiet Vienna with d3, and the sharp Frankenstein-Dracula Variation all branch from this single knight move. Understanding the common ideas unlocks all of them.</p>
+      </div>
+
+      <p class="section-label" style="margin-top:28px">Course Outline</p>
+      <div class="vn-lessons">
+        <div class="vn-lesson">
+          <span class="vn-lesson-num">01</span>
+          <span class="vn-lesson-title">Introduction — Why the Vienna?</span>
+          <span class="vn-lesson-badge">Coming Soon</span>
+        </div>
+        <div class="vn-lesson">
+          <span class="vn-lesson-num">02</span>
+          <span class="vn-lesson-title">The Vienna Gambit: 2...Nc6 3.f4</span>
+          <span class="vn-lesson-badge">Coming Soon</span>
+        </div>
+        <div class="vn-lesson">
+          <span class="vn-lesson-num">03</span>
+          <span class="vn-lesson-title">The Quiet Vienna: 3.g3 and 3.Bc4</span>
+          <span class="vn-lesson-badge">Coming Soon</span>
+        </div>
+        <div class="vn-lesson">
+          <span class="vn-lesson-num">04</span>
+          <span class="vn-lesson-title">Black's Solid Reply: 2...Nf6</span>
+          <span class="vn-lesson-badge">Coming Soon</span>
+        </div>
+        <div class="vn-lesson">
+          <span class="vn-lesson-num">05</span>
+          <span class="vn-lesson-title">The Frankenstein-Dracula Variation</span>
+          <span class="vn-lesson-badge">Coming Soon</span>
+        </div>
+        <div class="vn-lesson">
+          <span class="vn-lesson-num">06</span>
+          <span class="vn-lesson-title">Key Tactical Patterns</span>
+          <span class="vn-lesson-badge">Coming Soon</span>
+        </div>
+      </div>
+
+      <a class="vn-back" href="/chess-forge/">← Back to Chess Forge</a>
+
+    </main>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/data/pergamon-address.js"></script>
+  <script src="/data/entries.js"></script>
+  <script src="/data/atlas-reference.js"></script>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>loadSnippets('Chess Forge');</script>
+
+  <script>
+    // Vienna position: 1.e4 e5 2.Nc3
+    const vnPos = [
+      '♜','♞','♝','♛','♚','♝','♞','♜',
+      '♟','♟','♟','♟', '', '♟','♟','♟',
+      '', '', '', '', '', '', '', '',
+      '', '', '', '', '♟', '', '', '',
+      '', '', '', '', '♙', '', '', '',
+      '', '', '♘', '', '', '', '', '',
+      '♙','♙','♙','♙', '', '♙','♙','♙',
+      '♖', '', '♗','♕','♔','♗','♘','♖',
+    ];
+    const heroBoard = document.getElementById('vnHeroBoard');
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const sq = document.createElement('div');
+        sq.className = 'vn-hero-sq ' + ((r + c) % 2 === 0 ? 'l' : 'd');
+        const p = vnPos[r * 8 + c];
+        if (p) { const s = document.createElement('span'); s.textContent = p; sq.appendChild(s); }
+        heroBoard.appendChild(sq);
+      }
+    }
+  </script>
+
+</body>
+</html>
