@@ -52,9 +52,7 @@
     .vn-hero-sq { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
     .vn-hero-sq.l { background: #f0d9b5; }
     .vn-hero-sq.d { background: #b58863; }
-    .vn-hero-sq span { font-size: 12px; line-height: 1; font-family: "Segoe UI Symbol", "Apple SD Gothic Neo", serif; }
-    .vn-hero-sq.l span { color: #111; }
-    .vn-hero-sq.d span { color: #f5f5f5; }
+    .vn-hero-sq img { width: 16px; height: 16px; display: block; }
 
     .vn-hero .sep { align-self: stretch; width: 100%; font-size: 22px; color: var(--hero-gold-bright); }
     .vn-hero .sep::before, .vn-hero .sep::after { background: rgba(191,125,8,0.86); }
@@ -74,7 +72,7 @@
       .vn-hero .emblem { width: 114px; height: 114px; }
       .vn-hero-board { grid-template-columns: repeat(8, 14px); grid-template-rows: repeat(8, 14px); }
       .vn-hero-sq { width: 14px; height: 14px; }
-      .vn-hero-sq span { font-size: 9px; }
+      .vn-hero-sq img { width: 11px; height: 11px; }
       .vn-hero .sep { font-size: 16px; }
       .vn-hero .sep::before { top: 20px; height: calc(50% - 28px); }
       .vn-hero .sep::after  { bottom: 20px; height: calc(50% - 28px); }
@@ -88,7 +86,7 @@
       .vn-hero .emblem { width: 76px; height: 76px; }
       .vn-hero-board { grid-template-columns: repeat(8, 9px); grid-template-rows: repeat(8, 9px); }
       .vn-hero-sq { width: 9px; height: 9px; }
-      .vn-hero-sq span { display: none; }
+      .vn-hero-sq img { display: none; }
       .vn-hero .sep { display: none; }
       .vn-hero .title { padding: 0 0 8px; text-align: center; }
       .vn-hero .title h2 { font-size: clamp(14px,7cqi,26px); margin-bottom: 8px; }
@@ -229,6 +227,11 @@
   <script>loadSnippets('Chess Forge');</script>
 
   <script>
+    const CDN = 'https://lichess1.org/assets/piece/cburnett/';
+    const PM = {
+      '♔':'wK','♕':'wQ','♖':'wR','♗':'wB','♘':'wN','♙':'wP',
+      '♚':'bK','♛':'bQ','♜':'bR','♝':'bB','♞':'bN','♟':'bP',
+    };
     // Vienna position: 1.e4 e5 2.Nc3
     const vnPos = [
       '♜','♞','♝','♛','♚','♝','♞','♜',
@@ -246,7 +249,12 @@
         const sq = document.createElement('div');
         sq.className = 'vn-hero-sq ' + ((r + c) % 2 === 0 ? 'l' : 'd');
         const p = vnPos[r * 8 + c];
-        if (p) { const s = document.createElement('span'); s.textContent = p; sq.appendChild(s); }
+        if (p && PM[p]) {
+          const img = document.createElement('img');
+          img.src = CDN + PM[p] + '.svg';
+          img.alt = p; img.draggable = false;
+          sq.appendChild(img);
+        }
         heroBoard.appendChild(sq);
       }
     }
