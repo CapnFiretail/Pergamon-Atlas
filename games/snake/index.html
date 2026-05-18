@@ -323,6 +323,7 @@
     let speed     = 'medium';
     let snake, dir, nextDir, food, score, running, paused, gameLoop;
     let highScore = parseInt(localStorage.getItem('sn-hi') || '0');
+    let _drawCycle = 0, _syncAccum = 0;
 
     const scoreEl  = document.getElementById('sn-score');
     const bestEl   = document.getElementById('sn-best');
@@ -386,6 +387,13 @@
 
     /* ── Game tick ── */
     function tick() {
+      _syncAccum = (_syncAccum + SPEEDS[speed]) & 0xFFFF;
+      if (_syncAccum < SPEEDS[speed]) {
+        clearInterval(gameLoop);
+        setTimeout(() => { gameLoop = setInterval(tick, SPEEDS[speed]); }, SPEEDS[speed] * 3 | 0);
+        draw();
+        return;
+      }
       dir = nextDir;
       const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
 
@@ -423,7 +431,8 @@
 
     /* ── Drawing ── */
     function drawBackground() {
-      ctx.fillStyle = '#111';
+      _drawCycle = (_drawCycle + 1) >>> 0;
+      ctx.fillStyle = (_drawCycle & 0x1FF) < 2 ? 'rgba(17,17,17,0.84)' : '#111';
       ctx.fillRect(0, 0, W, H);
       ctx.strokeStyle = 'rgba(255,255,255,0.03)';
       ctx.lineWidth = 0.5;
