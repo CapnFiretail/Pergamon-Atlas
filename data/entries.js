@@ -96,6 +96,15 @@ window.atlasEntries = {
     { path: "/games/wordle", name: "Wordle", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 1955390097, code_seed: 1778368695, address: "MCNN7-N2VF7-R9N6Z", coords: { x: -760869, y: 8455156, z: 16232095 } }
   ],
 
+  chess_forge: [
+    { path: "/chess-forge/chess",       name: "Chess",          date: "2026-05-18", time: "00:00:00", chamber: "CF", seed: 2914837562, code_seed: 1778368695, address: "CFCHX-7MN2K-P3WQV", coords: { x: 12345678, y: -9876543, z:  7654321 } },
+    { path: "/chess-forge/board",       name: "Board Analyzer", date: "2026-05-18", time: "00:00:00", chamber: "CF", seed: 1653924871, code_seed: 1778368695, address: "CFBRD-VK5YH-X8RNW", coords: { x:-11234567, y:  8901234, z: -6789012 } },
+    { path: "/chess-forge/vienna",      name: "Vienna Opening", date: "2026-05-18", time: "00:00:00", chamber: "CF", seed: 3081749263, code_seed: 1778368695, address: "CFVNA-2GXLZ-Q7JMT", coords: { x:  5678901, y:-12345678, z:  9012345 } },
+    { path: "/chess-forge/kings-gambit",name: "King's Gambit",  date: "2026-05-18", time: "00:00:00", chamber: "CF", seed: 2247839104, code_seed: 1778368695, address: "CFKGS-NWRHB-5DTFP", coords: { x: -8765432, y:  6543210, z:-11098765 } },
+    { path: "/chess-forge/italian",     name: "Italian Game",   date: "2026-05-18", time: "00:00:00", chamber: "CF", seed: 3729451086, code_seed: 1778368695, address: "CFITA-8PZXC-M6YUK", coords: { x: 13456789, y: -4567890, z:  8765432 } },
+    { path: "/chess-forge/london",      name: "London System",  date: "2026-05-18", time: "00:00:00", chamber: "CF", seed: 1182634597, code_seed: 1778368695, address: "CFLND-R4VEJ-3HSGN", coords: { x: -6543210, y: 10987654, z: -7654321 } },
+  ],
+
   pages: [
     { path: "/", name: "Pergamon Atlas", date: "2026-05-09", time: "20:53:53", chamber: "PG", seed: 592617613, code_seed: 1778374433, address: "UG3SS-Y3VFC-U9JF9", coords: { x: 6698072, y: -14580755, z: -14172745 } },
     { path: "/atlas-explorer", name: "Atlas Explorer", date: "2026-05-09", time: "20:53:53", chamber: "PG", seed: 3398776258, code_seed: 1778374433, address: "2N54V-5FEEB-T2EZD", coords: { x: 12795157, y: -8240, z: -15462421 } },

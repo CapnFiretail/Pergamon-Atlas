@@ -34,6 +34,7 @@
       ? [
           ...window.atlasEntries.tools,
           ...window.atlasEntries.games,
+          ...(window.atlasEntries.chess_forge || []),
           ...(window.atlasEntries.pages || [])
         ]
       : [];
@@ -117,6 +118,7 @@
     const catalogs = [];
     if (chamber === 'TL') catalogs.push({ name: 'Tools Catalog', path: '/tools' });
     if (chamber === 'GM') catalogs.push({ name: 'Games Catalog', path: '/games' });
+    if (chamber === 'CF') catalogs.push({ name: 'Chess Forge', path: '/chess-forge' });
 
     const section = buildSection({
       name, artCode, typeName, address, neighbors, catalogs, PA, all, allArchived
