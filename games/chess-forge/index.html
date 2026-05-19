@@ -277,6 +277,502 @@
     .ch-modal-btn.secondary { background:transparent; border:1px solid rgba(255,255,255,0.09); color:#444; }
     .ch-modal-btn.secondary:hover { color:#777; border-color:rgba(255,255,255,0.18); }
 
+    /* Mockup-inspired forge table */
+    :root {
+      --sq: clamp(42px, 4.9vw, 61px);
+      --ch-gold: #c58a18;
+      --ch-gold-soft: #e0b04b;
+      --ch-panel: #0c0c0b;
+      --ch-line: rgba(197, 138, 24, 0.34);
+      --ch-text: #ede5d5;
+      --ch-muted: #9a8f7d;
+    }
+
+    .ch-arena {
+      grid-template-columns: minmax(210px, 234px) minmax(0, calc((8 * var(--sq)) + 56px)) minmax(248px, 276px);
+      gap: 20px;
+      align-items: stretch;
+      margin: 26px auto;
+      max-width: 1120px;
+      color: var(--ch-text);
+    }
+
+    .ch-panel,
+    .ch-board-stage,
+    .ch-side-card {
+      background:
+        radial-gradient(circle at 50% 0, rgba(255,255,255,0.035), transparent 42%),
+        linear-gradient(145deg, rgba(18,18,16,0.98), rgba(5,5,5,0.98));
+      border: 1px solid var(--ch-line);
+      box-shadow: inset 0 0 28px rgba(255,255,255,0.025), 0 16px 42px rgba(0,0,0,0.42);
+    }
+
+    .ch-panel {
+      min-height: 618px;
+      border-radius: 8px;
+      padding: 18px 16px;
+      gap: 20px;
+    }
+
+    #setupSection,
+    #gameInfoSection,
+    .ch-panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #setupSection,
+    #gameInfoSection {
+      gap: 22px;
+    }
+
+    .ch-sect-lbl {
+      color: var(--ch-gold-soft);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: Georgia, serif;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      margin: 0;
+    }
+
+    .ch-sect-lbl::before {
+      content: attr(data-icon);
+      color: var(--ch-gold);
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: 0;
+      width: 20px;
+      text-align: center;
+    }
+
+    .ch-mode-row,
+    .ch-tc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ch-mode-btn,
+    .ch-tc-row,
+    .ch-start-btn,
+    .ch-history-btn,
+    .ch-icon-btn {
+      background: rgba(3,3,3,0.52);
+      border: 1px solid rgba(197,138,24,0.18);
+      border-radius: 6px;
+      color: var(--ch-muted);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .ch-mode-btn {
+      min-height: 45px;
+      padding: 0 14px;
+      text-align: left;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .ch-mode-btn.on,
+    .ch-tc-row.on {
+      background: rgba(197,138,24,0.08);
+      border-color: rgba(197,138,24,0.72);
+      color: var(--ch-gold-soft);
+    }
+
+    .ch-mode-btn.on::after,
+    .ch-tc-row.on::after {
+      content: "";
+      width: 5px;
+      height: 5px;
+      margin-left: auto;
+      border-radius: 50%;
+      background: var(--ch-gold-soft);
+      box-shadow: 0 0 8px rgba(224,176,75,0.55);
+    }
+
+    .ch-mode-btn,
+    .ch-tc-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .ch-tc-row {
+      min-height: 44px;
+      padding: 0 13px;
+      gap: 0;
+    }
+
+    .ch-tc-dot { display: none; }
+    .ch-tc-name {
+      color: inherit;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    .ch-tc-sub {
+      color: var(--ch-muted);
+      font-size: 13px;
+      margin-left: auto;
+    }
+
+    .ch-start-btn {
+      min-height: 56px;
+      margin-top: auto;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--ch-gold-soft);
+      font-family: Georgia, serif;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .ch-start-btn::after {
+      content: "›";
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .ch-board-stage {
+      border-radius: 8px;
+      padding: 8px 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .ch-center {
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .ch-board-outer {
+      display: grid;
+      grid-template-columns: 18px minmax(0, calc(8 * var(--sq))) 18px;
+      grid-template-rows: 18px minmax(0, calc(8 * var(--sq))) 18px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ch-files {
+      display: grid;
+      grid-template-columns: repeat(8, var(--sq));
+      padding: 0;
+      margin: 0;
+      grid-column: 2;
+      height: 18px;
+    }
+
+    .ch-files.top { grid-row: 1; }
+    .ch-files.bottom { grid-row: 3; }
+
+    .ch-ranks {
+      width: 18px;
+      height: calc(8 * var(--sq));
+      justify-content: stretch;
+      grid-row: 2;
+    }
+
+    .ch-ranks.left { grid-column: 1; }
+    .ch-ranks.right { grid-column: 3; }
+
+    .ch-board-wrap {
+      grid-column: 2;
+      grid-row: 2;
+      position: relative;
+    }
+
+    .ch-board-row { display: contents; }
+
+    .ch-ranks span,
+    .ch-files span {
+      color: var(--ch-gold-soft);
+      font-family: Georgia, serif;
+      font-size: 14px;
+    }
+
+    .ch-ranks span { height: var(--sq); }
+
+    #gameBoard {
+      border: 1px solid rgba(197,138,24,0.34);
+      box-shadow: 0 10px 34px rgba(0,0,0,0.7);
+    }
+
+    .sq.l { background: #cdbb9e; }
+    .sq.d { background: #252421; }
+
+    .sq img {
+      width: 84%;
+      height: 84%;
+      filter: drop-shadow(0 2px 1px rgba(0,0,0,0.72));
+    }
+
+    .ch-player-bar {
+      width: 100%;
+      border: 1px solid rgba(197,138,24,0.2);
+      border-radius: 7px;
+      background: rgba(3,3,3,0.42);
+      padding: 9px 10px;
+      gap: 10px;
+    }
+
+    .ch-pb-player {
+      flex: 1;
+      min-width: 0;
+      border-radius: 7px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+      padding: 10px 12px;
+    }
+
+    .ch-pb-piece {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid rgba(197,138,24,0.18);
+      background: #e8ddca;
+      color: #111;
+      font-size: 0;
+      opacity: 1;
+    }
+
+    #pbB .ch-pb-piece {
+      background: #020202;
+      border-color: rgba(197,138,24,0.34);
+    }
+
+    .ch-pb-name {
+      color: var(--ch-text);
+      font-family: Georgia, serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+
+    .ch-pb-sub {
+      display: block;
+      color: var(--ch-muted);
+      font-family: Georgia, serif;
+      font-size: 13px;
+      letter-spacing: 0;
+      margin-top: 2px;
+      text-transform: none;
+    }
+
+    .ch-player-clock {
+      color: var(--ch-text);
+      font-family: Georgia, serif;
+      font-size: 17px;
+      min-width: 54px;
+      text-align: right;
+    }
+
+    .ch-vs {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--ch-gold-soft);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      position: relative;
+    }
+
+    .ch-vs::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(197,138,24,0.55);
+      transform: rotate(45deg);
+    }
+
+    .ch-cap-row-w[id^="capBy"],
+    .ch-cap-row-b[id^="capBy"],
+    .ch-pb-adv {
+      display: none;
+    }
+
+    .ch-right-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 618px;
+    }
+
+    .ch-side-card {
+      border-radius: 7px;
+      padding: 16px 14px 12px;
+    }
+
+    .ch-side-card.history {
+      flex: 1;
+      min-height: 292px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ch-log-wrap {
+      max-height: none;
+      min-height: 210px;
+      flex: 1;
+      border: 1px solid rgba(255,255,255,0.035);
+      background:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        rgba(0,0,0,0.22);
+      background-size: 100% 36px;
+      padding: 8px;
+    }
+
+    #moveLogTable td {
+      color: var(--ch-muted);
+      font-family: Georgia, serif;
+      font-size: 13px;
+      padding: 4px 5px;
+    }
+
+    #moveLogTable td:first-child {
+      color: var(--ch-text);
+      font-size: 13px;
+    }
+
+    #moveLogTable tr:last-child td { color: var(--ch-gold-soft); }
+
+    .ch-history-controls {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .ch-history-btn,
+    .ch-icon-btn {
+      min-height: 31px;
+      color: var(--ch-gold-soft);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .ch-history-btn:disabled {
+      opacity: 0.42;
+      cursor: default;
+    }
+
+    .ch-cap-block {
+      gap: 12px;
+      padding-top: 2px;
+    }
+
+    .ch-cap-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 28px;
+    }
+
+    .ch-cap-token {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      border: 1px solid rgba(197,138,24,0.2);
+      background: #e8ddca;
+    }
+
+    .ch-cap-token.black { background: #020202; border-color: rgba(197,138,24,0.34); }
+
+    .ch-cap-row-w,
+    .ch-cap-row-b { gap: 5px; }
+
+    .ch-cap-row-w img,
+    .ch-cap-row-b img {
+      width: 22px;
+      height: 22px;
+      opacity: 0.84;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.7));
+    }
+
+    .ch-tools-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .ch-right-btns {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 9px;
+      margin-top: 0;
+    }
+
+    .ch-icon-btn {
+      min-height: 53px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: Georgia, serif;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .ch-icon-btn .tool-symbol {
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .ch-turn-val {
+      color: var(--ch-text);
+      font-size: 18px;
+    }
+
+    @media(max-width:1180px){
+      .ch-arena {
+        grid-template-columns: minmax(190px, 220px) minmax(0, calc((8 * var(--sq)) + 56px));
+      }
+      .ch-right-stack {
+        grid-column: 1 / -1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    @media(max-width:760px){
+      .ch-arena {
+        grid-template-columns: 1fr;
+        max-width: calc((8 * var(--sq)) + 36px);
+      }
+      .ch-panel,
+      .ch-board-stage,
+      .ch-right-stack {
+        width: 100%;
+        min-height: 0;
+      }
+      .ch-right-stack {
+        display: flex;
+      }
+      .ch-player-bar {
+        flex-wrap: wrap;
+      }
+      .ch-vs {
+        order: 3;
+        margin: 0 auto;
+      }
+    }
+
     /* ── Responsive ── */
     @media(max-width:920px){
       .ch-arena { grid-template-columns:1fr; justify-items:center; }
@@ -287,6 +783,63 @@
     }
     @media(max-width:520px){ :root{--sq:42px} .ch-pb-clock{font-size:16px;min-width:40px} }
     @media(max-width:390px){ :root{--sq:36px} }
+    .ch-clock-row-hidden,
+    .ch-center > div[style*="justify-content:space-between"] { display: none !important; }
+
+    .ch-player-clock.ch-pb-clock {
+      color: var(--ch-text);
+      font-family: Georgia, serif;
+      font-size: 17px;
+      min-width: 54px;
+      text-align: right;
+      letter-spacing: 0.02em;
+    }
+
+    .ch-player-clock.ch-pb-clock.active { color: var(--ch-gold-soft); }
+    .ch-player-clock.ch-pb-clock.low { color: #ff7063 !important; }
+
+    #pbB {
+      flex-direction: row !important;
+    }
+
+    #pbB > span { order: 3; }
+    #pbB > div:not(.ch-player-clock) {
+      order: 1;
+      text-align: left !important;
+    }
+    #pbB .ch-player-clock { order: 2; margin-left: auto; }
+
+    @media(max-width:920px){
+      .ch-arena {
+        grid-template-columns: 1fr;
+        justify-items: stretch;
+        max-width: calc((8 * var(--sq)) + 42px);
+      }
+      .ch-panel {
+        width: 100%;
+        flex-direction: column;
+        flex-wrap: nowrap;
+      }
+      .ch-panel > * { min-width: 0; }
+      .ch-right-stack {
+        width: 100%;
+        display: flex;
+        min-height: 0;
+      }
+      .ch-log-wrap { max-height: none; }
+    }
+
+    @media(max-width:520px){
+      :root { --sq: 34px; }
+      .ch-board-stage { padding: 6px; }
+      .ch-player-bar { gap: 6px; margin-top: 72px; padding: 8px; }
+      .ch-pb-player { padding: 9px 8px; }
+      .ch-vs { width: 30px; height: 30px; }
+    }
+
+    @media(max-width:390px){
+      :root { --sq: 31px; }
+    }
   </style>
 </head>
 <body>
@@ -333,16 +886,16 @@
 
           <!-- Setup section -->
           <div id="setupSection">
-            <div>
-              <div class="ch-sect-lbl">Game Mode</div>
+            <div class="ch-panel-section">
+              <div class="ch-sect-lbl" data-icon="♞">Game Mode</div>
               <div class="ch-mode-row">
                 <button class="ch-mode-btn on" id="tgLocal">Local</button>
                 <button class="ch-mode-btn"    id="tgComputer">Computer</button>
               </div>
             </div>
 
-            <div id="colorSect" style="display:none">
-              <div class="ch-sect-lbl">Play As</div>
+            <div class="ch-panel-section" id="colorSect" style="display:none">
+              <div class="ch-sect-lbl" data-icon="♙">Play As</div>
               <div class="ch-mode-row">
                 <button class="ch-mode-btn on" id="tgWhite">White</button>
                 <button class="ch-mode-btn"    id="tgBlack">Black</button>
@@ -350,8 +903,8 @@
               </div>
             </div>
 
-            <div id="diffSect" style="display:none">
-              <div class="ch-sect-lbl">Difficulty</div>
+            <div class="ch-panel-section" id="diffSect" style="display:none">
+              <div class="ch-sect-lbl" data-icon="♜">Difficulty</div>
               <div class="ch-mode-row">
                 <button class="ch-mode-btn"    id="tgEasy">Easy</button>
                 <button class="ch-mode-btn on" id="tgMed">Med</button>
@@ -359,8 +912,8 @@
               </div>
             </div>
 
-            <div>
-              <div class="ch-sect-lbl">Time Controls</div>
+            <div class="ch-panel-section">
+              <div class="ch-sect-lbl" data-icon="◴">Time Control</div>
               <div class="ch-tc-list">
                 <div class="ch-tc-row"    id="tcBullet"><span class="ch-tc-dot"></span><span class="ch-tc-name">Bullet</span><span class="ch-tc-sub">1 min</span></div>
                 <div class="ch-tc-row on" id="tcBlitz" ><span class="ch-tc-dot"></span><span class="ch-tc-name">Blitz</span> <span class="ch-tc-sub">5 min</span></div>
@@ -373,7 +926,7 @@
           <!-- Game-info section (hidden until game starts) -->
           <div id="gameInfoSection" style="display:none">
             <div>
-              <div class="ch-sect-lbl">Turn</div>
+              <div class="ch-sect-lbl" data-icon="♔">Turn</div>
               <div class="ch-turn-val" id="turnVal">—</div>
             </div>
             <div class="ch-alert-box" id="alertBox">Check!</div>
@@ -384,11 +937,14 @@
         </div>
 
         <!-- CENTER: board + player bar -->
+        <div class="ch-board-stage">
         <div class="ch-center">
           <div class="ch-board-outer">
+            <div id="chFilesTop" class="ch-files top"></div>
             <div class="ch-board-row">
-              <div id="chRanks" class="ch-ranks"></div>
-              <div style="position:relative">
+              <div id="chRanks" class="ch-ranks left"></div>
+              <div id="chRanksRight" class="ch-ranks right"></div>
+              <div class="ch-board-wrap">
                 <div id="gameBoard"></div>
                 <div id="promoOverlay">
                   <p class="ch-promo-label">Promote to:</p>
@@ -396,7 +952,7 @@
                 </div>
               </div>
             </div>
-            <div id="chFiles" class="ch-files"></div>
+            <div id="chFiles" class="ch-files bottom"></div>
           </div>
 
           <!-- Player bar -->
@@ -405,53 +961,72 @@
               <span class="ch-pb-piece">♙</span>
               <div>
                 <span class="ch-pb-name" id="nameW">WHITE</span>
+                <span class="ch-pb-sub">Player</span>
                 <div style="display:flex;align-items:center;gap:2px;margin-top:2px">
                   <div class="ch-cap-row-w" id="capByWhite" style="min-height:0"></div>
                   <span class="ch-pb-adv" id="advW"></span>
                 </div>
               </div>
+              <div class="ch-player-clock ch-pb-clock" id="clockW">—</div>
             </div>
+            <div class="ch-vs">VS</div>
             <div class="ch-pb-player" id="pbB" style="flex-direction:row-reverse">
               <span class="ch-pb-piece">♟</span>
               <div style="text-align:right">
                 <span class="ch-pb-name" id="nameB">BLACK</span>
+                <span class="ch-pb-sub">Player</span>
                 <div style="display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:2px">
                   <span class="ch-pb-adv" id="advB"></span>
                   <div class="ch-cap-row-b" id="capByBlack" style="min-height:0"></div>
                 </div>
               </div>
+              <div class="ch-player-clock ch-pb-clock" id="clockB">—</div>
             </div>
           </div>
 
           <!-- Clocks row -->
           <div style="display:flex;justify-content:space-between;padding:6px 14px 0;width:calc(18px + 8 * var(--sq));box-sizing:border-box;">
-            <div class="ch-pb-clock" id="clockW">—</div>
-            <div class="ch-pb-clock" id="clockB" style="text-align:right">—</div>
+            <div class="ch-pb-clock" id="clockWOld">—</div>
+            <div class="ch-pb-clock" id="clockBOld" style="text-align:right">—</div>
           </div>
+        </div>
         </div>
 
         <!-- RIGHT PANEL -->
-        <div class="ch-panel" id="rightPanel">
-          <div style="display:flex;flex-direction:column;flex:1;gap:18px;min-height:0">
-            <div style="display:flex;flex-direction:column;flex:1;min-height:0">
-              <div class="ch-sect-lbl">Move History</div>
-              <div class="ch-log-wrap">
-                <table id="moveLogTable"><tbody></tbody></table>
-              </div>
+        <div class="ch-right-stack" id="rightPanel">
+          <div class="ch-side-card history">
+            <div class="ch-sect-lbl" data-icon="♘">Move History</div>
+            <div class="ch-log-wrap">
+              <table id="moveLogTable"><tbody></tbody></table>
             </div>
+            <div class="ch-history-controls" aria-label="Move history controls">
+              <button class="ch-history-btn" type="button" title="First move">|‹</button>
+              <button class="ch-history-btn" type="button" title="Previous move">‹</button>
+              <button class="ch-history-btn" type="button" title="Next move" disabled>›</button>
+              <button class="ch-history-btn" type="button" title="Last move">›|</button>
+            </div>
+          </div>
 
-            <div>
-              <div class="ch-sect-lbl">Captured Pieces</div>
-              <div class="ch-cap-block">
+          <div class="ch-side-card">
+            <div class="ch-sect-lbl" data-icon="⚔">Captured Pieces</div>
+            <div class="ch-cap-block">
+              <div class="ch-cap-line">
+                <span class="ch-cap-token black"></span>
                 <div class="ch-cap-row-w" id="capW"></div>
+              </div>
+              <div class="ch-cap-line">
+                <span class="ch-cap-token"></span>
                 <div class="ch-cap-row-b" id="capB"></div>
               </div>
             </div>
           </div>
 
-          <div class="ch-right-btns">
-            <button class="ch-icon-btn" id="btnFlip" title="Flip Board">&#8644;</button>
-            <button class="ch-icon-btn ch-resign" id="btnResign" title="Resign">&#9876;</button>
+          <div class="ch-side-card ch-tools-card">
+            <div class="ch-sect-lbl" data-icon="⚒">Tools</div>
+            <div class="ch-right-btns">
+              <button class="ch-icon-btn" id="btnFlip" title="Flip Board"><span class="tool-symbol">&#8644;</span> Flip Board</button>
+              <button class="ch-icon-btn ch-resign" id="btnResign" title="Resign"><span class="tool-symbol">&#9873;</span> Resign</button>
+            </div>
           </div>
         </div>
 
@@ -626,11 +1201,11 @@
   function renderClocks(){
     const wEl=document.getElementById('clockW'),bEl=document.getElementById('clockB');
     if(!wEl||!bEl)return;
-    if(setupTime===0||!gameStarted){wEl.textContent='—';bEl.textContent='—';wEl.className='ch-pb-clock';bEl.className='ch-pb-clock';return;}
+    if(setupTime===0||!gameStarted){wEl.textContent='—';bEl.textContent='—';wEl.className='ch-player-clock ch-pb-clock';bEl.className='ch-player-clock ch-pb-clock';return;}
     wEl.textContent=fmtClock(clocks.w);bEl.textContent=fmtClock(clocks.b);
     const wActive=state.turn==='w'&&!over,bActive=state.turn==='b'&&!over;
-    wEl.className='ch-pb-clock running'+(wActive?' active':'')+(clocks.w<20&&!over?' low':'');
-    bEl.className='ch-pb-clock running'+(bActive?' active':'')+(clocks.b<20&&!over?' low':'');
+    wEl.className='ch-player-clock ch-pb-clock running'+(wActive?' active':'')+(clocks.w<20&&!over?' low':'');
+    bEl.className='ch-player-clock ch-pb-clock running'+(bActive?' active':'')+(clocks.b<20&&!over?' low':'');
   }
 
   // ── Player bar ──
@@ -709,11 +1284,16 @@
   }
   function renderCoords(){
     const files='abcdefgh',ranks='87654321';
-    const fEl=document.getElementById('chFiles'),rEl=document.getElementById('chRanks');
+    const fEl=document.getElementById('chFiles'),fTop=document.getElementById('chFilesTop'),rEl=document.getElementById('chRanks'),rRight=document.getElementById('chRanksRight');
     if(!fEl||!rEl)return;fEl.innerHTML='';rEl.innerHTML='';
+    if(fTop)fTop.innerHTML='';
+    if(rRight)rRight.innerHTML='';
     for(let i=0;i<8;i++){
-      const fs=document.createElement('span');fs.textContent=flipped?files[7-i]:files[i];fEl.appendChild(fs);
-      const rs=document.createElement('span');rs.textContent=flipped?ranks[7-i]:ranks[i];rEl.appendChild(rs);
+      const fileTxt=flipped?files[7-i]:files[i],rankTxt=flipped?ranks[7-i]:ranks[i];
+      const fs=document.createElement('span');fs.textContent=fileTxt.toUpperCase();fEl.appendChild(fs);
+      if(fTop){const fst=document.createElement('span');fst.textContent=fileTxt.toUpperCase();fTop.appendChild(fst);}
+      const rs=document.createElement('span');rs.textContent=rankTxt;rEl.appendChild(rs);
+      if(rRight){const rr=document.createElement('span');rr.textContent=rankTxt;rRight.appendChild(rr);}
     }
   }
   function render(){renderBoard();renderPlayerBar();renderClocks();renderCaptured();renderAdvBadges();renderPanel();renderLog();}
