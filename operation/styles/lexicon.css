@@ -4,6 +4,12 @@
 
 /* ── Page Hero — uses shared .game-hero / .catalog-hero ── */
 
+/* ── Warm background for lexicon pages ───────────── */
+
+.lex-page .main-content {
+  background: #f9f6f0;
+}
+
 /* ── Section Labels ──────────────────────────────── */
 
 .lex-section-label {
@@ -45,12 +51,10 @@
   font-family: Georgia, serif;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.lex-search-input::placeholder {
-  color: #bbb;
-}
+.lex-search-input::placeholder { color: #bbb; }
 
 .lex-search-input:focus {
   border-color: #8a611c;
@@ -64,7 +68,7 @@
   align-items: center;
   gap: 7px;
   border: 1.5px solid #d4c09a;
-  background: #fff;
+  background: transparent;
   color: #8a611c;
   border-radius: 5px;
   padding: 7px 14px;
@@ -75,12 +79,11 @@
   text-decoration: none;
   transition: border-color 0.18s, background 0.18s;
   margin-bottom: 32px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .lex-random-btn:hover {
   border-color: #8a611c;
-  background: #fdf8f0;
+  background: rgba(138,97,28,0.06);
 }
 
 /* ── Alphabet Bar ────────────────────────────────── */
@@ -93,14 +96,14 @@
 }
 
 .lex-alpha-btn {
-  background: #fff;
+  background: transparent;
   border: 1.5px solid #ddd;
   border-radius: 4px;
   padding: 5px 9px;
   font-family: Georgia, serif;
   font-size: 12px;
   font-weight: 700;
-  color: #777;
+  color: #888;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s;
   line-height: 1;
@@ -109,7 +112,6 @@
 .lex-alpha-btn:hover {
   border-color: #8a611c;
   color: #5a3e0f;
-  background: #fdf8f0;
 }
 
 .lex-alpha-btn.active {
@@ -119,7 +121,7 @@
 }
 
 .lex-alpha-btn:disabled {
-  opacity: 0.25;
+  opacity: 0.22;
   cursor: default;
 }
 
@@ -134,19 +136,18 @@
 
 .lex-feat-card {
   background: #fff;
-  border: 1.5px solid #e8d9b8;
+  border: 1px solid #e4d9c4;
   border-radius: 8px;
   padding: 18px 20px;
   text-decoration: none;
   color: inherit;
   transition: border-color 0.18s, box-shadow 0.18s;
   display: block;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
 .lex-feat-card:hover {
   border-color: #8a611c;
-  box-shadow: 0 4px 16px rgba(138,97,28,0.12);
+  box-shadow: 0 4px 16px rgba(138,97,28,0.1);
 }
 
 .lex-feat-word {
@@ -170,7 +171,7 @@
 
 .lex-feat-snippet {
   font-size: 13px;
-  color: #666;
+  color: #777;
   font-family: Georgia, serif;
   line-height: 1.55;
   margin: 0;
@@ -184,19 +185,16 @@
 
 .lex-word-list {
   background: #fff;
-  border: 1.5px solid #e0d4c0;
+  border: 1px solid #e4d9c4;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .lex-letter-section {
   border-bottom: 1px solid #f0ebe0;
 }
 
-.lex-letter-section:last-child {
-  border-bottom: none;
-}
+.lex-letter-section:last-child { border-bottom: none; }
 
 .lex-letter-header {
   background: #faf6ee;
@@ -222,13 +220,9 @@
   min-width: 0;
 }
 
-.lex-word-row:last-child {
-  border-bottom: none;
-}
+.lex-word-row:last-child { border-bottom: none; }
 
-.lex-word-row:hover {
-  background: #fdf8f0;
-}
+.lex-word-row:hover { background: #fdf8f0; }
 
 .lex-row-word {
   font-family: Georgia, serif;
@@ -241,9 +235,7 @@
   transition: color 0.12s;
 }
 
-.lex-word-row:hover .lex-row-word {
-  color: #5a3e0f;
-}
+.lex-word-row:hover .lex-row-word { color: #5a3e0f; }
 
 .lex-row-pos {
   font-size: 9px;
@@ -256,14 +248,11 @@
   padding-top: 1px;
 }
 
-.lex-row-dot {
-  color: #ccc;
-  flex-shrink: 0;
-}
+.lex-row-dot { color: #ccc; flex-shrink: 0; }
 
 .lex-row-def {
   font-size: 13px;
-  color: #888;
+  color: #999;
   font-family: Georgia, serif;
   white-space: nowrap;
   overflow: hidden;
@@ -288,7 +277,7 @@
 ══════════════════════════════════════════════════ */
 
 .lex-record-wrap {
-  max-width: 720px;
+  max-width: 740px;
 }
 
 /* ── Back Link ───────────────────────────────────── */
@@ -296,30 +285,33 @@
 .lex-back {
   display: inline-block;
   font-family: Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #8a611c;
+  color: #aaa;
   text-decoration: none;
-  margin-bottom: 36px;
-  opacity: 0.7;
-  transition: opacity 0.15s;
+  margin-bottom: 32px;
+  transition: color 0.15s;
 }
 
-.lex-back:hover {
-  opacity: 1;
-}
+.lex-back:hover { color: #8a611c; }
 
-/* ── Word Header ─────────────────────────────────── */
+/* ── Word Header Row ─────────────────────────────── */
 
-.lex-word-header {
+.lex-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
   padding-bottom: 28px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e0d9cc;
 }
 
-.lex-word-header h1 {
+.lex-word-side { flex: 1; min-width: 0; }
+
+.lex-word-side h1 {
   font-family: Georgia, serif;
-  font-size: clamp(48px, 7vw, 80px);
+  font-size: clamp(48px, 7vw, 76px);
   font-weight: 700;
   color: #111;
   margin: 0 0 10px;
@@ -330,118 +322,125 @@
 .lex-word-meta {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  font-family: Georgia, serif;
 }
 
 .lex-word-pronunciation {
-  font-family: Georgia, serif;
-  font-size: 16px;
-  color: #8a611c;
+  font-size: 15px;
+  color: #888;
   font-style: italic;
 }
 
-.lex-word-meta-dot {
-  color: #ccc;
-}
+.lex-word-meta-dot { color: #ccc; font-size: 13px; }
 
 .lex-word-pos {
-  font-family: Georgia, serif;
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #999;
+  color: #aaa;
+}
+
+.lex-atlas-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+  padding-top: 6px;
+}
+
+.lex-atlas-label {
+  font-family: Georgia, serif;
+  font-size: 8px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.lex-atlas-code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #8a611c;
+  letter-spacing: 0.12em;
 }
 
 /* ── Definitions ─────────────────────────────────── */
 
 .lex-defs {
   padding: 32px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e0d9cc;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 22px;
 }
 
 .lex-def-item {
   display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 0 8px;
+  grid-template-columns: 40px 1fr;
+  gap: 0;
   align-items: start;
 }
 
 .lex-numeral {
   font-family: Georgia, serif;
-  font-size: 11px;
-  color: #8a611c;
-  letter-spacing: 0.06em;
-  padding-top: 5px;
+  font-size: 12px;
+  color: #b8881a;
+  letter-spacing: 0.04em;
+  padding-top: 4px;
   user-select: none;
-  opacity: 0.7;
 }
 
 .lex-def-text {
   font-family: Georgia, serif;
-  font-size: 17px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.82;
   color: #222;
   margin: 0;
 }
 
-/* ── Metadata Grid ───────────────────────────────── */
+/* ── Connections Row ─────────────────────────────── */
 
-.lex-meta-grid {
+.lex-connections-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
   padding: 28px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e0d9cc;
+}
+
+.lex-conn-block {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
 }
 
-.lex-meta-row {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 0 20px;
-  align-items: baseline;
-}
-
-.lex-meta-key {
+.lex-conn-label {
   font-family: Georgia, serif;
-  font-size: 9px;
-  letter-spacing: 0.22em;
+  font-size: 8px;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: #aaa;
-  padding-top: 2px;
-  flex-shrink: 0;
 }
 
-.lex-meta-val {
+.lex-conn-links {
   font-family: Georgia, serif;
-  font-size: 15px;
-  color: #333;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #555;
 }
 
-.lex-meta-val.code {
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  color: #8a611c;
-  letter-spacing: 0.1em;
-}
-
-.lex-meta-val a {
+.lex-conn-link {
   color: #8a611c;
   text-decoration: none;
   transition: color 0.15s;
 }
 
-.lex-meta-val a:hover {
-  color: #5a3e0f;
-  text-decoration: underline;
-}
+.lex-conn-link:hover { color: #5a3e0f; }
 
-.lex-meta-sep {
+.lex-conn-sep {
   color: #ccc;
-  margin: 0 8px;
+  margin: 0 7px;
   user-select: none;
 }
 
@@ -457,28 +456,37 @@
 
 .lex-nav-link {
   font-family: Georgia, serif;
-  font-size: 14px;
-  color: #888;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
   text-decoration: none;
   transition: color 0.15s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.lex-nav-link:hover {
-  color: #8a611c;
+.lex-nav-link:hover { color: #8a611c; }
+.lex-nav-link.next { text-align: right; }
+
+.lex-nav-ornament {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 }
 
-.lex-nav-link.next {
-  text-align: right;
+.lex-nav-line {
+  flex: 1;
+  height: 1px;
+  background: #e0d9cc;
 }
 
-.lex-nav-center {
-  font-family: Georgia, serif;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #ccc;
-  white-space: nowrap;
+.lex-nav-diamond {
+  color: #c9a04a;
+  font-size: 7px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 /* ── Not Found ───────────────────────────────────── */
@@ -489,54 +497,25 @@
   font-family: Georgia, serif;
 }
 
-.lex-not-found h2 {
-  color: #222;
-  font-size: 28px;
-  margin: 0 0 14px;
-}
-
-.lex-not-found p {
-  color: #888;
-  margin: 0 0 28px;
-  font-size: 15px;
-}
+.lex-not-found h2 { color: #222; font-size: 28px; margin: 0 0 14px; }
+.lex-not-found p  { color: #888; margin: 0 0 28px; font-size: 15px; }
 
 /* ── Responsive ──────────────────────────────────── */
 
 @media (max-width: 700px) {
-  .lex-featured-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .lex-featured-grid { grid-template-columns: repeat(2, 1fr); }
 
-  .lex-word-header h1 {
-    font-size: clamp(40px, 12vw, 60px);
-  }
+  .lex-header-row { flex-direction: column; }
+  .lex-atlas-side { align-items: flex-start; }
+  .lex-word-side h1 { font-size: clamp(40px, 12vw, 60px); }
 
-  .lex-meta-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
+  .lex-connections-row { grid-template-columns: 1fr; gap: 20px; }
 
-  .lex-meta-key {
-    font-size: 8px;
-  }
-
-  .lex-row-def {
-    display: none;
-  }
-
-  .lex-word-row {
-    padding: 9px 14px;
-  }
+  .lex-row-def { display: none; }
+  .lex-word-row { padding: 9px 14px; }
 }
 
 @media (max-width: 480px) {
-  .lex-featured-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .lex-alpha-btn {
-    padding: 4px 6px;
-    font-size: 11px;
-  }
+  .lex-featured-grid { grid-template-columns: 1fr; }
+  .lex-alpha-btn { padding: 4px 6px; font-size: 11px; }
 }
