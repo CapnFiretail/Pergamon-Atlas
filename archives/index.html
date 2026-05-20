@@ -26,27 +26,7 @@
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
   <style>
-    .arc-hero {
-      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
-      color: white;
-      border: 2px solid #8a611c;
-      border-radius: 16px;
-      padding: 28px;
-      margin-bottom: 28px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-    }
-    .arc-hero h2 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 5vw, 42px);
-      color: #f0d39b;
-    }
-    .arc-hero p {
-      margin: 0;
-      font-size: 17px;
-      line-height: 1.7;
-      color: #f3f3f3;
-      max-width: 680px;
-    }
+    .arc-logo-img { mix-blend-mode: screen; }
 
     .arc-access-note {
       background: #f8f5ee;
@@ -163,9 +143,23 @@
     <div id="sidebar-placeholder"></div>
     <main class="main-content">
 
-      <section class="arc-hero">
-        <h2>Archives</h2>
-        <p>Artifacts that have been deprecated, replaced, or removed from active Atlas space. Their addresses and identities are preserved here. They no longer appear in standard navigation.</p>
+      <section class="game-hero catalog-hero">
+        <span class="game-hero-corner tl"></span>
+        <span class="game-hero-corner tr"></span>
+        <span class="game-hero-corner bl"></span>
+        <span class="game-hero-corner br"></span>
+        <div class="game-hero-emblem">
+          <img src="/operation/images/archives-logo.png" alt="Archives Logo" class="arc-logo-img">
+        </div>
+        <div class="game-hero-sep">&#10022;</div>
+        <div class="game-hero-title">
+          <h2>Archives</h2>
+          <div class="game-hero-sub">
+            <span class="game-hero-sub-line"></span>
+            <span>Pergamon Catalogs</span>
+            <span class="game-hero-sub-line"></span>
+          </div>
+        </div>
       </section>
 
       <div class="arc-panel">
