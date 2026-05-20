@@ -4,10 +4,6 @@
 
 /* ── Page Hero — uses shared .game-hero / .catalog-hero from games CSS ── */
 
-.lex-logo-img {
-  mix-blend-mode: screen;
-}
-
 /* ── Search Bar ─────────────────────────────────── */
 
 .lex-search-wrap {
