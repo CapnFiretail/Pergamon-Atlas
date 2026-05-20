@@ -259,26 +259,26 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1.5px solid rgba(184,136,26,0.8);
-  background: transparent;
-  color: #8a611c;
+  border: 2px solid #8a611c;
+  background: #8a611c;
+  color: #f5e6c0;
   border-radius: 8px;
-  padding: 9px 16px;
+  padding: 13px 18px;
   font-family: Georgia, serif;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .lex-random-btn:hover {
-  background: rgba(184,136,26,0.08);
-  color: #6b4a14;
-  box-shadow: 0 0 12px rgba(184,136,26,0.15);
+  background: #6b4a14;
+  border-color: #6b4a14;
+  box-shadow: 0 0 12px rgba(138,97,28,0.25);
 }
 
 /* ══════════════════════════════════════════════════
@@ -784,16 +784,17 @@
 .section-label {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 11px;
+  gap: 14px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #8a611c;
   margin: 0 0 14px;
   font-family: Georgia, serif;
 }
 
+.section-label::before,
 .section-label::after {
   content: "";
   flex: 1;
