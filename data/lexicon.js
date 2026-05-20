@@ -19,7 +19,7 @@ window.lexiconData = {
         'A conceptual depth without floor; the space between what exists and what has ceased to exist.',
         'In figurative use: a condition of overwhelming depth — of despair, ruin, or ignorance — from which no ascent is visible.',
       ],
-      example: 'The abyss is not empty — it is full of the absence of what cannot exist there.',
+      example: 'No traversal path beyond the abyss was recovered.',
       cluster: 'water-depth',
       synonyms: [], antonyms: [], related: ['depth', 'ocean', 'silence', 'eternity'],
       atlas: { address: 'UQSDS-X2A9B-MD5JP', chamber: 'LX', seed: 760826786, coords: { x: 6427192, y: -15643472, z: 12185605 } },

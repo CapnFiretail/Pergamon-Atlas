@@ -100,52 +100,37 @@
       `;
     } else {
 
-      const idx     = sorted.findIndex(e => e.word === entry.word);
-      const prev    = idx > 0              ? sorted[idx - 1] : null;
-      const next    = idx < sorted.length - 1 ? sorted[idx + 1] : null;
-      const cluster = data.clusters[entry.cluster] || entry.cluster;
-
-      // Cluster siblings (same cluster, not self, up to 6)
+      const cluster  = data.clusters[entry.cluster] || entry.cluster;
       const siblings = entries
         .filter(e => e.cluster === entry.cluster && e.word !== entry.word)
         .slice(0, 6);
 
-      function navCard(e, dir) {
-        if (!e) return `<div></div>`;
-        const arrow = dir === 'prev' ? '←' : '→';
-        const dirLabel = dir === 'prev' ? 'Previous' : 'Next';
-        if (dir === 'prev') {
-          return `
-            <a class="lex-nav-prev" href="/lexicon/record.html?word=${encodeURIComponent(e.word)}">
-              <span class="lex-nav-arrow">${arrow}</span>
-              <span>
-                <span class="lex-nav-dir">${dirLabel}</span>
-                <span class="lex-nav-word">${h(e.word)}</span>
-                <span class="lex-nav-pos">${h(e.pos)}</span>
-              </span>
-            </a>`;
-        }
-        return `
-          <a class="lex-nav-next" href="/lexicon/record.html?word=${encodeURIComponent(e.word)}">
-            <span>
-              <span class="lex-nav-dir">${dirLabel}</span>
-              <span class="lex-nav-word">${h(e.word)}</span>
-              <span class="lex-nav-pos">${h(e.pos)}</span>
-            </span>
-            <span class="lex-nav-arrow">${arrow}</span>
-          </a>`;
-      }
+      // Connection panels — only rendered when non-empty
+      const synHTML = (entry.synonyms && entry.synonyms.length)
+        ? `<div class="lex-panel" style="margin-bottom:0"><p class="lex-panel-label">Synonyms</p><div class="lex-tags">${entry.synonyms.map(w => tagLink(w, 'synonym')).join('')}</div></div>`
+        : '';
+      const antHTML = (entry.antonyms && entry.antonyms.length)
+        ? `<div class="lex-panel" style="margin-bottom:0"><p class="lex-panel-label">Antonyms</p><div class="lex-tags">${entry.antonyms.map(w => tagLink(w, 'antonym')).join('')}</div></div>`
+        : '';
+      const connectionsHTML = (synHTML || antHTML)
+        ? `<div class="lex-connections-grid" style="margin-bottom:16px">${synHTML}${antHTML}</div>`
+        : '';
 
-      const clusterHTML = siblings.length > 0
-        ? `<div class="lex-cluster-grid">
-            ${siblings.map(s => `
-              <a class="lex-cluster-card" href="/lexicon/record.html?word=${encodeURIComponent(s.word)}">
-                <span class="lex-cluster-card-word">${h(s.word)}</span>
-                <span class="lex-cluster-card-pos">${h(s.pos)}</span>
-              </a>
-            `).join('')}
+      const relatedHTML = (entry.related && entry.related.length)
+        ? `<div class="lex-panel"><p class="lex-panel-label">Related Entries</p><div class="lex-tags">${entry.related.map(w => tagLink(w, 'related')).join('')}</div></div>`
+        : '';
+
+      const nearbyHTML = siblings.length
+        ? `<p class="section-label" style="margin-top:32px">Nearby Records</p>
+           <div class="lex-cluster-grid">
+             ${siblings.map(s => `
+               <a class="lex-cluster-card" href="/lexicon/record.html?word=${encodeURIComponent(s.word)}">
+                 <span class="lex-cluster-card-word">${h(s.word)}</span>
+                 <span class="lex-cluster-card-pos">${h(s.pos)}</span>
+               </a>
+             `).join('')}
            </div>`
-        : `<p style="color:#888;font-family:Georgia,serif;font-size:14px;margin:0">No other entries in this cluster yet.</p>`;
+        : '';
 
       main.innerHTML = `
 
@@ -197,22 +182,9 @@
           <p class="lex-example-text">${h(entry.example)}</p>
         </div>
 
-        <!-- Synonyms + Antonyms -->
-        <div class="lex-connections-grid">
-          <div class="lex-panel" style="margin-bottom:0">
-            <p class="lex-panel-label">Synonyms</p>
-            <div class="lex-tags">
-              ${tagsOrEmpty(entry.synonyms, 'synonym', 'none recorded')}
-            </div>
-          </div>
-          <div class="lex-panel" style="margin-bottom:0">
-            <p class="lex-panel-label">Antonyms</p>
-            <div class="lex-tags">
-              ${tagsOrEmpty(entry.antonyms, 'antonym', 'none recorded')}
-            </div>
-          </div>
-        </div>
-
+        ${connectionsHTML}
+        ${relatedHTML}
+        ${nearbyHTML}
 
       `;
     }
