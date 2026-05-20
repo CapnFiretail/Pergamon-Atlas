@@ -88,51 +88,50 @@
         ? `<a class="lex-nav-link next" href="/lexicon/record.html?word=${encodeURIComponent(next.word)}">${h(next.word)} →</a>`
         : `<span></span>`;
 
+      const nearbyHTML = nearby.length > 0 ? `
+        <div class="lex-meta-row">
+          <span class="lex-meta-key">Nearby Records</span>
+          <span class="lex-meta-val">${connList(nearby.map(e => e.word))}</span>
+        </div>` : '';
+
       main.innerHTML = `
+        <div class="lex-record-wrap">
 
-        <a class="lex-back" href="/lexicon/">← The Lexicon</a>
+          <a class="lex-back" href="/lexicon/">← The Lexicon</a>
 
-        <div class="lex-word-header">
-          <h1>${h(entry.word)}</h1>
-          <p class="lex-word-pronunciation">${h(entry.pronunciation)}</p>
-          <p class="lex-word-pos">${h(entry.pos)}</p>
+          <div class="lex-word-header">
+            <h1>${h(entry.word)}</h1>
+            <div class="lex-word-meta">
+              <span class="lex-word-pronunciation">${h(entry.pronunciation)}</span>
+              <span class="lex-word-meta-dot">·</span>
+              <span class="lex-word-pos">${h(entry.pos)}</span>
+            </div>
+          </div>
+
+          <div class="lex-defs">
+            ${defsHTML}
+          </div>
+
+          <div class="lex-meta-grid">
+            <div class="lex-meta-row">
+              <span class="lex-meta-key">Atlas Reference</span>
+              <span class="lex-meta-val code">${h(entry.atlas.address)}</span>
+            </div>
+            ${entry.related && entry.related.length > 0 ? `
+            <div class="lex-meta-row">
+              <span class="lex-meta-key">Related Entries</span>
+              <span class="lex-meta-val">${connList(entry.related)}</span>
+            </div>` : ''}
+            ${nearbyHTML}
+          </div>
+
+          <div class="lex-nav-bar">
+            ${prevLink}
+            <span class="lex-nav-center">The Lexicon</span>
+            ${nextLink}
+          </div>
+
         </div>
-
-        <hr class="lex-rule">
-
-        <div class="lex-defs">
-          ${defsHTML}
-        </div>
-
-        <hr class="lex-rule">
-
-        <div class="lex-ref-block">
-          <span class="lex-ref-label">Atlas Reference</span>
-          <span class="lex-ref-code">${h(entry.atlas.address)}</span>
-        </div>
-
-        <hr class="lex-rule">
-
-        <div class="lex-conn-block">
-          <span class="lex-conn-label">Related Entries</span>
-          <div class="lex-conn-links">${connList(entry.related)}</div>
-        </div>
-
-        ${nearby.length > 0 ? `
-        <hr class="lex-rule">
-
-        <div class="lex-conn-block">
-          <span class="lex-conn-label">Nearby Records</span>
-          <div class="lex-conn-links">${connList(nearby.map(e => e.word))}</div>
-        </div>
-        ` : ''}
-
-        <div class="lex-nav-bar">
-          ${prevLink}
-          <span class="lex-nav-center">The Lexicon</span>
-          ${nextLink}
-        </div>
-
       `;
     }
   </script>

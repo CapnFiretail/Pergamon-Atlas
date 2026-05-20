@@ -2,7 +2,7 @@
    LEXICON — Archival Indexing System
 =================================================== */
 
-/* ── Page Hero — uses shared .game-hero / .catalog-hero from games CSS ── */
+/* ── Page Hero — uses shared .game-hero / .catalog-hero ── */
 
 /* ── Section Labels ──────────────────────────────── */
 
@@ -10,9 +10,9 @@
   font-size: 9px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(184,136,26,0.8);
+  color: #8a611c;
   font-family: Georgia, serif;
-  margin: 0 0 16px;
+  margin: 0 0 14px;
 }
 
 /* ── Search Bar ──────────────────────────────────── */
@@ -28,7 +28,7 @@
 .lex-search-icon {
   position: absolute;
   left: 14px;
-  color: rgba(184,136,26,0.5);
+  color: rgba(138,97,28,0.55);
   display: flex;
   align-items: center;
   pointer-events: none;
@@ -36,23 +36,25 @@
 
 .lex-search-input {
   width: 100%;
-  background: #0d0d0d;
-  color: rgba(255,255,255,0.85);
-  border: 1px solid rgba(184,136,26,0.25);
+  background: #fff;
+  color: #111;
+  border: 1.5px solid #d4c09a;
   border-radius: 6px;
   padding: 11px 14px 11px 42px;
   font-size: 15px;
   font-family: Georgia, serif;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .lex-search-input::placeholder {
-  color: rgba(255,255,255,0.2);
+  color: #bbb;
 }
 
 .lex-search-input:focus {
-  border-color: rgba(184,136,26,0.6);
+  border-color: #8a611c;
+  box-shadow: 0 0 0 3px rgba(138,97,28,0.1);
 }
 
 /* ── Random Entry Button ─────────────────────────── */
@@ -60,24 +62,25 @@
 .lex-random-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border: 1px solid rgba(184,136,26,0.3);
-  background: transparent;
-  color: rgba(184,136,26,0.65);
+  gap: 7px;
+  border: 1.5px solid #d4c09a;
+  background: #fff;
+  color: #8a611c;
   border-radius: 5px;
   padding: 7px 14px;
   font-family: Georgia, serif;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   cursor: pointer;
   text-decoration: none;
-  transition: border-color 0.18s, color 0.18s;
+  transition: border-color 0.18s, background 0.18s;
   margin-bottom: 32px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .lex-random-btn:hover {
-  border-color: rgba(184,136,26,0.65);
-  color: rgba(184,136,26,0.9);
+  border-color: #8a611c;
+  background: #fdf8f0;
 }
 
 /* ── Alphabet Bar ────────────────────────────────── */
@@ -90,31 +93,33 @@
 }
 
 .lex-alpha-btn {
-  background: transparent;
-  border: 1px solid rgba(184,136,26,0.18);
-  border-radius: 3px;
-  padding: 5px 8px;
+  background: #fff;
+  border: 1.5px solid #ddd;
+  border-radius: 4px;
+  padding: 5px 9px;
   font-family: Georgia, serif;
   font-size: 12px;
-  color: rgba(255,255,255,0.3);
+  font-weight: 700;
+  color: #777;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
   line-height: 1;
 }
 
 .lex-alpha-btn:hover {
-  border-color: rgba(184,136,26,0.5);
-  color: rgba(255,255,255,0.7);
+  border-color: #8a611c;
+  color: #5a3e0f;
+  background: #fdf8f0;
 }
 
 .lex-alpha-btn.active {
-  border-color: rgba(184,136,26,0.7);
-  color: rgba(184,136,26,0.9);
-  background: rgba(184,136,26,0.08);
+  border-color: #8a611c;
+  background: #8a611c;
+  color: #f0d39b;
 }
 
 .lex-alpha-btn:disabled {
-  opacity: 0.15;
+  opacity: 0.25;
   cursor: default;
 }
 
@@ -122,32 +127,34 @@
 
 .lex-featured-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 10px;
   margin-bottom: 36px;
 }
 
 .lex-feat-card {
-  background: #0d0d0d;
-  border: 1px solid rgba(184,136,26,0.2);
+  background: #fff;
+  border: 1.5px solid #e8d9b8;
   border-radius: 8px;
   padding: 18px 20px;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.18s;
+  transition: border-color 0.18s, box-shadow 0.18s;
   display: block;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
 .lex-feat-card:hover {
-  border-color: rgba(184,136,26,0.55);
+  border-color: #8a611c;
+  box-shadow: 0 4px 16px rgba(138,97,28,0.12);
 }
 
 .lex-feat-word {
   font-family: Georgia, serif;
   font-size: 22px;
   font-weight: 700;
-  color: #fff;
-  margin: 0 0 5px;
+  color: #111;
+  margin: 0 0 4px;
   line-height: 1;
 }
 
@@ -156,14 +163,14 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(184,136,26,0.6);
+  color: #8a611c;
   font-family: Georgia, serif;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 }
 
 .lex-feat-snippet {
   font-size: 13px;
-  color: rgba(255,255,255,0.35);
+  color: #666;
   font-family: Georgia, serif;
   line-height: 1.55;
   margin: 0;
@@ -176,14 +183,15 @@
 /* ── Word List ───────────────────────────────────── */
 
 .lex-word-list {
-  background: #0d0d0d;
-  border: 1px solid rgba(184,136,26,0.18);
+  background: #fff;
+  border: 1.5px solid #e0d4c0;
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .lex-letter-section {
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid #f0ebe0;
 }
 
 .lex-letter-section:last-child {
@@ -191,14 +199,14 @@
 }
 
 .lex-letter-header {
-  background: #0a0a0a;
-  border-bottom: 1px solid rgba(184,136,26,0.1);
+  background: #faf6ee;
+  border-bottom: 1px solid #ede3cf;
   padding: 7px 20px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(184,136,26,0.5);
+  color: #8a611c;
   font-family: Georgia, serif;
 }
 
@@ -209,8 +217,8 @@
   padding: 10px 20px;
   text-decoration: none;
   color: inherit;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  transition: background 0.14s;
+  border-bottom: 1px solid #f5f0e8;
+  transition: background 0.12s;
   min-width: 0;
 }
 
@@ -219,22 +227,22 @@
 }
 
 .lex-word-row:hover {
-  background: rgba(184,136,26,0.05);
+  background: #fdf8f0;
 }
 
 .lex-row-word {
   font-family: Georgia, serif;
   font-size: 15px;
   font-weight: 700;
-  color: rgba(255,255,255,0.9);
+  color: #111;
   white-space: nowrap;
   flex-shrink: 0;
   min-width: 110px;
-  transition: color 0.14s;
+  transition: color 0.12s;
 }
 
 .lex-word-row:hover .lex-row-word {
-  color: #fff;
+  color: #5a3e0f;
 }
 
 .lex-row-pos {
@@ -242,20 +250,20 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(184,136,26,0.55);
+  color: #8a611c;
   flex-shrink: 0;
   font-family: Georgia, serif;
   padding-top: 1px;
 }
 
 .lex-row-dot {
-  color: rgba(255,255,255,0.12);
+  color: #ccc;
   flex-shrink: 0;
 }
 
 .lex-row-def {
   font-size: 13px;
-  color: rgba(255,255,255,0.3);
+  color: #888;
   font-family: Georgia, serif;
   white-space: nowrap;
   overflow: hidden;
@@ -269,7 +277,7 @@
 .lex-no-results {
   padding: 40px 20px;
   text-align: center;
-  color: #888;
+  color: #aaa;
   font-family: Georgia, serif;
   font-size: 14px;
   display: none;
@@ -279,6 +287,10 @@
    RECORD PAGE
 ══════════════════════════════════════════════════ */
 
+.lex-record-wrap {
+  max-width: 720px;
+}
+
 /* ── Back Link ───────────────────────────────────── */
 
 .lex-back {
@@ -287,175 +299,173 @@
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(184,136,26,0.5);
+  color: #8a611c;
   text-decoration: none;
-  margin-bottom: 40px;
-  transition: color 0.15s;
+  margin-bottom: 36px;
+  opacity: 0.7;
+  transition: opacity 0.15s;
 }
 
 .lex-back:hover {
-  color: rgba(184,136,26,0.85);
+  opacity: 1;
 }
 
 /* ── Word Header ─────────────────────────────────── */
 
 .lex-word-header {
-  padding-bottom: 32px;
-  border-bottom: 1px solid rgba(184,136,26,0.15);
-  margin-bottom: 0;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #ddd;
 }
 
 .lex-word-header h1 {
   font-family: Georgia, serif;
-  font-size: clamp(52px, 8vw, 88px);
+  font-size: clamp(48px, 7vw, 80px);
   font-weight: 700;
   color: #111;
   margin: 0 0 10px;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+.lex-word-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .lex-word-pronunciation {
   font-family: Georgia, serif;
-  font-size: 17px;
-  color: rgba(184,136,26,0.85);
-  margin: 0 0 6px;
-  letter-spacing: 0.03em;
+  font-size: 16px;
+  color: #8a611c;
+  font-style: italic;
+}
+
+.lex-word-meta-dot {
+  color: #ccc;
 }
 
 .lex-word-pos {
   font-family: Georgia, serif;
   font-size: 10px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.35);
-  margin: 0;
-}
-
-/* ── Horizontal Rule ─────────────────────────────── */
-
-.lex-rule {
-  height: 1px;
-  background: rgba(184,136,26,0.15);
-  margin: 36px 0;
-  border: none;
+  color: #999;
 }
 
 /* ── Definitions ─────────────────────────────────── */
 
 .lex-defs {
+  padding: 32px 0;
+  border-bottom: 1px solid #ddd;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .lex-def-item {
   display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 0 12px;
+  grid-template-columns: 36px 1fr;
+  gap: 0 8px;
   align-items: start;
 }
 
 .lex-numeral {
   font-family: Georgia, serif;
   font-size: 11px;
-  color: rgba(184,136,26,0.75);
+  color: #8a611c;
   letter-spacing: 0.06em;
-  padding-top: 4px;
+  padding-top: 5px;
   user-select: none;
+  opacity: 0.7;
 }
 
 .lex-def-text {
   font-family: Georgia, serif;
   font-size: 17px;
-  line-height: 1.82;
+  line-height: 1.8;
   color: #222;
   margin: 0;
 }
 
-/* ── Atlas Reference ─────────────────────────────── */
+/* ── Metadata Grid ───────────────────────────────── */
 
-.lex-ref-block {
+.lex-meta-grid {
+  padding: 28px 0;
+  border-bottom: 1px solid #ddd;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 18px;
 }
 
-.lex-ref-label {
+.lex-meta-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0 20px;
+  align-items: baseline;
+}
+
+.lex-meta-key {
   font-family: Georgia, serif;
   font-size: 9px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.35);
+  color: #aaa;
+  padding-top: 2px;
+  flex-shrink: 0;
 }
 
-.lex-ref-code {
-  font-family: 'Courier New', monospace;
-  font-size: 14px;
-  color: rgba(184,136,26,0.75);
-  letter-spacing: 0.12em;
-}
-
-/* ── Connections (Related / Nearby) ─────────────── */
-
-.lex-conn-block {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.lex-conn-label {
-  font-family: Georgia, serif;
-  font-size: 9px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(0,0,0,0.35);
-}
-
-.lex-conn-links {
+.lex-meta-val {
   font-family: Georgia, serif;
   font-size: 15px;
-  line-height: 1.8;
+  color: #333;
+  line-height: 1.6;
 }
 
-.lex-conn-link {
-  color: rgba(138,97,28,0.9);
+.lex-meta-val.code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #8a611c;
+  letter-spacing: 0.1em;
+}
+
+.lex-meta-val a {
+  color: #8a611c;
   text-decoration: none;
   transition: color 0.15s;
 }
 
-.lex-conn-link:hover {
-  color: #6b4a14;
+.lex-meta-val a:hover {
+  color: #5a3e0f;
+  text-decoration: underline;
 }
 
-.lex-conn-sep {
-  color: rgba(0,0,0,0.2);
-  margin: 0 10px;
+.lex-meta-sep {
+  color: #ccc;
+  margin: 0 8px;
   user-select: none;
 }
 
-/* ── Prev / Next Navigation ──────────────────────── */
+/* ── Navigation ──────────────────────────────────── */
 
 .lex-nav-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 0 0;
-  border-top: 1px solid rgba(184,136,26,0.15);
+  padding: 24px 0 0;
   gap: 20px;
 }
 
 .lex-nav-link {
   font-family: Georgia, serif;
   font-size: 14px;
-  color: rgba(0,0,0,0.4);
+  color: #888;
   text-decoration: none;
   transition: color 0.15s;
   white-space: nowrap;
 }
 
 .lex-nav-link:hover {
-  color: rgba(138,97,28,0.9);
+  color: #8a611c;
 }
 
 .lex-nav-link.next {
@@ -464,10 +474,10 @@
 
 .lex-nav-center {
   font-family: Georgia, serif;
-  font-size: 11px;
-  letter-spacing: 0.14em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.2);
+  color: #ccc;
   white-space: nowrap;
 }
 
@@ -486,7 +496,7 @@
 }
 
 .lex-not-found p {
-  color: #666;
+  color: #888;
   margin: 0 0 28px;
   font-size: 15px;
 }
@@ -499,7 +509,16 @@
   }
 
   .lex-word-header h1 {
-    font-size: clamp(42px, 12vw, 64px);
+    font-size: clamp(40px, 12vw, 60px);
+  }
+
+  .lex-meta-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .lex-meta-key {
+    font-size: 8px;
   }
 
   .lex-row-def {
