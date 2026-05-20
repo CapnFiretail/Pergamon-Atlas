@@ -111,6 +111,52 @@
     .cf-artifact.muted::before, .cf-artifact.muted::after,
     .cf-artifact.muted .cf-artifact-inner::before, .cf-artifact.muted .cf-artifact-inner::after { border-color: rgba(255,255,255,0.1); }
 
+    /* ── Side-by-side pair (Game section) ── */
+    .cf-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .cf-card {
+      background: #0d0d0d;
+      border: 1px solid rgba(191,125,8,0.35);
+      border-radius: 14px;
+      overflow: hidden;
+      color: #f7f7f7;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .cf-card.live:hover {
+      border-color: rgba(191,125,8,0.9);
+      box-shadow: 0 0 28px rgba(184,136,26,0.12);
+    }
+    .cf-card.soon { opacity: 0.5; pointer-events: none; }
+
+    .cf-card-board {
+      background: #161616;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid rgba(191,125,8,0.14);
+    }
+
+    .cf-card-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    @media (max-width: 620px) {
+      .cf-pair { grid-template-columns: 1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -150,25 +196,29 @@
       <!-- Game -->
       <p class="section-label" style="margin-top:28px">Game</p>
 
-      <a class="cf-module live" href="/games/chess-forge/">
-        <div class="cf-board-area"><div class="cf-board" id="bGame"></div></div>
-        <div class="cf-mod-body">
-          <span class="cf-mod-tag">Game</span>
-          <h3 class="cf-mod-title">Chess</h3>
-          <p class="cf-mod-desc">A fully playable chess game with local 2-player and computer opponent modes. Full ruleset — castling, en passant, promotion, and more.</p>
-          <div class="cf-mod-foot"><span class="cf-badge">Play Now</span></div>
+      <div class="cf-pair">
+
+        <a class="cf-card live" href="/games/chess-forge/">
+          <div class="cf-card-board"><div class="cf-board" id="bGame"></div></div>
+          <div class="cf-card-body">
+            <span class="cf-mod-tag">Game</span>
+            <h3 class="cf-mod-title">Chess</h3>
+            <p class="cf-mod-desc">A fully playable chess game with local 2-player and computer opponent modes. Full ruleset — castling, en passant, promotion, and more.</p>
+            <div class="cf-mod-foot"><span class="cf-badge">Play Now</span></div>
+          </div>
+        </a>
+
+        <div class="cf-card soon">
+          <div class="cf-card-board"><div class="cf-board" id="bAnalyzer"></div></div>
+          <div class="cf-card-body">
+            <span class="cf-mod-tag">Tool</span>
+            <h3 class="cf-mod-title">Analyzer</h3>
+            <p class="cf-mod-desc">Load any position, step through moves, and explore variations on an interactive board with a built-in evaluation engine.</p>
+            <div class="cf-mod-foot"><span class="cf-badge muted">Coming Soon</span></div>
+          </div>
         </div>
-        <div class="cf-artifact">
-          <span class="cf-artifact-inner"></span>
-          <svg class="cf-artifact-icon" viewBox="0 0 48 48" fill="none">
-            <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-            <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="cf-artifact-label">Artifact Code</span>
-          <span class="cf-artifact-code">C443248D-CFCHX</span>
-        </div>
-      </a>
+
+      </div>
 
       <!-- Courses -->
       <p class="section-label" style="margin-top:10px">Courses</p>
@@ -348,7 +398,8 @@
       '♖','♘', '', '♕','♔','♗','♘','♖',
     ];
 
-    makeBoard('bGame',    START);
+    makeBoard('bGame',     START);
+    makeBoard('bAnalyzer', START);
     makeBoard('bVienna',  VIENNA);
     makeBoard('bKG',      KINGS_GAMBIT);
     makeBoard('bItalian', ITALIAN);
