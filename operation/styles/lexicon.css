@@ -259,26 +259,23 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 2px solid #8a611c;
-  background: #8a611c;
-  color: #f5e6c0;
-  border-radius: 8px;
-  padding: 13px 18px;
+  border: 2px solid #000;
+  background: #c28a2b;
+  color: #111;
+  border-radius: 10px;
+  padding: 13px 20px;
   font-family: Georgia, serif;
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: bold;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+  transition: 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .lex-random-btn:hover {
-  background: #6b4a14;
-  border-color: #6b4a14;
-  box-shadow: 0 0 12px rgba(138,97,28,0.25);
+  transform: translateY(-2px);
 }
 
 /* ══════════════════════════════════════════════════
