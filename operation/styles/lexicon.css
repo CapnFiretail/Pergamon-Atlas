@@ -4,12 +4,6 @@
 
 /* ── Page Hero — uses shared .game-hero / .catalog-hero from games CSS ── */
 
-/* ── Dark content area for lexicon pages ────────── */
-
-.lex-page .main-content {
-  background: #080808;
-}
-
 /* ── Section Labels ──────────────────────────────── */
 
 .lex-section-label {
