@@ -12,6 +12,45 @@
   margin-bottom: 28px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.5);
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 140px) 1px minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+}
+
+.lex-hero-emblem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lex-hero-emblem img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 10px rgba(184,136,26,0.35));
+}
+
+.lex-hero-sep {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, rgba(184,136,26,0.5), transparent);
+  align-self: center;
+}
+
+.lex-hero-content {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .lex-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .lex-hero-emblem img { width: 80px; height: 80px; }
+  .lex-hero-sep { display: none; }
+  .lex-hero-eyebrow::after { display: none; }
 }
 
 .lex-hero-corner {
