@@ -39,6 +39,16 @@
 
     loadSnippets(entry ? entry.word + ' — The Lexicon' : 'The Lexicon');
 
+    function toRoman(n) {
+      const vals = [1000,900,500,400,100,90,50,40,10,9,5,4,1];
+      const syms = ['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I'];
+      let out = '';
+      for (let i = 0; i < vals.length; i++) {
+        while (n >= vals[i]) { out += syms[i]; n -= vals[i]; }
+      }
+      return out;
+    }
+
     function h(str) {
       return String(str)
         .replace(/&/g, '&amp;')
@@ -146,8 +156,21 @@
 
         <!-- Definition -->
         <div class="lex-panel">
-          <p class="lex-panel-label">Definition</p>
-          <p class="lex-definition-text">${h(entry.definition)}</p>
+          <p class="lex-panel-label">Definition${(entry.definitions || []).length > 1 ? 's' : ''}</p>
+          ${(() => {
+            const defs = entry.definitions || (entry.definition ? [entry.definition] : []);
+            if (defs.length <= 1) {
+              return `<p class="lex-definition-text">${h(defs[0] || '')}</p>`;
+            }
+            return `<ol class="lex-definition-list">
+              ${defs.map((d, i) => `
+                <li class="lex-definition-item">
+                  <span class="lex-def-numeral">${toRoman(i + 1)}.</span>
+                  <span class="lex-def-text">${h(d)}</span>
+                </li>
+              `).join('')}
+            </ol>`;
+          })()}
         </div>
 
         <!-- Example -->

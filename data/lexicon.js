@@ -14,7 +14,11 @@ window.lexiconData = {
     {
       word: 'abyss', slug: 'abyss', pos: 'noun',
       pronunciation: '/əˈbɪs/', syllables: 'a·byss',
-      definition: 'An immeasurably deep space; a void whose bottom cannot be perceived or reached.',
+      definitions: [
+        'An immeasurably deep space; a void whose bottom cannot be perceived or reached.',
+        'A conceptual depth without floor; the space between what exists and what has ceased to exist.',
+        'In figurative use: a condition of overwhelming depth — of despair, ruin, or ignorance — from which no ascent is visible.',
+      ],
       example: 'The abyss is not empty — it is full of the absence of what cannot exist there.',
       cluster: 'water-depth',
       synonyms: [], antonyms: [], related: ['depth', 'ocean', 'silence', 'eternity'],

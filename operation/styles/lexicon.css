@@ -492,6 +492,38 @@
   margin: 0;
 }
 
+.lex-definition-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lex-definition-item {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+}
+
+.lex-def-numeral {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(184,136,26,0.75);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+  min-width: 22px;
+}
+
+.lex-def-text {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  line-height: 1.75;
+  color: #111;
+}
+
 .lex-example-text {
   font-family: Georgia, serif;
   font-size: 16px;
