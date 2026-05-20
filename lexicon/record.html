@@ -128,24 +128,28 @@
 
         <!-- Word Hero -->
         <div class="lex-word-hero">
-          <div class="lex-hero-corner tl"></div>
-          <div class="lex-hero-corner tr"></div>
-          <div class="lex-hero-corner bl"></div>
-          <div class="lex-hero-corner br"></div>
 
-          <h1>${h(entry.word)}</h1>
-          <p class="lex-word-pronunciation">${h(entry.pronunciation)}&ensp;·&ensp;${h(entry.syllables)}</p>
-
-          <div class="lex-word-meta-row">
-            <span class="lex-meta-chip pos">${h(entry.pos)}</span>
-            <span class="lex-meta-chip cluster">${h(cluster)}</span>
+          <div class="lex-hero-wordblock">
+            <h1>${h(entry.word)}</h1>
+            <p class="lex-word-pronunciation">${h(entry.pronunciation)}&ensp;·&ensp;${h(entry.syllables)}</p>
+            <div class="lex-word-meta-row">
+              <span class="lex-meta-chip pos">${h(entry.pos)}</span>
+            </div>
           </div>
 
-          <div class="lex-address-row">
-            <span class="lex-address-label">Atlas Address</span>
-            <span class="lex-address-code">${h(entry.atlas.address)}</span>
-            <span class="lex-chamber-code">Chamber ${h(entry.atlas.chamber)}</span>
-          </div>
+          <a href="/atlas-navigation/" class="lex-hero-artifact" aria-label="Atlas navigation">
+            <span class="lex-hero-artifact-inner"></span>
+            <svg class="lex-hero-artifact-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="lex-hero-artifact-text">
+              <span class="lex-hero-artifact-label">Atlas Address</span>
+              <span class="lex-hero-artifact-code">${h(entry.atlas.address)}</span>
+            </span>
+          </a>
+
         </div>
 
         <!-- Definition -->
