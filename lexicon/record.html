@@ -23,6 +23,9 @@
 
   <script src="/operation/scripts/atlas.js"></script>
   <script src="/data/lexicon.js"></script>
+  <script src="/data/pergamon-address.js"></script>
+  <script src="/data/entries.js"></script>
+  <script src="/data/atlas-reference.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const slug   = (params.get('word') || '').toLowerCase().trim();
@@ -35,6 +38,21 @@
     // Update page title once we know the word
     if (entry) {
       document.title = 'Pergamon Atlas | ' + entry.word + ' — The Lexicon';
+
+      // Inject atlas-meta so atlas-reference.js can render the reference section
+      const atlasMeta = document.createElement('script');
+      atlasMeta.type = 'application/json';
+      atlasMeta.id = 'atlas-meta';
+      atlasMeta.textContent = JSON.stringify({
+        name: entry.word,
+        date: entry.date || '2026-05-17',
+        time: '00:00:00',
+        chamber: entry.atlas.chamber,
+        seed: entry.atlas.seed,
+        coords: entry.atlas.coords,
+        address: entry.atlas.address
+      });
+      document.head.appendChild(atlasMeta);
     }
 
     loadSnippets(entry ? entry.word + ' — The Lexicon' : 'The Lexicon');
@@ -195,31 +213,6 @@
           </div>
         </div>
 
-        <!-- Related -->
-        <div class="lex-panel" style="margin-top:16px">
-          <p class="lex-panel-label">Related Entries</p>
-          <div class="lex-tags">
-            ${tagsOrEmpty(entry.related, 'related', 'none recorded')}
-          </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="lex-nav" style="margin-top:24px">
-          <div class="lex-nav-inner">
-            ${navCard(prev, 'prev')}
-            <div class="lex-nav-divider"></div>
-            ${navCard(next, 'next')}
-          </div>
-        </div>
-
-        <!-- Cluster -->
-        <p class="section-label" style="margin-top:32px">${h(cluster)} — Nearby Records</p>
-        ${clusterHTML}
-
-        <!-- Coords footnote -->
-        <p style="margin:24px 0 0;font-family:Georgia,serif;font-size:12px;color:#aaa;letter-spacing:0.04em;">
-          Indexed entry &middot; Coords (${entry.atlas.coords.x}, ${entry.atlas.coords.y}, ${entry.atlas.coords.z}) &middot; Registered within Pergamon Atlas
-        </p>
 
       `;
     }
