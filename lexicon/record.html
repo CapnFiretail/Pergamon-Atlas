@@ -116,17 +116,15 @@
         ? `<div class="lex-connections-grid" style="margin-bottom:16px">${synHTML}${antHTML}</div>`
         : '';
 
-      const relatedHTML = (entry.related && entry.related.length)
-        ? `<div class="lex-panel"><p class="lex-panel-label">Related Entries</p><div class="lex-tags">${entry.related.map(w => tagLink(w, 'related')).join('')}</div></div>`
-        : '';
-
       const nearbyHTML = siblings.length
         ? `<p class="section-label" style="margin-top:32px">Nearby Records</p>
+           <p class="lex-nearby-desc">Adjacent Atlas records occupying nearby coordinates.</p>
            <div class="lex-cluster-grid">
              ${siblings.map(s => `
                <a class="lex-cluster-card" href="/lexicon/record.html?word=${encodeURIComponent(s.word)}">
                  <span class="lex-cluster-card-word">${h(s.word)}</span>
                  <span class="lex-cluster-card-pos">${h(s.pos)}</span>
+                 <span class="lex-cluster-card-addr">${h(s.atlas.address)}</span>
                </a>
              `).join('')}
            </div>`
@@ -183,7 +181,6 @@
         </div>
 
         ${connectionsHTML}
-        ${relatedHTML}
         ${nearbyHTML}
 
       `;

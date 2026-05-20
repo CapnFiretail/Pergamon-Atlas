@@ -691,44 +691,64 @@
   line-height: 1;
 }
 
-/* ── Related in Cluster ─────────────────────────── */
+/* ── Nearby Records ─────────────────────────────── */
+
+.lex-nearby-desc {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: #aaa;
+  letter-spacing: 0.04em;
+  margin: -8px 0 14px;
+}
 
 .lex-cluster-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
 }
 
 .lex-cluster-card {
-  background: #fafafa;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 12px 14px;
+  background: white;
+  border: 1px solid #e0ddd8;
+  border-radius: 6px;
+  padding: 14px 16px;
   text-decoration: none;
   color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   transition: border-color 0.15s, background 0.15s;
 }
 
 .lex-cluster-card:hover {
-  border-color: #8a611c;
-  background: #fdf8f0;
+  border-color: rgba(184,136,26,0.45);
+  background: #fdf9f3;
 }
 
 .lex-cluster-card-word {
   font-family: Georgia, serif;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: #111;
   display: block;
-  margin-bottom: 2px;
+  line-height: 1.2;
 }
 
 .lex-cluster-card-pos {
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   color: #8a611c;
   font-family: Georgia, serif;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.lex-cluster-card-addr {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: #ccc;
+  letter-spacing: 0.04em;
   display: block;
 }
 
