@@ -138,7 +138,7 @@ function setDiff(d){
 function aiSpeed(){return{easy:2.2,medium:3.5,hard:5.2}[difficulty];}
 
 function resetBall(dir){
-  const spd=3;
+  const spd=5;
   const angle=(Math.random()*0.6-0.3);
   ball={x:CW/2,y:CH/2,dx:dir*spd*Math.cos(angle),dy:spd*Math.sin(angle),r:BALL_S/2};
 }
@@ -201,7 +201,7 @@ function update(){
 
   if(ball.dx<0&&ball.x-ball.r<=p1.x+PAD_W&&ball.x+ball.r>=p1.x&&ball.y+ball.r>=p1.y&&ball.y-ball.r<=p1.y+PAD_H){
     const hit=(ball.y-(p1.y+PAD_H/2))/(PAD_H/2);
-    const spd=Math.min(Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy)*1.04,10);
+    const spd=Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy)*1.04;
     const ang=hit*1.1;
     ball.dx=Math.abs(spd*Math.cos(ang));
     ball.dy=spd*Math.sin(ang);
@@ -210,7 +210,7 @@ function update(){
 
   if(ball.dx>0&&ball.x+ball.r>=p2.x&&ball.x-ball.r<=p2.x+PAD_W&&ball.y+ball.r>=p2.y&&ball.y-ball.r<=p2.y+PAD_H){
     const hit=(ball.y-(p2.y+PAD_H/2))/(PAD_H/2);
-    const spd=Math.min(Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy)*1.04,10);
+    const spd=Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy)*1.04;
     const ang=hit*1.1;
     ball.dx=-Math.abs(spd*Math.cos(ang));
     ball.dy=spd*Math.sin(ang);
