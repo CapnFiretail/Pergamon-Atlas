@@ -188,9 +188,10 @@ function addBet(n) {
   if(bet+n>balance) return;
   bet+=n;
   document.getElementById('betAmt').textContent=bet;
+  setButtons(false);
 }
 
-function clearBet() { if(!inRound){bet=0;document.getElementById('betAmt').textContent=0;} }
+function clearBet() { if(!inRound){bet=0;document.getElementById('betAmt').textContent=0;setButtons(false);} }
 
 function setButtons(inPlay) {
   document.getElementById('btnDeal').disabled=inPlay||bet===0;

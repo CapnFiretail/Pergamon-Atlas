@@ -135,7 +135,7 @@ function initLevel(lvl){
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
     bricks.push({r,c,alive:true});
   }
-  const spd=3.5+lvl*0.4;
+  const spd=2.5+lvl*0.3;
   ball={x:CW/2,y:CH*0.65,dx:spd*(Math.random()<.5?1:-1),dy:-spd,r:BALL_R,launched:false};
   pad={x:CW/2-PAD_W/2,y:CH-28};
 }
@@ -148,7 +148,7 @@ function bkStart(){
   document.getElementById('bkMsg').textContent='';
   updateHUD();
   if(raf) cancelAnimationFrame(raf);
-  loop();
+  lastTime=0; raf=requestAnimationFrame(loop);
 }
 
 function updateHUD(){
@@ -157,8 +157,11 @@ function updateHUD(){
   document.getElementById('bkLives').textContent='❤'.repeat(lives);
 }
 
-function loop(){
+let lastTime=0;
+function loop(ts=0){
   if(state!=='playing'){return;}
+  if(ts-lastTime<16){raf=requestAnimationFrame(loop);return;}
+  lastTime=ts;
   update();
   draw();
   raf=requestAnimationFrame(loop);

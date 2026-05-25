@@ -201,11 +201,11 @@ function handleDrop(col) {
   setTimeout(()=>{
     const ac=aiMove();
     const ar=dropPiece(ac,2);
-    render();
     const aw=checkWin(ar,ac,2);
-    if(aw) { endGame('a',aw); return; }
-    if(isDraw()) { endGame('d'); return; }
+    if(aw) { render(); endGame('a',aw); return; }
+    if(isDraw()) { render(); endGame('d'); return; }
     playerTurn=true;
+    render();
     setStatus('Your turn 🔴','');
   },400);
 }
