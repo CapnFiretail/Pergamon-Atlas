@@ -26,9 +26,39 @@
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
   <style>
-    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
-    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b;font-family:Georgia,serif}
-    .game-hero p{margin:0;font-size:16px;color:#ccc;font-family:Georgia,serif}
+    .gh-hero{--hg:#bf7d08;--hb:#e2ad35;display:grid;position:relative;box-sizing:border-box;width:100%;max-width:100%;overflow:hidden;grid-template-columns:minmax(0,190px) minmax(0,68px) minmax(0,1fr) minmax(0,300px);align-items:center;min-height:210px;padding:20px 36px;background:radial-gradient(circle at 18% 50%,rgba(184,136,26,.06),transparent 29%),radial-gradient(circle at 54% 48%,rgba(255,255,255,.032),transparent 31%),linear-gradient(135deg,#111 0%,#151515 45%,#0d0d0d 100%);border:1.5px solid rgba(191,125,8,.95);border-radius:20px;box-shadow:inset 0 0 0 1px rgba(184,136,26,.16),inset 0 0 0 8px rgba(0,0,0,.16),inset 0 0 40px rgba(255,255,255,.028),0 8px 22px rgba(0,0,0,.56);margin-bottom:24px}
+    .gh-hero::after{content:"";position:absolute;z-index:0;inset:7px;border:1px solid rgba(191,125,8,.62);border-radius:14px;background:linear-gradient(90deg,rgba(255,255,255,.035),transparent 12%,transparent 88%,rgba(255,255,255,.035)),repeating-linear-gradient(105deg,rgba(255,255,255,.016) 0 1px,transparent 1px 5px);pointer-events:none}
+    .gh-hero .game-hero-corner{display:none}
+    .gh-hero>*{position:relative;z-index:2;min-width:0}
+    .gh-hero .game-hero-emblem{place-self:center;width:182px;height:182px;background:transparent;border:0;border-radius:0;box-shadow:none;overflow:visible;margin:0}
+    .gh-hero .game-hero-emblem img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 8px rgba(184,136,26,.18))}
+    .gh-hero .game-hero-sep{align-self:stretch;width:100%;font-size:22px;color:var(--hb)}
+    .gh-hero .game-hero-sep::before,.gh-hero .game-hero-sep::after{background:rgba(191,125,8,.86)}
+    .gh-hero .game-hero-sep::before{top:24px;height:calc(50% - 36px)}
+    .gh-hero .game-hero-sep::after{bottom:24px;height:calc(50% - 36px)}
+    .gh-hero .game-hero-title{overflow:hidden;min-width:0;padding:0 24px 4px;container-type:inline-size}
+    .gh-hero .game-hero-title h2{margin:0 0 18px;font-size:clamp(32px,9cqi,68px);color:#f7f7f7;text-shadow:0 2px 0 rgba(0,0,0,.65),0 0 14px rgba(255,255,255,.18);overflow:hidden}
+    .gh-hero .game-hero-sub{gap:18px;color:var(--hb);font-size:15px;font-weight:700;letter-spacing:.15em}
+    .gh-hero .game-hero-sub-line{flex:1;max-width:100px;background:rgba(191,125,8,.95);position:relative}
+    .gh-hero .game-hero-sub-line::before,.gh-hero .game-hero-sub-line::after{content:"";position:absolute;top:50%;width:5px;height:5px;background:var(--hb);border-radius:50%;transform:translateY(-50%)}
+    .gh-hero .game-hero-sub-line::before{left:0}
+    .gh-hero .game-hero-sub-line::after{right:0}
+    .gh-artifact{align-self:center;width:100%;min-height:82px;border:1px solid rgba(191,125,8,.95);border-radius:8px;color:#f7f7f7;text-decoration:none;display:grid;grid-template-columns:40px 1fr;align-items:center;column-gap:12px;padding:10px 20px;position:relative;background:rgba(8,8,8,.26);box-shadow:inset 0 0 16px rgba(184,136,26,.04)}
+    .gh-artifact::before,.gh-artifact::after,.gh-artifact-inner::before,.gh-artifact-inner::after{content:"";position:absolute;width:14px;height:14px;border-color:#bf7d08;border-style:solid;pointer-events:none}
+    .gh-artifact::before{top:4px;left:4px;border-width:1px 0 0 1px}
+    .gh-artifact::after{top:4px;right:4px;border-width:1px 1px 0 0}
+    .gh-artifact-inner::before{bottom:4px;left:4px;border-width:0 0 1px 1px}
+    .gh-artifact-inner::after{bottom:4px;right:4px;border-width:0 1px 1px 0}
+    .gh-artifact-icon{width:34px;height:34px;color:#e2ad35}
+    .gh-artifact-inner{position:absolute;inset:0;pointer-events:none}
+    .gh-artifact-text{min-width:0;overflow:hidden}
+    .gh-artifact-label{color:#e2ad35;display:block;font-size:13px;font-weight:700;line-height:1.1;margin-bottom:5px;text-transform:uppercase;white-space:nowrap}
+    .gh-artifact-code{color:#f7f7f7;display:block;font-size:20px;line-height:1;text-shadow:0 1px 0 rgba(0,0,0,.65);white-space:nowrap;overflow-wrap:anywhere}
+    .gh-artifact:hover{background:rgba(184,136,26,.08)}
+    @media(max-width:1300px){.gh-hero{grid-template-columns:minmax(0,152px) minmax(0,52px) minmax(0,1fr) minmax(0,240px);min-height:186px;padding:18px 28px}.gh-hero .game-hero-emblem{width:148px;height:148px}.gh-artifact{min-height:68px;grid-template-columns:32px 1fr}.gh-artifact-code{font-size:17px}}
+    @media(max-width:1200px){.gh-hero{grid-template-columns:minmax(0,134px) minmax(0,42px) minmax(0,1fr);grid-template-rows:auto auto;min-height:0;height:auto;padding:16px 20px;border-radius:16px}.gh-hero::after{inset:5px;border-radius:11px}.gh-hero .game-hero-emblem{width:114px;height:114px;grid-column:1;grid-row:1;place-self:center}.gh-hero .game-hero-sep{grid-column:2;grid-row:1;font-size:16px}.gh-hero .game-hero-title{grid-column:3;grid-row:1;padding:6px 0 8px;text-align:center}.gh-hero .game-hero-title h2{font-size:clamp(22px,9cqi,46px);margin-bottom:10px}.gh-artifact{grid-column:1/4;grid-row:2;width:100%;margin-top:12px;grid-template-columns:36px 1fr;padding:10px 18px}}
+    @media(max-width:560px){.gh-hero{grid-template-columns:minmax(0,76px) minmax(0,1fr);padding:14px 16px;border-radius:14px}.gh-hero .game-hero-emblem{width:76px;height:76px;grid-column:1;grid-row:1}.gh-hero .game-hero-sep{display:none}.gh-hero .game-hero-title{grid-column:2;grid-row:1;padding:0 0 8px;text-align:center}.gh-hero .game-hero-title h2{font-size:clamp(16px,9cqi,30px);margin-bottom:8px}.gh-artifact{grid-column:1/3;grid-row:2;width:100%;margin-top:12px;grid-template-columns:30px 1fr;padding:9px 14px}}
+    @media(max-width:390px){.gh-hero{grid-template-columns:minmax(0,60px) minmax(0,1fr);padding:12px}.gh-hero .game-hero-emblem{width:60px;height:60px}.gh-artifact{grid-template-columns:26px minmax(0,1fr);padding:9px 12px}}
     .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);text-align:center;margin-bottom:20px}
     .score-row{display:flex;justify-content:center;gap:40px;margin-bottom:14px;font-family:Georgia,serif}
     .score-item .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
@@ -58,9 +88,29 @@
 <div class="layout">
 <div id="sidebar-placeholder"></div>
 <main class="main-content">
-  <div class="game-hero">
-    <h2>Connect Four</h2>
-    <p>Drop discs and connect four in a row — challenge the AI</p>
+  <div class="game-hero gh-hero">
+    <span class="game-hero-corner tl"></span><span class="game-hero-corner tr"></span>
+    <span class="game-hero-corner bl"></span><span class="game-hero-corner br"></span>
+    <div class="game-hero-emblem"><img src="/operation/images/game-icon-transparent.png" alt=""></div>
+    <div class="game-hero-sep">&#10022;</div>
+    <div class="game-hero-title">
+      <h2>Connect Four</h2>
+      <div class="game-hero-sub">
+        <span class="game-hero-sub-line"></span><span>Pergamon Games</span><span class="game-hero-sub-line"></span>
+      </div>
+    </div>
+    <a href="/tools/atlas-decoder/" class="gh-artifact" aria-label="View artifact in Atlas Decoder">
+      <span class="gh-artifact-inner"></span>
+      <svg class="gh-artifact-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none">
+        <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="gh-artifact-text">
+        <span class="gh-artifact-label">Artifact Code:</span>
+        <span class="gh-artifact-code">9PFZV-57W9R-N8UN6</span>
+      </span>
+    </a>
   </div>
   <div class="panel">
     <div class="score-row">
