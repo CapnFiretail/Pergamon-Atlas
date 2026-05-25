@@ -16,74 +16,176 @@
 
   <style>
 
-    /* ── Tool Registry List ────────────────────────────────── */
+    .main-content {
+      background-color: #e8e2d5;
+    }
+
+    /* ── Tool Registry ───────────────────────────────────── */
 
     .tools-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
+      counter-reset: tool-counter;
       margin-bottom: 48px;
     }
 
+    /* Chapter break */
+    .tools-chapter {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 32px 0 10px;
+    }
+
+    .tools-chapter:first-child {
+      margin-top: 0;
+    }
+
+    .tools-chapter::before,
+    .tools-chapter::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(120,80,10,0.2);
+    }
+
+    .tools-chapter-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(120,80,10,0.55);
+      font-family: Georgia, serif;
+      white-space: nowrap;
+    }
+
+    .tools-chapter-roman {
+      color: rgba(120,80,10,0.35);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+    }
+
+    .tools-chapter-count {
+      font-size: 9px;
+      color: rgba(120,80,10,0.35);
+      letter-spacing: 0.06em;
+    }
+
+    /* 2-up pair */
+    .tools-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Card */
     .tool-card {
       display: flex;
       align-items: center;
       background: #111;
-      border: 1px solid rgba(184,136,26,0.32);
+      border: 1px solid rgba(184,136,26,0.28);
       border-radius: 10px;
-      padding: 0 32px 0 0;
+      padding: 0 28px 0 0;
       text-decoration: none;
       color: inherit;
       transition: border-color 0.2s ease, background 0.2s ease;
       min-height: 86px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.22);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
       position: relative;
       overflow: hidden;
+      counter-increment: tool-counter;
     }
 
+    /* Left accent bar */
+    .tool-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: rgba(184,136,26,0.55);
+      border-radius: 10px 0 0 10px;
+      transition: width 0.18s ease;
+      z-index: 1;
+    }
+
+    /* Subtle right gradient */
     .tool-card::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent 60%, rgba(184,136,26,0.025));
+      background: linear-gradient(90deg, transparent 50%, rgba(184,136,26,0.018));
       pointer-events: none;
     }
 
     .tool-card:hover {
-      border-color: rgba(184,136,26,0.75);
-      background: #151515;
+      border-color: rgba(184,136,26,0.7);
+      background: #161616;
+    }
+
+    .tool-card:hover::before {
+      width: 3px;
     }
 
     .tool-card:hover .tool-card-action {
       color: #e2ad35;
     }
 
+    /* Entry number */
+    .tool-card-num {
+      font-size: 10px;
+      color: rgba(184,136,26,0.22);
+      font-family: Georgia, serif;
+      letter-spacing: 0.06em;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+      margin-left: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tool-card-num::before {
+      content: counter(tool-counter, decimal-leading-zero);
+    }
+
     /* Icon box */
     .tool-card-icon {
-      width: 58px;
-      height: 58px;
-      border: 1px solid rgba(184,136,26,0.22);
-      border-radius: 8px;
+      width: 52px;
+      height: 52px;
+      border: 1px solid rgba(184,136,26,0.18);
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      margin: 14px 0 14px 20px;
+      font-size: 20px;
+      line-height: 1;
+      margin: 14px 0 14px 10px;
       flex-shrink: 0;
       background: #0a0a0a;
+      color: rgba(184,136,26,0.65);
+      font-family: Georgia, serif;
+      font-style: normal;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Vertical divider with centered marker */
+    /* Divider */
     .tool-card-sep {
       align-self: stretch;
-      width: 40px;
+      width: 36px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      color: rgba(184,136,26,0.7);
-      font-size: 7px;
+      color: rgba(184,136,26,0.6);
+      font-size: 6px;
+      z-index: 1;
     }
 
     .tool-card-sep::before,
@@ -93,26 +195,28 @@
       left: 50%;
       transform: translateX(-50%);
       width: 1px;
-      background: rgba(184,136,26,0.18);
+      background: rgba(184,136,26,0.15);
     }
 
-    .tool-card-sep::before { top: 18px;    height: calc(50% - 14px); }
-    .tool-card-sep::after  { bottom: 18px; height: calc(50% - 14px); }
+    .tool-card-sep::before { top: 16px;    height: calc(50% - 13px); }
+    .tool-card-sep::after  { bottom: 16px; height: calc(50% - 13px); }
 
     /* Body */
     .tool-card-body {
       flex: 1;
       min-width: 0;
-      padding: 16px 32px 16px 4px;
+      padding: 16px 28px 16px 4px;
+      position: relative;
+      z-index: 1;
     }
 
     .tool-card-category {
       font-size: 9px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: rgba(184,136,26,0.78);
+      color: rgba(184,136,26,0.68);
       font-family: Georgia, serif;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .tool-card-name {
@@ -121,62 +225,107 @@
       color: #f0f0f0;
       font-weight: 700;
       line-height: 1.15;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
     }
 
     .tool-card-desc {
       font-size: 12px;
-      color: rgba(255,255,255,0.35);
-      line-height: 1.4;
+      color: rgba(255,255,255,0.32);
+      line-height: 1.55;
       font-family: Georgia, serif;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     /* Action */
     .tool-card-action {
       font-family: Georgia, serif;
       font-size: 12px;
-      color: rgba(184,136,26,0.5);
+      color: rgba(184,136,26,0.42);
       letter-spacing: 0.1em;
       flex-shrink: 0;
       white-space: nowrap;
       transition: color 0.2s ease;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Mobile */
+    /* Pair cards */
+    .tools-pair .tool-card {
+      min-height: 80px;
+    }
+
+    .tools-pair .tool-card-name {
+      font-size: 17px;
+    }
+
+    .tools-pair .tool-card-desc {
+      -webkit-line-clamp: 1;
+    }
+
+    /* Featured (Atlas) */
+    .tool-card--featured {
+      border-color: rgba(184,136,26,0.5);
+      min-height: 96px;
+      background: #0f0f0f;
+    }
+
+    .tool-card--featured .tool-card-name {
+      font-size: 22px;
+    }
+
+    .tool-card--featured .tool-card-action {
+      color: rgba(184,136,26,0.6);
+    }
+
+    /* Mobile: pairs go single-column at 700px */
+    @media (max-width: 700px) {
+      .tools-pair {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 600px) {
       .tools-list { gap: 6px; }
 
       .tool-card {
         min-height: 0;
-        padding: 0 16px 0 0;
+        padding: 0 14px 0 0;
+      }
+
+      .tool-card-num {
+        width: 18px;
+        font-size: 9px;
+        margin-left: 12px;
       }
 
       .tool-card-icon {
-        width: 42px;
-        height: 42px;
-        font-size: 18px;
-        margin: 12px 0 12px 14px;
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+        margin: 11px 0 11px 8px;
         border-radius: 6px;
       }
 
       .tool-card-sep {
-        width: 26px;
+        width: 24px;
       }
-      .tool-card-sep::before { top: 14px; height: calc(50% - 12px); }
-      .tool-card-sep::after  { bottom: 14px; height: calc(50% - 12px); }
+      .tool-card-sep::before { top: 12px; height: calc(50% - 11px); }
+      .tool-card-sep::after  { bottom: 12px; height: calc(50% - 11px); }
 
       .tool-card-body {
-        padding: 13px 12px 13px 4px;
+        padding: 11px 10px 11px 4px;
       }
 
-      .tool-card-category { font-size: 8px; margin-bottom: 3px; }
-      .tool-card-name { font-size: 15px; margin-bottom: 0; }
-      .tool-card-desc { display: none; }
+      .tool-card-category { font-size: 8px; margin-bottom: 2px; }
+      .tool-card-name     { font-size: 15px; margin-bottom: 0; }
+      .tool-card-desc     { display: none; }
+      .tool-card-action   { font-size: 11px; }
 
-      .tool-card-action { font-size: 11px; }
+      .tools-chapter { margin: 24px 0 8px; }
+      .tools-chapter-label { font-size: 9px; }
     }
 
   </style>
@@ -218,20 +367,30 @@
 
 <section class="tools-list">
 
-  <!-- Calculators -->
+  <!-- I · Calculators ────────────────────────────────────── -->
+  <div class="tools-chapter">
+    <span class="tools-chapter-label">
+      <span class="tools-chapter-roman">I</span>
+      Calculators
+      <span class="tools-chapter-count">9 entries</span>
+    </span>
+  </div>
+
   <a href="/tools/gpa-calculator" class="tool-card">
-    <div class="tool-card-icon">📘</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">Σ</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
       <div class="tool-card-name">GPA Calculator</div>
-      <div class="tool-card-desc">Calculate grade point average from individual course grades.</div>
+      <div class="tool-card-desc">Calculate grade point average from individual course grades and credit hours.</div>
     </div>
     <span class="tool-card-action">Open →</span>
   </a>
 
   <a href="/tools/bmi-calculator" class="tool-card">
-    <div class="tool-card-icon">📏</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">↕</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
@@ -242,62 +401,69 @@
   </a>
 
   <a href="/tools/calorie-calculator" class="tool-card">
-    <div class="tool-card-icon">🔥</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">△</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
       <div class="tool-card-name">Calorie Calculator</div>
-      <div class="tool-card-desc">Estimate daily calorie needs based on activity level and goals.</div>
+      <div class="tool-card-desc">Estimate daily calorie needs based on age, height, weight, and activity level.</div>
     </div>
     <span class="tool-card-action">Open →</span>
   </a>
 
   <a href="/tools/compound-interest-calculator" class="tool-card">
-    <div class="tool-card-icon">💸</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">∞</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
       <div class="tool-card-name">Compound Interest</div>
-      <div class="tool-card-desc">Project investment growth with regular contributions and compound rates.</div>
+      <div class="tool-card-desc">Project investment growth with regular contributions and compounding rates.</div>
     </div>
     <span class="tool-card-action">Open →</span>
   </a>
 
   <a href="/tools/loan-calculator" class="tool-card">
-    <div class="tool-card-icon">🏦</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◊</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
       <div class="tool-card-name">Loan Calculator</div>
-      <div class="tool-card-desc">Monthly payment and total interest for any loan amount and term.</div>
+      <div class="tool-card-desc">Monthly payment, total interest, and full amortization for any loan amount and term.</div>
     </div>
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <a href="/tools/percentage-calculator" class="tool-card">
-    <div class="tool-card-icon">%</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Calculators</div>
-      <div class="tool-card-name">Percentage Calculator</div>
-      <div class="tool-card-desc">Quick percentage math — of, change, increase, and decrease.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/tip-calculator" class="tool-card">
-    <div class="tool-card-icon">💵</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Calculators</div>
-      <div class="tool-card-name">Tip Calculator</div>
-      <div class="tool-card-desc">Split a bill and calculate tip per person.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/percentage-calculator" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">%</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Calculators</div>
+        <div class="tool-card-name">Percentage</div>
+        <div class="tool-card-desc">Quick percentage math — of, change, increase, and decrease.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/tip-calculator" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">÷</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Calculators</div>
+        <div class="tool-card-name">Tip Calculator</div>
+        <div class="tool-card-desc">Split a bill and calculate tip per person.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
   <a href="/tools/mortgage-calculator" class="tool-card">
-    <div class="tool-card-icon">🏠</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">⌂</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
@@ -308,7 +474,8 @@
   </a>
 
   <a href="/tools/speed-calculator" class="tool-card">
-    <div class="tool-card-icon">🚀</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">▷</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Calculators</div>
@@ -318,10 +485,18 @@
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <!-- Text & Dev -->
+  <!-- II · Text & Dev ─────────────────────────────────────── -->
+  <div class="tools-chapter">
+    <span class="tools-chapter-label">
+      <span class="tools-chapter-roman">II</span>
+      Text &amp; Dev
+      <span class="tools-chapter-count">10 entries</span>
+    </span>
+  </div>
 
   <a href="/tools/base64" class="tool-card">
-    <div class="tool-card-icon">🔐</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">⋄</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -332,7 +507,8 @@
   </a>
 
   <a href="/tools/json-formatter" class="tool-card">
-    <div class="tool-card-icon">🧾</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">≡</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -342,30 +518,34 @@
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <a href="/tools/regex-tester" class="tool-card">
-    <div class="tool-card-icon">🧠</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Text &amp; Dev</div>
-      <div class="tool-card-name">Regex Tester</div>
-      <div class="tool-card-desc">Build and test regular expressions with live match highlighting.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/text-diff" class="tool-card">
-    <div class="tool-card-icon">🔍</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Text &amp; Dev</div>
-      <div class="tool-card-name">Text Diff</div>
-      <div class="tool-card-desc">Compare two text blocks and highlight differences.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/regex-tester" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">∗</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Text &amp; Dev</div>
+        <div class="tool-card-name">Regex Tester</div>
+        <div class="tool-card-desc">Build and test regular expressions with live match highlighting.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/text-diff" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">≠</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Text &amp; Dev</div>
+        <div class="tool-card-name">Text Diff</div>
+        <div class="tool-card-desc">Compare two text blocks and highlight differences.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
   <a href="/tools/url-encoder" class="tool-card">
-    <div class="tool-card-icon">🌐</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">⊗</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -376,7 +556,8 @@
   </a>
 
   <a href="/tools/color-contrast" class="tool-card">
-    <div class="tool-card-icon">🎨</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◑</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -387,7 +568,8 @@
   </a>
 
   <a href="/tools/caesar-cipher" class="tool-card">
-    <div class="tool-card-icon">🔒</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">⊕</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -398,7 +580,8 @@
   </a>
 
   <a href="/tools/character-counter" class="tool-card">
-    <div class="tool-card-icon">📝</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">▤</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -409,7 +592,8 @@
   </a>
 
   <a href="/tools/password-strength" class="tool-card">
-    <div class="tool-card-icon">🔑</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◈</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -420,7 +604,8 @@
   </a>
 
   <a href="/tools/epoch-converter" class="tool-card">
-    <div class="tool-card-icon">🕰️</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◷</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Text &amp; Dev</div>
@@ -430,54 +615,68 @@
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <!-- Generators -->
+  <!-- III · Generators ────────────────────────────────────── -->
+  <div class="tools-chapter">
+    <span class="tools-chapter-label">
+      <span class="tools-chapter-roman">III</span>
+      Generators
+      <span class="tools-chapter-count">5 entries</span>
+    </span>
+  </div>
 
-  <a href="/tools/password-generator" class="tool-card">
-    <div class="tool-card-icon">🔑</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Generators</div>
-      <div class="tool-card-name">Password Generator</div>
-      <div class="tool-card-desc">Generate secure random passwords with custom length and character sets.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/password-generator" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">◈</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Generators</div>
+        <div class="tool-card-name">Password Generator</div>
+        <div class="tool-card-desc">Secure random passwords with custom length and character sets.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/qr-code-generator" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">▦</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Generators</div>
+        <div class="tool-card-name">QR Generator</div>
+        <div class="tool-card-desc">Create a QR code for any URL or text string.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
-  <a href="/tools/qr-code-generator" class="tool-card">
-    <div class="tool-card-icon">📷</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Generators</div>
-      <div class="tool-card-name">QR Generator</div>
-      <div class="tool-card-desc">Create a QR code for any URL or text string.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/lorem-ipsum" class="tool-card">
-    <div class="tool-card-icon">📄</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Generators</div>
-      <div class="tool-card-name">Lorem Ipsum</div>
-      <div class="tool-card-desc">Generate placeholder text in paragraphs, sentences, or words.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/name-generator" class="tool-card">
-    <div class="tool-card-icon">🎭</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Generators</div>
-      <div class="tool-card-name">Name Generator</div>
-      <div class="tool-card-desc">Generate random first and last names.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/lorem-ipsum" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">¶</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Generators</div>
+        <div class="tool-card-name">Lorem Ipsum</div>
+        <div class="tool-card-desc">Generate placeholder text in paragraphs, sentences, or words.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/name-generator" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">◎</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Generators</div>
+        <div class="tool-card-name">Name Generator</div>
+        <div class="tool-card-desc">Generate random first and last names.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
   <a href="/tools/quote-generator" class="tool-card">
-    <div class="tool-card-icon">💬</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◊</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Generators</div>
@@ -487,21 +686,43 @@
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <!-- Productivity -->
+  <!-- IV · Productivity ───────────────────────────────────── -->
+  <div class="tools-chapter">
+    <span class="tools-chapter-label">
+      <span class="tools-chapter-roman">IV</span>
+      Productivity
+      <span class="tools-chapter-count">6 entries</span>
+    </span>
+  </div>
 
-  <a href="/tools/pomodoro-timer" class="tool-card">
-    <div class="tool-card-icon">⏱</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Productivity</div>
-      <div class="tool-card-name">Pomodoro</div>
-      <div class="tool-card-desc">Focus timer with work intervals and configurable breaks.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/pomodoro-timer" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">◉</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Productivity</div>
+        <div class="tool-card-name">Pomodoro</div>
+        <div class="tool-card-desc">Focus timer with work intervals and configurable breaks.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/stopwatch" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">▷</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Productivity</div>
+        <div class="tool-card-name">Stopwatch</div>
+        <div class="tool-card-desc">Precise timing with lap support.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
   <a href="/tools/countdown-timer" class="tool-card">
-    <div class="tool-card-icon">⏳</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◷</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Productivity</div>
@@ -511,19 +732,9 @@
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <a href="/tools/stopwatch" class="tool-card">
-    <div class="tool-card-icon">⌚</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Productivity</div>
-      <div class="tool-card-name">Stopwatch</div>
-      <div class="tool-card-desc">Precise timing with lap support.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
   <a href="/tools/flashcards" class="tool-card">
-    <div class="tool-card-icon">📚</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">▣</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Productivity</div>
@@ -534,7 +745,8 @@
   </a>
 
   <a href="/tools/timezone-converter" class="tool-card">
-    <div class="tool-card-icon">🌍</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">◎</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Productivity</div>
@@ -545,7 +757,8 @@
   </a>
 
   <a href="/tools/metronome" class="tool-card">
-    <div class="tool-card-icon">🎵</div>
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">♩</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Productivity</div>
@@ -555,61 +768,82 @@
     <span class="tool-card-action">Open →</span>
   </a>
 
-  <!-- Fun -->
+  <!-- V · Fun ─────────────────────────────────────────────── -->
+  <div class="tools-chapter">
+    <span class="tools-chapter-label">
+      <span class="tools-chapter-roman">V</span>
+      Fun
+      <span class="tools-chapter-count">4 entries</span>
+    </span>
+  </div>
 
-  <a href="/tools/random-number" class="tool-card">
-    <div class="tool-card-icon">🎲</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Fun</div>
-      <div class="tool-card-name">Random Number</div>
-      <div class="tool-card-desc">Generate random numbers within a custom range.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/random-number" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">⊕</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Fun</div>
+        <div class="tool-card-name">Random Number</div>
+        <div class="tool-card-desc">Generate random numbers within a custom range.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/dice-roller" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">▦</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Fun</div>
+        <div class="tool-card-name">Dice Roller</div>
+        <div class="tool-card-desc">Roll any combination of standard polyhedral dice.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
-  <a href="/tools/dice-roller" class="tool-card">
-    <div class="tool-card-icon">🎲</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Fun</div>
-      <div class="tool-card-name">Dice Roller</div>
-      <div class="tool-card-desc">Roll any combination of standard polyhedral dice.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <div class="tools-pair">
+    <a href="/tools/decision-spinner" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">◉</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Fun</div>
+        <div class="tool-card-name">Decision Spinner</div>
+        <div class="tool-card-desc">Add options and spin to make a random choice.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+    <a href="/tools/shuffle-list" class="tool-card">
+      <span class="tool-card-num"></span>
+      <div class="tool-card-icon">≈</div>
+      <div class="tool-card-sep">◆</div>
+      <div class="tool-card-body">
+        <div class="tool-card-category">Fun</div>
+        <div class="tool-card-name">Shuffle List</div>
+        <div class="tool-card-desc">Randomize a list, pick random items, sort, or remove duplicates.</div>
+      </div>
+      <span class="tool-card-action">Open →</span>
+    </a>
+  </div>
 
-  <a href="/tools/decision-spinner" class="tool-card">
-    <div class="tool-card-icon">🎡</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Fun</div>
-      <div class="tool-card-name">Decision Spinner</div>
-      <div class="tool-card-desc">Add options and spin to make a random choice.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
+  <!-- VI · Atlas ──────────────────────────────────────────── -->
+  <div class="tools-chapter">
+    <span class="tools-chapter-label">
+      <span class="tools-chapter-roman">VI</span>
+      Atlas
+      <span class="tools-chapter-count">1 entry</span>
+    </span>
+  </div>
 
-  <a href="/tools/shuffle-list" class="tool-card">
-    <div class="tool-card-icon">🔀</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body">
-      <div class="tool-card-category">Fun</div>
-      <div class="tool-card-name">Shuffle List</div>
-      <div class="tool-card-desc">Randomize a list, pick random items, sort, or remove duplicates.</div>
-    </div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <!-- Atlas -->
-
-  <a href="/tools/atlas-decoder" class="tool-card">
-    <div class="tool-card-icon">🗺</div>
+  <a href="/tools/atlas-decoder" class="tool-card tool-card--featured">
+    <span class="tool-card-num"></span>
+    <div class="tool-card-icon">⊕</div>
     <div class="tool-card-sep">◆</div>
     <div class="tool-card-body">
       <div class="tool-card-category">Atlas</div>
       <div class="tool-card-name">Atlas Decoder</div>
-      <div class="tool-card-desc">Decode an artifact code or Atlas address to reveal its identity and position.</div>
+      <div class="tool-card-desc">Decode an artifact code or Atlas address to reveal its identity and position within the Pergamon registry.</div>
     </div>
     <span class="tool-card-action">Open →</span>
   </a>
