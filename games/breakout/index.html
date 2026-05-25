@@ -17,409 +17,227 @@
   "address": "EELHC-Y52WY-K4Q3D"
 }
 </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-    crossorigin="anonymous"></script>
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Breakout</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="/operation/styles/header.css">
   <link rel="stylesheet" href="/operation/styles/sidebar.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
-
   <style>
-    .ph-shell { max-width: 100%; margin: 0 auto; }
-
-    .bk-hero {
-      --hero-gold: #bf7d08;
-      --hero-gold-bright: #e2ad35;
-
-      display: grid;
-      position: relative;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      grid-template-columns: minmax(0, 190px) minmax(0, 68px) minmax(0, 1fr) minmax(0, 300px);
-      align-items: center;
-      min-height: 210px;
-      padding: 20px 36px;
-
-      background:
-        radial-gradient(circle at 18% 50%, rgba(184, 136, 26, 0.06), transparent 29%),
-        radial-gradient(circle at 54% 48%, rgba(255, 255, 255, 0.032), transparent 31%),
-        linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
-      border: 1.5px solid rgba(191, 125, 8, 0.95);
-      border-radius: 20px;
-      box-shadow:
-        inset 0 0 0 1px rgba(184, 136, 26, 0.16),
-        inset 0 0 0 8px rgba(0, 0, 0, 0.16),
-        inset 0 0 40px rgba(255, 255, 255, 0.028),
-        0 8px 22px rgba(0, 0, 0, 0.56);
-    }
-
-    .bk-hero::after {
-      content: "";
-      position: absolute;
-      z-index: 0;
-      inset: 7px;
-      border: 1px solid rgba(191, 125, 8, 0.62);
-      border-radius: 14px;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,0.035), transparent 12%, transparent 88%, rgba(255,255,255,0.035)),
-        repeating-linear-gradient(105deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 5px);
-      pointer-events: none;
-    }
-
-    .bk-hero .game-hero-corner { display: none; }
-
-    .bk-hero > * { position: relative; z-index: 2; min-width: 0; }
-
-    .bk-hero .game-hero-emblem {
-      place-self: center;
-      width: 182px; height: 182px;
-      background: transparent; border: 0; border-radius: 0; box-shadow: none; overflow: visible; margin: 0;
-    }
-
-    .bk-hero .game-hero-emblem img {
-      width: 100%; height: 100%; object-fit: contain; display: block;
-      filter: drop-shadow(0 0 8px rgba(184, 136, 26, 0.18));
-    }
-
-    .bk-hero .game-hero-sep {
-      align-self: stretch; width: 100%; font-size: 22px; color: var(--hero-gold-bright);
-    }
-
-    .bk-hero .game-hero-sep::before,
-    .bk-hero .game-hero-sep::after { background: rgba(191, 125, 8, 0.86); }
-
-    .bk-hero .game-hero-sep::before { top: 24px; height: calc(50% - 36px); }
-    .bk-hero .game-hero-sep::after  { bottom: 24px; height: calc(50% - 36px); }
-
-    .bk-hero .game-hero-title {
-      overflow: hidden; min-width: 0; padding: 0 24px 4px; container-type: inline-size;
-    }
-
-    .bk-hero .game-hero-title h2 {
-      margin: 0 0 18px;
-      font-size: clamp(32px, 9cqi, 68px);
-      color: #f7f7f7;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 14px rgba(255,255,255,0.18);
-      overflow: hidden;
-    }
-
-    .bk-hero .game-hero-sub {
-      gap: 18px; color: var(--hero-gold-bright); font-size: 15px; font-weight: 700; letter-spacing: 0.15em;
-    }
-
-    .bk-hero .game-hero-sub-line {
-      flex: 1; max-width: 100px; background: rgba(191, 125, 8, 0.95); position: relative;
-    }
-
-    .bk-hero .game-hero-sub-line::before,
-    .bk-hero .game-hero-sub-line::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 5px; height: 5px;
-      background: var(--hero-gold-bright);
-      border-radius: 50%;
-      transform: translateY(-50%);
-    }
-
-    .bk-hero .game-hero-sub-line::before { left: 0; }
-    .bk-hero .game-hero-sub-line::after  { right: 0; }
-
-    .bk-artifact {
-      align-self: center;
-      width: 100%;
-      min-height: 82px;
-      border: 1px solid rgba(191, 125, 8, 0.95);
-      border-radius: 8px;
-      color: #f7f7f7;
-      text-decoration: none;
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      align-items: center;
-      column-gap: 12px;
-      padding: 10px 20px;
-      position: relative;
-      background: rgba(8, 8, 8, 0.26);
-      box-shadow: inset 0 0 16px rgba(184, 136, 26, 0.04);
-    }
-
-    .bk-artifact::before,
-    .bk-artifact::after,
-    .bk-artifact-inner::before,
-    .bk-artifact-inner::after {
-      content: "";
-      position: absolute;
-      width: 14px; height: 14px;
-      border-color: var(--hero-gold);
-      border-style: solid;
-      pointer-events: none;
-    }
-
-    .bk-artifact::before       { top: 4px;    left: 4px;   border-width: 1px 0 0 1px; }
-    .bk-artifact::after        { top: 4px;    right: 4px;  border-width: 1px 1px 0 0; }
-    .bk-artifact-inner::before { bottom: 4px; left: 4px;   border-width: 0 0 1px 1px; }
-    .bk-artifact-inner::after  { bottom: 4px; right: 4px;  border-width: 0 1px 1px 0; }
-
-    .bk-artifact-icon { width: 34px; height: 34px; color: var(--hero-gold-bright); }
-    .bk-artifact-inner { position: absolute; inset: 0; pointer-events: none; }
-    .bk-artifact-text { min-width: 0; overflow: hidden; }
-
-    .bk-artifact-label {
-      color: var(--hero-gold-bright); display: block; font-size: 13px; font-weight: 700;
-      line-height: 1.1; margin-bottom: 5px; text-transform: uppercase; white-space: nowrap;
-    }
-
-    .bk-artifact-code {
-      color: #f7f7f7; display: block; font-size: 20px; line-height: 1;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.65), 0 0 10px rgba(255,255,255,0.12);
-      white-space: nowrap; overflow-wrap: anywhere;
-    }
-
-    .bk-artifact:hover {
-      background: rgba(184, 136, 26, 0.08);
-      box-shadow: inset 0 0 20px rgba(184, 136, 26, 0.08), 0 0 16px rgba(184, 136, 26, 0.13);
-    }
-
-    /* ── Coming Soon Card ── */
-    .ph-card {
-      background: white; border: 2px solid #000; border-radius: 16px;
-      padding: 36px 32px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); text-align: center;
-    }
-
-    /* ── Breakout court graphic ── */
-    .bk-court {
-      position: relative;
-      display: inline-block;
-      background: #111;
-      border: 2px solid #2a2a2a;
-      border-radius: 10px;
-      padding: 12px;
-      margin: 0 auto 28px;
-      width: fit-content;
-    }
-
-    .bk-bricks {
-      display: grid;
-      grid-template-columns: repeat(8, 28px);
-      gap: 4px;
-    }
-
-    .bk-brick { height: 12px; border-radius: 3px; }
-    .bk-brick.r0 { background: #e74c3c; }
-    .bk-brick.r1 { background: #e67e22; }
-    .bk-brick.r2 { background: #f1c40f; }
-    .bk-brick.r3 { background: #2ecc71; }
-    .bk-brick.dead { background: transparent; }
-
-    .bk-field {
-      position: relative;
-      height: 60px;
-      margin-top: 8px;
-      width: 252px;
-    }
-
-    .bk-ball {
-      position: absolute;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 0 6px rgba(255,255,255,0.5);
-    }
-
-    .bk-paddle {
-      position: absolute;
-      width: 64px; height: 8px;
-      border-radius: 4px;
-      background: #f0d39b;
-      bottom: 0;
-    }
-
-    .ph-label {
-      font-size: 22px; font-weight: 700; color: #111;
-      margin: 0 0 10px; font-family: Georgia, serif;
-    }
-
-    .ph-sub {
-      font-size: 16px; color: #555; line-height: 1.7;
-      margin: 0 0 24px; max-width: 480px; margin-left: auto; margin-right: auto;
-    }
-
-    @media (max-width: 600px) {
-      .ph-card { padding: 28px 20px; }
-      .bk-bricks { grid-template-columns: repeat(8, 22px); gap: 3px; }
-      .bk-brick { height: 10px; }
-      .bk-field { width: 199px; height: 50px; }
-      .bk-paddle { width: 52px; height: 7px; }
-      .bk-ball { width: 10px; height: 10px; }
-    }
-
-    /* ── ≤1300px ── */
-    @media (max-width: 1300px) {
-      .bk-hero {
-        grid-template-columns: minmax(0, 152px) minmax(0, 52px) minmax(0, 1fr) minmax(0, 240px);
-        min-height: 186px; padding: 18px 28px;
-      }
-      .bk-hero .game-hero-emblem { width: 148px; height: 148px; }
-      .bk-hero .game-hero-sep { font-size: 18px; }
-      .bk-hero .game-hero-sep::before { top: 20px; height: calc(50% - 30px); }
-      .bk-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 30px); }
-      .bk-hero .game-hero-title { padding: 0 16px 2px; }
-      .bk-hero .game-hero-title h2 { font-size: clamp(24px, 9cqi, 48px); margin-bottom: 14px; }
-      .bk-hero .game-hero-sub { font-size: 12px; gap: 12px; }
-      .bk-hero .game-hero-sub-line { max-width: 72px; }
-      .bk-artifact { min-height: 68px; grid-template-columns: 32px 1fr; column-gap: 10px; }
-      .bk-artifact-icon { width: 26px; height: 26px; }
-      .bk-artifact-label { font-size: 11px; }
-      .bk-artifact-code { font-size: 17px; }
-    }
-
-    /* ── ≤1200px: artifact drops below ── */
-    @media (max-width: 1200px) {
-      .bk-hero {
-        grid-template-columns: minmax(0, 134px) minmax(0, 42px) minmax(0, 1fr);
-        grid-template-rows: auto auto; min-height: 0; height: auto;
-        padding: 16px 20px; align-items: center; border-radius: 16px;
-      }
-      .bk-hero::after { inset: 5px; border-radius: 11px; }
-      .bk-hero .game-hero-emblem { width: 114px; height: 114px; grid-column: 1; grid-row: 1; place-self: center; }
-      .bk-hero .game-hero-sep { grid-column: 2; grid-row: 1; font-size: 16px; }
-      .bk-hero .game-hero-sep::before { top: 20px; height: calc(50% - 28px); }
-      .bk-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 28px); }
-      .bk-hero .game-hero-title { grid-column: 3; grid-row: 1; padding: 6px 0 8px; text-align: center; }
-      .bk-hero .game-hero-title h2 { font-size: clamp(22px, 9cqi, 46px); margin-bottom: 10px; }
-      .bk-hero .game-hero-sub { font-size: 11px; gap: 10px; }
-      .bk-hero .game-hero-sub-line { max-width: 56px; }
-      .bk-artifact {
-        grid-column: 1 / 4; grid-row: 2; width: 100%; min-height: 66px; margin-top: 12px;
-        grid-template-columns: 36px 1fr; column-gap: 10px; padding: 10px 18px;
-      }
-      .bk-artifact-icon { width: 30px; height: 30px; }
-      .bk-artifact-label { font-size: 12px; margin-bottom: 5px; }
-      .bk-artifact-code { font-size: 19px; }
-    }
-
-    /* ── ≤560px ── */
-    @media (max-width: 560px) {
-      .bk-hero {
-        grid-template-columns: minmax(0, 76px) minmax(0, 1fr);
-        grid-template-rows: auto auto; padding: 14px 16px; border-radius: 14px;
-      }
-      .bk-hero .game-hero-emblem { width: 76px; height: 76px; grid-column: 1; grid-row: 1; }
-      .bk-hero .game-hero-sep { display: none; }
-      .bk-hero .game-hero-title { grid-column: 2; grid-row: 1; padding: 0 0 8px; text-align: center; }
-      .bk-hero .game-hero-title h2 { font-size: clamp(16px, 9cqi, 30px); margin-bottom: 8px; }
-      .bk-hero .game-hero-sub { font-size: 9px; gap: 8px; }
-      .bk-hero .game-hero-sub-line { max-width: 36px; }
-      .bk-artifact {
-        grid-column: 1 / 3; grid-row: 2; width: 100%; margin-top: 12px;
-        min-height: 58px; grid-template-columns: 30px 1fr; column-gap: 10px; padding: 9px 14px;
-      }
-      .bk-artifact-icon { width: 26px; height: 26px; }
-      .bk-artifact-label { font-size: 10px; }
-      .bk-artifact-code { font-size: clamp(13px, 4vw, 17px); line-height: 1.15; white-space: normal; }
-    }
-
-    @media (max-width: 390px) {
-      .bk-hero { grid-template-columns: minmax(0, 60px) minmax(0, 1fr); padding: 12px; }
-      .bk-hero .game-hero-emblem { width: 60px; height: 60px; }
-      .bk-hero .game-hero-title h2 { font-size: 21px; }
-      .bk-hero .game-hero-sub { font-size: 8px; gap: 6px; }
-      .bk-hero .game-hero-sub-line { max-width: 22px; }
-      .bk-artifact { grid-template-columns: 26px minmax(0, 1fr); padding: 9px 12px; }
-    }
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b;font-family:Georgia,serif}
+    .game-hero p{margin:0;font-size:16px;color:#ccc;font-family:Georgia,serif}
+    .panel{background:#111;border:2px solid #333;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.3);margin-bottom:20px;text-align:center}
+    .bk-hud{display:flex;justify-content:center;gap:36px;margin-bottom:12px;font-family:Georgia,serif}
+    .bk-hud-item .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.1em}
+    .bk-hud-item .val{font-size:22px;font-weight:800;color:#f0d39b}
+    #bkCanvas{display:block;margin:0 auto;background:#0a0a0a;border-radius:10px;border:1px solid #333;touch-action:none}
+    .bk-msg{font-family:Georgia,serif;font-size:18px;color:#f0d39b;min-height:28px;margin:12px 0 8px}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 28px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#f0d39b;color:#111;font-weight:700;transition:.15s}
+    .atlas-btn:hover{background:#e0c070}
+    .bk-hint{font-family:Georgia,serif;font-size:13px;color:#666;margin-top:8px}
   </style>
 </head>
-
 <body>
-
-  <div id="header-placeholder"></div>
-
-  <div class="layout">
-    <div id="sidebar-placeholder"></div>
-
-    <main class="main-content">
-      <div class="ph-shell">
-
-        <div class="game-hero bk-hero">
-          <span class="game-hero-corner tl"></span>
-          <span class="game-hero-corner tr"></span>
-          <span class="game-hero-corner bl"></span>
-          <span class="game-hero-corner br"></span>
-
-          <div class="game-hero-emblem">
-            <img src="/operation/images/game-icon-transparent.png" alt="">
-          </div>
-
-          <div class="game-hero-sep">&#10022;</div>
-
-          <div class="game-hero-title">
-            <h2>Breakout</h2>
-            <div class="game-hero-sub">
-              <span class="game-hero-sub-line"></span>
-              <span>Pergamon Games</span>
-              <span class="game-hero-sub-line"></span>
-            </div>
-          </div>
-
-          <a href="/tools/atlas-decoder/" class="bk-artifact" aria-label="View artifact in Atlas Decoder">
-            <span class="bk-artifact-inner"></span>
-            <svg class="bk-artifact-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="bk-artifact-text">
-              <span class="bk-artifact-label">Artifact Code:</span>
-              <span class="bk-artifact-code">7B3F9C2D-EELHC</span>
-            </span>
-          </a>
-        </div>
-
-        <div class="ph-card">
-          <!-- Mid-game breakout court: 8 cols × 4 rows of bricks, some knocked out, ball and paddle -->
-          <div class="bk-court">
-            <div class="bk-bricks">
-              <!-- Row 0 (red): all 8 present -->
-              <div class="bk-brick r0"></div><div class="bk-brick r0"></div><div class="bk-brick r0"></div><div class="bk-brick r0"></div><div class="bk-brick r0"></div><div class="bk-brick r0"></div><div class="bk-brick r0"></div><div class="bk-brick r0"></div>
-              <!-- Row 1 (orange): missing cols 3 and 5 -->
-              <div class="bk-brick r1"></div><div class="bk-brick r1"></div><div class="bk-brick r1"></div><div class="bk-brick dead"></div><div class="bk-brick r1"></div><div class="bk-brick dead"></div><div class="bk-brick r1"></div><div class="bk-brick r1"></div>
-              <!-- Row 2 (yellow): missing cols 1, 4, 6 -->
-              <div class="bk-brick r2"></div><div class="bk-brick dead"></div><div class="bk-brick r2"></div><div class="bk-brick r2"></div><div class="bk-brick dead"></div><div class="bk-brick r2"></div><div class="bk-brick dead"></div><div class="bk-brick r2"></div>
-              <!-- Row 3 (green): missing cols 0, 2, 7 -->
-              <div class="bk-brick dead"></div><div class="bk-brick r3"></div><div class="bk-brick dead"></div><div class="bk-brick r3"></div><div class="bk-brick r3"></div><div class="bk-brick r3"></div><div class="bk-brick r3"></div><div class="bk-brick dead"></div>
-            </div>
-            <div class="bk-field">
-              <!-- Ball: slightly right of center, upper field -->
-              <div class="bk-ball" style="left: 138px; top: 10px;"></div>
-              <!-- Paddle: slightly left of center -->
-              <div class="bk-paddle" style="left: 76px;"></div>
-            </div>
-          </div>
-
-          <p class="ph-label">Coming Soon</p>
-          <p class="ph-sub">
-            This game is being rebuilt. Check back later, or play the original version in the archives.
-          </p>
-        </div>
-
-      </div>
-    </main>
+<div id="header-placeholder"></div>
+<div class="layout">
+<div id="sidebar-placeholder"></div>
+<main class="main-content">
+  <div class="game-hero">
+    <h2>Breakout</h2>
+    <p>Clear all bricks — don't let the ball drop</p>
   </div>
-
-  <div id="footer-placeholder"></div>
-
-<script src="/data/pergamon-address.js"></script>
-<script src="/data/entries.js"></script>
-<script src="/data/atlas-reference.js"></script>
+  <div class="panel">
+    <div class="bk-hud">
+      <div class="bk-hud-item"><div class="lbl">Score</div><div class="val" id="bkScore">0</div></div>
+      <div class="bk-hud-item"><div class="lbl">Level</div><div class="val" id="bkLevel">1</div></div>
+      <div class="bk-hud-item"><div class="lbl">Lives</div><div class="val" id="bkLives">❤❤❤</div></div>
+    </div>
+    <canvas id="bkCanvas" width="480" height="360"></canvas>
+    <div class="bk-msg" id="bkMsg">Click or tap to start</div>
+    <button class="atlas-btn" id="bkBtn" onclick="bkStart()">Start Game</button>
+    <div class="bk-hint">Arrow keys or mouse/touch to move paddle</div>
+  </div>
+</main>
+</div>
+<div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
-<script>loadSnippets('Games');</script>
+<script>
+loadSnippets('Games');
+
+const canvas=document.getElementById('bkCanvas');
+const ctx=canvas.getContext('2d');
+
+const CW=480, CH=360;
+const ROWS=5, COLS=10;
+const BRICK_W=42, BRICK_H=14, BRICK_GAP=4;
+const BRICK_TOP=40, BRICK_LEFT=9;
+const PAD_H=10, PAD_W=72;
+const BALL_R=7;
+const BRICK_COLORS=['#e63946','#e67e22','#f4d03f','#2ecc71','#1d7fb9'];
+
+let score,level,lives,bricks,ball,pad,raf,state,keys;
+
+function initLevel(lvl){
+  bricks=[];
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    bricks.push({r,c,alive:true});
+  }
+  const spd=3.5+lvl*0.4;
+  ball={x:CW/2,y:CH*0.65,dx:spd*(Math.random()<.5?1:-1),dy:-spd,r:BALL_R,launched:false};
+  pad={x:CW/2-PAD_W/2,y:CH-28};
+}
+
+function bkStart(){
+  score=0;level=1;lives=3;
+  initLevel(1);
+  state='playing';
+  document.getElementById('bkBtn').style.display='none';
+  document.getElementById('bkMsg').textContent='';
+  updateHUD();
+  if(raf) cancelAnimationFrame(raf);
+  loop();
+}
+
+function updateHUD(){
+  document.getElementById('bkScore').textContent=score;
+  document.getElementById('bkLevel').textContent=level;
+  document.getElementById('bkLives').textContent='❤'.repeat(lives);
+}
+
+function loop(){
+  if(state!=='playing'){return;}
+  update();
+  draw();
+  raf=requestAnimationFrame(loop);
+}
+
+let mouseX=null;
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=CW/rect.width;
+  mouseX=(e.clientX-rect.left)*scaleX-PAD_W/2;
+});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=CW/rect.width;
+  mouseX=(e.touches[0].clientX-rect.left)*scaleX-PAD_W/2;
+},{passive:false});
+canvas.addEventListener('click',()=>{if(state==='idle')bkStart();else{ball.launched=true;}});
+canvas.addEventListener('touchstart',()=>{if(state==='idle')bkStart();else{ball.launched=true;}});
+
+keys={left:false,right:false};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a')keys.left=true;
+  if(e.key==='ArrowRight'||e.key==='d')keys.right=true;
+  if(e.key===' '){e.preventDefault();ball.launched=true;}
+});
+document.addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;
+  if(e.key==='ArrowRight'||e.key==='d')keys.right=false;
+});
+
+function update(){
+  const spd=8;
+  if(keys.left) pad.x-=spd;
+  if(keys.right) pad.x+=spd;
+  if(mouseX!==null) pad.x=mouseX;
+  pad.x=Math.max(0,Math.min(CW-PAD_W,pad.x));
+
+  if(!ball.launched){
+    ball.x=pad.x+PAD_W/2;
+    return;
+  }
+
+  ball.x+=ball.dx;
+  ball.y+=ball.dy;
+
+  if(ball.x-BALL_R<0){ball.x=BALL_R;ball.dx=Math.abs(ball.dx);}
+  if(ball.x+BALL_R>CW){ball.x=CW-BALL_R;ball.dx=-Math.abs(ball.dx);}
+  if(ball.y-BALL_R<0){ball.y=BALL_R;ball.dy=Math.abs(ball.dy);}
+
+  if(ball.y+BALL_R>=pad.y&&ball.y-BALL_R<=pad.y+PAD_H&&ball.x+BALL_R>=pad.x&&ball.x-BALL_R<=pad.x+PAD_W&&ball.dy>0){
+    const hit=(ball.x-(pad.x+PAD_W/2))/(PAD_W/2);
+    const angle=hit*1.1;
+    const spd=Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy);
+    ball.dx=spd*Math.sin(angle);
+    ball.dy=-spd*Math.cos(angle);
+    ball.y=pad.y-BALL_R;
+  }
+
+  if(ball.y-BALL_R>CH){
+    lives--;
+    updateHUD();
+    if(lives<=0){
+      state='gameover';
+      document.getElementById('bkMsg').textContent='Game Over — Score: '+score;
+      document.getElementById('bkBtn').style.display='';
+      document.getElementById('bkBtn').textContent='Play Again';
+      draw();return;
+    }
+    ball.launched=false;
+    ball.x=pad.x+PAD_W/2;
+    ball.y=pad.y-BALL_R-2;
+    const s=3.5+level*0.4;
+    ball.dx=s*(Math.random()<.5?1:-1);
+    ball.dy=-s;
+  }
+
+  for(const b of bricks){
+    if(!b.alive) continue;
+    const bx=BRICK_LEFT+b.c*(BRICK_W+BRICK_GAP);
+    const by=BRICK_TOP+b.r*(BRICK_H+BRICK_GAP);
+    if(ball.x+BALL_R>bx&&ball.x-BALL_R<bx+BRICK_W&&ball.y+BALL_R>by&&ball.y-BALL_R<by+BRICK_H){
+      b.alive=false;
+      score+=10*(level);
+      updateHUD();
+      const overlapL=ball.x+BALL_R-bx,overlapR=bx+BRICK_W-(ball.x-BALL_R);
+      const overlapT=ball.y+BALL_R-by,overlapB=by+BRICK_H-(ball.y-BALL_R);
+      const minH=Math.min(overlapL,overlapR),minV=Math.min(overlapT,overlapB);
+      if(minH<minV) ball.dx=-ball.dx; else ball.dy=-ball.dy;
+      break;
+    }
+  }
+
+  if(bricks.every(b=>!b.alive)){
+    level++;
+    initLevel(level);
+    updateHUD();
+    document.getElementById('bkMsg').textContent='Level '+level+'!';
+    setTimeout(()=>{if(state==='playing')document.getElementById('bkMsg').textContent='';},1500);
+  }
+}
+
+function draw(){
+  ctx.clearRect(0,0,CW,CH);
+
+  for(const b of bricks){
+    if(!b.alive) continue;
+    const bx=BRICK_LEFT+b.c*(BRICK_W+BRICK_GAP);
+    const by=BRICK_TOP+b.r*(BRICK_H+BRICK_GAP);
+    ctx.fillStyle=BRICK_COLORS[b.r%BRICK_COLORS.length];
+    ctx.beginPath();ctx.roundRect(bx,by,BRICK_W,BRICK_H,3);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.18)';
+    ctx.fillRect(bx+2,by+2,BRICK_W-4,3);
+  }
+
+  const grad=ctx.createLinearGradient(pad.x,pad.y,pad.x,pad.y+PAD_H);
+  grad.addColorStop(0,'#f0d39b');grad.addColorStop(1,'#b8860b');
+  ctx.fillStyle=grad;
+  ctx.beginPath();ctx.roundRect(pad.x,pad.y,PAD_W,PAD_H,5);ctx.fill();
+
+  ctx.beginPath();ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);
+  ctx.fillStyle='white';ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.beginPath();ctx.arc(ball.x-2,ball.y-2,BALL_R*0.4,0,Math.PI*2);ctx.fill();
+}
+
+state='idle';
+initLevel(1);
+draw();
+</script>
 </body>
 </html>

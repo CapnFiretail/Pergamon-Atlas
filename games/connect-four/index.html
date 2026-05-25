@@ -17,487 +17,185 @@
   "address": "9PFZV-57W9R-N8UN6"
 }
 </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-    crossorigin="anonymous"></script>
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Connect Four</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="/operation/styles/header.css">
   <link rel="stylesheet" href="/operation/styles/sidebar.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
-
   <style>
-    .ph-shell {
-      max-width: 100%;
-      margin: 0 auto;
-    }
-
-    .cf-hero {
-      --hero-gold: #bf7d08;
-      --hero-gold-bright: #e2ad35;
-
-      display: grid;
-      position: relative;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      grid-template-columns: minmax(0, 190px) minmax(0, 68px) minmax(0, 1fr) minmax(0, 300px);
-      align-items: center;
-      min-height: 210px;
-      padding: 20px 36px;
-
-      background:
-        radial-gradient(circle at 18% 50%, rgba(184, 136, 26, 0.06), transparent 29%),
-        radial-gradient(circle at 54% 48%, rgba(255, 255, 255, 0.032), transparent 31%),
-        linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
-      border: 1.5px solid rgba(191, 125, 8, 0.95);
-      border-radius: 20px;
-      box-shadow:
-        inset 0 0 0 1px rgba(184, 136, 26, 0.16),
-        inset 0 0 0 8px rgba(0, 0, 0, 0.16),
-        inset 0 0 40px rgba(255, 255, 255, 0.028),
-        0 8px 22px rgba(0, 0, 0, 0.56);
-    }
-
-    .cf-hero::after {
-      content: "";
-      position: absolute;
-      z-index: 0;
-      inset: 7px;
-      border: 1px solid rgba(191, 125, 8, 0.62);
-      border-radius: 14px;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,0.035), transparent 12%, transparent 88%, rgba(255,255,255,0.035)),
-        repeating-linear-gradient(105deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 5px);
-      pointer-events: none;
-    }
-
-    .cf-hero .game-hero-corner { display: none; }
-
-    .cf-hero > * {
-      position: relative;
-      z-index: 2;
-      min-width: 0;
-    }
-
-    .cf-hero .game-hero-emblem {
-      place-self: center;
-      width: 182px;
-      height: 182px;
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      overflow: visible;
-      margin: 0;
-    }
-
-    .cf-hero .game-hero-emblem img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 0 8px rgba(184, 136, 26, 0.18));
-    }
-
-    .cf-hero .game-hero-sep {
-      align-self: stretch;
-      width: 100%;
-      font-size: 22px;
-      color: var(--hero-gold-bright);
-    }
-
-    .cf-hero .game-hero-sep::before,
-    .cf-hero .game-hero-sep::after {
-      background: rgba(191, 125, 8, 0.86);
-    }
-
-    .cf-hero .game-hero-sep::before { top: 24px; height: calc(50% - 36px); }
-    .cf-hero .game-hero-sep::after  { bottom: 24px; height: calc(50% - 36px); }
-
-    .cf-hero .game-hero-title {
-      overflow: hidden;
-      min-width: 0;
-      padding: 0 24px 4px;
-      container-type: inline-size;
-    }
-
-    .cf-hero .game-hero-title h2 {
-      margin: 0 0 18px;
-      font-size: clamp(32px, 9cqi, 68px);
-      color: #f7f7f7;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 14px rgba(255,255,255,0.18);
-      overflow: hidden;
-    }
-
-    .cf-hero .game-hero-sub {
-      gap: 18px;
-      color: var(--hero-gold-bright);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-    }
-
-    .cf-hero .game-hero-sub-line {
-      flex: 1;
-      max-width: 100px;
-      background: rgba(191, 125, 8, 0.95);
-      position: relative;
-    }
-
-    .cf-hero .game-hero-sub-line::before,
-    .cf-hero .game-hero-sub-line::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 5px;
-      height: 5px;
-      background: var(--hero-gold-bright);
-      border-radius: 50%;
-      transform: translateY(-50%);
-    }
-
-    .cf-hero .game-hero-sub-line::before { left: 0; }
-    .cf-hero .game-hero-sub-line::after  { right: 0; }
-
-    .cf-artifact {
-      align-self: center;
-      width: 100%;
-      min-height: 82px;
-      border: 1px solid rgba(191, 125, 8, 0.95);
-      border-radius: 8px;
-      color: #f7f7f7;
-      text-decoration: none;
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      align-items: center;
-      column-gap: 12px;
-      padding: 10px 20px;
-      position: relative;
-      background: rgba(8, 8, 8, 0.26);
-      box-shadow: inset 0 0 16px rgba(184, 136, 26, 0.04);
-    }
-
-    .cf-artifact::before,
-    .cf-artifact::after,
-    .cf-artifact-inner::before,
-    .cf-artifact-inner::after {
-      content: "";
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-color: var(--hero-gold);
-      border-style: solid;
-      pointer-events: none;
-    }
-
-    .cf-artifact::before       { top: 4px;    left: 4px;   border-width: 1px 0 0 1px; }
-    .cf-artifact::after        { top: 4px;    right: 4px;  border-width: 1px 1px 0 0; }
-    .cf-artifact-inner::before { bottom: 4px; left: 4px;   border-width: 0 0 1px 1px; }
-    .cf-artifact-inner::after  { bottom: 4px; right: 4px;  border-width: 0 1px 1px 0; }
-
-    .cf-artifact-icon {
-      width: 34px;
-      height: 34px;
-      color: var(--hero-gold-bright);
-    }
-
-    .cf-artifact-inner {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .cf-artifact-text {
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    .cf-artifact-label {
-      color: var(--hero-gold-bright);
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .cf-artifact-code {
-      color: #f7f7f7;
-      display: block;
-      font-size: 20px;
-      line-height: 1;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.65), 0 0 10px rgba(255,255,255,0.12);
-      white-space: nowrap;
-      overflow-wrap: anywhere;
-    }
-
-    .cf-artifact:hover {
-      background: rgba(184, 136, 26, 0.08);
-      box-shadow: inset 0 0 20px rgba(184, 136, 26, 0.08), 0 0 16px rgba(184, 136, 26, 0.13);
-    }
-
-    /* ── Coming Soon Card ── */
-    .ph-card {
-      background: white;
-      border: 2px solid #000;
-      border-radius: 16px;
-      padding: 36px 32px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      text-align: center;
-    }
-
-    .cf-board {
-      display: inline-grid;
-      grid-template-columns: repeat(7, 40px);
-      gap: 5px;
-      background: #1f6fab;
-      padding: 10px;
-      border-radius: 12px;
-      margin: 0 auto 28px;
-      width: fit-content;
-    }
-
-    .cf-disc {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.25);
-    }
-
-    .cf-disc.r { background: #e63946; }
-    .cf-disc.y { background: #f4d03f; }
-
-    .ph-label {
-      font-size: 22px;
-      font-weight: 700;
-      color: #111;
-      margin: 0 0 10px;
-      font-family: Georgia, serif;
-    }
-
-    .ph-sub {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.7;
-      margin: 0 0 24px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    @media (max-width: 600px) {
-      .ph-card { padding: 28px 20px; }
-      .cf-board { grid-template-columns: repeat(7, 32px); gap: 4px; padding: 8px; }
-      .cf-disc { width: 32px; height: 32px; }
-    }
-
-    /* ── ≤1300px ── */
-    @media (max-width: 1300px) {
-      .cf-hero {
-        grid-template-columns: minmax(0, 152px) minmax(0, 52px) minmax(0, 1fr) minmax(0, 240px);
-        min-height: 186px;
-        padding: 18px 28px;
-      }
-
-      .cf-hero .game-hero-emblem { width: 148px; height: 148px; }
-      .cf-hero .game-hero-sep { font-size: 18px; }
-      .cf-hero .game-hero-sep::before { top: 20px; height: calc(50% - 30px); }
-      .cf-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 30px); }
-      .cf-hero .game-hero-title { padding: 0 16px 2px; }
-      .cf-hero .game-hero-title h2 { font-size: clamp(24px, 9cqi, 48px); margin-bottom: 14px; }
-      .cf-hero .game-hero-sub { font-size: 12px; gap: 12px; }
-      .cf-hero .game-hero-sub-line { max-width: 72px; }
-
-      .cf-artifact { min-height: 68px; grid-template-columns: 32px 1fr; column-gap: 10px; }
-      .cf-artifact-icon { width: 26px; height: 26px; }
-      .cf-artifact-label { font-size: 11px; }
-      .cf-artifact-code { font-size: 17px; }
-    }
-
-    /* ── ≤1200px: artifact drops below ── */
-    @media (max-width: 1200px) {
-      .cf-hero {
-        grid-template-columns: minmax(0, 134px) minmax(0, 42px) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        min-height: 0;
-        height: auto;
-        padding: 16px 20px;
-        align-items: center;
-        border-radius: 16px;
-      }
-
-      .cf-hero::after { inset: 5px; border-radius: 11px; }
-
-      .cf-hero .game-hero-emblem {
-        width: 114px; height: 114px;
-        grid-column: 1; grid-row: 1;
-        place-self: center;
-      }
-
-      .cf-hero .game-hero-sep {
-        grid-column: 2; grid-row: 1;
-        font-size: 16px;
-      }
-
-      .cf-hero .game-hero-sep::before { top: 20px; height: calc(50% - 28px); }
-      .cf-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 28px); }
-
-      .cf-hero .game-hero-title {
-        grid-column: 3; grid-row: 1;
-        padding: 6px 0 8px;
-        text-align: center;
-      }
-
-      .cf-hero .game-hero-title h2 { font-size: clamp(22px, 9cqi, 46px); margin-bottom: 10px; }
-      .cf-hero .game-hero-sub { font-size: 11px; gap: 10px; }
-      .cf-hero .game-hero-sub-line { max-width: 56px; }
-
-      .cf-artifact {
-        grid-column: 1 / 4; grid-row: 2;
-        width: 100%; min-height: 66px;
-        margin-top: 12px;
-        grid-template-columns: 36px 1fr;
-        column-gap: 10px;
-        padding: 10px 18px;
-      }
-
-      .cf-artifact-icon { width: 30px; height: 30px; }
-      .cf-artifact-label { font-size: 12px; margin-bottom: 5px; }
-      .cf-artifact-code { font-size: 19px; }
-    }
-
-    /* ── ≤560px ── */
-    @media (max-width: 560px) {
-      .cf-hero {
-        grid-template-columns: minmax(0, 76px) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        padding: 14px 16px;
-        border-radius: 14px;
-      }
-
-      .cf-hero .game-hero-emblem { width: 76px; height: 76px; grid-column: 1; grid-row: 1; }
-      .cf-hero .game-hero-sep { display: none; }
-
-      .cf-hero .game-hero-title {
-        grid-column: 2; grid-row: 1;
-        padding: 0 0 8px;
-        text-align: center;
-      }
-
-      .cf-hero .game-hero-title h2 { font-size: clamp(16px, 9cqi, 30px); margin-bottom: 8px; }
-      .cf-hero .game-hero-sub { font-size: 9px; gap: 8px; }
-      .cf-hero .game-hero-sub-line { max-width: 36px; }
-
-      .cf-artifact {
-        grid-column: 1 / 3; grid-row: 2;
-        width: 100%; margin-top: 12px;
-        min-height: 58px;
-        grid-template-columns: 30px 1fr;
-        column-gap: 10px;
-        padding: 9px 14px;
-      }
-
-      .cf-artifact-icon { width: 26px; height: 26px; }
-      .cf-artifact-label { font-size: 10px; }
-      .cf-artifact-code { font-size: clamp(13px, 4vw, 17px); line-height: 1.15; white-space: normal; }
-    }
-
-    @media (max-width: 390px) {
-      .cf-hero { grid-template-columns: minmax(0, 60px) minmax(0, 1fr); padding: 12px; }
-      .cf-hero .game-hero-emblem { width: 60px; height: 60px; }
-      .cf-hero .game-hero-title h2 { font-size: 21px; }
-      .cf-hero .game-hero-sub { font-size: 8px; gap: 6px; }
-      .cf-hero .game-hero-sub-line { max-width: 22px; }
-      .cf-artifact { grid-template-columns: 26px minmax(0, 1fr); padding: 9px 12px; }
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b;font-family:Georgia,serif}
+    .game-hero p{margin:0;font-size:16px;color:#ccc;font-family:Georgia,serif}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);text-align:center;margin-bottom:20px}
+    .score-row{display:flex;justify-content:center;gap:40px;margin-bottom:14px;font-family:Georgia,serif}
+    .score-item .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+    .score-item .val{font-size:28px;font-weight:800;color:#8a611c}
+    .status{font-size:17px;font-weight:700;min-height:26px;margin-bottom:14px;font-family:Georgia,serif}
+    .cf-wrap{display:inline-block;background:#1f6fab;border-radius:14px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+    .cf-cols{display:flex;gap:6px;margin-bottom:4px}
+    .cf-drop{width:44px;height:28px;border:none;border-radius:6px;background:rgba(255,255,255,0.12);cursor:pointer;font-size:16px;color:white;transition:background .12s;font-family:Georgia,serif}
+    .cf-drop:hover:not(:disabled){background:rgba(255,255,255,0.28)}
+    .cf-drop:disabled{opacity:.3;cursor:default}
+    .cf-board{display:grid;grid-template-columns:repeat(7,44px);gap:6px}
+    .cf-cell{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.08);transition:background .15s}
+    .cf-cell.r{background:#e63946}
+    .cf-cell.y{background:#f4d03f}
+    .cf-cell.win{box-shadow:0 0 0 3px white}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 24px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#111;color:white;transition:.15s;margin-top:16px}
+    .atlas-btn:hover{background:#333}
+    @media(max-width:480px){
+      .cf-drop,.cf-cell{width:36px;height:36px}
+      .cf-board{grid-template-columns:repeat(7,36px)}
+      .cf-cols{gap:4px}.cf-board{gap:4px}.cf-wrap{padding:8px}
     }
   </style>
 </head>
-
 <body>
-
-  <div id="header-placeholder"></div>
-
-  <div class="layout">
-    <div id="sidebar-placeholder"></div>
-
-    <main class="main-content">
-      <div class="ph-shell">
-
-        <div class="game-hero cf-hero">
-          <span class="game-hero-corner tl"></span>
-          <span class="game-hero-corner tr"></span>
-          <span class="game-hero-corner bl"></span>
-          <span class="game-hero-corner br"></span>
-
-          <div class="game-hero-emblem">
-            <img src="/operation/images/game-icon-transparent.png" alt="">
-          </div>
-
-          <div class="game-hero-sep">&#10022;</div>
-
-          <div class="game-hero-title">
-            <h2>Connect Four</h2>
-            <div class="game-hero-sub">
-              <span class="game-hero-sub-line"></span>
-              <span>Pergamon Games</span>
-              <span class="game-hero-sub-line"></span>
-            </div>
-          </div>
-
-          <a href="/tools/atlas-decoder/" class="cf-artifact" aria-label="View artifact in Atlas Decoder">
-            <span class="cf-artifact-inner"></span>
-            <svg class="cf-artifact-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="cf-artifact-text">
-              <span class="cf-artifact-label">Artifact Code:</span>
-              <span class="cf-artifact-code">F0A1DD23-9PFZV</span>
-            </span>
-          </a>
-        </div>
-
-        <div class="ph-card">
-          <div class="cf-board">
-            <!-- Row 0 (top) — empty -->
-            <div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div>
-            <!-- Row 1 — empty -->
-            <div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div>
-            <!-- Row 2 — empty -->
-            <div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div>
-            <!-- Row 3 -->
-            <div class="cf-disc"></div><div class="cf-disc r"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div>
-            <!-- Row 4 -->
-            <div class="cf-disc r"></div><div class="cf-disc y"></div><div class="cf-disc r"></div><div class="cf-disc y"></div><div class="cf-disc"></div><div class="cf-disc"></div><div class="cf-disc"></div>
-            <!-- Row 5 (bottom) -->
-            <div class="cf-disc y"></div><div class="cf-disc r"></div><div class="cf-disc y"></div><div class="cf-disc r"></div><div class="cf-disc r"></div><div class="cf-disc r"></div><div class="cf-disc"></div>
-          </div>
-
-          <p class="ph-label">Coming Soon</p>
-          <p class="ph-sub">
-            This game is being rebuilt. Check back later, or play the original version in the archives.
-          </p>
-        </div>
-
-      </div>
-    </main>
+<div id="header-placeholder"></div>
+<div class="layout">
+<div id="sidebar-placeholder"></div>
+<main class="main-content">
+  <div class="game-hero">
+    <h2>Connect Four</h2>
+    <p>Drop discs and connect four in a row — challenge the AI</p>
   </div>
-
-  <div id="footer-placeholder"></div>
-
-<script src="/data/pergamon-address.js"></script>
-<script src="/data/entries.js"></script>
-<script src="/data/atlas-reference.js"></script>
+  <div class="panel">
+    <div class="score-row">
+      <div class="score-item"><div class="lbl">🔴 You</div><div class="val" id="scoreP">0</div></div>
+      <div class="score-item"><div class="lbl">Draws</div><div class="val" id="scoreD">0</div></div>
+      <div class="score-item"><div class="lbl">🟡 AI</div><div class="val" id="scoreA">0</div></div>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="cf-wrap">
+      <div class="cf-cols" id="drops"></div>
+      <div class="cf-board" id="board"></div>
+    </div>
+    <br>
+    <button class="atlas-btn" onclick="newGame()">New Game</button>
+  </div>
+</main>
+</div>
+<div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
-<script>loadSnippets('Games');</script>
+<script>
+loadSnippets('Games');
+
+const ROWS=6, COLS=7;
+let board, gameActive, playerTurn;
+let scores={p:0,a:0,d:0};
+
+function newGame() {
+  board = Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  gameActive = true;
+  playerTurn = true;
+  render();
+  setStatus('Your turn 🔴','');
+}
+
+function setStatus(msg,color){
+  const el=document.getElementById('status');
+  el.textContent=msg; el.style.color=color;
+}
+
+function dropPiece(col,player) {
+  for(let r=ROWS-1;r>=0;r--) {
+    if(!board[r][col]) { board[r][col]=player; return r; }
+  }
+  return -1;
+}
+
+function colFull(col) { return board[0][col]!==0; }
+
+function checkWin(r,c,player) {
+  const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+  for(const [dr,dc] of dirs) {
+    let cells=[[r,c]];
+    for(let s=1;s<4;s++){const nr=r+dr*s,nc=c+dc*s;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc]===player)cells.push([nr,nc]);else break;}
+    for(let s=1;s<4;s++){const nr=r-dr*s,nc=c-dc*s;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc]===player)cells.push([nr,nc]);else break;}
+    if(cells.length>=4) return cells.slice(0,4);
+  }
+  return null;
+}
+
+function isDraw() { return board[0].every(c=>c!==0); }
+
+function aiMove() {
+  // Win if possible
+  for(let c=0;c<COLS;c++) {
+    if(colFull(c)) continue;
+    for(let r=ROWS-1;r>=0;r--) { if(!board[r][c]){board[r][c]=2;const w=checkWin(r,c,2);board[r][c]=0;if(w)return c;break;} }
+  }
+  // Block player win
+  for(let c=0;c<COLS;c++) {
+    if(colFull(c)) continue;
+    for(let r=ROWS-1;r>=0;r--) { if(!board[r][c]){board[r][c]=1;const w=checkWin(r,c,1);board[r][c]=0;if(w)return c;break;} }
+  }
+  // Prefer center columns
+  const order=[3,2,4,1,5,0,6];
+  for(const c of order) { if(!colFull(c)) return c; }
+  return 0;
+}
+
+function handleDrop(col) {
+  if(!gameActive||!playerTurn||colFull(col)) return;
+  const r=dropPiece(col,1);
+  render();
+  const w=checkWin(r,col,1);
+  if(w) { endGame('p',w); return; }
+  if(isDraw()) { endGame('d'); return; }
+  playerTurn=false;
+  setStatus('AI thinking…','#888');
+  setTimeout(()=>{
+    const ac=aiMove();
+    const ar=dropPiece(ac,2);
+    render();
+    const aw=checkWin(ar,ac,2);
+    if(aw) { endGame('a',aw); return; }
+    if(isDraw()) { endGame('d'); return; }
+    playerTurn=true;
+    setStatus('Your turn 🔴','');
+  },400);
+}
+
+function endGame(who,winCells) {
+  gameActive=false;
+  if(who==='p'){scores.p++;setStatus('You win! 🎉','#2a9d3a');}
+  else if(who==='a'){scores.a++;setStatus('AI wins! 🟡','#c0392b');}
+  else{scores.d++;setStatus('Draw!','#888');}
+  document.getElementById('scoreP').textContent=scores.p;
+  document.getElementById('scoreA').textContent=scores.a;
+  document.getElementById('scoreD').textContent=scores.d;
+  render(winCells);
+}
+
+function render(winCells) {
+  // Drop buttons
+  const drops=document.getElementById('drops');
+  drops.innerHTML='';
+  for(let c=0;c<COLS;c++) {
+    const btn=document.createElement('button');
+    btn.className='cf-drop'; btn.textContent='▼';
+    btn.disabled=!gameActive||!playerTurn||colFull(c);
+    btn.onclick=()=>handleDrop(c);
+    drops.appendChild(btn);
+  }
+  // Board
+  const brd=document.getElementById('board');
+  brd.innerHTML='';
+  const winSet=winCells?new Set(winCells.map(([r,c])=>r*COLS+c)):new Set();
+  for(let r=0;r<ROWS;r++) {
+    for(let c=0;c<COLS;c++) {
+      const div=document.createElement('div');
+      div.className='cf-cell'+(board[r][c]===1?' r':board[r][c]===2?' y':'')+(winSet.has(r*COLS+c)?' win':'');
+      brd.appendChild(div);
+    }
+  }
+}
+
+newGame();
+</script>
 </body>
 </html>

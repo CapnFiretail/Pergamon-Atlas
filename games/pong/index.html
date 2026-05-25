@@ -17,580 +17,200 @@
   "address": "HWENM-VQPA2-UMHX7"
 }
 </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-    crossorigin="anonymous"></script>
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Pong</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="/operation/styles/header.css">
   <link rel="stylesheet" href="/operation/styles/sidebar.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
-
   <style>
-    .ph-shell {
-      max-width: 100%;
-      margin: 0 auto;
-    }
-
-    .pong-hero {
-      --hero-gold: #bf7d08;
-      --hero-gold-bright: #e2ad35;
-
-      display: grid;
-      position: relative;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      grid-template-columns: minmax(0, 190px) minmax(0, 68px) minmax(0, 1fr) minmax(0, 300px);
-      align-items: center;
-      min-height: 210px;
-      padding: 20px 36px;
-
-      background:
-        radial-gradient(circle at 18% 50%, rgba(184, 136, 26, 0.06), transparent 29%),
-        radial-gradient(circle at 54% 48%, rgba(255, 255, 255, 0.032), transparent 31%),
-        linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
-      border: 1.5px solid rgba(191, 125, 8, 0.95);
-      border-radius: 20px;
-      box-shadow:
-        inset 0 0 0 1px rgba(184, 136, 26, 0.16),
-        inset 0 0 0 8px rgba(0, 0, 0, 0.16),
-        inset 0 0 40px rgba(255, 255, 255, 0.028),
-        0 8px 22px rgba(0, 0, 0, 0.56);
-    }
-
-    .pong-hero::after {
-      content: "";
-      position: absolute;
-      z-index: 0;
-      inset: 7px;
-      border: 1px solid rgba(191, 125, 8, 0.62);
-      border-radius: 14px;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,0.035), transparent 12%, transparent 88%, rgba(255,255,255,0.035)),
-        repeating-linear-gradient(105deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 5px);
-      pointer-events: none;
-    }
-
-    .pong-hero .game-hero-corner { display: none; }
-
-    .pong-hero > * {
-      position: relative;
-      z-index: 2;
-      min-width: 0;
-    }
-
-    .pong-hero .game-hero-emblem {
-      place-self: center;
-      width: 182px;
-      height: 182px;
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      overflow: visible;
-      margin: 0;
-    }
-
-    .pong-hero .game-hero-emblem img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 0 8px rgba(184, 136, 26, 0.18));
-    }
-
-    .pong-hero .game-hero-sep {
-      align-self: stretch;
-      width: 100%;
-      font-size: 22px;
-      color: var(--hero-gold-bright);
-    }
-
-    .pong-hero .game-hero-sep::before,
-    .pong-hero .game-hero-sep::after {
-      background: rgba(191, 125, 8, 0.86);
-    }
-
-    .pong-hero .game-hero-sep::before { top: 24px; height: calc(50% - 36px); }
-    .pong-hero .game-hero-sep::after  { bottom: 24px; height: calc(50% - 36px); }
-
-    .pong-hero .game-hero-title {
-      overflow: hidden;
-      min-width: 0;
-      padding: 0 24px 4px;
-      container-type: inline-size;
-    }
-
-    .pong-hero .game-hero-title h2 {
-      margin: 0 0 18px;
-      font-size: clamp(32px, 9cqi, 68px);
-      color: #f7f7f7;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 14px rgba(255,255,255,0.18);
-      overflow: hidden;
-    }
-
-    .pong-hero .game-hero-sub {
-      gap: 18px;
-      color: var(--hero-gold-bright);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-    }
-
-    .pong-hero .game-hero-sub-line {
-      flex: 1;
-      max-width: 100px;
-      background: rgba(191, 125, 8, 0.95);
-      position: relative;
-    }
-
-    .pong-hero .game-hero-sub-line::before,
-    .pong-hero .game-hero-sub-line::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 5px;
-      height: 5px;
-      background: var(--hero-gold-bright);
-      border-radius: 50%;
-      transform: translateY(-50%);
-    }
-
-    .pong-hero .game-hero-sub-line::before { left: 0; }
-    .pong-hero .game-hero-sub-line::after  { right: 0; }
-
-    .pong-artifact {
-      align-self: center;
-      width: 100%;
-      min-height: 82px;
-      border: 1px solid rgba(191, 125, 8, 0.95);
-      border-radius: 8px;
-      color: #f7f7f7;
-      text-decoration: none;
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      align-items: center;
-      column-gap: 12px;
-      padding: 10px 20px;
-      position: relative;
-      background: rgba(8, 8, 8, 0.26);
-      box-shadow: inset 0 0 16px rgba(184, 136, 26, 0.04);
-    }
-
-    .pong-artifact::before,
-    .pong-artifact::after,
-    .pong-artifact-inner::before,
-    .pong-artifact-inner::after {
-      content: "";
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-color: var(--hero-gold);
-      border-style: solid;
-      pointer-events: none;
-    }
-
-    .pong-artifact::before       { top: 4px;    left: 4px;   border-width: 1px 0 0 1px; }
-    .pong-artifact::after        { top: 4px;    right: 4px;  border-width: 1px 1px 0 0; }
-    .pong-artifact-inner::before { bottom: 4px; left: 4px;   border-width: 0 0 1px 1px; }
-    .pong-artifact-inner::after  { bottom: 4px; right: 4px;  border-width: 0 1px 1px 0; }
-
-    .pong-artifact-icon {
-      width: 34px;
-      height: 34px;
-      color: var(--hero-gold-bright);
-    }
-
-    .pong-artifact-inner {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .pong-artifact-text {
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    .pong-artifact-label {
-      color: var(--hero-gold-bright);
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .pong-artifact-code {
-      color: #f7f7f7;
-      display: block;
-      font-size: 20px;
-      line-height: 1;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.65), 0 0 10px rgba(255,255,255,0.12);
-      white-space: nowrap;
-      overflow-wrap: anywhere;
-    }
-
-    .pong-artifact:hover {
-      background: rgba(184, 136, 26, 0.08);
-      box-shadow: inset 0 0 20px rgba(184, 136, 26, 0.08), 0 0 16px rgba(184, 136, 26, 0.13);
-    }
-
-    .ph-card {
-      background: white;
-      border: 2px solid #000;
-      border-radius: 16px;
-      padding: 36px 32px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      text-align: center;
-    }
-
-    .ph-pong {
-      position: relative;
-      width: 260px;
-      height: 174px;
-      background: #111;
-      border: 3px solid #222;
-      border-radius: 10px;
-      margin: 0 auto 28px;
-      overflow: hidden;
-    }
-
-    .ph-pong-line {
-      position: absolute;
-      left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      transform: translateX(-50%);
-      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.22) 0 8px, transparent 8px 16px);
-    }
-
-    .ph-pong-paddle {
-      position: absolute;
-      width: 8px;
-      height: 48px;
-      background: #f0d39b;
-      border-radius: 4px;
-    }
-
-    .ph-pong-left  { left: 12px; top: 52px; }
-    .ph-pong-right { right: 12px; top: 74px; }
-
-    .ph-pong-ball {
-      position: absolute;
-      width: 11px;
-      height: 11px;
-      background: white;
-      border-radius: 50%;
-      left: 122px;
-      top: 82px;
-      box-shadow: 0 0 8px rgba(255,255,255,0.7);
-    }
-
-    .ph-pong-score {
-      position: absolute;
-      top: 12px;
-      font-family: Georgia, serif;
-      font-size: 28px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.35);
-    }
-
-    .ph-pong-score.s1 { left: 68px; }
-    .ph-pong-score.s2 { right: 68px; }
-
-    .ph-label {
-      font-size: 22px;
-      font-weight: 700;
-      color: #111;
-      margin: 0 0 10px;
-      font-family: Georgia, serif;
-    }
-
-    .ph-sub {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.7;
-      margin: 0 0 24px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    @media (max-width: 600px) {
-      .ph-card { padding: 28px 20px; }
-      .ph-pong { width: 220px; height: 147px; }
-      .ph-pong-paddle { height: 40px; }
-      .ph-pong-right { top: 60px; }
-      .ph-pong-ball { left: 102px; top: 68px; }
-      .ph-pong-score.s1 { left: 54px; }
-      .ph-pong-score.s2 { right: 54px; }
-    }
-
-    /* ── ≤1300px: compact 4-column ─────────────────────────── */
-    @media (max-width: 1300px) {
-      .pong-hero {
-        grid-template-columns: minmax(0, 152px) minmax(0, 52px) minmax(0, 1fr) minmax(0, 240px);
-        min-height: 186px;
-        padding: 18px 28px;
-      }
-
-      .pong-hero .game-hero-emblem {
-        width: 148px;
-        height: 148px;
-      }
-
-      .pong-hero .game-hero-sep { font-size: 18px; }
-      .pong-hero .game-hero-sep::before { top: 20px; height: calc(50% - 30px); }
-      .pong-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 30px); }
-
-      .pong-hero .game-hero-title { padding: 0 16px 2px; }
-
-      .pong-hero .game-hero-title h2 {
-        font-size: clamp(24px, 9cqi, 48px);
-        margin-bottom: 14px;
-      }
-
-      .pong-hero .game-hero-sub { font-size: 12px; gap: 12px; }
-      .pong-hero .game-hero-sub-line { max-width: 72px; }
-
-      .pong-artifact { min-height: 68px; grid-template-columns: 32px 1fr; column-gap: 10px; }
-      .pong-artifact-icon { width: 26px; height: 26px; }
-      .pong-artifact-label { font-size: 11px; }
-      .pong-artifact-code { font-size: 17px; }
-    }
-
-    /* ── ≤1200px: artifact moves below ── */
-    @media (max-width: 1200px) {
-      .pong-hero {
-        grid-template-columns: minmax(0, 134px) minmax(0, 42px) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        min-height: 0;
-        height: auto;
-        padding: 16px 20px;
-        align-items: center;
-        border-radius: 16px;
-      }
-
-      .pong-hero::after { inset: 5px; border-radius: 11px; }
-
-      .pong-hero .game-hero-emblem {
-        width: 114px;
-        height: 114px;
-        grid-column: 1;
-        grid-row: 1;
-        place-self: center;
-      }
-
-      .pong-hero .game-hero-sep {
-        grid-column: 2;
-        grid-row: 1;
-        font-size: 16px;
-      }
-
-      .pong-hero .game-hero-sep::before { top: 20px; height: calc(50% - 28px); }
-      .pong-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 28px); }
-
-      .pong-hero .game-hero-title {
-        grid-column: 3;
-        grid-row: 1;
-        padding: 6px 0 8px;
-        text-align: center;
-      }
-
-      .pong-hero .game-hero-title h2 {
-        font-size: clamp(22px, 9cqi, 46px);
-        margin-bottom: 10px;
-      }
-
-      .pong-hero .game-hero-sub { font-size: 11px; gap: 10px; }
-      .pong-hero .game-hero-sub-line { max-width: 56px; }
-
-      .pong-artifact {
-        grid-column: 1 / 4;
-        grid-row: 2;
-        width: 100%;
-        min-height: 66px;
-        margin-top: 12px;
-        grid-template-columns: 36px 1fr;
-        column-gap: 10px;
-        padding: 10px 18px;
-      }
-
-      .pong-artifact-icon { width: 30px; height: 30px; }
-      .pong-artifact-label { font-size: 12px; margin-bottom: 5px; }
-      .pong-artifact-code { font-size: 19px; }
-    }
-
-    /* ── ≤560px: 2-column stack ─────────────────────────────── */
-    @media (max-width: 560px) {
-      .pong-hero {
-        grid-template-columns: minmax(0, 76px) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        padding: 14px 16px;
-        border-radius: 14px;
-      }
-
-      .pong-hero .game-hero-emblem {
-        width: 76px;
-        height: 76px;
-        grid-column: 1;
-        grid-row: 1;
-      }
-
-      .pong-hero .game-hero-sep { display: none; }
-
-      .pong-hero .game-hero-title {
-        grid-column: 2;
-        grid-row: 1;
-        padding: 0 0 8px;
-        text-align: center;
-      }
-
-      .pong-hero .game-hero-title h2 {
-        font-size: clamp(16px, 9cqi, 30px);
-        margin-bottom: 8px;
-      }
-
-      .pong-hero .game-hero-sub {
-        font-size: 9px;
-        gap: 8px;
-      }
-
-      .pong-hero .game-hero-sub-line { max-width: 36px; }
-
-      .pong-artifact {
-        grid-column: 1 / 3;
-        grid-row: 2;
-        width: 100%;
-        margin-top: 12px;
-        min-height: 58px;
-        grid-template-columns: 30px 1fr;
-        column-gap: 10px;
-        padding: 9px 14px;
-      }
-
-      .pong-artifact-icon { width: 26px; height: 26px; }
-      .pong-artifact-label { font-size: 10px; }
-      .pong-artifact-code {
-        font-size: clamp(13px, 4vw, 17px);
-        line-height: 1.15;
-        white-space: normal;
-      }
-    }
-
-    @media (max-width: 390px) {
-      .pong-hero {
-        grid-template-columns: minmax(0, 60px) minmax(0, 1fr);
-        padding: 12px;
-      }
-
-      .pong-hero .game-hero-emblem {
-        width: 60px;
-        height: 60px;
-      }
-
-      .pong-hero .game-hero-title h2 {
-        font-size: 21px;
-      }
-
-      .pong-hero .game-hero-sub {
-        font-size: 8px;
-        gap: 6px;
-      }
-
-      .pong-hero .game-hero-sub-line {
-        max-width: 22px;
-      }
-
-      .pong-artifact {
-        grid-template-columns: 26px minmax(0, 1fr);
-        padding: 9px 12px;
-      }
-    }
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b;font-family:Georgia,serif}
+    .game-hero p{margin:0;font-size:16px;color:#ccc;font-family:Georgia,serif}
+    .panel{background:#111;border:2px solid #333;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.3);margin-bottom:20px;text-align:center}
+    #pongCanvas{display:block;margin:0 auto;background:#0a0a0a;border-radius:10px;border:1px solid #333;touch-action:none}
+    .pong-msg{font-family:Georgia,serif;font-size:18px;color:#f0d39b;min-height:28px;margin:12px 0 8px}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 28px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#f0d39b;color:#111;font-weight:700;transition:.15s}
+    .atlas-btn:hover{background:#e0c070}
+    .diff-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+    .diff-btn{padding:6px 18px;border:2px solid #555;border-radius:8px;background:transparent;color:#888;font-family:Georgia,serif;font-size:13px;cursor:pointer;transition:.15s}
+    .diff-btn.active{background:#f0d39b;color:#111;border-color:#f0d39b}
+    .pong-hint{font-family:Georgia,serif;font-size:13px;color:#555;margin-top:8px}
   </style>
 </head>
-
 <body>
-
-  <div id="header-placeholder"></div>
-
-  <div class="layout">
-    <div id="sidebar-placeholder"></div>
-
-    <main class="main-content">
-      <div class="ph-shell">
-
-        <div class="game-hero pong-hero">
-          <span class="game-hero-corner tl"></span>
-          <span class="game-hero-corner tr"></span>
-          <span class="game-hero-corner bl"></span>
-          <span class="game-hero-corner br"></span>
-
-          <div class="game-hero-emblem">
-            <img src="/operation/images/game-icon-transparent.png" alt="">
-          </div>
-
-          <div class="game-hero-sep">&#10022;</div>
-
-          <div class="game-hero-title">
-            <h2>Pong</h2>
-            <div class="game-hero-sub">
-              <span class="game-hero-sub-line"></span>
-              <span>Pergamon Games</span>
-              <span class="game-hero-sub-line"></span>
-            </div>
-          </div>
-
-          <a href="/atlas-navigation/" class="pong-artifact" aria-label="View atlas navigation">
-            <span class="pong-artifact-inner"></span>
-            <svg class="pong-artifact-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="pong-artifact-text">
-              <span class="pong-artifact-label">Artifact Code:</span>
-              <span class="pong-artifact-code">DDC4B1CE-HWENM</span>
-            </span>
-          </a>
-        </div>
-
-        <div class="ph-card">
-          <div class="ph-pong">
-            <div class="ph-pong-line"></div>
-            <div class="ph-pong-paddle ph-pong-left"></div>
-            <div class="ph-pong-paddle ph-pong-right"></div>
-            <div class="ph-pong-ball"></div>
-            <span class="ph-pong-score s1">3</span>
-            <span class="ph-pong-score s2">5</span>
-          </div>
-
-          <p class="ph-label">Coming Soon</p>
-          <p class="ph-sub">
-            This game is being rebuilt. Check back later, or play the original version in the archives.
-          </p>
-        </div>
-
-      </div>
-    </main>
+<div id="header-placeholder"></div>
+<div class="layout">
+<div id="sidebar-placeholder"></div>
+<main class="main-content">
+  <div class="game-hero">
+    <h2>Pong</h2>
+    <p>First to 7 wins — classic arcade paddle battle</p>
   </div>
-
-  <div id="footer-placeholder"></div>
-
-<script src="/data/pergamon-address.js"></script>
-<script src="/data/entries.js"></script>
-<script src="/data/atlas-reference.js"></script>
+  <div class="panel">
+    <div class="diff-row">
+      <button class="diff-btn" id="dEasy"   onclick="setDiff('easy')">Easy</button>
+      <button class="diff-btn active" id="dMed" onclick="setDiff('medium')">Medium</button>
+      <button class="diff-btn" id="dHard"   onclick="setDiff('hard')">Hard</button>
+    </div>
+    <canvas id="pongCanvas" width="520" height="340"></canvas>
+    <div class="pong-msg" id="pongMsg">Click or tap to start</div>
+    <button class="atlas-btn" id="pongBtn" onclick="pongStart()">Start Game</button>
+    <div class="pong-hint">W/S or ↑/↓ to move — or drag the paddle on touch</div>
+  </div>
+</main>
+</div>
+<div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
-<script>loadSnippets('Games');</script>
+<script>
+loadSnippets('Games');
+
+const canvas=document.getElementById('pongCanvas');
+const ctx=canvas.getContext('2d');
+const CW=520,CH=340;
+const PAD_W=10,PAD_H=64,BALL_S=9;
+const WIN_SCORE=7;
+
+let state='idle';
+let difficulty='medium';
+let ball,p1,p2,raf;
+let keys={};
+let touchY=null;
+
+function setDiff(d){
+  difficulty=d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('d'+d.charAt(0).toUpperCase()+d.slice(1)).classList.add('active');
+}
+
+function aiSpeed(){return{easy:2.2,medium:3.5,hard:5.2}[difficulty];}
+
+function resetBall(dir){
+  const spd=5;
+  const angle=(Math.random()*0.6-0.3);
+  ball={x:CW/2,y:CH/2,dx:dir*spd*Math.cos(angle),dy:spd*Math.sin(angle),r:BALL_S/2};
+}
+
+function pongStart(){
+  p1={x:14,y:CH/2-PAD_H/2,score:0};
+  p2={x:CW-14-PAD_W,y:CH/2-PAD_H/2,score:0};
+  resetBall(1);
+  state='playing';
+  document.getElementById('pongBtn').style.display='none';
+  document.getElementById('pongMsg').textContent='';
+  if(raf) cancelAnimationFrame(raf);
+  loop();
+}
+
+function loop(){
+  if(state!=='playing') return;
+  update();
+  draw();
+  raf=requestAnimationFrame(loop);
+}
+
+document.addEventListener('keydown',e=>{keys[e.key]=true;});
+document.addEventListener('keyup',e=>{keys[e.key]=false;});
+
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  if(state==='idle'){pongStart();return;}
+  touchY=e.touches[0].clientY;
+},{passive:false});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  if(touchY===null) return;
+  const rect=canvas.getBoundingClientRect();
+  const scaleY=CH/rect.height;
+  const ny=(e.touches[0].clientY-rect.top)*scaleY;
+  p1.y=Math.max(0,Math.min(CH-PAD_H,ny-PAD_H/2));
+  touchY=e.touches[0].clientY;
+},{passive:false});
+
+function update(){
+  const pspd=6;
+  if(keys['w']||keys['W']||keys['ArrowUp']){p1.y=Math.max(0,p1.y-pspd);}
+  if(keys['s']||keys['S']||keys['ArrowDown']){p1.y=Math.min(CH-PAD_H,p1.y+pspd);}
+
+  const target=ball.y-PAD_H/2+ball.r;
+  const diff=target-p2.y;
+  const as=aiSpeed();
+  p2.y+=Math.max(-as,Math.min(as,diff));
+  p2.y=Math.max(0,Math.min(CH-PAD_H,p2.y));
+
+  ball.x+=ball.dx;
+  ball.y+=ball.dy;
+
+  if(ball.y-ball.r<=0){ball.y=ball.r;ball.dy=Math.abs(ball.dy);}
+  if(ball.y+ball.r>=CH){ball.y=CH-ball.r;ball.dy=-Math.abs(ball.dy);}
+
+  if(ball.dx<0&&ball.x-ball.r<=p1.x+PAD_W&&ball.x+ball.r>=p1.x&&ball.y+ball.r>=p1.y&&ball.y-ball.r<=p1.y+PAD_H){
+    const hit=(ball.y-(p1.y+PAD_H/2))/(PAD_H/2);
+    const spd=Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy)*1.04;
+    const ang=hit*1.1;
+    ball.dx=Math.abs(spd*Math.cos(ang));
+    ball.dy=spd*Math.sin(ang);
+    ball.x=p1.x+PAD_W+ball.r;
+  }
+
+  if(ball.dx>0&&ball.x+ball.r>=p2.x&&ball.x-ball.r<=p2.x+PAD_W&&ball.y+ball.r>=p2.y&&ball.y-ball.r<=p2.y+PAD_H){
+    const hit=(ball.y-(p2.y+PAD_H/2))/(PAD_H/2);
+    const spd=Math.sqrt(ball.dx*ball.dx+ball.dy*ball.dy)*1.04;
+    const ang=hit*1.1;
+    ball.dx=-Math.abs(spd*Math.cos(ang));
+    ball.dy=spd*Math.sin(ang);
+    ball.x=p2.x-ball.r;
+  }
+
+  if(ball.x-ball.r<0){
+    p2.score++;
+    if(p2.score>=WIN_SCORE){endGame('ai');return;}
+    resetBall(1);
+  }
+  if(ball.x+ball.r>CW){
+    p1.score++;
+    if(p1.score>=WIN_SCORE){endGame('player');return;}
+    resetBall(-1);
+  }
+}
+
+function endGame(who){
+  state='over';
+  cancelAnimationFrame(raf);
+  draw();
+  if(who==='player') document.getElementById('pongMsg').textContent='You win! 🎉';
+  else document.getElementById('pongMsg').textContent='AI wins!';
+  document.getElementById('pongBtn').style.display='';
+  document.getElementById('pongBtn').textContent='Play Again';
+}
+
+function draw(){
+  ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,CW,CH);
+
+  ctx.setLineDash([8,8]);
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(CW/2,0);ctx.lineTo(CW/2,CH);ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.font='bold 42px Georgia';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,0.18)';
+  ctx.fillText(p1?p1.score:0,CW/4,54);
+  ctx.fillText(p2?p2.score:0,CW*3/4,54);
+
+  ctx.fillStyle='#f0d39b';
+  ctx.beginPath();ctx.roundRect(p1.x,p1.y,PAD_W,PAD_H,4);ctx.fill();
+  ctx.beginPath();ctx.roundRect(p2.x,p2.y,PAD_W,PAD_H,4);ctx.fill();
+
+  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+  ctx.fillStyle='white';ctx.fill();
+}
+
+state='idle';
+p1={x:14,y:CH/2-PAD_H/2,score:0};
+p2={x:CW-14-PAD_W,y:CH/2-PAD_H/2,score:0};
+ball={x:CW/2,y:CH/2,dx:0,dy:0,r:BALL_S/2};
+draw();
+</script>
 </body>
 </html>

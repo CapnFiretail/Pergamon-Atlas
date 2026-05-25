@@ -17,563 +17,182 @@
   "address": "BX8X3-YYGQS-MPULE"
 }
 </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-    crossorigin="anonymous"></script>
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Tic Tac Toe</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="/operation/styles/header.css">
   <link rel="stylesheet" href="/operation/styles/sidebar.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
-
   <style>
-    .ph-shell {
-      max-width: 100%;
-      margin: 0 auto;
-    }
-
-    .ttt-hero {
-      --hero-gold: #bf7d08;
-      --hero-gold-bright: #e2ad35;
-
-      /* Safe responsive grid */
-      display: grid;
-      position: relative;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-      grid-template-columns: minmax(0, 190px) minmax(0, 68px) minmax(0, 1fr) minmax(0, 300px);
-      align-items: center;
-      min-height: 210px;
-      padding: 20px 36px;
-
-      background:
-        radial-gradient(circle at 18% 50%, rgba(184, 136, 26, 0.06), transparent 29%),
-        radial-gradient(circle at 54% 48%, rgba(255, 255, 255, 0.032), transparent 31%),
-        linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
-      border: 1.5px solid rgba(191, 125, 8, 0.95);
-      border-radius: 20px;
-      box-shadow:
-        inset 0 0 0 1px rgba(184, 136, 26, 0.16),
-        inset 0 0 0 8px rgba(0, 0, 0, 0.16),
-        inset 0 0 40px rgba(255, 255, 255, 0.028),
-        0 8px 22px rgba(0, 0, 0, 0.56);
-    }
-
-    .ttt-hero::after {
-      content: "";
-      position: absolute;
-      z-index: 0;
-      inset: 7px;
-      border: 1px solid rgba(191, 125, 8, 0.62);
-      border-radius: 14px;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,0.035), transparent 12%, transparent 88%, rgba(255,255,255,0.035)),
-        repeating-linear-gradient(105deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 5px);
-      pointer-events: none;
-    }
-
-    .ttt-hero .game-hero-corner { display: none; }
-
-    /* min-width: 0 on every direct child so columns can truly shrink */
-    .ttt-hero > * {
-      position: relative;
-      z-index: 2;
-      min-width: 0;
-    }
-
-    /* Emblem — place-self: center gives equal left/right spacing inside the column */
-    .ttt-hero .game-hero-emblem {
-      place-self: center;
-      width: 182px;
-      height: 182px;
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      overflow: visible;
-      margin: 0;
-    }
-
-    .ttt-hero .game-hero-emblem img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      filter: drop-shadow(0 0 8px rgba(184, 136, 26, 0.18));
-    }
-
-    /* Sep fills its column height */
-    .ttt-hero .game-hero-sep {
-      align-self: stretch;
-      width: 100%;
-      font-size: 22px;
-      color: var(--hero-gold-bright);
-    }
-
-    .ttt-hero .game-hero-sep::before,
-    .ttt-hero .game-hero-sep::after {
-      background: rgba(191, 125, 8, 0.86);
-    }
-
-    .ttt-hero .game-hero-sep::before { top: 24px; height: calc(50% - 36px); }
-    .ttt-hero .game-hero-sep::after  { bottom: 24px; height: calc(50% - 36px); }
-
-    /* Title — overflow: hidden prevents any bleed into adjacent columns */
-    .ttt-hero .game-hero-title {
-      overflow: hidden;
-      min-width: 0;
-      padding: 0 24px 4px;
-      container-type: inline-size;
-    }
-
-    .ttt-hero .game-hero-title h2 {
-      margin: 0 0 18px;
-      font-size: clamp(32px, 9cqi, 68px);
-      color: #f7f7f7;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 14px rgba(255,255,255,0.18);
-      overflow: hidden;
-    }
-
-    .ttt-hero .game-hero-sub {
-      gap: 18px;
-      color: var(--hero-gold-bright);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-    }
-
-    .ttt-hero .game-hero-sub-line {
-      flex: 1;
-      max-width: 100px;
-      background: rgba(191, 125, 8, 0.95);
-      position: relative;
-    }
-
-    .ttt-hero .game-hero-sub-line::before,
-    .ttt-hero .game-hero-sub-line::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 5px;
-      height: 5px;
-      background: var(--hero-gold-bright);
-      border-radius: 50%;
-      transform: translateY(-50%);
-    }
-
-    .ttt-hero .game-hero-sub-line::before { left: 0; }
-    .ttt-hero .game-hero-sub-line::after  { right: 0; }
-
-    /* Artifact — fills its column, never overflows */
-    .ttt-artifact {
-      align-self: center;
-      width: 100%;
-      min-height: 82px;
-      border: 1px solid rgba(191, 125, 8, 0.95);
-      border-radius: 8px;
-      color: #f7f7f7;
-      text-decoration: none;
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      align-items: center;
-      column-gap: 12px;
-      padding: 10px 20px;
-      position: relative;
-      background: rgba(8, 8, 8, 0.26);
-      box-shadow: inset 0 0 16px rgba(184, 136, 26, 0.04);
-    }
-
-    .ttt-artifact::before,
-    .ttt-artifact::after,
-    .ttt-artifact-inner::before,
-    .ttt-artifact-inner::after {
-      content: "";
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-color: var(--hero-gold);
-      border-style: solid;
-      pointer-events: none;
-    }
-
-    .ttt-artifact::before       { top: 4px;    left: 4px;   border-width: 1px 0 0 1px; }
-    .ttt-artifact::after        { top: 4px;    right: 4px;  border-width: 1px 1px 0 0; }
-    .ttt-artifact-inner::before { bottom: 4px; left: 4px;   border-width: 0 0 1px 1px; }
-    .ttt-artifact-inner::after  { bottom: 4px; right: 4px;  border-width: 0 1px 1px 0; }
-
-    .ttt-artifact-icon {
-      width: 34px;
-      height: 34px;
-      color: var(--hero-gold-bright);
-    }
-
-    .ttt-artifact-inner {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .ttt-artifact-text {
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    .ttt-artifact-label {
-      color: var(--hero-gold-bright);
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .ttt-artifact-code {
-      color: #f7f7f7;
-      display: block;
-      font-size: 20px;
-      line-height: 1;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.65), 0 0 10px rgba(255,255,255,0.12);
-      white-space: nowrap;
-      overflow-wrap: anywhere;
-    }
-
-    .ttt-artifact:hover {
-      background: rgba(184, 136, 26, 0.08);
-      box-shadow: inset 0 0 20px rgba(184, 136, 26, 0.08), 0 0 16px rgba(184, 136, 26, 0.13);
-    }
-
-    .ph-card {
-      background: white;
-      border: 2px solid #000;
-      border-radius: 16px;
-      padding: 36px 32px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      text-align: center;
-    }
-
-    .ph-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 80px);
-      gap: 10px;
-      margin: 0 auto 28px;
-      width: fit-content;
-      background: #111;
-      border-radius: 14px;
-      padding: 10px;
-    }
-
-    .ph-cell {
-      width: 80px;
-      height: 80px;
-      background: #f4f4f4;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: Georgia, serif;
-      font-size: 36px;
-      font-weight: 700;
-      color: #111;
-    }
-
-    .ph-cell.dim { color: #ccc; }
-
-    .ph-label {
-      font-size: 22px;
-      font-weight: 700;
-      color: #111;
-      margin: 0 0 10px;
-      font-family: Georgia, serif;
-    }
-
-    .ph-sub {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.7;
-      margin: 0 0 24px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    @media (max-width: 600px) {
-      .ph-card { padding: 28px 20px; }
-
-      .ph-grid { grid-template-columns: repeat(3, 64px); }
-
-      .ph-cell {
-        width: 64px;
-        height: 64px;
-        font-size: 28px;
-      }
-    }
-
-    /* ── ≤1300px: compact 4-column ─────────────────────────── */
-    @media (max-width: 1300px) {
-      .ttt-hero {
-        grid-template-columns: minmax(0, 152px) minmax(0, 52px) minmax(0, 1fr) minmax(0, 240px);
-        min-height: 186px;
-        padding: 18px 28px;
-      }
-
-      .ttt-hero .game-hero-emblem {
-        width: 148px;
-        height: 148px;
-      }
-
-      .ttt-hero .game-hero-sep { font-size: 18px; }
-      .ttt-hero .game-hero-sep::before { top: 20px; height: calc(50% - 30px); }
-      .ttt-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 30px); }
-
-      .ttt-hero .game-hero-title { padding: 0 16px 2px; }
-
-      .ttt-hero .game-hero-title h2 {
-        font-size: clamp(24px, 9cqi, 48px);
-        margin-bottom: 14px;
-      }
-
-      .ttt-hero .game-hero-sub { font-size: 12px; gap: 12px; }
-      .ttt-hero .game-hero-sub-line { max-width: 72px; }
-
-      .ttt-artifact { min-height: 68px; grid-template-columns: 32px 1fr; column-gap: 10px; }
-      .ttt-artifact-icon { width: 26px; height: 26px; }
-      .ttt-artifact-label { font-size: 11px; }
-      .ttt-artifact-code { font-size: 17px; }
-    }
-
-    /* ── ≤1200px: artifact moves below before the row gets crowded ── */
-    @media (max-width: 1200px) {
-      .ttt-hero {
-        grid-template-columns: minmax(0, 134px) minmax(0, 42px) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        min-height: 0;
-        height: auto;
-        padding: 16px 20px;
-        align-items: center;
-        border-radius: 16px;
-      }
-
-      .ttt-hero::after { inset: 5px; border-radius: 11px; }
-
-      .ttt-hero .game-hero-emblem {
-        width: 114px;
-        height: 114px;
-        grid-column: 1;
-        grid-row: 1;
-        place-self: center;
-      }
-
-      .ttt-hero .game-hero-sep {
-        grid-column: 2;
-        grid-row: 1;
-        font-size: 16px;
-      }
-
-      .ttt-hero .game-hero-sep::before { top: 20px; height: calc(50% - 28px); }
-      .ttt-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 28px); }
-
-      .ttt-hero .game-hero-title {
-        grid-column: 3;
-        grid-row: 1;
-        padding: 6px 0 8px;
-        text-align: center;
-      }
-
-      .ttt-hero .game-hero-title h2 {
-        font-size: clamp(22px, 9cqi, 46px);
-        margin-bottom: 10px;
-      }
-
-      .ttt-hero .game-hero-sub { font-size: 11px; gap: 10px; }
-      .ttt-hero .game-hero-sub-line { max-width: 56px; }
-
-      .ttt-artifact {
-        grid-column: 1 / 4;
-        grid-row: 2;
-        width: 100%;
-        min-height: 66px;
-        margin-top: 12px;
-        grid-template-columns: 36px 1fr;
-        column-gap: 10px;
-        padding: 10px 18px;
-      }
-
-      .ttt-artifact-icon { width: 30px; height: 30px; }
-      .ttt-artifact-label { font-size: 12px; margin-bottom: 5px; }
-      .ttt-artifact-code { font-size: 19px; }
-    }
-
-    /* ── ≤560px: 2-column stack ─────────────────────────────── */
-    @media (max-width: 560px) {
-      .ttt-hero {
-        grid-template-columns: minmax(0, 76px) minmax(0, 1fr);
-        grid-template-rows: auto auto;
-        padding: 14px 16px;
-        border-radius: 14px;
-      }
-
-      .ttt-hero .game-hero-emblem {
-        width: 76px;
-        height: 76px;
-        grid-column: 1;
-        grid-row: 1;
-      }
-
-      .ttt-hero .game-hero-sep { display: none; }
-
-      .ttt-hero .game-hero-title {
-        grid-column: 2;
-        grid-row: 1;
-        padding: 0 0 8px;
-        text-align: center;
-      }
-
-      .ttt-hero .game-hero-title h2 {
-        font-size: clamp(16px, 9cqi, 30px);
-        margin-bottom: 8px;
-      }
-
-      .ttt-hero .game-hero-sub {
-        font-size: 9px;
-        gap: 8px;
-      }
-
-      .ttt-hero .game-hero-sub-line { max-width: 36px; }
-
-      .ttt-artifact {
-        grid-column: 1 / 3;
-        grid-row: 2;
-        width: 100%;
-        margin-top: 12px;
-        min-height: 58px;
-        grid-template-columns: 30px 1fr;
-        column-gap: 10px;
-        padding: 9px 14px;
-      }
-
-      .ttt-artifact-icon { width: 26px; height: 26px; }
-      .ttt-artifact-label { font-size: 10px; }
-      .ttt-artifact-code {
-        font-size: clamp(13px, 4vw, 17px);
-        line-height: 1.15;
-        white-space: normal;
-      }
-    }
-
-    @media (max-width: 390px) {
-      .ttt-hero {
-        grid-template-columns: minmax(0, 60px) minmax(0, 1fr);
-        padding: 12px;
-      }
-
-      .ttt-hero .game-hero-emblem {
-        width: 60px;
-        height: 60px;
-      }
-
-      .ttt-hero .game-hero-title h2 {
-        font-size: 21px;
-      }
-
-      .ttt-hero .game-hero-sub {
-        font-size: 8px;
-        gap: 6px;
-      }
-
-      .ttt-hero .game-hero-sub-line {
-        max-width: 22px;
-      }
-
-      .ttt-artifact {
-        grid-template-columns: 26px minmax(0, 1fr);
-        padding: 9px 12px;
-      }
-    }
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b;font-family:Georgia,serif}
+    .game-hero p{margin:0;font-size:16px;color:#ccc;font-family:Georgia,serif}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);text-align:center;margin-bottom:20px}
+    .mode-row{display:flex;justify-content:center;gap:10px;margin-bottom:20px}
+    .mode-btn{padding:8px 20px;border:2px solid #ccc;border-radius:8px;background:white;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .mode-btn.active{background:#111;color:white;border-color:#111}
+    .status{font-size:17px;font-weight:700;min-height:26px;margin-bottom:18px;font-family:Georgia,serif}
+    .ttt-grid{display:grid;grid-template-columns:repeat(3,90px);gap:8px;margin:0 auto 22px;width:fit-content;background:#111;border-radius:12px;padding:8px}
+    .ttt-cell{width:90px;height:90px;background:#f5f5f5;border-radius:10px;border:none;cursor:pointer;font-family:Georgia,serif;font-size:44px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .12s;color:#111}
+    .ttt-cell:hover:not(.taken){background:#e8e8e8}
+    .ttt-cell.x{color:#e63946}
+    .ttt-cell.o{color:#1d7fb9}
+    .ttt-cell.win{background:#f0d39b !important;border:2px solid #8a611c}
+    .score-row{display:flex;justify-content:center;gap:32px;margin-bottom:18px;font-family:Georgia,serif}
+    .score-item{text-align:center}
+    .score-item .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+    .score-item .val{font-size:28px;font-weight:800;color:#8a611c}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 24px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#111;color:white;transition:.15s}
+    .atlas-btn:hover{background:#333}
+    @media(max-width:500px){.ttt-grid{grid-template-columns:repeat(3,72px)}.ttt-cell{width:72px;height:72px;font-size:34px}}
   </style>
 </head>
-
 <body>
-
-  <div id="header-placeholder"></div>
-
-  <div class="layout">
-    <div id="sidebar-placeholder"></div>
-
-    <main class="main-content">
-      <div class="ph-shell">
-
-        <div class="game-hero ttt-hero">
-          <span class="game-hero-corner tl"></span>
-          <span class="game-hero-corner tr"></span>
-          <span class="game-hero-corner bl"></span>
-          <span class="game-hero-corner br"></span>
-
-          <div class="game-hero-emblem">
-            <img src="/operation/images/game-icon-transparent.png" alt="">
-          </div>
-
-          <div class="game-hero-sep">&#10022;</div>
-
-          <div class="game-hero-title">
-            <h2>Tic Tac Toe</h2>
-            <div class="game-hero-sub">
-              <span class="game-hero-sub-line"></span>
-              <span>Pergamon Games</span>
-              <span class="game-hero-sub-line"></span>
-            </div>
-          </div>
-
-          <a href="/atlas-navigation/" class="ttt-artifact" aria-label="View atlas navigation">
-            <span class="ttt-artifact-inner"></span>
-            <svg class="ttt-artifact-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none">
-              <path d="M24 4 40 13v22L24 44 8 35V13L24 4Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-              <path d="M8 13 24 22l16-9M24 22v22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17.5 24 13l8 4.5M16 30.5l8 4.5 8-4.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="ttt-artifact-text">
-              <span class="ttt-artifact-label">Artifact Code:</span>
-              <span class="ttt-artifact-code">58C89058-BX8X3</span>
-            </span>
-          </a>
-        </div>
-
-        <div class="ph-card">
-          <div class="ph-grid">
-            <div class="ph-cell">X</div>
-            <div class="ph-cell dim">O</div>
-            <div class="ph-cell">X</div>
-            <div class="ph-cell">O</div>
-            <div class="ph-cell">X</div>
-            <div class="ph-cell dim">O</div>
-            <div class="ph-cell dim"></div>
-            <div class="ph-cell dim"></div>
-            <div class="ph-cell dim"></div>
-          </div>
-
-          <p class="ph-label">Coming Soon</p>
-          <p class="ph-sub">
-            This game is being rebuilt. Check back later, or play the original version in the archives.
-          </p>
-        </div>
-
-      </div>
-    </main>
+<div id="header-placeholder"></div>
+<div class="layout">
+<div id="sidebar-placeholder"></div>
+<main class="main-content">
+  <div class="game-hero">
+    <h2>Tic Tac Toe</h2>
+    <p>Classic X's and O's — challenge a friend or face an unbeatable AI</p>
   </div>
-
-  <div id="footer-placeholder"></div>
-
-<script src="/data/pergamon-address.js"></script>
-<script src="/data/entries.js"></script>
-<script src="/data/atlas-reference.js"></script>
+  <div class="panel">
+    <div class="mode-row">
+      <button class="mode-btn active" id="modeAI" onclick="setMode('ai')">vs AI</button>
+      <button class="mode-btn" id="mode2P" onclick="setMode('2p')">2 Players</button>
+    </div>
+    <div class="score-row">
+      <div class="score-item"><div class="lbl" id="p1lbl">You (X)</div><div class="val" id="scoreX">0</div></div>
+      <div class="score-item"><div class="lbl">Draws</div><div class="val" id="scoreDraw">0</div></div>
+      <div class="score-item"><div class="lbl" id="p2lbl">AI (O)</div><div class="val" id="scoreO">0</div></div>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="ttt-grid" id="grid"></div>
+    <button class="atlas-btn" onclick="newGame()">New Game</button>
+  </div>
+</main>
+</div>
+<div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
-<script>loadSnippets('Games');</script>
+<script>
+loadSnippets('Games');
+
+let board, currentPlayer, gameActive, mode = 'ai';
+let scores = {X:0, O:0, draw:0};
+const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('modeAI').classList.toggle('active', m==='ai');
+  document.getElementById('mode2P').classList.toggle('active', m==='2p');
+  document.getElementById('p2lbl').textContent = m==='ai' ? 'AI (O)' : 'Player 2 (O)';
+  document.getElementById('p1lbl').textContent = m==='ai' ? 'You (X)' : 'Player 1 (X)';
+  newGame();
+}
+
+function newGame() {
+  board = Array(9).fill(null);
+  currentPlayer = 'X';
+  gameActive = true;
+  render();
+  setStatus(mode==='2p' ? "X's turn" : 'Your turn (X)', '');
+}
+
+function setStatus(msg, color) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.style.color = color;
+}
+
+function checkWinner(b) {
+  for (const [a,bb,c] of LINES) {
+    if (b[a] && b[a]===b[bb] && b[a]===b[c]) return {winner:b[a], line:[a,bb,c]};
+  }
+  return b.every(c=>c) ? {winner:'draw'} : null;
+}
+
+function minimax(b, isMax, depth) {
+  const r = checkWinner(b);
+  if (r) return r.winner==='O' ? 10-depth : r.winner==='X' ? depth-10 : 0;
+  const moves = b.map((_,i)=>i).filter(i=>!b[i]);
+  if (!moves.length) return 0;
+  let best = isMax ? -Infinity : Infinity;
+  for (const i of moves) {
+    b[i] = isMax ? 'O' : 'X';
+    const s = minimax(b, !isMax, depth+1);
+    b[i] = null;
+    best = isMax ? Math.max(best,s) : Math.min(best,s);
+  }
+  return best;
+}
+
+function bestMove() {
+  let best = -Infinity, move = -1;
+  for (let i=0;i<9;i++) {
+    if (!board[i]) {
+      board[i]='O';
+      const s = minimax(board,false,0);
+      board[i]=null;
+      if (s>best) { best=s; move=i; }
+    }
+  }
+  return move;
+}
+
+function handleClick(i) {
+  if (!gameActive || board[i]) return;
+  if (mode==='ai' && currentPlayer==='O') return;
+  board[i] = currentPlayer;
+  const r = checkWinner(board);
+  render();
+  if (r) { endGame(r); return; }
+  if (mode==='2p') {
+    currentPlayer = currentPlayer==='X' ? 'O' : 'X';
+    setStatus(`${currentPlayer}'s turn`, '');
+  } else {
+    currentPlayer = 'O';
+    setStatus('AI is thinking…', '#888');
+    setTimeout(() => {
+      const m = bestMove();
+      if (m!==-1) board[m]='O';
+      render();
+      const r2 = checkWinner(board);
+      if (r2) { endGame(r2); return; }
+      currentPlayer = 'X';
+      setStatus('Your turn (X)', '');
+    }, 300);
+  }
+}
+
+function endGame(r) {
+  gameActive = false;
+  render(r.line);
+  if (r.winner==='draw') { scores.draw++; setStatus('Draw!', '#888'); }
+  else {
+    scores[r.winner]++;
+    if (mode==='ai') setStatus(r.winner==='X' ? 'You win! 🎉' : 'AI wins!', r.winner==='X' ? '#2a9d3a' : '#c0392b');
+    else setStatus(`${r.winner} wins! 🎉`, '#2a9d3a');
+  }
+  document.getElementById('scoreX').textContent = scores.X;
+  document.getElementById('scoreO').textContent = scores.O;
+  document.getElementById('scoreDraw').textContent = scores.draw;
+}
+
+function render(winLine) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  board.forEach((val,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ttt-cell'+(val?' taken '+val.toLowerCase():'')+(winLine&&winLine.includes(i)?' win':'');
+    btn.textContent = val||'';
+    btn.onclick = ()=>handleClick(i);
+    grid.appendChild(btn);
+  });
+}
+
+newGame();
+</script>
 </body>
 </html>
