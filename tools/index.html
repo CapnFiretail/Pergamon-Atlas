@@ -119,6 +119,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .tc-code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      color: #e2ad35;
+      letter-spacing: 0.07em;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
 
     /* ── Seal group (address + button) ──────────────────────── */
 
@@ -132,7 +140,7 @@
     .tc-seal-addr {
       font-family: 'Courier New', Courier, monospace;
       font-size: 10px;
-      color: rgba(184,136,26,0.7);
+      color: #e2ad35;
       letter-spacing: 0.07em;
       white-space: nowrap;
     }
@@ -145,7 +153,7 @@
       background: rgba(184,136,26,0.07);
       border: 1px solid rgba(184,136,26,0.28);
       border-radius: 6px;
-      color: rgba(184,136,26,0.6);
+      color: #e2ad35;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -202,10 +210,9 @@
       flex-wrap: wrap;
       margin-top: 6px;
       font-size: 10.5px;
-      color: rgba(184,136,26,0.6);
+      color: #e2ad35;
       letter-spacing: 0.04em;
     }
-    .tc-dot { color: rgba(184,136,26,0.35); }
 
     /* ── Open Artifact button ────────────────────────────────── */
 
@@ -412,7 +419,9 @@
         var entry = byPath[path] || {};
 
         var fullAddr = entry.address ? 'ATLAS-' + entry.address : '';
-        var chamber  = CHAMBERS[entry.chamber] || 'Tools Wing';
+        var artCode  = (entry.code_seed && entry.seed)
+          ? (((entry.code_seed ^ entry.seed) >>> 0).toString(16).toUpperCase().padStart(8,'0') + '-' + (entry.address || '').split('-')[0])
+          : '';
         var dated    = fmtDate(entry.date);
         var name     = entry.name || path.split('/').pop().replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
 
@@ -422,6 +431,7 @@
               '<div class="tc-icon-wrap">' + icon + '</div>' +
               '<div class="tc-title">' +
                 '<div class="tc-name">' + esc(name) + '</div>' +
+                '<div class="tc-code">' + esc(artCode) + '</div>' +
               '</div>' +
               '<div class="tc-seal-group">' +
                 '<span class="tc-seal-addr">' + esc(fullAddr) + '</span>' +
@@ -435,13 +445,7 @@
             '<div class="tc-foot">' +
               '<div class="tc-left">' +
                 '<div class="tc-desc">' + esc(desc) + '</div>' +
-                '<div class="tc-meta">' +
-                  '<span>' + esc(chamber) + '</span>' +
-                  '<span class="tc-dot">&middot;</span>' +
-                  '<span>Stable</span>' +
-                  '<span class="tc-dot">&middot;</span>' +
-                  '<span>Indexed ' + esc(dated) + '</span>' +
-                '</div>' +
+                '<div class="tc-meta">Indexed ' + esc(dated) + '</div>' +
               '</div>' +
               '<span class="tc-action">Open Artifact &#8594;</span>' +
             '</div>' +
