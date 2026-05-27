@@ -53,34 +53,34 @@
 
     .tc-card {
       display: block;
-      background: #0f0d0a;
-      border: 1px solid rgba(184,136,26,0.2);
+      background: #131008;
+      border: 1px solid rgba(184,136,26,0.55);
       border-radius: 10px;
       text-decoration: none;
       color: inherit;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.22);
-      transition: border-color 0.18s, background 0.18s;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.28);
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
     }
 
-    /* Left gold accent bar */
+    /* Left gold accent bar — always visible */
     .tc-card::before {
       content: '';
       position: absolute;
       left: 0; top: 0; bottom: 0;
-      width: 0;
+      width: 3px;
       background: rgba(184,136,26,0.48);
       border-radius: 10px 0 0 10px;
-      transition: width 0.18s;
       z-index: 1;
     }
 
     .tc-card:hover {
-      border-color: rgba(184,136,26,0.58);
-      background: #131008;
+      border-color: rgba(184,136,26,0.82);
+      background: #191410;
+      box-shadow: 0 4px 22px rgba(0,0,0,0.36);
     }
-    .tc-card:hover::before { width: 3px; }
+    .tc-card:hover::before { background: rgba(184,136,26,0.72); }
 
     /* ── Head ────────────────────────────────────────────────── */
 
@@ -113,36 +113,39 @@
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 17px;
       font-weight: 700;
-      color: #ede9e0;
+      color: #fff;
       line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: color 0.18s;
     }
-    .tc-card:hover .tc-name { color: #fff; }
 
-    .tc-addr {
+    /* ── Seal group (address + button) ──────────────────────── */
+
+    .tc-seal-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-shrink: 0;
+    }
+
+    .tc-seal-addr {
       font-family: 'Courier New', Courier, monospace;
       font-size: 10px;
-      color: rgba(184,136,26,0.62);
+      color: rgba(184,136,26,0.7);
       letter-spacing: 0.07em;
-      margin-top: 3px;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     /* ── Seal button ─────────────────────────────────────────── */
 
     .tc-seal {
-      position: relative;
       width: 32px;
       height: 32px;
-      background: rgba(184,136,26,0.05);
-      border: 1px solid rgba(184,136,26,0.17);
+      background: rgba(184,136,26,0.07);
+      border: 1px solid rgba(184,136,26,0.28);
       border-radius: 6px;
-      color: rgba(184,136,26,0.45);
+      color: rgba(184,136,26,0.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -153,30 +156,10 @@
     }
     .tc-seal svg { pointer-events: none; }
     .tc-seal:hover {
-      background: rgba(184,136,26,0.12);
-      border-color: rgba(184,136,26,0.46);
+      background: rgba(184,136,26,0.16);
+      border-color: rgba(184,136,26,0.55);
       color: #e2ad35;
     }
-
-    .tc-seal-tip {
-      position: absolute;
-      right: calc(100% + 9px);
-      top: 50%;
-      transform: translateY(-50%);
-      background: #1c1810;
-      border: 1px solid rgba(184,136,26,0.3);
-      border-radius: 5px;
-      color: #e2ad35;
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
-      letter-spacing: 0.07em;
-      padding: 5px 11px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-    }
-    .tc-seal:hover .tc-seal-tip { opacity: 1; }
 
     /* ── Divider ─────────────────────────────────────────────── */
 
@@ -229,21 +212,20 @@
     .tc-action {
       font-family: Georgia, serif;
       font-size: 11.5px;
-      color: rgba(184,136,26,0.75);
-      border: 1px solid rgba(184,136,26,0.38);
+      color: #e2ad35;
+      border: 1px solid rgba(184,136,26,0.5);
       border-radius: 5px;
       padding: 6px 14px;
       white-space: nowrap;
       flex-shrink: 0;
       letter-spacing: 0.06em;
-      background: rgba(184,136,26,0.04);
-      transition: color 0.18s, border-color 0.18s, background 0.18s, box-shadow 0.18s;
+      background: rgba(184,136,26,0.07);
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
     }
     .tc-card:hover .tc-action {
-      color: #e2ad35;
-      border-color: rgba(184,136,26,0.58);
-      background: rgba(184,136,26,0.07);
-      box-shadow: 0 0 16px rgba(184,136,26,0.1);
+      border-color: rgba(184,136,26,0.78);
+      background: rgba(184,136,26,0.12);
+      box-shadow: 0 0 18px rgba(184,136,26,0.14);
     }
 
     /* ── Mobile ──────────────────────────────────────────────── */
@@ -440,13 +422,14 @@
               '<div class="tc-icon-wrap">' + icon + '</div>' +
               '<div class="tc-title">' +
                 '<div class="tc-name">' + esc(name) + '</div>' +
-                '<div class="tc-addr">' + esc(fullAddr) + '</div>' +
               '</div>' +
-              '<button class="tc-seal" title="Open in Atlas Decoder"' +
-                ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/tools/atlas-decoder/\'">' +
-                SEAL +
-                '<span class="tc-seal-tip">' + esc(fullAddr) + '</span>' +
-              '</button>' +
+              '<div class="tc-seal-group">' +
+                '<span class="tc-seal-addr">' + esc(fullAddr) + '</span>' +
+                '<button class="tc-seal" title="Open in Atlas Decoder"' +
+                  ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/tools/atlas-decoder/\'">' +
+                  SEAL +
+                '</button>' +
+              '</div>' +
             '</div>' +
             '<div class="tc-rule"></div>' +
             '<div class="tc-foot">' +
