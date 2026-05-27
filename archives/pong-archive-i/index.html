@@ -1,0 +1,192 @@
+<!-- ═══════════════════════════════════════════════════════════
+     ARCHIVED — pong-v1
+     Preserved for reference. Not the live version.
+     Live version: /games/pong/
+     ═══════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Pong (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 2567689826,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 3921454,
+    "y": 6084875,
+    "z": 8709532
+  },
+  "address": "Z7BDL-BDFUE-J38EU",
+  "archived": true,
+  "archive_date": "2026-05-17"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Pong (v1) — Archived</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    canvas{border:3px solid #000;border-radius:10px;display:block;margin:0 auto;max-width:100%}
+    .controls{display:flex;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .mode-row{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+    .mode-btn{padding:7px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
+    .mode-btn.active{background:#111;color:white;border-color:#111}
+    .hint{font-size:13px;color:#aaa;margin-top:8px}
+    .dpad-row{display:flex;justify-content:center;gap:20px;margin-top:10px}
+    .dpad-v{display:flex;flex-direction:column;gap:4px;align-items:center}
+    .dpad-v span{font-size:11px;color:#aaa;font-weight:700}
+    .dpad-btn{width:44px;height:44px;border:2px solid #ccc;border-radius:8px;background:#f7f7f7;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none}
+    .dpad-btn:active{background:#ddd}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Pong <span style="font-size:16px;color:#aaa;font-weight:400">(v1 — Archived)</span></h2>
+        <p>Classic paddle game — 1 player vs AI or 2 players</p>
+      </div>
+      <div class="panel">
+        <div class="mode-row">
+          <button class="mode-btn active" id="btnAI" onclick="setMode('ai')">vs AI</button>
+          <button class="mode-btn" id="btn2p" onclick="setMode('2p')">2 Players</button>
+        </div>
+        <canvas id="c" width="500" height="320"></canvas>
+        <div class="controls">
+          <button class="atlas-btn" id="startBtn" onclick="startGame()">Start</button>
+          <button class="atlas-btn" style="background:#555" onclick="togglePause()">Pause</button>
+        </div>
+        <div class="dpad-row">
+          <div class="dpad-v">
+            <span>Player 1 (W/S)</span>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <button class="dpad-btn" onmousedown="p1up=true" onmouseup="p1up=false" ontouchstart="p1up=true" ontouchend="p1up=false">▲</button>
+              <button class="dpad-btn" onmousedown="p1dn=true" onmouseup="p1dn=false" ontouchstart="p1dn=true" ontouchend="p1dn=false">▼</button>
+            </div>
+          </div>
+          <div class="dpad-v" id="p2ctrl">
+            <span>Player 2 (↑/↓)</span>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <button class="dpad-btn" onmousedown="p2up=true" onmouseup="p2up=false" ontouchstart="p2up=true" ontouchend="p2up=false">▲</button>
+              <button class="dpad-btn" onmousedown="p2dn=true" onmouseup="p2dn=false" ontouchstart="p2dn=true" ontouchend="p2dn=false">▼</button>
+            </div>
+          </div>
+        </div>
+        <div class="hint">W/S for P1 | Arrow keys for P2 (2P mode)</div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Games');
+
+    const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+    const W=500,H=320,PAD_W=10,PAD_H=60,BALL=8;
+    let p1y,p2y,bx,by,bdx,bdy,s1,s2,raf,paused,running,mode;
+    let p1up=false,p1dn=false,p2up=false,p2dn=false;
+    const SPEED=4,AI_SPEED=3.2;
+    mode='ai';
+
+    function setMode(m){mode=m;document.getElementById('btnAI').classList.toggle('active',m==='ai');document.getElementById('btn2p').classList.toggle('active',m==='2p');document.getElementById('p2ctrl').style.display=m==='2p'?'flex':'none';if(running)startGame();}
+
+    function startGame(){
+      p1y=H/2-PAD_H/2;p2y=H/2-PAD_H/2;
+      bx=W/2;by=H/2;
+      const ang=(Math.random()*.6-.3);
+      bdx=(Math.random()<.5?1:-1)*SPEED*Math.cos(ang);
+      bdy=SPEED*Math.sin(ang);
+      s1=0;s2=0;paused=false;running=true;
+      cancelAnimationFrame(raf);
+      document.getElementById('startBtn').textContent='Restart';
+      loop();
+    }
+
+    function togglePause(){paused=!paused;if(!paused&&running)loop();}
+
+    function loop(){
+      if(paused||!running) return;
+      update();draw();
+      raf=requestAnimationFrame(loop);
+    }
+
+    const PAD_SPEED=5;
+    function update(){
+      if(p1up&&p1y>0) p1y-=PAD_SPEED;
+      if(p1dn&&p1y<H-PAD_H) p1y+=PAD_SPEED;
+      if(mode==='2p'){
+        if(p2up&&p2y>0) p2y-=PAD_SPEED;
+        if(p2dn&&p2y<H-PAD_H) p2y+=PAD_SPEED;
+      } else {
+        const center=p2y+PAD_H/2;
+        if(center<by-4&&p2y<H-PAD_H) p2y+=AI_SPEED;
+        else if(center>by+4&&p2y>0) p2y-=AI_SPEED;
+      }
+      bx+=bdx;by+=bdy;
+      if(by<=BALL||by>=H-BALL){bdy=-bdy;by=by<=BALL?BALL:H-BALL;}
+      if(bx<=PAD_W+BALL&&by>=p1y&&by<=p1y+PAD_H){bdx=Math.abs(bdx);const rel=(by-(p1y+PAD_H/2))/(PAD_H/2);bdy=rel*SPEED*1.2;speedUp();}
+      if(bx>=W-PAD_W-BALL&&by>=p2y&&by<=p2y+PAD_H){bdx=-Math.abs(bdx);const rel=(by-(p2y+PAD_H/2))/(PAD_H/2);bdy=rel*SPEED*1.2;speedUp();}
+      if(bx<0){s2++;reset();}
+      if(bx>W){s1++;reset();}
+    }
+
+    function speedUp(){const spd=Math.sqrt(bdx*bdx+bdy*bdy);if(spd<10){bdx*=1.05;bdy*=1.05;}}
+
+    function reset(){
+      bx=W/2;by=H/2;
+      const ang=(Math.random()*.6-.3);
+      bdx=(Math.random()<.5?1:-1)*SPEED*Math.cos(ang);
+      bdy=SPEED*Math.sin(ang);
+    }
+
+    function draw(){
+      ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);
+      ctx.setLineDash([8,8]);ctx.strokeStyle='#333';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#f0d39b';ctx.font='bold 36px monospace';ctx.textAlign='center';
+      ctx.fillText(s1,W/4,48);ctx.fillText(s2,W*3/4,48);
+      ctx.fillStyle='#f0d39b';
+      ctx.fillRect(0,p1y,PAD_W,PAD_H);
+      ctx.fillRect(W-PAD_W,p2y,PAD_W,PAD_H);
+      ctx.beginPath();ctx.arc(bx,by,BALL,0,Math.PI*2);ctx.fillStyle='white';ctx.fill();
+    }
+
+    document.addEventListener('keydown',e=>{
+      if(e.key==='w') p1up=true;
+      if(e.key==='s') p1dn=true;
+      if(e.key==='ArrowUp'){e.preventDefault();p2up=true;}
+      if(e.key==='ArrowDown'){e.preventDefault();p2dn=true;}
+    });
+    document.addEventListener('keyup',e=>{
+      if(e.key==='w') p1up=false;
+      if(e.key==='s') p1dn=false;
+      if(e.key==='ArrowUp') p2up=false;
+      if(e.key==='ArrowDown') p2dn=false;
+    });
+
+    document.getElementById('p2ctrl').style.display='none';
+    ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#f0d39b';ctx.font='bold 20px Georgia';ctx.textAlign='center';
+    ctx.fillText('Press Start to play',W/2,H/2);
+  </script>
+
+  <script src="/data/pergamon-address.js"></script>
+  <script src="/data/entries.js"></script>
+  <script src="/data/atlas-reference.js"></script>
+</body>
+</html>

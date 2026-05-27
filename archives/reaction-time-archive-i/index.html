@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Reaction Time (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 3765870595,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -12140320,
+    "y": -15985066,
+    "z": -13495734
+  },
+  "address": "AHEW2-WCYJ5-VWD4A",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Reaction Time</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .react-zone{border-radius:20px;padding:60px 24px;text-align:center;cursor:pointer;transition:background .2s;user-select:none;margin-bottom:20px;border:3px solid #000}
+    .react-zone.waiting{background:#e0e0e0}
+    .react-zone.ready{background:#2a9d3a}
+    .react-zone.early{background:#c0392b}
+    .react-zone .big-msg{font-size:clamp(28px,6vw,52px);font-weight:800;color:white;line-height:1.2}
+    .react-zone.waiting .big-msg{color:#555}
+    .react-zone .sub-msg{font-size:16px;margin-top:10px;color:rgba(255,255,255,.8)}
+    .react-zone.waiting .sub-msg{color:#777}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:16px}
+    .stat-box{background:#111;color:white;border-radius:12px;padding:18px;text-align:center}
+    .stat-box .val{font-size:32px;font-weight:800;color:#f0d39b;font-family:monospace}
+    .stat-box .lbl{font-size:12px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+    .hist-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .hist-bar{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .bar-fill{width:28px;border-radius:4px 4px 0 0;background:#8a611c;transition:.3s}
+    .bar-val{font-size:10px;color:#888;font-family:monospace}
+    .reset-btn{background:none;border:1.5px solid #ccc;border-radius:8px;padding:7px 16px;font-size:13px;font-family:Georgia,serif;cursor:pointer;color:#888;margin-top:4px}
+    .reset-btn:hover{border-color:#000;color:#000}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Reaction Time</h2>
+        <p>Test your reflexes. Click as fast as you can when the box turns green.</p>
+      </div>
+
+      <div class="react-zone waiting" id="reactZone" onclick="handleClick()">
+        <div class="big-msg" id="bigMsg">Click to Start</div>
+        <div class="sub-msg" id="subMsg">Wait for green...</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box"><div class="val" id="lastTime">—</div><div class="lbl">Last (ms)</div></div>
+        <div class="stat-box"><div class="val" id="bestTime">—</div><div class="lbl">Best (ms)</div></div>
+        <div class="stat-box"><div class="val" id="avgTime">—</div><div class="lbl">Average (ms)</div></div>
+        <div class="stat-box"><div class="val" id="attempts">0</div><div class="lbl">Attempts</div></div>
+      </div>
+
+      <div style="background:white;border:2px solid #000;border-radius:16px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.08)">
+        <div style="font-weight:700;margin-bottom:10px;font-size:16px">Last 10 Results</div>
+        <div class="hist-row" id="histRow"><div style="color:#aaa;font-size:14px">No attempts yet.</div></div>
+        <button class="reset-btn" onclick="resetAll()">Reset</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Games');
+
+    let state = 'idle'; // idle, waiting, ready, early
+    let timeout;
+    let startTime;
+    let results = [];
+
+    function handleClick() {
+      if(state==='idle'){startRound();}
+      else if(state==='waiting'){tooEarly();}
+      else if(state==='ready'){recordTime();}
+      else if(state==='early'||state==='result'){startRound();}
+    }
+
+    function startRound() {
+      clearTimeout(timeout);
+      const zone = document.getElementById('reactZone');
+      zone.className='react-zone waiting';
+      document.getElementById('bigMsg').textContent='Get ready...';
+      document.getElementById('subMsg').textContent='Wait for green!';
+      state='waiting';
+      const delay = 1500 + Math.random()*3500;
+      timeout = setTimeout(()=>{
+        if(state!=='waiting') return;
+        zone.className='react-zone ready';
+        document.getElementById('bigMsg').textContent='CLICK NOW!';
+        document.getElementById('subMsg').textContent='';
+        state='ready';
+        startTime=performance.now();
+      }, delay);
+    }
+
+    function tooEarly() {
+      clearTimeout(timeout);
+      state='early';
+      const zone=document.getElementById('reactZone');
+      zone.className='react-zone early';
+      document.getElementById('bigMsg').textContent='Too Early!';
+      document.getElementById('subMsg').textContent='Click to try again';
+    }
+
+    function recordTime() {
+      const ms = Math.round(performance.now()-startTime);
+      state='result';
+      const zone=document.getElementById('reactZone');
+      zone.className='react-zone';
+      zone.style.background='#8a611c';
+      document.getElementById('bigMsg').textContent=ms+' ms';
+      document.getElementById('subMsg').textContent='Click to go again';
+
+      results.unshift(ms);
+      if(results.length>10) results.pop();
+
+      const best=Math.min(...results);
+      const avg=Math.round(results.reduce((a,b)=>a+b,0)/results.length);
+      document.getElementById('lastTime').textContent=ms;
+      document.getElementById('bestTime').textContent=best;
+      document.getElementById('avgTime').textContent=avg;
+      document.getElementById('attempts').textContent=results.length;
+
+      const maxVal=Math.max(...results);
+      document.getElementById('histRow').innerHTML=results.map(r=>{
+        const h=Math.max(8,Math.round((r/maxVal)*80));
+        const col=r===best?'#2a9d3a':'#8a611c';
+        return `<div class="hist-bar"><div class="bar-fill" style="height:${h}px;background:${col}"></div><div class="bar-val">${r}</div></div>`;
+      }).join('');
+    }
+
+    function resetAll(){
+      clearTimeout(timeout);
+      state='idle';results=[];
+      const zone=document.getElementById('reactZone');
+      zone.className='react-zone waiting';zone.style.background='';
+      document.getElementById('bigMsg').textContent='Click to Start';
+      document.getElementById('subMsg').textContent='Wait for green...';
+      ['lastTime','bestTime','avgTime'].forEach(id=>document.getElementById(id).textContent='—');
+      document.getElementById('attempts').textContent='0';
+      document.getElementById('histRow').innerHTML='<div style="color:#aaa;font-size:14px">No attempts yet.</div>';
+    }
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

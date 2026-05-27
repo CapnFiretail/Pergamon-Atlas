@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Flood Fill (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 3133749613,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 974970,
+    "y": 5363060,
+    "z": 7925534
+  },
+  "address": "WZNT8-B3GT7-HB6SW",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Flood Fill</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .ff-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+    #ffGrid{display:grid;width:min(100%,400px);gap:2px;background:#222;padding:4px;border-radius:8px;border:2px solid #8a611c}
+    .ff-cell{aspect-ratio:1;border-radius:3px;transition:background .15s}
+    .ff-stats{display:flex;gap:20px;background:#111;border-radius:10px;padding:12px 24px;color:white}
+    .ff-stat .val{font-size:26px;font-weight:800;color:#f0d39b;font-family:monospace;text-align:center}
+    .ff-stat .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;text-align:center}
+    .ff-colors{display:flex;gap:10px;justify-content:center}
+    .ff-color-btn{width:44px;height:44px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:.15s}
+    .ff-color-btn:hover{transform:scale(1.1)}
+    .ff-color-btn.active{border-color:white;transform:scale(1.15)}
+    .ff-msg{font-size:17px;font-weight:700;color:#f0d39b;min-height:22px;text-align:center}
+    .ff-btn{padding:10px 20px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .ff-btn:hover{background:#8a611c;color:white}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Flood Fill</h2>
+        <p>Fill the entire grid with one color. Click a color to flood from the top-left corner. You have 25 moves.</p>
+      </div>
+      <div class="ff-wrap">
+        <div class="ff-stats">
+          <div class="ff-stat"><div class="val" id="movesEl">0</div><div class="lbl">Moves</div></div>
+          <div class="ff-stat"><div class="val" id="leftEl">25</div><div class="lbl">Left</div></div>
+        </div>
+        <div id="ffGrid"></div>
+        <div class="ff-colors" id="ffColors"></div>
+        <div class="ff-msg" id="ffMsg">Choose a color to flood fill.</div>
+        <button class="ff-btn" onclick="newGame()">New Game</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>loadSnippets('Games');</script>
+  <script>
+  const SIZE=12, MAX_MOVES=25;
+  const COLORS=['#c28a2b','#5a8a3a','#3a6aaa','#aa3a3a','#8a3aaa','#c8a048'];
+  let grid,moves,won;
+
+  function newGame(){
+    grid=Array(SIZE).fill(null).map(()=>Array(SIZE).fill(0).map(()=>Math.floor(Math.random()*COLORS.length)));
+    moves=0; won=false;
+    document.getElementById('movesEl').textContent='0';
+    document.getElementById('leftEl').textContent=MAX_MOVES;
+    document.getElementById('ffMsg').textContent='Choose a color to flood fill.';
+    buildColors(); render();
+  }
+
+  function buildColors(){
+    const el=document.getElementById('ffColors');
+    el.innerHTML='';
+    COLORS.forEach((col,i)=>{
+      const b=document.createElement('button');
+      b.className='ff-color-btn'; b.style.background=col;
+      b.title='Color '+(i+1); b.onclick=()=>flood(i);
+      el.appendChild(b);
+    });
+  }
+
+  function flood(colorIdx){
+    if(won||moves>=MAX_MOVES)return;
+    const oldColor=grid[0][0];
+    if(oldColor===colorIdx)return;
+    function fill(r,c){
+      if(r<0||r>=SIZE||c<0||c>=SIZE||grid[r][c]!==oldColor)return;
+      grid[r][c]=colorIdx;
+      fill(r+1,c);fill(r-1,c);fill(r,c+1);fill(r,c-1);
+    }
+    fill(0,0); moves++;
+    const left=MAX_MOVES-moves;
+    document.getElementById('movesEl').textContent=moves;
+    document.getElementById('leftEl').textContent=left;
+    // Update color button highlight
+    document.querySelectorAll('.ff-color-btn').forEach((b,i)=>b.classList.toggle('active',i===colorIdx));
+    // Check win
+    const allSame=grid.flat().every(v=>v===colorIdx);
+    if(allSame){won=true;document.getElementById('ffMsg').textContent=`Filled in ${moves} moves!`;}
+    else if(left===0){document.getElementById('ffMsg').textContent='Out of moves. Try again!';}
+    else document.getElementById('ffMsg').textContent=`${left} moves left.`;
+    render();
+  }
+
+  function render(){
+    const el=document.getElementById('ffGrid');
+    el.style.gridTemplateColumns=`repeat(${SIZE},1fr)`;
+    el.innerHTML='';
+    grid.forEach(row=>row.forEach(v=>{
+      const d=document.createElement('div');
+      d.className='ff-cell'; d.style.background=COLORS[v];
+      el.appendChild(d);
+    }));
+  }
+
+  newGame();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

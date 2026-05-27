@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Typing Practice (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 1232015380,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 12980370,
+    "y": 5902317,
+    "z": 12132376
+  },
+  "address": "2GSYY-BQSFC-MCRJ8",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Typing Practice</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .tp-card{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:16px}
+    .tp-passage{font-size:clamp(16px,2vw,20px);line-height:1.8;letter-spacing:.02em;font-family:Georgia,serif;margin-bottom:16px;padding:16px;background:#fafafa;border-radius:8px;border:1.5px solid #eee;min-height:80px}
+    .tp-char.correct{color:#2a8a3a}
+    .tp-char.incorrect{color:#c0392b;background:#ffe8e8;border-radius:2px}
+    .tp-char.current{border-bottom:2px solid #8a611c}
+    .tp-char.pending{color:#aaa}
+    .tp-input{width:100%;padding:12px;font-size:16px;font-family:Georgia,serif;border:2px solid #ccc;border-radius:8px;box-sizing:border-box;resize:none;min-height:80px}
+    .tp-input:focus{outline:none;border-color:#8a611c}
+    .tp-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+    .tp-stat{background:#111;color:white;border-radius:10px;padding:14px 18px;text-align:center;flex:1;min-width:100px}
+    .tp-stat .val{font-size:26px;font-weight:800;color:#f0d39b;font-family:monospace}
+    .tp-stat .lbl{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+    .tp-btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+    .tp-btn{padding:10px 18px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .tp-btn:hover{background:#8a611c;color:white}
+    .tp-result{display:none;padding:16px;background:#f0f8e8;border:1.5px solid #8a611c;border-radius:10px;margin-top:14px;font-size:16px;color:#3a5a1a;text-align:center;font-weight:700}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Typing Practice</h2>
+        <p>Type the passage as accurately as you can. Track your WPM and accuracy.</p>
+      </div>
+      <div class="tp-card">
+        <div class="tp-passage" id="tpPassage"></div>
+        <textarea class="tp-input" id="tpInput" placeholder="Start typing here..." oninput="onInput()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+        <div class="tp-stats">
+          <div class="tp-stat"><div class="val" id="wpmEl">0</div><div class="lbl">WPM</div></div>
+          <div class="tp-stat"><div class="val" id="accEl">100%</div><div class="lbl">Accuracy</div></div>
+          <div class="tp-stat"><div class="val" id="timeEl">0s</div><div class="lbl">Time</div></div>
+          <div class="tp-stat"><div class="val" id="errEl">0</div><div class="lbl">Errors</div></div>
+        </div>
+        <div class="tp-result" id="tpResult"></div>
+        <div class="tp-btns">
+          <button class="tp-btn" onclick="newPassage()">New Passage</button>
+          <button class="tp-btn" onclick="restart()">Restart</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>loadSnippets('Games');</script>
+  <script>
+  const PASSAGES=[
+    "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
+    "All that glitters is not gold, and not all those who wander are lost in the shadows of time.",
+    "To be, or not to be — that is the question. Whether tis nobler in the mind to suffer the slings and arrows.",
+    "A journey of a thousand miles begins with a single step. Patience and persistence conquer all things.",
+    "In the middle of difficulty lies opportunity. Every great dream begins with a dreamer.",
+    "The only way to do great work is to love what you do. Stay hungry, stay foolish, stay curious.",
+    "Not all those who wander are lost. Some are simply taking the scenic route through life.",
+    "It always seems impossible until it is done. Success is not final, failure is not fatal.",
+  ];
+  let passage,startTime,timerInt,done,typed='';
+
+  function newPassage(){
+    passage=PASSAGES[Math.floor(Math.random()*PASSAGES.length)];
+    restart();
+  }
+
+  function restart(){
+    clearInterval(timerInt); startTime=null; done=false; typed='';
+    document.getElementById('tpInput').value='';
+    document.getElementById('tpInput').disabled=false;
+    document.getElementById('tpInput').focus();
+    document.getElementById('wpmEl').textContent='0';
+    document.getElementById('accEl').textContent='100%';
+    document.getElementById('timeEl').textContent='0s';
+    document.getElementById('errEl').textContent='0';
+    document.getElementById('tpResult').style.display='none';
+    renderPassage('');
+  }
+
+  function onInput(){
+    if(done)return;
+    const val=document.getElementById('tpInput').value;
+    if(!startTime&&val.length>0){
+      startTime=Date.now();
+      timerInt=setInterval(updateStats,200);
+    }
+    typed=val;
+    renderPassage(val);
+    updateStats();
+    if(val.length>=passage.length){finishGame();}
+  }
+
+  function renderPassage(val){
+    const el=document.getElementById('tpPassage');
+    el.innerHTML=passage.split('').map((ch,i)=>{
+      let cls='tp-char ';
+      if(i<val.length)cls+=val[i]===ch?'correct':'incorrect';
+      else if(i===val.length)cls+='current';
+      else cls+='pending';
+      return`<span class="${cls}">${ch==' '?'&nbsp;':ch}</span>`;
+    }).join('');
+  }
+
+  function countErrors(val){
+    let e=0;
+    for(let i=0;i<Math.min(val.length,passage.length);i++)if(val[i]!==passage[i])e++;
+    return e;
+  }
+
+  function updateStats(){
+    if(!startTime)return;
+    const sec=(Date.now()-startTime)/1000;
+    const words=typed.trim().split(/\s+/).length;
+    const wpm=sec>0?Math.round(words/(sec/60)):0;
+    const errors=countErrors(typed);
+    const acc=typed.length>0?Math.round((1-errors/typed.length)*100):100;
+    document.getElementById('wpmEl').textContent=wpm;
+    document.getElementById('accEl').textContent=Math.max(0,acc)+'%';
+    document.getElementById('timeEl').textContent=Math.round(sec)+'s';
+    document.getElementById('errEl').textContent=errors;
+  }
+
+  function finishGame(){
+    done=true; clearInterval(timerInt);
+    document.getElementById('tpInput').disabled=true;
+    updateStats();
+    const sec=((Date.now()-startTime)/1000).toFixed(1);
+    const errors=countErrors(typed);
+    const acc=Math.max(0,Math.round((1-errors/passage.length)*100));
+    const wpm=Math.round((passage.split(' ').length/(sec/60)));
+    const res=document.getElementById('tpResult');
+    res.style.display='block';
+    res.textContent=`Done! ${wpm} WPM · ${acc}% accuracy · ${sec}s`;
+  }
+
+  newPassage();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Sliding Puzzle (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 4171088238,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -11063983,
+    "y": 12452140,
+    "z": 15666631
+  },
+  "address": "BE92Z-RGVVF-QQEGR",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Sliding Puzzle</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .sp-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+    #spGrid{display:grid;grid-template-columns:repeat(4,1fr);width:min(100%,380px);aspect-ratio:1;gap:5px;padding:10px;background:#1a1a1a;border-radius:12px;border:2px solid #8a611c}
+    .sp-tile{background:linear-gradient(135deg,#c28a2b,#8a611c);color:white;font-size:clamp(20px,4vw,36px);font-weight:800;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .1s,opacity .1s;user-select:none;font-family:Georgia,serif}
+    .sp-tile:hover{transform:scale(1.04)}
+    .sp-tile.empty{background:#111;cursor:default}
+    .sp-tile.empty:hover{transform:none}
+    .sp-stats{display:flex;gap:20px;background:#111;border-radius:10px;padding:14px 24px;color:white;font-family:Georgia,serif}
+    .sp-stat{text-align:center}
+    .sp-stat .val{font-size:28px;font-weight:800;color:#f0d39b}
+    .sp-stat .lbl{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+    .sp-btns{display:flex;gap:10px}
+    .sp-btn{padding:10px 20px;border:2px solid #8a611c;background:#111;color:#f0d39b;border-radius:8px;font-family:Georgia,serif;font-size:14px;cursor:pointer;transition:.15s}
+    .sp-btn:hover{background:#8a611c;color:white}
+    .sp-msg{font-size:18px;font-weight:700;color:#5a8a3a;min-height:24px;text-align:center}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Sliding Puzzle</h2>
+        <p>Slide tiles into order from 1 to 15. The empty space lets you move adjacent tiles.</p>
+      </div>
+      <div class="sp-wrap">
+        <div class="sp-stats">
+          <div class="sp-stat"><div class="val" id="movesEl">0</div><div class="lbl">Moves</div></div>
+          <div class="sp-stat"><div class="val" id="timeEl">0:00</div><div class="lbl">Time</div></div>
+        </div>
+        <div id="spGrid"></div>
+        <div class="sp-msg" id="spMsg"></div>
+        <div class="sp-btns">
+          <button class="sp-btn" onclick="newGame()">New Game</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>loadSnippets('Games');</script>
+  <script>
+  let tiles,moves,timerSec,timerInt,won;
+
+  function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+  function isSolvable(t){
+    const flat=t.filter(x=>x!==0);
+    let inv=0;
+    for(let i=0;i<flat.length;i++)for(let j=i+1;j<flat.length;j++)if(flat[i]>flat[j])inv++;
+    const blankRow=Math.floor(t.indexOf(0)/4);
+    const fromBottom=4-blankRow;
+    return(inv+fromBottom)%2===0;
+  }
+
+  function newGame(){
+    let t;
+    do{t=shuffle([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]);}while(!isSolvable(t));
+    tiles=t; moves=0; won=false; timerSec=0;
+    clearInterval(timerInt);
+    timerInt=setInterval(()=>{if(!won){timerSec++;document.getElementById('timeEl').textContent=Math.floor(timerSec/60)+':'+(timerSec%60+'').padStart(2,'0');}},1000);
+    document.getElementById('movesEl').textContent='0';
+    document.getElementById('spMsg').textContent='';
+    render();
+  }
+
+  function slide(pos){
+    if(won)return;
+    const blank=tiles.indexOf(0);
+    const br=Math.floor(blank/4),bc=blank%4;
+    const r=Math.floor(pos/4),c=pos%4;
+    if(Math.abs(r-br)+Math.abs(c-bc)!==1)return;
+    [tiles[blank],tiles[pos]]=[tiles[pos],tiles[blank]];
+    moves++;
+    document.getElementById('movesEl').textContent=moves;
+    checkWin(); render();
+  }
+
+  function checkWin(){
+    const goal=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0];
+    if(tiles.every((v,i)=>v===goal[i])){
+      won=true; clearInterval(timerInt);
+      document.getElementById('spMsg').textContent=`Solved in ${moves} moves!`;
+    }
+  }
+
+  function render(){
+    const grid=document.getElementById('spGrid');
+    grid.innerHTML='';
+    tiles.forEach((v,i)=>{
+      const d=document.createElement('div');
+      d.className='sp-tile'+(v===0?' empty':'');
+      if(v!==0)d.textContent=v;
+      d.onclick=()=>slide(i);
+      grid.appendChild(d);
+    });
+  }
+
+  document.addEventListener('keydown',e=>{
+    const blank=tiles.indexOf(0);
+    const map={ArrowUp:4,ArrowDown:-4,ArrowLeft:1,ArrowRight:-1};
+    const offset=map[e.key];
+    if(offset!==undefined){const pos=blank+offset;if(pos>=0&&pos<16)slide(pos);}
+  });
+
+  newGame();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>
