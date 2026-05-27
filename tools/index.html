@@ -1,540 +1,469 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
-    crossorigin="anonymous"></script>
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Tools</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="/operation/styles/header.css">
   <link rel="stylesheet" href="/operation/styles/sidebar.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
-
   <style>
 
-    .main-content {
-      background-color: #e8e2d5;
-    }
+    .main-content { background-color: #e8e2d5; }
 
-    /* ── Tool Registry ───────────────────────────────────── */
+    /* ── Chapter breaks ──────────────────────────────────────── */
 
-    .tools-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 48px;
-    }
-
-    /* Chapter break */
-    .tools-chapter {
+    .tc-chapter {
       display: flex;
       align-items: center;
       gap: 16px;
-      margin: 32px 0 10px;
+      margin: 38px 0 11px;
     }
-
-    .tools-chapter:first-child {
-      margin-top: 0;
-    }
-
-    .tools-chapter::before,
-    .tools-chapter::after {
-      content: "";
+    .tc-chapter:first-child { margin-top: 0; }
+    .tc-chapter::before,
+    .tc-chapter::after {
+      content: '';
       flex: 1;
-      height: 2px;
-      background: rgba(120,80,10,0.3);
+      height: 1px;
+      background: rgba(120,80,10,0.2);
     }
-
-    .tools-chapter-label {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(120,80,10,0.7);
+    .tc-chapter-label {
       font-family: Georgia, serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(120,80,10,0.55);
       white-space: nowrap;
     }
 
-    /* Card */
-    .tool-card {
+    /* ── List container ──────────────────────────────────────── */
+
+    #tc-list {
       display: flex;
-      align-items: center;
-      background: #1a1714;
-      border: 1px solid rgba(184,136,26,0.28);
-      border-radius: 10px;
-      padding: 0 28px 0 0;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.2s ease, background 0.2s ease;
-      min-height: 70px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
-      position: relative;
-      overflow: hidden;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 60px;
     }
 
-    /* Left accent bar */
-    .tool-card::before {
-      content: "";
+    /* ── Card ────────────────────────────────────────────────── */
+
+    .tc-card {
+      display: block;
+      background: #0f0d0a;
+      border: 1px solid rgba(184,136,26,0.2);
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.22);
+      transition: border-color 0.18s, background 0.18s;
+    }
+
+    /* Left gold accent bar */
+    .tc-card::before {
+      content: '';
       position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
+      left: 0; top: 0; bottom: 0;
       width: 0;
-      background: rgba(184,136,26,0.55);
+      background: rgba(184,136,26,0.48);
       border-radius: 10px 0 0 10px;
-      transition: width 0.18s ease;
+      transition: width 0.18s;
       z-index: 1;
     }
 
-    /* Subtle right gradient */
-    .tool-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent 50%, rgba(184,136,26,0.018));
-      pointer-events: none;
+    .tc-card:hover {
+      border-color: rgba(184,136,26,0.58);
+      background: #131008;
+    }
+    .tc-card:hover::before { width: 3px; }
+
+    /* ── Head ────────────────────────────────────────────────── */
+
+    .tc-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 18px 12px 20px;
+      position: relative;
+      z-index: 2;
     }
 
-    .tool-card:hover {
-      border-color: rgba(184,136,26,0.7);
-      background: #201d18;
+    .tc-icon-wrap {
+      width: 42px;
+      height: 42px;
+      background: #070504;
+      border: 1px solid rgba(184,136,26,0.13);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      line-height: 1;
+      flex-shrink: 0;
     }
 
-    .tool-card:hover::before {
-      width: 3px;
+    .tc-title { flex: 1; min-width: 0; }
+
+    .tc-name {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #ede9e0;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.18s;
+    }
+    .tc-card:hover .tc-name { color: #fff; }
+
+    .tc-addr {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      color: rgba(184,136,26,0.4);
+      letter-spacing: 0.07em;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .tool-card:hover .tool-card-action {
+    /* ── Seal button ─────────────────────────────────────────── */
+
+    .tc-seal {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      background: rgba(184,136,26,0.05);
+      border: 1px solid rgba(184,136,26,0.17);
+      border-radius: 6px;
+      color: rgba(184,136,26,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      z-index: 3;
+    }
+    .tc-seal svg { pointer-events: none; }
+    .tc-seal:hover {
+      background: rgba(184,136,26,0.12);
+      border-color: rgba(184,136,26,0.46);
       color: #e2ad35;
     }
 
-    /* Icon box */
-    .tool-card-icon {
-      width: 48px;
-      height: 48px;
-      border: 1px solid rgba(184,136,26,0.18);
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      line-height: 1;
-      margin: 12px 0 12px 18px;
-      flex-shrink: 0;
-      background: #0d0b08;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Divider */
-    .tool-card-sep {
-      align-self: stretch;
-      width: 36px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      color: rgba(184,136,26,0.6);
-      font-size: 6px;
-      z-index: 1;
-    }
-
-    .tool-card-sep::before,
-    .tool-card-sep::after {
-      content: "";
+    .tc-seal-tip {
       position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 1px;
-      background: rgba(184,136,26,0.15);
-    }
-
-    .tool-card-sep::before { top: 14px;    height: calc(50% - 11px); }
-    .tool-card-sep::after  { bottom: 14px; height: calc(50% - 11px); }
-
-    /* Body */
-    .tool-card-body {
-      flex: 1;
-      min-width: 0;
-      padding: 0 28px 0 4px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .tool-card-name {
-      font-size: 20px;
-      font-family: Georgia, serif;
-      color: #f0f0f0;
-      font-weight: 700;
-      line-height: 1.15;
-    }
-
-    /* Action */
-    .tool-card-action {
-      font-family: Georgia, serif;
-      font-size: 12px;
-      color: rgba(184,136,26,0.42);
-      letter-spacing: 0.1em;
-      flex-shrink: 0;
+      right: calc(100% + 9px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1c1810;
+      border: 1px solid rgba(184,136,26,0.3);
+      border-radius: 5px;
+      color: #e2ad35;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      padding: 5px 11px;
       white-space: nowrap;
-      transition: color 0.2s ease;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .tc-seal:hover .tc-seal-tip { opacity: 1; }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+
+    .tc-rule {
+      height: 1px;
+      background: rgba(184,136,26,0.09);
+      margin: 0 20px;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
-    @media (max-width: 600px) {
-      .tools-list { gap: 6px; }
+    /* ── Foot ────────────────────────────────────────────────── */
 
-      .tool-card {
-        min-height: 0;
-        padding: 0 14px 0 0;
-      }
+    .tc-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 11px 18px 14px 20px;
+      position: relative;
+      z-index: 2;
+    }
 
-      .tool-card-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-        margin: 11px 0 11px 14px;
-        border-radius: 6px;
-      }
+    .tc-left { flex: 1; min-width: 0; }
 
-      .tool-card-sep { width: 24px; }
-      .tool-card-sep::before { top: 12px; height: calc(50% - 10px); }
-      .tool-card-sep::after  { bottom: 12px; height: calc(50% - 10px); }
+    .tc-desc {
+      font-size: 13px;
+      color: rgba(237,233,224,0.5);
+      line-height: 1.58;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
 
-      .tool-card-body { padding: 0 10px 0 4px; }
-      .tool-card-name { font-size: 15px; }
-      .tool-card-action { font-size: 11px; }
+    .tc-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      font-size: 10.5px;
+      color: rgba(184,136,26,0.36);
+      letter-spacing: 0.04em;
+    }
+    .tc-dot { color: rgba(184,136,26,0.2); }
 
-      .tools-chapter { margin: 24px 0 8px; }
-      .tools-chapter-label { font-size: 11px; }
+    /* ── Open Artifact button ────────────────────────────────── */
+
+    .tc-action {
+      font-family: Georgia, serif;
+      font-size: 11.5px;
+      color: rgba(184,136,26,0.48);
+      border: 1px solid rgba(184,136,26,0.22);
+      border-radius: 5px;
+      padding: 6px 14px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      letter-spacing: 0.06em;
+      background: rgba(184,136,26,0.04);
+      transition: color 0.18s, border-color 0.18s, background 0.18s, box-shadow 0.18s;
+    }
+    .tc-card:hover .tc-action {
+      color: #e2ad35;
+      border-color: rgba(184,136,26,0.58);
+      background: rgba(184,136,26,0.07);
+      box-shadow: 0 0 16px rgba(184,136,26,0.1);
+    }
+
+    /* ── Mobile ──────────────────────────────────────────────── */
+
+    @media (max-width: 640px) {
+      .tc-head { padding: 12px 14px 10px 14px; gap: 10px; }
+      .tc-foot { padding: 9px 14px 12px 14px; flex-wrap: wrap; gap: 10px; }
+      .tc-rule { margin: 0 14px; }
+      .tc-icon-wrap { width: 36px; height: 36px; font-size: 16px; }
+      .tc-name { font-size: 15px; }
+      .tc-action { font-size: 11px; padding: 5px 11px; }
+      .tc-seal-tip { display: none; }
+      .tc-chapter { margin: 28px 0 8px; }
+      .tc-chapter-label { font-size: 10px; }
     }
 
   </style>
-
 </head>
-
 <body>
 
 <div id="header-placeholder"></div>
-
 <div class="layout">
 <div id="sidebar-placeholder"></div>
 
 <main class="main-content">
 
-<section class="game-hero catalog-hero">
-  <span class="game-hero-corner tl"></span>
-  <span class="game-hero-corner tr"></span>
-  <span class="game-hero-corner bl"></span>
-  <span class="game-hero-corner br"></span>
-  <div class="game-hero-emblem">
-    <img src="/operation/images/tool-icon.png" alt="">
-  </div>
-  <div class="game-hero-sep">&#10022;</div>
-  <div class="game-hero-title">
-    <h2>Tools</h2>
-    <div class="game-hero-sub">
-      <span class="game-hero-sub-line"></span>
-      <span>Pergamon Catalogs</span>
-      <span class="game-hero-sub-line"></span>
+  <section class="game-hero catalog-hero">
+    <span class="game-hero-corner tl"></span>
+    <span class="game-hero-corner tr"></span>
+    <span class="game-hero-corner bl"></span>
+    <span class="game-hero-corner br"></span>
+    <div class="game-hero-emblem">
+      <img src="/operation/images/tool-icon.png" alt="">
     </div>
-  </div>
-  <div class="catalog-count">
-    <span class="catalog-count-inner"></span>
-    <span class="catalog-count-num">35</span>
-    <span class="catalog-count-label">Tools</span>
-  </div>
-</section>
+    <div class="game-hero-sep">&#10022;</div>
+    <div class="game-hero-title">
+      <h2>Tools</h2>
+      <div class="game-hero-sub">
+        <span class="game-hero-sub-line"></span>
+        <span>Pergamon Catalogs</span>
+        <span class="game-hero-sub-line"></span>
+      </div>
+    </div>
+    <div class="catalog-count">
+      <span class="catalog-count-inner"></span>
+      <span class="catalog-count-num">56</span>
+      <span class="catalog-count-label">Tools</span>
+    </div>
+  </section>
 
-<section class="tools-list">
-
-  <!-- Calculators -->
-  <div class="tools-chapter"><span class="tools-chapter-label">Calculators</span></div>
-
-  <a href="/tools/gpa-calculator" class="tool-card">
-    <div class="tool-card-icon">📘</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">GPA Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/bmi-calculator" class="tool-card">
-    <div class="tool-card-icon">📏</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">BMI Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/calorie-calculator" class="tool-card">
-    <div class="tool-card-icon">🔥</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Calorie Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/compound-interest-calculator" class="tool-card">
-    <div class="tool-card-icon">💸</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Compound Interest</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/loan-calculator" class="tool-card">
-    <div class="tool-card-icon">🏦</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Loan Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/percentage-calculator" class="tool-card">
-    <div class="tool-card-icon">%</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Percentage Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/tip-calculator" class="tool-card">
-    <div class="tool-card-icon">💵</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Tip Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/mortgage-calculator" class="tool-card">
-    <div class="tool-card-icon">🏠</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Mortgage Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/speed-calculator" class="tool-card">
-    <div class="tool-card-icon">🚀</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Speed Calculator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <!-- Text & Dev -->
-  <div class="tools-chapter"><span class="tools-chapter-label">Text &amp; Dev</span></div>
-
-  <a href="/tools/base64" class="tool-card">
-    <div class="tool-card-icon">🔐</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Base64</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/json-formatter" class="tool-card">
-    <div class="tool-card-icon">🧾</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">JSON Formatter</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/regex-tester" class="tool-card">
-    <div class="tool-card-icon">🧠</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Regex Tester</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/text-diff" class="tool-card">
-    <div class="tool-card-icon">🔍</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Text Diff</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/url-encoder" class="tool-card">
-    <div class="tool-card-icon">🌐</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">URL Encoder</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/color-contrast" class="tool-card">
-    <div class="tool-card-icon">🎨</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Color Contrast</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/caesar-cipher" class="tool-card">
-    <div class="tool-card-icon">🔒</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Caesar Cipher</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/character-counter" class="tool-card">
-    <div class="tool-card-icon">📝</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Character Counter</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/password-strength" class="tool-card">
-    <div class="tool-card-icon">🔑</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Password Strength</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/epoch-converter" class="tool-card">
-    <div class="tool-card-icon">🕰️</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Epoch Converter</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <!-- Generators -->
-  <div class="tools-chapter"><span class="tools-chapter-label">Generators</span></div>
-
-  <a href="/tools/password-generator" class="tool-card">
-    <div class="tool-card-icon">🔑</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Password Generator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/qr-code-generator" class="tool-card">
-    <div class="tool-card-icon">📷</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">QR Generator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/lorem-ipsum" class="tool-card">
-    <div class="tool-card-icon">📄</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Lorem Ipsum</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/name-generator" class="tool-card">
-    <div class="tool-card-icon">🎭</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Name Generator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/quote-generator" class="tool-card">
-    <div class="tool-card-icon">💬</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Quote Generator</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <!-- Productivity -->
-  <div class="tools-chapter"><span class="tools-chapter-label">Productivity</span></div>
-
-  <a href="/tools/pomodoro-timer" class="tool-card">
-    <div class="tool-card-icon">⏱</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Pomodoro</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/countdown-timer" class="tool-card">
-    <div class="tool-card-icon">⏳</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Countdown Timer</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/stopwatch" class="tool-card">
-    <div class="tool-card-icon">⌚</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Stopwatch</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/flashcards" class="tool-card">
-    <div class="tool-card-icon">📚</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Flashcards</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/timezone-converter" class="tool-card">
-    <div class="tool-card-icon">🌍</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Timezone Converter</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/metronome" class="tool-card">
-    <div class="tool-card-icon">🎵</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Metronome</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <!-- Fun -->
-  <div class="tools-chapter"><span class="tools-chapter-label">Fun</span></div>
-
-  <a href="/tools/random-number" class="tool-card">
-    <div class="tool-card-icon">🎲</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Random Number</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/dice-roller" class="tool-card">
-    <div class="tool-card-icon">🎲</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Dice Roller</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/decision-spinner" class="tool-card">
-    <div class="tool-card-icon">🎡</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Decision Spinner</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <a href="/tools/shuffle-list" class="tool-card">
-    <div class="tool-card-icon">🔀</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Shuffle List</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-  <!-- Atlas -->
-  <div class="tools-chapter"><span class="tools-chapter-label">Atlas</span></div>
-
-  <a href="/tools/atlas-decoder" class="tool-card">
-    <div class="tool-card-icon">🗺</div>
-    <div class="tool-card-sep">◆</div>
-    <div class="tool-card-body"><div class="tool-card-name">Atlas Decoder</div></div>
-    <span class="tool-card-action">Open →</span>
-  </a>
-
-</section>
+  <div id="tc-list"></div>
 
 </main>
 </div>
 
 <div id="footer-placeholder"></div>
 
-
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
 <script src="/operation/scripts/atlas.js"></script>
 <script>
   loadSnippets('Tools');
-  const _sysCode = window.atlasNavCodes && window.atlasNavCodes[window.location.pathname.replace(/\/$/, '') || '/'];
-  if (_sysCode) {
-    const _i = setInterval(() => {
-      const el = document.getElementById('system-code-display');
-      if (el) { el.textContent = _sysCode; clearInterval(_i); }
-    }, 50);
-  }
+
+  (function () {
+
+    /* ── Archive seal SVG ──────────────────────────────────── */
+    var SEAL = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="6.5,0.5 12.5,3.7 12.5,9.3 6.5,12.5 0.5,9.3 0.5,3.7" stroke="currentColor" stroke-width="1.1" fill="none"/><circle cx="6.5" cy="6.5" r="1.8" fill="currentColor"/></svg>';
+
+    /* ── Chamber labels ────────────────────────────────────── */
+    var CHAMBERS = { TL: 'Tools Wing', GM: 'Games Wing', PG: 'Archive' };
+
+    /* ── Date formatter ────────────────────────────────────── */
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function fmtDate(d) {
+      if (!d) return '';
+      var parts = d.split('-');
+      return MONTHS[parseInt(parts[1], 10) - 1] + ' ' + parseInt(parts[2], 10) + ', ' + parts[0];
+    }
+
+    /* ── Catalog definition ────────────────────────────────── */
+    var CATALOG = [
+      { ch: 'Calculators', items: [
+        ['/tools/gpa-calculator',               '📘', 'Calculate grade point average across courses and credit hours.'],
+        ['/tools/grade-calculator',             '📊', 'Convert percentage scores to letter grades and GPA point values.'],
+        ['/tools/bmi-calculator',               '📏', 'Compute body mass index from height and weight in any unit system.'],
+        ['/tools/calorie-calculator',           '🔥', 'Estimate daily caloric needs by age, weight, height, and activity level.'],
+        ['/tools/compound-interest-calculator', '📈', 'Project investment growth with compounding returns over any time horizon.'],
+        ['/tools/loan-calculator',              '🏦', 'Calculate monthly payments, total interest, and loan amortization.'],
+        ['/tools/mortgage-calculator',          '🏠', 'Estimate monthly mortgage payments and total home loan cost over term.'],
+        ['/tools/percentage-calculator',        '🔢', 'Solve percentage increases, decreases, and proportional ratios.'],
+        ['/tools/tip-calculator',               '💵', 'Calculate gratuity and split restaurant bills by party size.'],
+        ['/tools/speed-calculator',             '🚀', 'Compute speed, distance, or elapsed time given any two known values.'],
+        ['/tools/scientific-calculator',        '🔬', 'Perform advanced mathematical operations and trigonometric functions.'],
+        ['/tools/age-calculator',               '🎂', 'Calculate exact age and elapsed time between any two dates.'],
+        ['/tools/aspect-ratio',                 '📐', 'Compute and convert image aspect ratios and pixel dimensions.'],
+      ]},
+      { ch: 'Finance', items: [
+        ['/tools/bill-splitter',                '🧾', 'Divide shared expenses evenly among any number of contributors.'],
+        ['/tools/budget-planner',               '💼', 'Plan monthly budgets and map income against projected expenses.'],
+        ['/tools/salary-converter',             '💰', 'Convert salary between hourly, weekly, monthly, and annual rates.'],
+        ['/tools/savings-goal',                 '🏆', 'Calculate how long to reach a savings target at a given deposit rate.'],
+      ]},
+      { ch: 'Cipher & Script', items: [
+        ['/tools/base64',                       '🔐', 'Encode and decode text to Base64 format for safe data transmission.'],
+        ['/tools/json-formatter',               '🗂️', 'Prettify, validate, and minify JSON data structures.'],
+        ['/tools/regex-tester',                 '🔍', 'Test regular expressions against sample input text in real time.'],
+        ['/tools/text-diff',                    '⚖️', 'Compare two text blocks and highlight their differences line by line.'],
+        ['/tools/url-encoder',                  '🌐', 'Encode and decode URL components for safe web transmission.'],
+        ['/tools/caesar-cipher',                '🔒', 'Encrypt and decrypt messages using the classical Caesar shift cipher.'],
+        ['/tools/character-counter',            '📝', 'Count characters, words, sentences, and estimated reading time.'],
+        ['/tools/password-strength',            '🛡️', 'Analyze password security and estimate resistance to brute-force attack.'],
+        ['/tools/epoch-converter',              '🕰️', 'Convert Unix timestamps to human-readable dates and back.'],
+        ['/tools/binary-translator',            '💻', 'Translate text to binary notation and decode binary back to text.'],
+        ['/tools/number-base-converter',        '#️⃣', 'Convert numbers between binary, octal, decimal, and hexadecimal bases.'],
+        ['/tools/markdown-previewer',           '📄', 'Render Markdown syntax to formatted HTML with a live preview pane.'],
+        ['/tools/case-converter',               '🔡', 'Convert text between camelCase, snake_case, UPPER, Title Case, and more.'],
+        ['/tools/word-counter',                 '📖', 'Count words, characters, and sentences across any block of text.'],
+      ]},
+      { ch: 'Color Studio', items: [
+        ['/tools/color-contrast',               '🎨', 'Check foreground and background color accessibility ratios against WCAG.'],
+        ['/tools/color-palette',                '🖌️', 'Generate harmonious color palettes from any seed color.'],
+        ['/tools/color-picker',                 '💠', 'Pick, convert, and copy colors across hex, RGB, and HSL formats.'],
+        ['/tools/gradient-generator',           '🌈', 'Build and preview CSS gradient strings with full color control.'],
+      ]},
+      { ch: 'Synthesis', items: [
+        ['/tools/password-generator',           '🔑', 'Generate cryptographically strong passwords with custom length and rules.'],
+        ['/tools/qr-code-generator',            '📷', 'Create QR codes from any URL, text, or arbitrary data string.'],
+        ['/tools/lorem-ipsum',                  '📜', 'Generate placeholder text in various lengths and paragraph formats.'],
+        ['/tools/name-generator',               '🎭', 'Generate random names by nationality, historical era, or archetype.'],
+        ['/tools/quote-generator',              '💬', 'Surface curated quotations from philosophers, writers, and thinkers.'],
+      ]},
+      { ch: 'Operations', items: [
+        ['/tools/pomodoro-timer',               '🍅', 'Run structured 25-minute focus intervals using the Pomodoro technique.'],
+        ['/tools/countdown-timer',              '⏳', 'Set precise countdowns for deadlines, events, and timed sessions.'],
+        ['/tools/stopwatch',                    '⌚', 'Track elapsed time with millisecond precision and lap recording.'],
+        ['/tools/flashcards',                   '📚', 'Create and study custom flashcard decks with active recall practice.'],
+        ['/tools/timezone-converter',           '🌍', 'Compare current times across multiple world time zones simultaneously.'],
+        ['/tools/metronome',                    '🎵', 'Maintain steady tempo with an adjustable beats-per-minute metronome.'],
+        ['/tools/date-difference',              '📅', 'Calculate exact days, months, and years between any two dates.'],
+        ['/tools/reading-time',                 '⏱️', 'Estimate reading duration for any block of text at a given pace.'],
+        ['/tools/unit-converter',               '⚖️', 'Convert measurements across length, mass, volume, temperature, and more.'],
+        ['/tools/times-tables',                 '✖️', 'Practice and visualize multiplication tables with an interactive grid.'],
+        ['/tools/roman-numerals',               'Ⅻ', 'Convert between Arabic and Roman numeral notation in both directions.'],
+      ]},
+      { ch: 'Curiosities', items: [
+        ['/tools/random-number',                '🎲', 'Generate random integers or decimals within any specified range.'],
+        ['/tools/dice-roller',                  '🎯', 'Roll any combination of standard polyhedral dice for tabletop games.'],
+        ['/tools/decision-spinner',             '🎡', 'Spin a probability wheel to resolve decisions and dilemmas by chance.'],
+        ['/tools/shuffle-list',                 '🔀', 'Randomize the order of any list of items, names, or entries.'],
+      ]},
+      { ch: 'Atlas Navigation', items: [
+        ['/tools/atlas-decoder',                '🗺️', 'Decode Atlas addresses to locate and identify artifacts in coordinate space.'],
+      ]},
+    ];
+
+    /* ── Build atlas address lookup ────────────────────────── */
+    var atlasTools = (window.atlasEntries && window.atlasEntries.tools) || [];
+    var byPath = {};
+    atlasTools.forEach(function(t) { byPath[t.path] = t; });
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+
+    /* ── Render ────────────────────────────────────────────── */
+    var html = '';
+
+    CATALOG.forEach(function(section) {
+      html += '<div class="tc-chapter"><span class="tc-chapter-label">' + esc(section.ch) + '</span></div>';
+
+      section.items.forEach(function(item) {
+        var path  = item[0];
+        var icon  = item[1];
+        var desc  = item[2];
+        var entry = byPath[path] || {};
+
+        var fullAddr = entry.address ? 'ATLAS-' + entry.address : '';
+        var chamber  = CHAMBERS[entry.chamber] || 'Tools Wing';
+        var dated    = fmtDate(entry.date);
+        var name     = entry.name || path.split('/').pop().replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+
+        html +=
+          '<a href="' + path + '/" class="tc-card">' +
+            '<div class="tc-head">' +
+              '<div class="tc-icon-wrap">' + icon + '</div>' +
+              '<div class="tc-title">' +
+                '<div class="tc-name">' + esc(name) + '</div>' +
+                '<div class="tc-addr">' + esc(fullAddr) + '</div>' +
+              '</div>' +
+              '<button class="tc-seal" title="Open in Atlas Decoder"' +
+                ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/tools/atlas-decoder/\'">' +
+                SEAL +
+                '<span class="tc-seal-tip">' + esc(fullAddr) + '</span>' +
+              '</button>' +
+            '</div>' +
+            '<div class="tc-rule"></div>' +
+            '<div class="tc-foot">' +
+              '<div class="tc-left">' +
+                '<div class="tc-desc">' + esc(desc) + '</div>' +
+                '<div class="tc-meta">' +
+                  '<span>' + esc(chamber) + '</span>' +
+                  '<span class="tc-dot">&middot;</span>' +
+                  '<span>Stable</span>' +
+                  '<span class="tc-dot">&middot;</span>' +
+                  '<span>Indexed ' + esc(dated) + '</span>' +
+                '</div>' +
+              '</div>' +
+              '<span class="tc-action">Open Artifact &#8594;</span>' +
+            '</div>' +
+          '</a>';
+      });
+    });
+
+    document.getElementById('tc-list').innerHTML = html;
+
+  })();
 </script>
 
 </body>
