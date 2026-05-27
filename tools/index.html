@@ -42,11 +42,12 @@
     /* ── List container ──────────────────────────────────────── */
 
     #tc-list {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 7px;
       margin-bottom: 60px;
     }
+    .tc-chapter { grid-column: 1 / -1; }
 
     /* ── Card ────────────────────────────────────────────────── */
 
@@ -124,7 +125,7 @@
     .tc-addr {
       font-family: 'Courier New', Courier, monospace;
       font-size: 10px;
-      color: rgba(184,136,26,0.4);
+      color: rgba(184,136,26,0.62);
       letter-spacing: 0.07em;
       margin-top: 3px;
       white-space: nowrap;
@@ -203,7 +204,7 @@
 
     .tc-desc {
       font-size: 13px;
-      color: rgba(237,233,224,0.5);
+      color: rgba(237,233,224,0.75);
       line-height: 1.58;
       overflow: hidden;
       display: -webkit-box;
@@ -218,18 +219,18 @@
       flex-wrap: wrap;
       margin-top: 6px;
       font-size: 10.5px;
-      color: rgba(184,136,26,0.36);
+      color: rgba(184,136,26,0.6);
       letter-spacing: 0.04em;
     }
-    .tc-dot { color: rgba(184,136,26,0.2); }
+    .tc-dot { color: rgba(184,136,26,0.35); }
 
     /* ── Open Artifact button ────────────────────────────────── */
 
     .tc-action {
       font-family: Georgia, serif;
       font-size: 11.5px;
-      color: rgba(184,136,26,0.48);
-      border: 1px solid rgba(184,136,26,0.22);
+      color: rgba(184,136,26,0.75);
+      border: 1px solid rgba(184,136,26,0.38);
       border-radius: 5px;
       padding: 6px 14px;
       white-space: nowrap;
@@ -246,6 +247,10 @@
     }
 
     /* ── Mobile ──────────────────────────────────────────────── */
+
+    @media (max-width: 900px) {
+      #tc-list { grid-template-columns: 1fr; }
+    }
 
     @media (max-width: 640px) {
       .tc-head { padding: 12px 14px 10px 14px; gap: 10px; }
