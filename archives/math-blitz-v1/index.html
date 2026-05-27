@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Math Blitz (v1)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 104874486,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -420294,
+    "y": 1526077,
+    "z": 13624072
+  },
+  "address": "M3TD8-FWBVU-NR9SQ",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Math Blitz</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .hud{display:flex;justify-content:center;gap:24px;margin-bottom:12px;font-size:15px;font-weight:700}
+    .hud .val{font-size:28px;display:block;color:#8a611c;font-family:monospace}
+    .time-bar{height:10px;background:#eee;border-radius:999px;overflow:hidden;margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto}
+    .time-fill{height:100%;background:#8a611c;border-radius:999px;transition:.1s linear}
+    .equation{font-size:clamp(40px,8vw,64px);font-weight:900;font-family:monospace;margin:20px 0;color:#111;min-height:80px;display:flex;align-items:center;justify-content:center}
+    .ans-input{padding:14px;border:2px solid #ccc;border-radius:10px;font-size:28px;font-family:monospace;text-align:center;width:160px;outline:none;transition:border .15s;margin-bottom:10px}
+    .ans-input:focus{border-color:#8a611c}
+    .ans-input.correct{border-color:#2a9d3a;background:#e9fbe9;animation:pop .2s}
+    .ans-input.wrong{border-color:#c0392b;background:#fdf0f0;animation:shake .3s}
+    @keyframes pop{0%{transform:scale(.9)}100%{transform:scale(1)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+    .atlas-btn{border:none;border-radius:10px;padding:12px 28px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .mode-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .mode-btn{padding:7px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
+    .mode-btn.active{background:#111;color:white;border-color:#111}
+    .feedback{font-size:15px;font-weight:700;min-height:22px;color:#aaa}
+    .result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin:14px 0}
+    .res-box{background:#111;color:white;border-radius:12px;padding:14px;text-align:center}
+    .res-box .val{font-size:28px;font-weight:800;color:#f0d39b}
+    .res-box .lbl{font-size:12px;color:#888;margin-top:3px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Math Blitz</h2>
+        <p>Solve as many math problems as you can before time runs out!</p>
+      </div>
+      <div class="panel">
+        <div class="mode-row">
+          <button class="mode-btn active" onclick="setMode('easy',this)">Easy (+−)</button>
+          <button class="mode-btn" onclick="setMode('medium',this)">Medium (×÷)</button>
+          <button class="mode-btn" onclick="setMode('hard',this)">Hard (Mixed)</button>
+        </div>
+        <div class="hud">
+          <span><span class="val" id="scoreVal">0</span>Score</span>
+          <span><span class="val" id="timeVal">60</span>Time</span>
+          <span><span class="val" id="streakVal">0</span>Streak</span>
+        </div>
+        <div class="time-bar"><div class="time-fill" id="timeFill" style="width:100%"></div></div>
+        <div class="equation" id="equation">Press Start!</div>
+        <input class="ans-input" id="ansInput" type="text" inputmode="numeric" placeholder="?" autocomplete="off" onkeydown="if(event.key==='Enter')checkAns()" disabled>
+        <div class="feedback" id="feedback"></div>
+        <div class="result-grid" id="resultGrid" style="display:none"></div>
+        <button class="atlas-btn" style="margin-top:10px" onclick="startGame()">Start</button>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Games');
+
+    let mode='easy',score,streak,timeLeft,timerInt,currentAns,running,best;
+    best=parseInt(localStorage.getItem('mathblitz_best')||0);
+
+    function setMode(m,btn){mode=m;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+
+    function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+    function genQuestion(){
+      let a,b,op,ans;
+      if(mode==='easy'){
+        op=Math.random()<.5?'+':'-';
+        a=randInt(1,20);b=randInt(1,20);
+        if(op==='-'&&b>a)[a,b]=[b,a];
+        ans=op==='+'?a+b:a-b;
+      } else if(mode==='medium'){
+        op=Math.random()<.5?'×':'÷';
+        if(op==='×'){a=randInt(2,12);b=randInt(2,12);ans=a*b;}
+        else{ans=randInt(2,12);b=randInt(2,12);a=ans*b;}
+      } else {
+        const ops=['+','-','×'];op=ops[Math.floor(Math.random()*ops.length)];
+        if(op==='+'){a=randInt(10,99);b=randInt(10,99);ans=a+b;}
+        else if(op==='-'){a=randInt(20,99);b=randInt(10,a);ans=a-b;}
+        else{a=randInt(2,15);b=randInt(2,15);ans=a*b;}
+      }
+      currentAns=ans;
+      document.getElementById('equation').textContent=`${a} ${op} ${b} = ?`;
+    }
+
+    function startGame(){
+      score=0;streak=0;timeLeft=60;running=true;
+      document.getElementById('scoreVal').textContent=0;
+      document.getElementById('streakVal').textContent=0;
+      document.getElementById('timeFill').style.width='100%';
+      document.getElementById('resultGrid').style.display='none';
+      document.getElementById('feedback').textContent='';
+      const inp=document.getElementById('ansInput');inp.disabled=false;inp.value='';inp.className='ans-input';
+      clearInterval(timerInt);
+      timerInt=setInterval(()=>{timeLeft--;document.getElementById('timeVal').textContent=timeLeft;document.getElementById('timeFill').style.width=(timeLeft/60*100)+'%';if(timeLeft<=0)endGame();},1000);
+      genQuestion();inp.focus();
+    }
+
+    function checkAns(){
+      if(!running) return;
+      const val=parseInt(document.getElementById('ansInput').value);
+      const inp=document.getElementById('ansInput');
+      if(isNaN(val)){inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),300);return;}
+      inp.value='';
+      if(val===currentAns){
+        score+=1+Math.floor(streak/3);streak++;
+        document.getElementById('scoreVal').textContent=score;
+        document.getElementById('streakVal').textContent=streak;
+        document.getElementById('feedback').textContent='';
+        inp.classList.add('correct');setTimeout(()=>inp.classList.remove('correct'),200);
+      } else {
+        streak=0;document.getElementById('streakVal').textContent=0;
+        document.getElementById('feedback').textContent='Answer was '+currentAns;
+        inp.classList.add('wrong');setTimeout(()=>inp.classList.remove('wrong'),300);
+      }
+      genQuestion();
+    }
+
+    function endGame(){
+      clearInterval(timerInt);running=false;
+      const inp=document.getElementById('ansInput');inp.disabled=true;
+      if(score>best){best=score;localStorage.setItem('mathblitz_best',best);}
+      document.getElementById('equation').textContent='Time\'s up!';
+      document.getElementById('resultGrid').style.display='grid';
+      document.getElementById('resultGrid').innerHTML=`
+        <div class="res-box"><div class="val">${score}</div><div class="lbl">Final Score</div></div>
+        <div class="res-box"><div class="val">${best}</div><div class="lbl">Best Score</div></div>`;
+    }
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

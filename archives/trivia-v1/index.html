@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Trivia Quiz (v1)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 1992782028,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -16246314,
+    "y": 14549922,
+    "z": 129849
+  },
+  "address": "E4U6U-KGVHR-AV3TT",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Trivia Quiz</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:15px;font-weight:700;flex-wrap:wrap;gap:8px}
+    .hud .badge{background:#111;color:#f0d39b;border-radius:8px;padding:6px 14px;font-size:14px}
+    .progress-bar{height:8px;background:#eee;border-radius:999px;overflow:hidden;margin-bottom:18px}
+    .progress-fill{height:100%;background:#8a611c;border-radius:999px;transition:.4s}
+    .question{font-size:20px;font-weight:700;color:#111;margin-bottom:20px;line-height:1.5}
+    .options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+    .opt-btn{padding:14px 18px;border:2px solid #ccc;border-radius:12px;background:white;font-size:16px;font-family:Georgia,serif;cursor:pointer;text-align:left;transition:.15s;font-weight:600}
+    .opt-btn:hover:not(:disabled){border-color:#8a611c;background:#fdf6e9}
+    .opt-btn.correct{background:#e9fbe9;border-color:#2a9d3a;color:#1a6b2a}
+    .opt-btn.wrong{background:#fdf0f0;border-color:#c0392b;color:#8b1a1a}
+    .opt-btn:disabled{cursor:default}
+    .feedback{font-size:16px;font-weight:700;min-height:24px;margin-bottom:10px;color:#555}
+    .next-btn{border:none;border-radius:10px;padding:12px 28px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .next-btn:hover{background:#222}
+    .cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .cat-btn{padding:7px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
+    .cat-btn.active{background:#111;color:white;border-color:#111}
+    .result-screen{text-align:center;padding:16px 0}
+    .result-big{font-size:56px;font-weight:900;color:#8a611c}
+    .result-sub{font-size:18px;color:#555;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Trivia Quiz</h2>
+        <p>Test your knowledge across Science, History, Geography, and more</p>
+      </div>
+      <div class="panel" id="mainPanel">
+        <div id="catScreen">
+          <h3 style="margin:0 0 14px">Choose a Category</h3>
+          <div class="cat-row" id="catRow"></div>
+          <button class="next-btn" onclick="startQuiz()">Start Quiz (10 Questions)</button>
+        </div>
+        <div id="quizScreen" style="display:none">
+          <div class="hud">
+            <span id="qNum">Question 1/10</span>
+            <span class="badge" id="scoreBadge">0 pts</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:10%"></div></div>
+          <div class="question" id="questionText"></div>
+          <div class="options" id="optionsDiv"></div>
+          <div class="feedback" id="feedback"></div>
+          <button class="next-btn" id="nextBtn" onclick="nextQ()" style="display:none">Next →</button>
+        </div>
+        <div id="resultScreen" style="display:none" class="result-screen">
+          <div class="result-big" id="resultBig">0/10</div>
+          <div class="result-sub" id="resultSub"></div>
+          <button class="next-btn" style="margin-top:20px" onclick="backToCats()">Play Again</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Games');
+
+    const ALL_Q={
+      Science:[
+        {q:"What is the chemical symbol for gold?",a:"Au",opts:["Au","Ag","Fe","Cu"]},
+        {q:"How many bones are in the adult human body?",a:"206",opts:["206","186","256","226"]},
+        {q:"What planet is known as the Red Planet?",a:"Mars",opts:["Mars","Venus","Jupiter","Saturn"]},
+        {q:"What is the powerhouse of the cell?",a:"Mitochondria",opts:["Mitochondria","Nucleus","Ribosome","Golgi apparatus"]},
+        {q:"What gas do plants absorb from the atmosphere?",a:"Carbon dioxide",opts:["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"]},
+        {q:"What is the speed of light in a vacuum (approx)?",a:"300,000 km/s",opts:["300,000 km/s","150,000 km/s","500,000 km/s","1,000,000 km/s"]},
+        {q:"Which element has the atomic number 1?",a:"Hydrogen",opts:["Hydrogen","Helium","Lithium","Carbon"]},
+        {q:"What is the hardest natural substance?",a:"Diamond",opts:["Diamond","Quartz","Graphite","Corundum"]},
+        {q:"How many chromosomes do humans have?",a:"46",opts:["46","23","48","44"]},
+        {q:"What force keeps planets in orbit?",a:"Gravity",opts:["Gravity","Magnetism","Friction","Electromagnetism"]},
+      ],
+      History:[
+        {q:"In what year did World War II end?",a:"1945",opts:["1945","1942","1948","1944"]},
+        {q:"Who was the first US President?",a:"George Washington",opts:["George Washington","Thomas Jefferson","John Adams","Benjamin Franklin"]},
+        {q:"Which ancient wonder was located in Egypt?",a:"Great Pyramid of Giza",opts:["Great Pyramid of Giza","Hanging Gardens","Colossus of Rhodes","Statue of Zeus"]},
+        {q:"Who wrote the Declaration of Independence?",a:"Thomas Jefferson",opts:["Thomas Jefferson","George Washington","John Adams","Benjamin Franklin"]},
+        {q:"What year did the Berlin Wall fall?",a:"1989",opts:["1989","1991","1987","1993"]},
+        {q:"Which empire was ruled by Julius Caesar?",a:"Roman Empire",opts:["Roman Empire","Greek Empire","Ottoman Empire","Byzantine Empire"]},
+        {q:"In what year did the Titanic sink?",a:"1912",opts:["1912","1915","1910","1918"]},
+        {q:"Who was the first man to walk on the moon?",a:"Neil Armstrong",opts:["Neil Armstrong","Buzz Aldrin","Yuri Gagarin","John Glenn"]},
+        {q:"What ancient civilization built Machu Picchu?",a:"Inca",opts:["Inca","Aztec","Maya","Olmec"]},
+        {q:"Which country was the first to grant women the right to vote?",a:"New Zealand",opts:["New Zealand","USA","UK","Finland"]},
+      ],
+      Geography:[
+        {q:"What is the largest ocean on Earth?",a:"Pacific",opts:["Pacific","Atlantic","Indian","Arctic"]},
+        {q:"What is the capital of Australia?",a:"Canberra",opts:["Canberra","Sydney","Melbourne","Brisbane"]},
+        {q:"Which is the longest river in the world?",a:"Nile",opts:["Nile","Amazon","Yangtze","Mississippi"]},
+        {q:"What country has the most natural lakes?",a:"Canada",opts:["Canada","Russia","USA","Finland"]},
+        {q:"Mount Everest is located in which mountain range?",a:"Himalayas",opts:["Himalayas","Andes","Alps","Rockies"]},
+        {q:"What is the smallest country in the world?",a:"Vatican City",opts:["Vatican City","Monaco","San Marino","Liechtenstein"]},
+        {q:"Which continent has the most countries?",a:"Africa",opts:["Africa","Asia","Europe","South America"]},
+        {q:"What is the capital of Canada?",a:"Ottawa",opts:["Ottawa","Toronto","Vancouver","Montreal"]},
+        {q:"Which desert is the largest hot desert?",a:"Sahara",opts:["Sahara","Arabian","Gobi","Kalahari"]},
+        {q:"Through how many countries does the Amazon River flow?",a:"9",opts:["9","3","5","7"]},
+      ],
+      Pop_Culture:[
+        {q:"How many strings does a standard guitar have?",a:"6",opts:["6","4","7","8"]},
+        {q:"What is the best-selling video game of all time?",a:"Minecraft",opts:["Minecraft","Tetris","GTA V","Mario Kart"]},
+        {q:"Who painted the Mona Lisa?",a:"Leonardo da Vinci",opts:["Leonardo da Vinci","Michelangelo","Raphael","Botticelli"]},
+        {q:"What movie features the song 'Let It Go'?",a:"Frozen",opts:["Frozen","Tangled","Brave","Moana"]},
+        {q:"How many Harry Potter books are there?",a:"7",opts:["7","6","8","9"]},
+        {q:"What sport is played at Wimbledon?",a:"Tennis",opts:["Tennis","Cricket","Badminton","Squash"]},
+        {q:"Who wrote Romeo and Juliet?",a:"Shakespeare",opts:["Shakespeare","Dickens","Chaucer","Austen"]},
+        {q:"What is the highest-grossing film of all time (unadjusted)?",a:"Avatar",opts:["Avatar","Avengers: Endgame","Titanic","Star Wars"]},
+        {q:"In chess, which piece can only move diagonally?",a:"Bishop",opts:["Bishop","Knight","Rook","King"]},
+        {q:"What country invented pizza?",a:"Italy",opts:["Italy","Greece","France","USA"]},
+      ],
+    };
+
+    let catKey='Science',questions,qi,score;
+
+    function buildCats(){
+      const row=document.getElementById('catRow');
+      Object.keys(ALL_Q).forEach((c,i)=>{
+        const b=document.createElement('button');b.className='cat-btn'+(i===0?' active':'');
+        b.textContent=c.replace('_',' ');
+        b.onclick=()=>{catKey=c;document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');};
+        row.appendChild(b);
+      });
+    }
+
+    function startQuiz(){
+      questions=[...ALL_Q[catKey]].sort(()=>Math.random()-.5).slice(0,10);
+      qi=0;score=0;
+      document.getElementById('catScreen').style.display='none';
+      document.getElementById('quizScreen').style.display='block';
+      showQ();
+    }
+
+    function showQ(){
+      const q=questions[qi];
+      document.getElementById('qNum').textContent='Question '+(qi+1)+'/10';
+      document.getElementById('scoreBadge').textContent=score+' pts';
+      document.getElementById('progFill').style.width=((qi+1)/10*100)+'%';
+      document.getElementById('questionText').textContent=q.q;
+      document.getElementById('feedback').textContent='';
+      document.getElementById('nextBtn').style.display='none';
+      const opts=[...q.opts].sort(()=>Math.random()-.5);
+      document.getElementById('optionsDiv').innerHTML=opts.map(o=>
+        `<button class="opt-btn" onclick="answer(this,'${o.replace(/'/g,"\\'")}','${q.a.replace(/'/g,"\\'")}')">${o}</button>`
+      ).join('');
+    }
+
+    function answer(btn,chosen,correct){
+      document.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('correct');});
+      if(chosen===correct){score+=10;document.getElementById('feedback').textContent='Correct! +10 pts';}
+      else{btn.classList.add('wrong');document.getElementById('feedback').textContent='Wrong! The answer was: '+correct;}
+      document.getElementById('scoreBadge').textContent=score+' pts';
+      document.getElementById('nextBtn').style.display='inline-block';
+      document.getElementById('nextBtn').textContent=qi>=9?'See Results':'Next →';
+    }
+
+    function nextQ(){
+      qi++;
+      if(qi>=10){showResult();return;}
+      showQ();
+    }
+
+    function showResult(){
+      document.getElementById('quizScreen').style.display='none';
+      document.getElementById('resultScreen').style.display='block';
+      document.getElementById('resultBig').textContent=score+'/100';
+      const pct=score;
+      const msg=pct>=90?'Outstanding!':pct>=70?'Great job!':pct>=50?'Not bad!':'Keep studying!';
+      document.getElementById('resultSub').textContent=msg+' You scored '+pct+'%';
+    }
+
+    function backToCats(){
+      document.getElementById('resultScreen').style.display='none';
+      document.getElementById('catScreen').style.display='block';
+    }
+
+    buildCats();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

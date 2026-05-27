@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Hangman (v1)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 3699833612,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -15106101,
+    "y": 8915465,
+    "z": -641914
+  },
+  "address": "F2MNP-NLTLG-96LNN",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Hangman</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .layout2{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:start}
+    canvas{border:2px solid #ddd;border-radius:10px}
+    .word-display{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0}
+    .letter-blank{width:36px;border-bottom:3px solid #111;font-size:28px;font-weight:800;text-align:center;line-height:1.4;text-transform:uppercase;min-height:40px}
+    .wrong-letters{font-size:14px;color:#c0392b;font-weight:700;margin-bottom:14px;min-height:20px}
+    .keyboard{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:14px;max-width:360px;margin-left:auto;margin-right:auto}
+    .key{width:38px;height:38px;border:2px solid #ccc;border-radius:7px;background:#f7f7f7;font-size:14px;font-weight:700;cursor:pointer;transition:.12s;font-family:Georgia,serif}
+    .key:hover:not(:disabled){background:#111;color:white;border-color:#111}
+    .key:disabled{opacity:.3;cursor:default}
+    .key.wrong{background:#c0392b;color:white;border-color:#c0392b}
+    .key.right{background:#2a9d3a;color:white;border-color:#2a9d3a}
+    .status{font-size:18px;font-weight:800;margin-bottom:10px;min-height:26px}
+    .status.win{color:#2a9d3a}
+    .status.lose{color:#c0392b}
+    .hint-badge{display:inline-block;background:#f7f7f7;border:1px solid #ddd;border-radius:8px;padding:5px 12px;font-size:13px;color:#555;margin-bottom:14px}
+    .atlas-btn{border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .cat-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .cat-btn{padding:6px 14px;border:2px solid #ccc;border-radius:8px;background:white;font-size:13px;font-family:Georgia,serif;cursor:pointer;font-weight:700;transition:.15s}
+    .cat-btn.active{background:#111;color:white;border-color:#111}
+    @media(max-width:600px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Hangman</h2>
+        <p>Guess the word before the hangman is complete</p>
+      </div>
+      <div class="panel">
+        <div class="cat-row" id="catRow"></div>
+        <div class="layout2">
+          <canvas id="c" width="180" height="220"></canvas>
+          <div>
+            <div class="hint-badge" id="hintBadge">Category</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="wrong-letters" id="wrongLetters"></div>
+            <div class="keyboard" id="keyboard"></div>
+            <div class="status" id="status"></div>
+            <button class="atlas-btn" onclick="newGame()">New Word</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Games');
+
+    const CATEGORIES={
+      Animals:['elephant','dolphin','penguin','giraffe','kangaroo','cheetah','alligator','butterfly','octopus','hamster'],
+      Science:['gravity','nucleus','molecule','electron','protein','volcano','eclipse','membrane','catalyst','frequency'],
+      Countries:['australia','brazil','canada','denmark','ethiopia','finland','germany','hungary','iceland','jamaica'],
+      Food:['avocado','broccoli','cinnamon','dumpling','eggplant','frittata','guacamole','hummus','jalapeno','ketchup'],
+      Sports:['basketball','volleyball','swimming','gymnastics','archery','lacrosse','cricket','badminton','fencing','wrestling'],
+    };
+
+    let secret,guessed,wrong,catKey,gameOver;
+
+    function buildCats(){
+      const row=document.getElementById('catRow');
+      Object.keys(CATEGORIES).forEach((c,i)=>{
+        const b=document.createElement('button');b.className='cat-btn'+(i===0?' active':'');
+        b.textContent=c;b.onclick=()=>{catKey=c;document.querySelectorAll('.cat-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');newGame();};
+        row.appendChild(b);
+      });
+      catKey=Object.keys(CATEGORIES)[0];
+    }
+
+    function newGame(){
+      const words=CATEGORIES[catKey];
+      secret=words[Math.floor(Math.random()*words.length)];
+      guessed=new Set();wrong=[];gameOver=false;
+      document.getElementById('hintBadge').textContent=catKey;
+      document.getElementById('status').textContent='';
+      document.getElementById('status').className='status';
+      buildKeyboard();renderWord();drawGallows(0);
+    }
+
+    function buildKeyboard(){
+      const kb=document.getElementById('keyboard');kb.innerHTML='';
+      'abcdefghijklmnopqrstuvwxyz'.split('').forEach(l=>{
+        const btn=document.createElement('button');btn.className='key';btn.textContent=l.toUpperCase();
+        btn.onclick=()=>guess(l,btn);kb.appendChild(btn);
+      });
+    }
+
+    function guess(l,btn){
+      if(gameOver||guessed.has(l)) return;
+      guessed.add(l);
+      if(secret.includes(l)){btn.classList.add('right');}
+      else{wrong.push(l);btn.classList.add('wrong');}
+      btn.disabled=true;
+      renderWord();drawGallows(wrong.length);
+      document.getElementById('wrongLetters').textContent=wrong.length?'Wrong: '+wrong.join(', ').toUpperCase():'';
+      const won=secret.split('').every(c=>guessed.has(c));
+      if(won){gameOver=true;const st=document.getElementById('status');st.textContent='You win!';st.className='status win';}
+      else if(wrong.length>=6){gameOver=true;const st=document.getElementById('status');st.textContent='You lose! Word: '+secret.toUpperCase();st.className='status lose';}
+    }
+
+    function renderWord(){
+      document.getElementById('wordDisplay').innerHTML=secret.split('').map(c=>
+        `<div class="letter-blank">${guessed.has(c)?c.toUpperCase():''}</div>`).join('');
+    }
+
+    function drawGallows(mistakes){
+      const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+      ctx.clearRect(0,0,180,220);
+      ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.lineCap='round';
+      // Base
+      ctx.beginPath();ctx.moveTo(20,210);ctx.lineTo(160,210);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(50,210);ctx.lineTo(50,20);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(50,20);ctx.lineTo(120,20);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(120,20);ctx.lineTo(120,45);ctx.stroke();
+      if(mistakes<1) return;
+      // Head
+      ctx.beginPath();ctx.arc(120,60,16,0,Math.PI*2);ctx.stroke();
+      if(mistakes<2) return;
+      // Body
+      ctx.beginPath();ctx.moveTo(120,76);ctx.lineTo(120,130);ctx.stroke();
+      if(mistakes<3) return;
+      // Left arm
+      ctx.beginPath();ctx.moveTo(120,90);ctx.lineTo(95,115);ctx.stroke();
+      if(mistakes<4) return;
+      // Right arm
+      ctx.beginPath();ctx.moveTo(120,90);ctx.lineTo(145,115);ctx.stroke();
+      if(mistakes<5) return;
+      // Left leg
+      ctx.beginPath();ctx.moveTo(120,130);ctx.lineTo(95,165);ctx.stroke();
+      if(mistakes<6) return;
+      // Right leg
+      ctx.beginPath();ctx.moveTo(120,130);ctx.lineTo(145,165);ctx.stroke();
+    }
+
+    document.addEventListener('keydown',e=>{
+      if(/^[a-zA-Z]$/.test(e.key)){
+        const l=e.key.toLowerCase();
+        const btn=document.querySelector(`.key:not(:disabled)[data-letter="${l}"]`);
+        if(!btn){const all=document.querySelectorAll('.key');all.forEach(b=>{if(b.textContent===l.toUpperCase()&&!b.disabled)guess(l,b);});}
+      }
+    });
+
+    buildCats();newGame();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

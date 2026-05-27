@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Higher or Lower (v1)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "GM",
+  "seed": 4170887498,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -16476307,
+    "y": 14887488,
+    "z": -11321314
+  },
+  "address": "EDTKM-L63MT-XYZJW",
+  "archived": true,
+  "archive_date": "2026-05-25"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Higher or Lower</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .game-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .game-hero h2{margin:0 0 8px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .game-hero p{margin:0;font-size:16px;color:#ccc}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:28px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px;text-align:center}
+    .card-num{font-size:clamp(80px,15vw,130px);font-weight:800;font-family:monospace;line-height:1;color:#111;margin:16px 0}
+    .card-wrap{background:#f7f7f7;border:3px solid #000;border-radius:20px;display:inline-block;padding:24px 48px;margin-bottom:16px;min-width:200px}
+    .info-row{display:flex;justify-content:center;gap:32px;margin-bottom:16px;font-size:16px}
+    .info-row span{font-weight:700}
+    .info-row .score-val{font-size:22px;color:#8a611c}
+    .btn-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+    .hl-btn{border:none;border-radius:12px;padding:16px 36px;font-size:18px;font-weight:700;font-family:Georgia,serif;cursor:pointer;transition:.15s}
+    .hl-btn.lower{background:#c0392b;color:white}
+    .hl-btn.higher{background:#2a9d3a;color:white}
+    .hl-btn:hover{opacity:.85}
+    .hl-btn:disabled{opacity:.3;cursor:default}
+    .feedback{font-size:18px;font-weight:700;min-height:28px;margin-bottom:8px}
+    .feedback.win{color:#2a9d3a}
+    .feedback.lose{color:#c0392b}
+    .range-select{display:flex;justify-content:center;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .range-select label{font-size:14px;font-weight:700;color:#555}
+    .range-select select{padding:8px 12px;border:1.5px solid #ccc;border-radius:8px;font-size:14px;font-family:Georgia,serif}
+    .next-btn{background:#111;color:white;border:none;border-radius:10px;padding:12px 28px;font-size:15px;font-family:Georgia,serif;cursor:pointer;margin-top:10px}
+    .next-btn:hover{background:#333}
+    .best-score{font-size:13px;color:#aaa;margin-top:6px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="game-hero">
+        <h2>Higher or Lower</h2>
+        <p>Guess if the next number is higher or lower. How long can your streak go?</p>
+      </div>
+      <div class="panel">
+        <div class="range-select">
+          <label>Range:</label>
+          <select id="rangeSelect" onchange="newGame()">
+            <option value="10">1 – 10</option>
+            <option value="20" selected>1 – 20</option>
+            <option value="50">1 – 50</option>
+            <option value="100">1 – 100</option>
+          </select>
+        </div>
+        <div class="info-row">
+          <span>Score: <span class="score-val" id="score">0</span></span>
+          <span>Streak: <span class="score-val" id="streak">0</span></span>
+        </div>
+        <div class="card-wrap">
+          <div id="currentNum" class="card-num">?</div>
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <div class="btn-row">
+          <button class="hl-btn lower" id="btnLower" onclick="guess('lower')">⬇ Lower</button>
+          <button class="hl-btn higher" id="btnHigher" onclick="guess('higher')">⬆ Higher</button>
+        </div>
+        <button class="next-btn" id="nextBtn" onclick="nextRound()" style="display:none">Next →</button>
+        <div class="best-score" id="bestScore">Best streak: 0</div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Games');
+
+    let current, next, score, streak, best, max, gameOver;
+
+    function newGame() {
+      max = parseInt(document.getElementById('rangeSelect').value);
+      score = 0; streak = 0; best = parseInt(localStorage.getItem('hl_best')||0); gameOver = false;
+      current = rand(); next = null;
+      document.getElementById('currentNum').textContent = current;
+      document.getElementById('score').textContent = 0;
+      document.getElementById('streak').textContent = 0;
+      document.getElementById('bestScore').textContent = 'Best streak: ' + best;
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').style.display = 'none';
+      setButtons(true);
+    }
+
+    function rand() { return Math.floor(Math.random()*max)+1; }
+
+    function setButtons(on) {
+      document.getElementById('btnLower').disabled = !on;
+      document.getElementById('btnHigher').disabled = !on;
+    }
+
+    function guess(dir) {
+      next = rand();
+      const fb = document.getElementById('feedback');
+      const correct = (dir==='higher'&&next>current)||(dir==='lower'&&next<current)||(next===current);
+
+      if(correct||next===current) {
+        score++;streak++;
+        if(streak>best){best=streak;localStorage.setItem('hl_best',best);document.getElementById('bestScore').textContent='Best streak: '+best;}
+        fb.className='feedback win';
+        fb.textContent = next===current ? `It was ${next} — same! Counts as correct.` : `Correct! It was ${next}.`;
+      } else {
+        fb.className='feedback lose';
+        fb.textContent = `Wrong! It was ${next}. Your streak: ${streak}.`;
+        streak=0; gameOver=true;
+      }
+
+      document.getElementById('score').textContent=score;
+      document.getElementById('streak').textContent=streak;
+      current = next;
+      document.getElementById('currentNum').textContent = current;
+      setButtons(false);
+
+      if(gameOver) {
+        document.getElementById('nextBtn').textContent='Play Again';
+        document.getElementById('nextBtn').onclick = newGame;
+      } else {
+        document.getElementById('nextBtn').textContent='Next →';
+        document.getElementById('nextBtn').onclick = nextRound;
+      }
+      document.getElementById('nextBtn').style.display='inline-block';
+    }
+
+    function nextRound() {
+      document.getElementById('feedback').textContent='';
+      document.getElementById('nextBtn').style.display='none';
+      setButtons(true);
+      gameOver=false;
+    }
+
+    newGame();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>
