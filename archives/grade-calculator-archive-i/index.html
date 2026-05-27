@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Grade Calculator (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "TL",
+  "seed": 633838734,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 15794288,
+    "y": -6938015,
+    "z": 16618923
+  },
+  "address": "5JWTJ-7Y5KQ-RMCFD",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Grade Calculator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 14px;font-size:22px}
+    .assignment-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .assignment-row{display:grid;grid-template-columns:1fr 90px 90px 80px auto;gap:8px;align-items:center}
+    .assignment-row input{padding:10px;border:1.5px solid #ccc;border-radius:9px;font-size:14px;font-family:Georgia,serif;width:100%;box-sizing:border-box}
+    .assignment-row input:focus{outline:none;border-color:#8a611c}
+    .assignment-row select{padding:10px;border:1.5px solid #ccc;border-radius:9px;font-size:14px;font-family:Georgia,serif;width:100%}
+    .assignment-row button{background:none;border:1.5px solid #ccc;border-radius:8px;padding:9px;font-size:15px;cursor:pointer;color:#aaa;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+    .assignment-row button:hover{border-color:#c00;color:#c00}
+    .col-header{display:grid;grid-template-columns:1fr 90px 90px 80px auto;gap:8px;margin-bottom:6px}
+    .col-header span{font-size:12px;font-weight:700;color:#888;padding:0 4px;text-transform:uppercase}
+    .add-btn{border:1.5px dashed #ccc;border-radius:9px;padding:9px;width:100%;font-size:14px;font-family:Georgia,serif;background:none;cursor:pointer;transition:.15s;margin-bottom:12px}
+    .add-btn:hover{border-color:#8a611c;color:#8a611c}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 22px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .grade-display{background:#111;color:#f0d39b;border-radius:14px;padding:28px;text-align:center;margin-bottom:16px}
+    .grade-big{font-size:68px;font-weight:800;line-height:1}
+    .grade-letter{font-size:32px;margin-top:8px;color:#c28a2b}
+    .grade-desc{font-size:14px;color:#aaa;margin-top:6px}
+    .breakdown-list{display:flex;flex-direction:column;gap:6px}
+    .breakdown-row{display:flex;justify-content:space-between;padding:8px 12px;background:#f7f7f7;border:1px solid #eee;border-radius:8px;font-size:14px}
+    .breakdown-row .cat{font-weight:700;color:#333}
+    .breakdown-row .score{font-family:monospace;color:#111}
+    .what-if{margin-top:14px}
+    .what-if h4{margin:0 0 10px;font-size:17px}
+    .wi-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+    .wi-row label{font-size:14px;color:#555;white-space:nowrap}
+    .wi-row input{padding:9px;border:1.5px solid #ccc;border-radius:8px;font-size:14px;font-family:Georgia,serif;width:80px}
+    .wi-result{font-size:15px;font-weight:700;color:#111;background:#f7f7f7;padding:10px 14px;border-radius:8px;margin-top:6px}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}.assignment-row{grid-template-columns:1fr 80px 80px auto}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Grade Calculator</h2>
+        <p>Calculate your weighted course grade from assignments, tests, and exams.</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <h3>Assignments</h3>
+          <div class="col-header"><span>Name</span><span>Score</span><span>Max</span><span>Weight %</span><span></span></div>
+          <div class="assignment-list" id="assignList"></div>
+          <button class="add-btn" onclick="addAssignment()">+ Add Assignment</button>
+          <button class="atlas-btn" onclick="calculate()">Calculate Grade</button>
+        </div>
+        <div>
+          <div class="grade-display" id="gradeDisplay">
+            <div class="grade-big" id="gradePct">—</div>
+            <div class="grade-letter" id="gradeLetter"></div>
+            <div class="grade-desc" id="gradeDesc">Enter assignments to calculate</div>
+          </div>
+          <div class="panel">
+            <h3>Breakdown</h3>
+            <div class="breakdown-list" id="breakdownList"></div>
+          </div>
+          <div class="panel">
+            <div class="what-if">
+              <h4>What grade do I need?</h4>
+              <div class="wi-row">
+                <label>Final exam weight:</label>
+                <input type="number" id="wiWeight" value="30" min="0" max="100"> %
+              </div>
+              <div class="wi-row">
+                <label>Target grade:</label>
+                <input type="number" id="wiTarget" value="90" min="0" max="100"> %
+              </div>
+              <button class="atlas-btn" style="padding:9px 16px;font-size:14px" onclick="whatIf()">Calculate</button>
+              <div class="wi-result" id="wiResult" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    let assignments = [
+      {name:'Homework 1', score:88, max:100, weight:10},
+      {name:'Quiz 1', score:75, max:100, weight:10},
+      {name:'Midterm Exam', score:82, max:100, weight:30},
+      {name:'Project', score:90, max:100, weight:20},
+    ];
+
+    function renderList() {
+      const list = document.getElementById('assignList');
+      list.innerHTML = '';
+      assignments.forEach((a, i) => {
+        const row = document.createElement('div');
+        row.className = 'assignment-row';
+        row.innerHTML = `
+          <input type="text" value="${a.name}" placeholder="Name" oninput="assignments[${i}].name=this.value">
+          <input type="number" value="${a.score}" min="0" oninput="assignments[${i}].score=parseFloat(this.value)||0">
+          <input type="number" value="${a.max}" min="1" oninput="assignments[${i}].max=parseFloat(this.value)||100">
+          <input type="number" value="${a.weight}" min="0" max="100" oninput="assignments[${i}].weight=parseFloat(this.value)||0">
+          <button onclick="removeAssignment(${i})">×</button>
+        `;
+        list.appendChild(row);
+      });
+      calculate();
+    }
+
+    function addAssignment() { assignments.push({name:'',score:0,max:100,weight:10}); renderList(); }
+    function removeAssignment(i) { assignments.splice(i,1); renderList(); }
+
+    function letterGrade(pct) {
+      if(pct>=97) return 'A+'; if(pct>=93) return 'A'; if(pct>=90) return 'A-';
+      if(pct>=87) return 'B+'; if(pct>=83) return 'B'; if(pct>=80) return 'B-';
+      if(pct>=77) return 'C+'; if(pct>=73) return 'C'; if(pct>=70) return 'C-';
+      if(pct>=67) return 'D+'; if(pct>=63) return 'D'; if(pct>=60) return 'D-';
+      return 'F';
+    }
+
+    function calculate() {
+      const validAss = assignments.filter(a=>a.max>0);
+      if (!validAss.length) return;
+
+      const totalWeight = validAss.reduce((s,a)=>s+a.weight,0);
+      let weightedSum = 0;
+      validAss.forEach(a => {
+        const pct = (a.score/a.max)*100;
+        weightedSum += pct * (a.weight/(totalWeight||1));
+      });
+
+      const pct = weightedSum;
+      const letter = letterGrade(pct);
+
+      document.getElementById('gradePct').textContent = pct.toFixed(1)+'%';
+      document.getElementById('gradeLetter').textContent = letter;
+      document.getElementById('gradeDesc').textContent = totalWeight!==100 ? 'Note: weights total '+totalWeight+'% (not 100%)' : '';
+
+      document.getElementById('breakdownList').innerHTML = validAss.map(a=>{
+        const p=(a.score/a.max*100).toFixed(1);
+        return `<div class="breakdown-row"><span class="cat">${a.name||'Assignment'}</span><span class="score">${p}% (${a.weight}% weight)</span></div>`;
+      }).join('');
+    }
+
+    function whatIf() {
+      const finalWeight = parseFloat(document.getElementById('wiWeight').value)||30;
+      const target = parseFloat(document.getElementById('wiTarget').value)||90;
+      const validAss = assignments.filter(a=>a.max>0);
+      const currentWeight = validAss.reduce((s,a)=>s+a.weight,0);
+      const currentWeightedSum = validAss.reduce((s,a)=>s+(a.score/a.max*100)*(a.weight/100),0);
+      const needed = (target - currentWeightedSum*(100/(100))) / (finalWeight/100);
+      const result = document.getElementById('wiResult');
+      result.style.display='block';
+      if (needed>100) result.textContent='You need more than 100% on the final — not possible without extra credit.';
+      else if (needed<0) result.textContent='You already have your target grade — you can score 0% on the final!';
+      else result.textContent='You need at least ' + needed.toFixed(1) + '% on the final exam to reach ' + target + '%.';
+    }
+
+    renderList();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

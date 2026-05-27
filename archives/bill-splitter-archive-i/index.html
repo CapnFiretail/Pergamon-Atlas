@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Bill Splitter (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "TL",
+  "seed": 2805586383,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 7587933,
+    "y": 13385875,
+    "z": -15412979
+  },
+  "address": "VPGS5-JCD86-T3VAF",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Bill Splitter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .field label{font-size:14px;font-weight:700;color:#333}
+    .input-prefix{position:relative}
+    .input-prefix::before{content:'$';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#888;font-size:16px;pointer-events:none}
+    .input-prefix input{padding-left:28px}
+    .field input,.field select{padding:12px;border:1.5px solid #ccc;border-radius:10px;font-size:16px;font-family:Georgia,serif;width:100%;box-sizing:border-box}
+    .field input:focus,.field select:focus{outline:none;border-color:#8a611c}
+    .tip-quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .tip-btn{border:1.5px solid #ccc;border-radius:999px;padding:7px 14px;font-size:14px;font-family:Georgia,serif;cursor:pointer;background:white;transition:.15s}
+    .tip-btn:hover,.tip-btn.active{background:#111;color:white;border-color:#111}
+    .person-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .person-row{display:flex;gap:8px;align-items:center}
+    .person-row input{flex:1;padding:10px;border:1.5px solid #ccc;border-radius:9px;font-size:15px;font-family:Georgia,serif}
+    .person-row input:focus{outline:none;border-color:#8a611c}
+    .person-row button{background:none;border:1.5px solid #ccc;border-radius:8px;padding:9px 11px;font-size:15px;cursor:pointer;color:#888}
+    .person-row button:hover{border-color:#c00;color:#c00}
+    .add-btn{border:1.5px dashed #ccc;border-radius:9px;padding:9px;width:100%;font-size:14px;font-family:Georgia,serif;background:none;cursor:pointer;transition:.15s;margin-bottom:12px}
+    .add-btn:hover{border-color:#8a611c;color:#8a611c}
+    .atlas-btn{width:100%;border:none;border-radius:10px;padding:13px;font-size:16px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s}
+    .atlas-btn:hover{background:#222}
+    .result-card{background:#111;color:white;border-radius:14px;padding:22px;margin-bottom:14px}
+    .result-card h4{margin:0 0 14px;color:#f0d39b;font-size:18px}
+    .person-result{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2a2a2a;font-size:16px}
+    .person-result:last-child{border-bottom:none}
+    .person-result .amount{font-size:20px;font-weight:800;color:#f0d39b}
+    .summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;border-bottom:1px solid #eee}
+    .summary-row:last-child{border-bottom:none;font-weight:700;font-size:17px;padding-top:12px}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Bill Splitter</h2>
+        <p>Split any bill between any number of people, with tip and custom shares.</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <h3>Bill Details</h3>
+          <div class="field"><label>Total Bill</label><div class="input-prefix"><input type="number" id="billTotal" value="80" min="0" step="0.01" oninput="calculate()"></div></div>
+          <div class="field">
+            <label>Tip %</label>
+            <input type="number" id="tipPct" value="18" min="0" max="100" step="1" oninput="calculate()">
+            <div class="tip-quick">
+              <button class="tip-btn" onclick="setTip(0)">0%</button>
+              <button class="tip-btn" onclick="setTip(10)">10%</button>
+              <button class="tip-btn" onclick="setTip(15)">15%</button>
+              <button class="tip-btn active" onclick="setTip(18)">18%</button>
+              <button class="tip-btn" onclick="setTip(20)">20%</button>
+              <button class="tip-btn" onclick="setTip(25)">25%</button>
+            </div>
+          </div>
+          <div class="field"><label>Tax %</label><input type="number" id="taxPct" value="0" min="0" max="30" step="0.1" oninput="calculate()"></div>
+          <div class="field"><label>Split Mode</label>
+            <select id="splitMode" onchange="calculate()">
+              <option value="equal">Split Equally</option>
+              <option value="custom">Custom Amounts</option>
+            </select>
+          </div>
+          <h3 style="margin-top:8px">People</h3>
+          <div class="person-list" id="personList"></div>
+          <button class="add-btn" onclick="addPerson()">+ Add Person</button>
+          <button class="atlas-btn" onclick="calculate()">Calculate Split</button>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>Summary</h3>
+            <div class="summary-row"><span>Subtotal</span><span id="sumSubtotal">$0.00</span></div>
+            <div class="summary-row"><span>Tax</span><span id="sumTax">$0.00</span></div>
+            <div class="summary-row"><span>Tip</span><span id="sumTip">$0.00</span></div>
+            <div class="summary-row"><span>Total</span><span id="sumTotal">$0.00</span></div>
+          </div>
+          <div class="result-card" id="resultCard">
+            <h4>Each Person Pays</h4>
+            <div id="personResults"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    let people = ['Alex','Sam','Jordan','Casey'];
+
+    function renderPeople() {
+      const list = document.getElementById('personList');
+      const isCustom = document.getElementById('splitMode').value === 'custom';
+      list.innerHTML = '';
+      people.forEach((p,i) => {
+        const row = document.createElement('div');
+        row.className = 'person-row';
+        row.innerHTML = `
+          <input type="text" value="${p}" placeholder="Name" oninput="people[${i}]=this.value;calculate()">
+          ${isCustom?`<div style="position:relative;flex-shrink:0"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#888;font-size:14px;pointer-events:none">$</span><input type="number" id="custom_${i}" value="0" min="0" step="0.01" style="width:90px;padding:10px 10px 10px 24px" oninput="calculate()"></div>`:''}
+          <button onclick="removePerson(${i})">×</button>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function addPerson() { people.push('Person '+(people.length+1)); renderPeople(); calculate(); }
+    function removePerson(i) { if(people.length>1){people.splice(i,1); renderPeople(); calculate();} }
+    function setTip(v) {
+      document.getElementById('tipPct').value=v;
+      document.querySelectorAll('.tip-btn').forEach(b=>b.classList.toggle('active',b.textContent===v+'%'));
+      calculate();
+    }
+
+    function calculate() {
+      renderPeople();
+      const subtotal = parseFloat(document.getElementById('billTotal').value)||0;
+      const tipPct = parseFloat(document.getElementById('tipPct').value)||0;
+      const taxPct = parseFloat(document.getElementById('taxPct').value)||0;
+      const tax = subtotal*(taxPct/100);
+      const tip = subtotal*(tipPct/100);
+      const total = subtotal+tax+tip;
+      const fmt = n=>'$'+n.toFixed(2);
+
+      document.getElementById('sumSubtotal').textContent=fmt(subtotal);
+      document.getElementById('sumTax').textContent=fmt(tax);
+      document.getElementById('sumTip').textContent=fmt(tip);
+      document.getElementById('sumTotal').textContent=fmt(total);
+
+      const mode = document.getElementById('splitMode').value;
+      let perPerson;
+      if (mode==='equal') {
+        const share = total/people.length;
+        perPerson = people.map(p=>({name:p,amount:share}));
+      } else {
+        const customAmts = people.map((_,i)=>parseFloat(document.getElementById('custom_'+i)?.value)||0);
+        const customTotal = customAmts.reduce((s,a)=>s+a,0);
+        const scale = customTotal>0 ? total/customTotal : 0;
+        perPerson = people.map((p,i)=>({name:p,amount:customAmts[i]*scale}));
+      }
+
+      document.getElementById('personResults').innerHTML = perPerson.map(p=>`
+        <div class="person-result">
+          <span>${p.name||'Person'}</span>
+          <span class="amount">${fmt(p.amount)}</span>
+        </div>`).join('');
+    }
+
+    renderPeople(); calculate();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

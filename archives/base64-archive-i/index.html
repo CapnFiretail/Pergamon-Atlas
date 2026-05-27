@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Base64 (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "TL",
+  "seed": 996507150,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -10425962,
+    "y": 7955389,
+    "z": 2766534
+  },
+  "address": "CMQ8U-DJMHU-CEL8N",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Base64 Encoder / Decoder</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 14px;font-size:22px}
+    .mode-tabs{display:flex;gap:0;border:2px solid #000;border-radius:12px;overflow:hidden;margin-bottom:18px;width:fit-content}
+    .mode-tab{padding:10px 20px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:white;border:none;font-weight:700}
+    .mode-tab.active{background:#111;color:white}
+    .ta-wrap{position:relative;margin-bottom:12px}
+    textarea{width:100%;height:140px;padding:14px;border:1.5px solid #ccc;border-radius:10px;font-size:14px;font-family:monospace;resize:vertical;box-sizing:border-box;line-height:1.5}
+    textarea:focus{outline:none;border-color:#8a611c}
+    .copy-btn{position:absolute;top:10px;right:10px;background:#111;color:white;border:none;border-radius:7px;padding:6px 12px;font-size:13px;font-family:Georgia,serif;cursor:pointer}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 20px;font-size:15px;font-family:Georgia,serif;cursor:pointer;background:#000;color:white;transition:.15s;margin-right:8px;margin-bottom:8px}
+    .atlas-btn:hover{background:#222}
+    .error-msg{color:#c00;font-size:14px;margin-top:6px}
+    .file-section{background:#f7f7f7;border:1px dashed #ccc;border-radius:12px;padding:20px;text-align:center;margin-top:14px;cursor:pointer}
+    .file-section:hover{border-color:#8a611c}
+    .file-section input{display:none}
+    .img-preview{max-width:100%;max-height:200px;border-radius:8px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Base64 Encoder / Decoder</h2>
+        <p>Encode text or files to Base64, or decode Base64 back to text or images.</p>
+      </div>
+      <div class="panel">
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tabEncode" onclick="setMode('encode')">Encode</button>
+          <button class="mode-tab" id="tabDecode" onclick="setMode('decode')">Decode</button>
+          <button class="mode-tab" id="tabFile" onclick="setMode('file')">File to Base64</button>
+        </div>
+
+        <div id="sectionEncode">
+          <h3>Text to Base64</h3>
+          <div class="ta-wrap">
+            <textarea id="encInput" placeholder="Enter text to encode..." oninput="encodeB64()"></textarea>
+          </div>
+          <h3>Result</h3>
+          <div class="ta-wrap">
+            <textarea id="encOutput" readonly></textarea>
+            <button class="copy-btn" onclick="copyEl('encOutput')">Copy</button>
+          </div>
+        </div>
+
+        <div id="sectionDecode" style="display:none">
+          <h3>Base64 to Text</h3>
+          <div class="ta-wrap">
+            <textarea id="decInput" placeholder="Paste Base64 string here..." oninput="decodeB64()"></textarea>
+          </div>
+          <div id="decError" class="error-msg"></div>
+          <h3>Result</h3>
+          <div class="ta-wrap">
+            <textarea id="decOutput" readonly></textarea>
+            <button class="copy-btn" onclick="copyEl('decOutput')">Copy</button>
+          </div>
+        </div>
+
+        <div id="sectionFile" style="display:none">
+          <h3>File to Base64</h3>
+          <div class="file-section" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size:32px;margin-bottom:8px">📁</div>
+            <div>Click to select a file (image, text, etc.)</div>
+            <input type="file" id="fileInput" onchange="fileToBase64()">
+          </div>
+          <div id="fileResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    function setMode(m) {
+      ['Encode','Decode','File'].forEach(s=>{
+        document.getElementById('section'+s).style.display = s.toLowerCase()===m?'block':'none';
+        document.getElementById('tab'+s).classList.toggle('active', s.toLowerCase()===m);
+      });
+    }
+
+    function encodeB64() {
+      try {
+        document.getElementById('encOutput').value = btoa(unescape(encodeURIComponent(document.getElementById('encInput').value)));
+      } catch(e) { document.getElementById('encOutput').value = 'Encoding error'; }
+    }
+
+    function decodeB64() {
+      const inp = document.getElementById('decInput').value.trim();
+      const err = document.getElementById('decError');
+      if (!inp) { document.getElementById('decOutput').value=''; err.textContent=''; return; }
+      try {
+        document.getElementById('decOutput').value = decodeURIComponent(escape(atob(inp)));
+        err.textContent = '';
+      } catch(e) { err.textContent = 'Invalid Base64 string'; document.getElementById('decOutput').value=''; }
+    }
+
+    function fileToBase64() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const b64 = e.target.result;
+        const isImg = file.type.startsWith('image/');
+        let html = `<div style="margin-bottom:12px"><strong>${file.name}</strong> (${(file.size/1024).toFixed(1)} KB, ${file.type||'unknown'})</div>`;
+        if (isImg) html += `<img src="${b64}" class="img-preview">`;
+        html += `<div style="position:relative;margin-top:12px"><textarea style="width:100%;height:120px;font-family:monospace;font-size:12px;padding:12px;border:1.5px solid #ccc;border-radius:10px;box-sizing:border-box" readonly>${b64}</textarea>
+          <button style="position:absolute;top:10px;right:10px;background:#111;color:white;border:none;border-radius:7px;padding:6px 12px;font-size:13px;cursor:pointer" onclick="navigator.clipboard.writeText('${b64.replace(/'/g,"\\'")}')">Copy</button></div>`;
+        document.getElementById('fileResult').innerHTML = html;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function copyEl(id) { navigator.clipboard.writeText(document.getElementById(id).value); }
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

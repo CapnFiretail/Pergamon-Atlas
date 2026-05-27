@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Reading Time (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "TL",
+  "seed": 533243517,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -4304585,
+    "y": -914568,
+    "z": 12938345
+  },
+  "address": "RYA5T-58TB3-N46MB",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Reading Time Estimator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 14px;font-size:22px}
+    textarea{width:100%;height:320px;padding:14px;border:1.5px solid #ccc;border-radius:10px;font-size:16px;font-family:Georgia,serif;resize:vertical;box-sizing:border-box;line-height:1.6}
+    textarea:focus{outline:none;border-color:#8a611c}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .stat-box{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:14px;text-align:center}
+    .stat-num{font-size:28px;font-weight:800;color:#111}
+    .stat-label{font-size:12px;color:#555;margin-top:3px}
+    .reading-times{display:flex;flex-direction:column;gap:10px}
+    .rt-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:10px;border:1px solid #ddd}
+    .rt-speed{font-size:14px;color:#555}
+    .rt-time{font-size:18px;font-weight:800;color:#111}
+    .wpm-row{display:flex;align-items:center;gap:10px;margin-top:14px;padding:14px;background:#f7f7f7;border-radius:10px}
+    .wpm-row label{font-size:14px;font-weight:700;white-space:nowrap}
+    .wpm-row input{flex:1;accent-color:#8a611c}
+    .wpm-val{font-size:16px;font-weight:800;min-width:56px;text-align:right}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Reading Time Estimator</h2>
+        <p>Paste text or enter a word count to estimate how long it takes to read at different speeds.</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <h3>Paste Text</h3>
+          <textarea id="textInput" placeholder="Paste your article, essay, or any text here..." oninput="update()"></textarea>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px;color:#555">Or enter word count:</span>
+              <input type="number" id="wordInput" placeholder="0" min="0" style="width:100px;padding:9px;border:1.5px solid #ccc;border-radius:8px;font-size:15px;font-family:Georgia,serif" oninput="updateFromCount()">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>Text Stats</h3>
+            <div class="stat-grid">
+              <div class="stat-box"><div class="stat-num" id="sWords">0</div><div class="stat-label">Words</div></div>
+              <div class="stat-box"><div class="stat-num" id="sChars">0</div><div class="stat-label">Characters</div></div>
+              <div class="stat-box"><div class="stat-num" id="sSentences">0</div><div class="stat-label">Sentences</div></div>
+              <div class="stat-box"><div class="stat-num" id="sParas">0</div><div class="stat-label">Paragraphs</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Reading Times</h3>
+            <div class="reading-times" id="readingTimes"></div>
+            <div class="wpm-row">
+              <label>Custom WPM:</label>
+              <input type="range" id="customWpm" min="50" max="800" value="238" oninput="updateCustom()">
+              <span class="wpm-val" id="wpmVal">238</span>
+            </div>
+            <div id="customResult" style="margin-top:10px;padding:12px;background:#111;color:#f0d39b;border-radius:10px;text-align:center;font-size:18px;font-weight:800">—</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    const speeds = [
+      {label:'Child reader',wpm:100,color:'#f5f5f5'},
+      {label:'Slow (150 wpm)',wpm:150,color:'#f5f5f5'},
+      {label:'Average (238 wpm)',wpm:238,color:'#fffaf4'},
+      {label:'Fast (300 wpm)',wpm:300,color:'#f5f5f5'},
+      {label:'Speed reader (600 wpm)',wpm:600,color:'#f5f5f5'},
+    ];
+
+    let wordCount = 0;
+
+    function fmtTime(words, wpm) {
+      const secs = Math.round((words/wpm)*60);
+      if (secs < 60) return secs+'s';
+      const m=Math.floor(secs/60), s=secs%60;
+      if (m < 60) return m+'m'+(s>0?' '+s+'s':'');
+      const h=Math.floor(m/60), rm=m%60;
+      return h+'h'+(rm>0?' '+rm+'m':'');
+    }
+
+    function update() {
+      const txt = document.getElementById('textInput').value;
+      wordCount = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+      document.getElementById('sWords').textContent = wordCount.toLocaleString();
+      document.getElementById('sChars').textContent = txt.length.toLocaleString();
+      document.getElementById('sSentences').textContent = (txt.match(/[.!?]+/g)||[]).length;
+      document.getElementById('sParas').textContent = txt.trim() ? txt.split(/\n\s*\n/).filter(p=>p.trim()).length : 0;
+      renderTimes();
+    }
+
+    function updateFromCount() {
+      wordCount = parseInt(document.getElementById('wordInput').value)||0;
+      document.getElementById('sWords').textContent = wordCount.toLocaleString();
+      document.getElementById('sChars').textContent = '—';
+      document.getElementById('sSentences').textContent = '—';
+      document.getElementById('sParas').textContent = '—';
+      renderTimes();
+    }
+
+    function renderTimes() {
+      document.getElementById('readingTimes').innerHTML = speeds.map(s=>
+        `<div class="rt-row" style="background:${s.color}">
+          <span class="rt-speed">${s.label}</span>
+          <span class="rt-time">${wordCount>0?fmtTime(wordCount,s.wpm):'—'}</span>
+        </div>`
+      ).join('');
+      updateCustom();
+    }
+
+    function updateCustom() {
+      const wpm = parseInt(document.getElementById('customWpm').value);
+      document.getElementById('wpmVal').textContent = wpm + ' wpm';
+      document.getElementById('customResult').textContent = wordCount>0 ? fmtTime(wordCount,wpm) : '—';
+    }
+
+    renderTimes();
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

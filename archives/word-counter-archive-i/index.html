@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Word Counter (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "TL",
+  "seed": 57385386,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": 9295439,
+    "y": -7970785,
+    "z": -11475285
+  },
+  "address": "6TBAK-6YM4S-XT87D",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Word Counter</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .wc-layout{display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+    .panel h3{margin:0 0 14px;font-size:24px}
+    textarea{width:100%;height:320px;padding:14px;border:1.5px solid #ccc;border-radius:10px;font-size:16px;font-family:Georgia,serif;resize:vertical;box-sizing:border-box;line-height:1.6}
+    textarea:focus{outline:none;border-color:#8a611c;box-shadow:0 0 0 2px rgba(138,97,28,.14)}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .stat-box{background:#f7f7f7;border:1px solid #ddd;border-radius:12px;padding:16px;text-align:center}
+    .stat-num{font-size:32px;font-weight:800;color:#111;line-height:1}
+    .stat-label{font-size:13px;color:#555;margin-top:4px}
+    .reading-box{background:#111;color:white;border-radius:12px;padding:18px;margin-top:4px}
+    .reading-box h4{margin:0 0 10px;color:#f0d39b;font-size:18px}
+    .reading-row{display:flex;justify-content:space-between;font-size:15px;padding:4px 0;border-bottom:1px solid #2a2a2a}
+    .reading-row:last-child{border-bottom:none}
+    .btn-row{display:flex;gap:10px;margin-top:14px}
+    .atlas-btn{border:none;border-radius:10px;padding:11px 18px;font-size:15px;font-family:Georgia,serif;cursor:pointer;transition:transform .15s,background .15s}
+    .atlas-btn:hover{transform:translateY(-1px)}
+    .atlas-btn.primary{background:#000;color:white}
+    .atlas-btn.secondary{background:white;color:#111;border:1.5px solid #999}
+    @media(max-width:900px){.wc-layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Word Counter</h2>
+        <p>Count words, characters, sentences, and estimate reading time instantly.</p>
+      </div>
+      <div class="wc-layout">
+        <div class="panel">
+          <h3>Your Text</h3>
+          <textarea id="textInput" placeholder="Paste or type your text here..."></textarea>
+          <div class="btn-row">
+            <button class="atlas-btn secondary" onclick="document.getElementById('textInput').value='';update()">Clear</button>
+            <button class="atlas-btn secondary" onclick="copyText()">Copy</button>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>Statistics</h3>
+            <div class="stat-grid">
+              <div class="stat-box"><div class="stat-num" id="wordCount">0</div><div class="stat-label">Words</div></div>
+              <div class="stat-box"><div class="stat-num" id="charCount">0</div><div class="stat-label">Characters</div></div>
+              <div class="stat-box"><div class="stat-num" id="charNoSpace">0</div><div class="stat-label">No Spaces</div></div>
+              <div class="stat-box"><div class="stat-num" id="sentenceCount">0</div><div class="stat-label">Sentences</div></div>
+              <div class="stat-box"><div class="stat-num" id="paraCount">0</div><div class="stat-label">Paragraphs</div></div>
+              <div class="stat-box"><div class="stat-num" id="lineCount">0</div><div class="stat-label">Lines</div></div>
+            </div>
+            <div class="reading-box">
+              <h4>Reading Time</h4>
+              <div class="reading-row"><span>Slow (150 wpm)</span><span id="slow">0s</span></div>
+              <div class="reading-row"><span>Average (238 wpm)</span><span id="avg">0s</span></div>
+              <div class="reading-row"><span>Fast (400 wpm)</span><span id="fast">0s</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    function fmtTime(words, wpm) {
+      const secs = Math.round((words / wpm) * 60);
+      if (secs < 60) return secs + 's';
+      const m = Math.floor(secs / 60), s = secs % 60;
+      return m + 'm ' + (s > 0 ? s + 's' : '');
+    }
+
+    function update() {
+      const txt = document.getElementById('textInput').value;
+      const words = txt.trim() === '' ? 0 : txt.trim().split(/\s+/).length;
+      const chars = txt.length;
+      const charsNoSpace = txt.replace(/\s/g, '').length;
+      const sentences = txt.trim() === '' ? 0 : (txt.match(/[.!?]+/g) || []).length;
+      const paras = txt.trim() === '' ? 0 : txt.split(/\n\s*\n/).filter(p => p.trim()).length;
+      const lines = txt.trim() === '' ? 0 : txt.split('\n').length;
+
+      document.getElementById('wordCount').textContent = words.toLocaleString();
+      document.getElementById('charCount').textContent = chars.toLocaleString();
+      document.getElementById('charNoSpace').textContent = charsNoSpace.toLocaleString();
+      document.getElementById('sentenceCount').textContent = sentences.toLocaleString();
+      document.getElementById('paraCount').textContent = paras.toLocaleString();
+      document.getElementById('lineCount').textContent = lines.toLocaleString();
+      document.getElementById('slow').textContent = fmtTime(words, 150);
+      document.getElementById('avg').textContent = fmtTime(words, 238);
+      document.getElementById('fast').textContent = fmtTime(words, 400);
+    }
+
+    function copyText() {
+      const txt = document.getElementById('textInput').value;
+      navigator.clipboard.writeText(txt).catch(() => {});
+    }
+
+    document.getElementById('textInput').addEventListener('input', update);
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

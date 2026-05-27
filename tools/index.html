@@ -319,78 +319,12 @@
 
     /* ── Catalog definition ────────────────────────────────── */
     var CATALOG = [
-      { ch: 'Calculators', items: [
-        ['/tools/gpa-calculator',               '📘', 'Calculate grade point average across courses and credit hours.'],
-        ['/tools/grade-calculator',             '📊', 'Convert percentage scores to letter grades and GPA point values.'],
-        ['/tools/bmi-calculator',               '📏', 'Compute body mass index from height and weight in any unit system.'],
-        ['/tools/calorie-calculator',           '🔥', 'Estimate daily caloric needs by age, weight, height, and activity level.'],
-        ['/tools/compound-interest-calculator', '📈', 'Project investment growth with compounding returns over any time horizon.'],
-        ['/tools/loan-calculator',              '🏦', 'Calculate monthly payments, total interest, and loan amortization.'],
-        ['/tools/mortgage-calculator',          '🏠', 'Estimate monthly mortgage payments and total home loan cost over term.'],
-        ['/tools/percentage-calculator',        '🔢', 'Solve percentage increases, decreases, and proportional ratios.'],
-        ['/tools/tip-calculator',               '💵', 'Calculate gratuity and split restaurant bills by party size.'],
-        ['/tools/speed-calculator',             '🚀', 'Compute speed, distance, or elapsed time given any two known values.'],
-        ['/tools/scientific-calculator',        '🔬', 'Perform advanced mathematical operations and trigonometric functions.'],
-        ['/tools/age-calculator',               '🎂', 'Calculate exact age and elapsed time between any two dates.'],
-        ['/tools/aspect-ratio',                 '📐', 'Compute and convert image aspect ratios and pixel dimensions.'],
-      ]},
-      { ch: 'Finance', items: [
-        ['/tools/bill-splitter',                '🧾', 'Divide shared expenses evenly among any number of contributors.'],
-        ['/tools/budget-planner',               '💼', 'Plan monthly budgets and map income against projected expenses.'],
-        ['/tools/salary-converter',             '💰', 'Convert salary between hourly, weekly, monthly, and annual rates.'],
-        ['/tools/savings-goal',                 '🏆', 'Calculate how long to reach a savings target at a given deposit rate.'],
-      ]},
-      { ch: 'Cipher & Script', items: [
-        ['/tools/base64',                       '🔐', 'Encode and decode text to Base64 format for safe data transmission.'],
-        ['/tools/json-formatter',               '🗂️', 'Prettify, validate, and minify JSON data structures.'],
-        ['/tools/regex-tester',                 '🔍', 'Test regular expressions against sample input text in real time.'],
-        ['/tools/text-diff',                    '⚖️', 'Compare two text blocks and highlight their differences line by line.'],
-        ['/tools/url-encoder',                  '🌐', 'Encode and decode URL components for safe web transmission.'],
-        ['/tools/caesar-cipher',                '🔒', 'Encrypt and decrypt messages using the classical Caesar shift cipher.'],
-        ['/tools/character-counter',            '📝', 'Count characters, words, sentences, and estimated reading time.'],
-        ['/tools/password-strength',            '🛡️', 'Analyze password security and estimate resistance to brute-force attack.'],
-        ['/tools/epoch-converter',              '🕰️', 'Convert Unix timestamps to human-readable dates and back.'],
-        ['/tools/binary-translator',            '💻', 'Translate text to binary notation and decode binary back to text.'],
-        ['/tools/number-base-converter',        '#️⃣', 'Convert numbers between binary, octal, decimal, and hexadecimal bases.'],
-        ['/tools/markdown-previewer',           '📄', 'Render Markdown syntax to formatted HTML with a live preview pane.'],
-        ['/tools/case-converter',               '🔡', 'Convert text between camelCase, snake_case, UPPER, Title Case, and more.'],
-        ['/tools/word-counter',                 '📖', 'Count words, characters, and sentences across any block of text.'],
-      ]},
-      { ch: 'Color Studio', items: [
-        ['/tools/color-contrast',               '🎨', 'Check foreground and background color accessibility ratios against WCAG.'],
-        ['/tools/color-palette',                '🖌️', 'Generate harmonious color palettes from any seed color.'],
-        ['/tools/color-picker',                 '💠', 'Pick, convert, and copy colors across hex, RGB, and HSL formats.'],
-        ['/tools/gradient-generator',           '🌈', 'Build and preview CSS gradient strings with full color control.'],
-      ]},
-      { ch: 'Synthesis', items: [
-        ['/tools/password-generator',           '🔑', 'Generate cryptographically strong passwords with custom length and rules.'],
-        ['/tools/qr-code-generator',            '📷', 'Create QR codes from any URL, text, or arbitrary data string.'],
-        ['/tools/lorem-ipsum',                  '📜', 'Generate placeholder text in various lengths and paragraph formats.'],
-        ['/tools/name-generator',               '🎭', 'Generate random names by nationality, historical era, or archetype.'],
-        ['/tools/quote-generator',              '💬', 'Surface curated quotations from philosophers, writers, and thinkers.'],
-      ]},
-      { ch: 'Operations', items: [
-        ['/tools/pomodoro-timer',               '🍅', 'Run structured 25-minute focus intervals using the Pomodoro technique.'],
-        ['/tools/countdown-timer',              '⏳', 'Set precise countdowns for deadlines, events, and timed sessions.'],
-        ['/tools/stopwatch',                    '⌚', 'Track elapsed time with millisecond precision and lap recording.'],
-        ['/tools/flashcards',                   '📚', 'Create and study custom flashcard decks with active recall practice.'],
-        ['/tools/timezone-converter',           '🌍', 'Compare current times across multiple world time zones simultaneously.'],
-        ['/tools/metronome',                    '🎵', 'Maintain steady tempo with an adjustable beats-per-minute metronome.'],
-        ['/tools/date-difference',              '📅', 'Calculate exact days, months, and years between any two dates.'],
-        ['/tools/reading-time',                 '⏱️', 'Estimate reading duration for any block of text at a given pace.'],
-        ['/tools/unit-converter',               '⚖️', 'Convert measurements across length, mass, volume, temperature, and more.'],
-        ['/tools/times-tables',                 '✖️', 'Practice and visualize multiplication tables with an interactive grid.'],
-        ['/tools/roman-numerals',               'Ⅻ', 'Convert between Arabic and Roman numeral notation in both directions.'],
-      ]},
-      { ch: 'Curiosities', items: [
-        ['/tools/random-number',                '🎲', 'Generate random integers or decimals within any specified range.'],
-        ['/tools/dice-roller',                  '🎯', 'Roll any combination of standard polyhedral dice for tabletop games.'],
-        ['/tools/decision-spinner',             '🎡', 'Spin a probability wheel to resolve decisions and dilemmas by chance.'],
-        ['/tools/shuffle-list',                 '🔀', 'Randomize the order of any list of items, names, or entries.'],
-      ]},
-      { ch: 'Atlas Navigation', items: [
-        ['/tools/atlas-decoder',                '🗺️', 'Decode Atlas addresses to locate and identify artifacts in coordinate space.'],
-      ]},
+      ['/tools/gpa-calculator',    '📘', 'Calculate grade point average across courses and credit hours.'],
+      ['/tools/scientific-calculator', '🔬', 'Perform advanced mathematical operations and trigonometric functions.'],
+      ['/tools/password-generator','🔑', 'Generate cryptographically strong passwords with custom length and rules.'],
+      ['/tools/color-picker',      '💠', 'Pick, convert, and copy colors across hex, RGB, and HSL formats.'],
+      ['/tools/random-number',     '🎲', 'Generate random integers or decimals within any specified range.'],
+      ['/tools/decision-spinner',  '🎡', 'Spin a probability wheel to resolve decisions and dilemmas by chance.'],
     ];
 
     /* ── Build atlas address lookup ────────────────────────── */
@@ -409,48 +343,44 @@
     /* ── Render ────────────────────────────────────────────── */
     var html = '';
 
-    CATALOG.forEach(function(section) {
-      html += '<div class="tc-chapter"><span class="tc-chapter-label">' + esc(section.ch) + '</span></div>';
+    CATALOG.forEach(function(item) {
+      var path  = item[0];
+      var icon  = item[1];
+      var desc  = item[2];
+      var entry = byPath[path] || {};
 
-      section.items.forEach(function(item) {
-        var path  = item[0];
-        var icon  = item[1];
-        var desc  = item[2];
-        var entry = byPath[path] || {};
+      var fullAddr = entry.address ? 'ATLAS-' + entry.address : '';
+      var artCode  = (entry.code_seed && entry.seed)
+        ? (((entry.code_seed ^ entry.seed) >>> 0).toString(16).toUpperCase().padStart(8,'0') + '-' + (entry.address || '').split('-')[0])
+        : '';
+      var dated    = fmtDate(entry.date);
+      var name     = entry.name || path.split('/').pop().replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
 
-        var fullAddr = entry.address ? 'ATLAS-' + entry.address : '';
-        var artCode  = (entry.code_seed && entry.seed)
-          ? (((entry.code_seed ^ entry.seed) >>> 0).toString(16).toUpperCase().padStart(8,'0') + '-' + (entry.address || '').split('-')[0])
-          : '';
-        var dated    = fmtDate(entry.date);
-        var name     = entry.name || path.split('/').pop().replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
-
-        html +=
-          '<a href="' + path + '/" class="tc-card">' +
-            '<div class="tc-head">' +
-              '<div class="tc-icon-wrap">' + icon + '</div>' +
-              '<div class="tc-title">' +
-                '<div class="tc-name">' + esc(name) + '</div>' +
-                '<div class="tc-code">' + esc(artCode) + '</div>' +
-              '</div>' +
-              '<div class="tc-seal-group">' +
-                '<span class="tc-seal-addr">' + esc(fullAddr) + '</span>' +
-                '<button class="tc-seal" title="Open in Atlas Decoder"' +
-                  ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/tools/atlas-decoder/\'">' +
-                  SEAL +
-                '</button>' +
-              '</div>' +
+      html +=
+        '<a href="' + path + '/" class="tc-card">' +
+          '<div class="tc-head">' +
+            '<div class="tc-icon-wrap">' + icon + '</div>' +
+            '<div class="tc-title">' +
+              '<div class="tc-name">' + esc(name) + '</div>' +
+              '<div class="tc-code">' + esc(artCode) + '</div>' +
             '</div>' +
-            '<div class="tc-rule"></div>' +
-            '<div class="tc-foot">' +
-              '<div class="tc-left">' +
-                '<div class="tc-desc">' + esc(desc) + '</div>' +
-                '<div class="tc-meta">Indexed ' + esc(dated) + '</div>' +
-              '</div>' +
-              '<span class="tc-action">Open Artifact &#8594;</span>' +
+            '<div class="tc-seal-group">' +
+              '<span class="tc-seal-addr">' + esc(fullAddr) + '</span>' +
+              '<button class="tc-seal" title="Open in Atlas Decoder"' +
+                ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/archives/atlas-decoder-archive-i/\'">' +
+                SEAL +
+              '</button>' +
             '</div>' +
-          '</a>';
-      });
+          '</div>' +
+          '<div class="tc-rule"></div>' +
+          '<div class="tc-foot">' +
+            '<div class="tc-left">' +
+              '<div class="tc-desc">' + esc(desc) + '</div>' +
+              '<div class="tc-meta">Indexed ' + esc(dated) + '</div>' +
+            '</div>' +
+            '<span class="tc-action">Open Artifact &#8594;</span>' +
+          '</div>' +
+        '</a>';
     });
 
     document.getElementById('tc-list').innerHTML = html;

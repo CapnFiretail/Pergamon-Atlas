@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Stopwatch (Archive I)",
+  "date": "2026-04-18",
+  "time": "19:29:24",
+  "chamber": "TL",
+  "seed": 3861569689,
+  "code_seed": 1778368695,
+  "coords": {
+    "x": -12760097,
+    "y": -158099,
+    "z": 4571475
+  },
+  "address": "HSGN3-5BYKC-E5ZC5",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Stopwatch</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero{background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);color:white;border:2px solid #8a611c;border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .tool-hero h2{margin:0 0 10px;font-size:clamp(28px,4vw,42px);color:#f0d39b}
+    .tool-hero p{margin:0;font-size:17px;line-height:1.7;color:#f3f3f3}
+    .layout2{display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start}
+    .panel{background:white;border:2px solid #000;border-radius:16px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.08);margin-bottom:20px}
+    .panel h3{margin:0 0 18px;font-size:22px}
+    .watch-face{background:#111;border-radius:18px;padding:36px 24px;text-align:center;margin-bottom:20px}
+    .time-display{font-size:clamp(48px,8vw,72px);font-weight:800;font-family:monospace;color:#f0d39b;letter-spacing:2px;line-height:1}
+    .ms-display{font-size:32px;font-family:monospace;color:#8a611c;margin-top:4px}
+    .btn-row{display:flex;gap:12px;justify-content:center}
+    .sw-btn{border:none;border-radius:12px;padding:14px 28px;font-size:17px;font-weight:700;font-family:Georgia,serif;cursor:pointer;transition:.15s;min-width:110px}
+    .sw-btn:hover{transform:translateY(-2px)}
+    .sw-btn:active{transform:scale(.96)}
+    .sw-btn.start{background:#c28a2b;color:#111}
+    .sw-btn.stop{background:#333;color:white}
+    .sw-btn.reset{background:white;color:#111;border:2px solid #ccc}
+    .sw-btn.lap{background:#111;color:#f0d39b;border:2px solid #8a611c}
+    .laps-list{max-height:400px;overflow-y:auto}
+    .lap-item{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #eee;font-size:15px}
+    .lap-item:last-child{border-bottom:none}
+    .lap-num{color:#888;font-weight:700;width:40px}
+    .lap-time{font-family:monospace;font-weight:700;color:#111}
+    .lap-split{font-family:monospace;font-size:13px;color:#888}
+    .lap-item.best .lap-time{color:#2e7d32}
+    .lap-item.worst .lap-time{color:#c00}
+    .empty-laps{color:#aaa;font-size:14px;padding:14px;text-align:center}
+    @media(max-width:900px){.layout2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+      <div class="tool-hero">
+        <h2>Stopwatch</h2>
+        <p>Precise stopwatch with lap times, splits, and best/worst tracking.</p>
+      </div>
+      <div class="layout2">
+        <div class="panel">
+          <div class="watch-face">
+            <div class="time-display" id="timeDisplay">00:00:00</div>
+            <div class="ms-display" id="msDisplay">.000</div>
+          </div>
+          <div class="btn-row">
+            <button class="sw-btn start" id="startStopBtn" onclick="toggleStart()">Start</button>
+            <button class="sw-btn lap" id="lapBtn" onclick="addLap()" disabled>Lap</button>
+            <button class="sw-btn reset" onclick="reset()">Reset</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Laps</h3>
+          <div class="laps-list" id="lapsList"><div class="empty-laps">No laps recorded.</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    let startTime = 0;
+    let elapsed = 0;
+    let running = false;
+    let raf = null;
+    let laps = [];
+    let lastLapTime = 0;
+
+    function fmt(ms) {
+      const h=Math.floor(ms/3600000);
+      const m=Math.floor((ms%3600000)/60000);
+      const s=Math.floor((ms%60000)/1000);
+      const cs=ms%1000;
+      return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+
+    function tick() {
+      if (!running) return;
+      const now = elapsed + (Date.now() - startTime);
+      document.getElementById('timeDisplay').textContent = fmt(now);
+      document.getElementById('msDisplay').textContent = '.' + String(now%1000).padStart(3,'0');
+      raf = requestAnimationFrame(tick);
+    }
+
+    function toggleStart() {
+      if (running) {
+        elapsed += Date.now() - startTime;
+        running = false;
+        cancelAnimationFrame(raf);
+        document.getElementById('startStopBtn').textContent = 'Resume';
+        document.getElementById('startStopBtn').className = 'sw-btn start';
+      } else {
+        startTime = Date.now();
+        running = true;
+        document.getElementById('startStopBtn').textContent = 'Stop';
+        document.getElementById('startStopBtn').className = 'sw-btn stop';
+        document.getElementById('lapBtn').disabled = false;
+        tick();
+      }
+    }
+
+    function addLap() {
+      const total = elapsed + (running ? Date.now() - startTime : 0);
+      const split = total - lastLapTime;
+      laps.push({total, split, num: laps.length+1});
+      lastLapTime = total;
+      renderLaps();
+    }
+
+    function reset() {
+      running = false;
+      cancelAnimationFrame(raf);
+      elapsed = 0; lastLapTime = 0;
+      document.getElementById('timeDisplay').textContent = '00:00:00';
+      document.getElementById('msDisplay').textContent = '.000';
+      document.getElementById('startStopBtn').textContent = 'Start';
+      document.getElementById('startStopBtn').className = 'sw-btn start';
+      document.getElementById('lapBtn').disabled = true;
+      laps = [];
+      renderLaps();
+    }
+
+    function renderLaps() {
+      if (!laps.length) { document.getElementById('lapsList').innerHTML='<div class="empty-laps">No laps recorded.</div>'; return; }
+      const splits = laps.map(l=>l.split);
+      const bestSplit = Math.min(...splits);
+      const worstSplit = Math.max(...splits);
+      document.getElementById('lapsList').innerHTML = [...laps].reverse().map(l=>`
+        <div class="lap-item ${l.split===bestSplit&&laps.length>1?'best':l.split===worstSplit&&laps.length>1?'worst':''}">
+          <span class="lap-num">#${l.num}</span>
+          <span class="lap-time">${fmt(l.total)}.${String(l.total%1000).padStart(3,'0')}</span>
+          <span class="lap-split">+${fmt(l.split)}</span>
+        </div>
+      `).join('');
+    }
+  </script>
+
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

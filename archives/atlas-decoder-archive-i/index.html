@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Atlas Decoder (Archive I)",
+  "date": "2026-05-09",
+  "time": "19:38:01",
+  "chamber": "TL",
+  "seed": 3910889688,
+  "code_seed": 1778369881,
+  "coords": {
+    "x": -9693376,
+    "y": 12049440,
+    "z": 5416084
+  },
+  "address": "CUTM2-RXE4T-FXQN4",
+  "archived": true,
+  "archive_date": "2026-05-27"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Atlas Code Decoder</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+    .tool-hero {
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+      color: white;
+      border: 2px solid #8a611c;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    }
+    .tool-hero h2 { margin: 0 0 10px; font-size: clamp(28px,4vw,42px); color: #f0d39b; }
+    .tool-hero p  { margin: 0; font-size: 17px; line-height: 1.7; color: #f3f3f3; }
+
+    .panel {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    }
+    .panel h3 { margin: 0 0 6px; font-size: 22px; }
+    .panel-sub { font-size: 14px; color: #666; margin: 0 0 18px; }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      margin-bottom: 12px;
+    }
+    .dec-input {
+      flex: 1;
+      background: #f7f7f7;
+      border: 1.5px solid #ccc;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.06em;
+      outline: none;
+      transition: border-color .15s;
+      color: #111;
+    }
+    .dec-input:focus { border-color: #8a611c; }
+    .dec-input::placeholder { color: #bbb; letter-spacing: 0.02em; }
+
+    .dec-btn {
+      background: #111;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-size: 14px;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .dec-btn:hover { background: #333; }
+
+    .result-box {
+      border-radius: 10px;
+      padding: 18px 20px;
+      min-height: 60px;
+      display: none;
+    }
+    .result-box.show { display: block; }
+    .result-box.success {
+      background: #f0f7f0;
+      border: 1.5px solid #6a9a6a;
+    }
+    .result-box.error {
+      background: #fdf0f0;
+      border: 1.5px solid #c07070;
+      color: #8b3030;
+      font-size: 14px;
+    }
+    .result-box.info {
+      background: #f5f1ea;
+      border: 1.5px solid #c8a87a;
+    }
+
+    .result-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: #888;
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 12px;
+    }
+    .result-name {
+      font-size: 22px;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .result-addr {
+      font-size: 14px;
+      color: #8a611c;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+    .result-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .result-meta-item {
+      font-size: 13px;
+      color: #555;
+    }
+    .result-meta-item strong { color: #222; }
+    .result-coords {
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      color: #888;
+      margin-bottom: 14px;
+    }
+    .result-link {
+      display: inline-block;
+      background: #8a611c;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-family: Georgia, serif;
+      transition: background .15s;
+    }
+    .result-link:hover { background: #a07830; }
+
+    .coords-display {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+    .coord-chip {
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      color: #555;
+    }
+    .coord-chip span { color: #8a611c; margin-left: 6px; font-weight: bold; }
+
+    .divider { border: none; border-top: 2px solid #000; border-radius: 2px; margin: 4px 0 20px; }
+  </style>
+</head>
+<body>
+  <div id="header-placeholder"></div>
+  <div class="layout">
+    <div id="sidebar-placeholder"></div>
+    <main class="main-content">
+
+      <div class="tool-hero">
+        <h2>Atlas Code Decoder</h2>
+        <p>Decode an Artifact Code to reveal its origin, or decode an Atlas Address to its position in the coordinate space.</p>
+      </div>
+
+      <!-- Artifact Code -->
+      <div class="panel">
+        <h3>Artifact Code</h3>
+        <p class="panel-sub">Enter an artifact code (format: XXXXXXXX-XXXXX) to look up the artifact.</p>
+        <div class="input-row">
+          <input id="code-input" class="dec-input" type="text" placeholder="XXXXXXXX-XXXXX" maxlength="14"
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9\-]/g,'')">
+          <button class="dec-btn" onclick="decodeArtCode()">Decode</button>
+        </div>
+        <div id="code-result" class="result-box"></div>
+      </div>
+
+      <!-- Atlas Address -->
+      <div class="panel">
+        <h3>Atlas Address</h3>
+        <p class="panel-sub">Enter an Atlas Address (format: XXXXX-YYYYY-ZZZZZ or with ATLAS- prefix) to decode its position.</p>
+        <div class="input-row">
+          <input id="addr-input" class="dec-input" type="text" placeholder="XXXXX-YYYYY-ZZZZZ" maxlength="23"
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z2-9\-]/g,'')">
+          <button class="dec-btn" onclick="decodeAddr()">Decode</button>
+        </div>
+        <div id="addr-result" class="result-box"></div>
+      </div>
+
+    </main>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="/data/pergamon-address.js"></script>
+  <script src="/data/entries.js"></script>
+  <script src="/operation/scripts/atlas.js"></script>
+  <script>
+    loadSnippets('Tools');
+
+    const PA = window.PergamonAddress;
+
+    function getAll() {
+      if (typeof window.atlasEntries === 'undefined') return [];
+      return [
+        ...(window.atlasEntries.tools    || []),
+        ...(window.atlasEntries.games    || []),
+        ...(window.atlasEntries.archived || []),
+        ...(window.atlasEntries.pages    || [])
+      ];
+    }
+
+    function showResult(id, html, type) {
+      const el = document.getElementById(id);
+      el.className = 'result-box show ' + type;
+      el.innerHTML = html;
+    }
+
+    function artifactCard(e, extra) {
+      const typeMap = { TL: 'Tool', GM: 'Game', AR: 'Archive' };
+      const typeName = typeMap[e.chamber] || e.chamber;
+      const artCode = (() => {
+        const fixedVal = ((e.code_seed || 0) ^ e.seed) >>> 0;
+        const fixedHex = fixedVal.toString(16).toUpperCase().padStart(8, '0');
+        const dynSeg   = e.address.split('-')[0];
+        return fixedHex + '-' + dynSeg;
+      })();
+      return `
+        <div class="result-label">Artifact Found</div>
+        <div class="result-name">${esc(e.name)}</div>
+        <div class="result-addr">ATLAS-${esc(e.address)}</div>
+        <div class="result-meta">
+          <div class="result-meta-item"><strong>Code</strong> &nbsp;${artCode}</div>
+          <div class="result-meta-item"><strong>Type</strong> &nbsp;${typeName}</div>
+          <div class="result-meta-item"><strong>Discovered</strong> &nbsp;${e.date}${e.time ? ' at ' + e.time + ' EST' : ''}</div>
+        </div>
+        ${extra || ''}
+        <a class="result-link" href="${esc(e.path)}">Visit Artifact →</a>
+      `;
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function decodeArtCode() {
+      const raw = document.getElementById('code-input').value.trim().toUpperCase();
+      const match = raw.match(/^([0-9A-F]{8})-([A-Z2-9]{5})$/);
+      if (!match) {
+        showResult('code-result', 'Invalid artifact code format. Expected XXXXXXXX-XXXXX.', 'error');
+        return;
+      }
+      const [, fixedHex, dynSeg] = match;
+      const all = getAll();
+      const candidates = all.filter(e => e.address.startsWith(dynSeg + '-'));
+      const found = candidates.find(e => {
+        const val = ((e.code_seed || 0) ^ e.seed) >>> 0;
+        return val.toString(16).toUpperCase().padStart(8, '0') === fixedHex;
+      });
+      if (found) {
+        showResult('code-result', artifactCard(found), 'success');
+      } else if (candidates.length) {
+        showResult('code-result', 'Address segment matched but creation fingerprint did not — this code may be from a different registration state.', 'error');
+      } else {
+        showResult('code-result', 'No artifact found with this code. It may be unregistered or from a future index.', 'error');
+      }
+    }
+
+    function decodeAddr() {
+      let raw = document.getElementById('addr-input').value.trim().toUpperCase();
+      if (raw.startsWith('ATLAS-')) raw = raw.slice(6);
+      try {
+        const { x, y, z } = PA.addressToCoords(raw);
+        const all = getAll();
+        const found = all.find(e => e.address === raw);
+        const coordHtml = `
+          <div class="coords-display">
+            <div class="coord-chip">X<span>${x.toLocaleString()}</span></div>
+            <div class="coord-chip">Y<span>${y.toLocaleString()}</span></div>
+            <div class="coord-chip">Z<span>${z.toLocaleString()}</span></div>
+          </div>`;
+        if (found) {
+          showResult('addr-result', artifactCard(found, coordHtml), 'success');
+        } else {
+          showResult('addr-result', `
+            <div class="result-label">Position Decoded</div>
+            <div class="result-addr">ATLAS-${esc(raw)}</div>
+            ${coordHtml}
+            <div style="font-size:14px;color:#666;margin-top:10px;">No registered artifact occupies this address. The coordinate space extends far beyond what is currently indexed.</div>
+          `, 'info');
+        }
+      } catch {
+        showResult('addr-result', 'Invalid Atlas Address format.', 'error');
+      }
+    }
+
+    document.getElementById('code-input').addEventListener('keydown', e => { if (e.key === 'Enter') decodeArtCode(); });
+    document.getElementById('addr-input').addEventListener('keydown', e => { if (e.key === 'Enter') decodeAddr(); });
+  </script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>
