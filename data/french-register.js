@@ -1,0 +1,7 @@
+window.frenchRegisterData = {
+
+  entries: [
+
+  ]
+
+};

@@ -130,6 +130,10 @@
             <input type="text" class="lex-search-input" id="frSearch" placeholder="Search entries..." autocomplete="off" spellcheck="false">
           </div>
           <span class="fr-count" id="frCount"></span>
+          <button class="lex-random-btn" id="frExportBtn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Register
+          </button>
         </div>
 
         <!-- Ledger -->
@@ -156,6 +160,7 @@
 
   <script src="/operation/scripts/atlas.js"></script>
   <script src="/data/lexicon.js"></script>
+  <script src="/data/french-register.js"></script>
   <script>
     loadSnippets('The Lexicon');
 
@@ -338,7 +343,8 @@
     // FRENCH REGISTER
     // ══════════════════════════════════════════════
 
-    const FR_KEY = 'fr_register_v1';
+    const FR_KEY      = 'fr_register_v1';
+    const FR_SEED_KEY = 'fr_seeded_count';
 
     function frLoad() {
       try { return JSON.parse(localStorage.getItem(FR_KEY) || '[]'); }
@@ -348,6 +354,40 @@
     function frSave(arr) {
       localStorage.setItem(FR_KEY, JSON.stringify(arr));
     }
+
+    function frSeedFromFile() {
+      var fileEntries = (window.frenchRegisterData && window.frenchRegisterData.entries) || [];
+      var lastCount   = parseInt(localStorage.getItem(FR_SEED_KEY) || '0', 10);
+      if (fileEntries.length <= lastCount) return;
+      var existing    = frLoad();
+      var existingIds = new Set(existing.map(function(e) { return e.id; }));
+      var toAdd       = fileEntries.filter(function(e) { return !existingIds.has(e.id); });
+      if (toAdd.length > 0) frSave(toAdd.concat(existing));
+      localStorage.setItem(FR_SEED_KEY, fileEntries.length.toString());
+    }
+
+    function frExport() {
+      var all   = frLoad();
+      var lines = all.map(function(e) {
+        return '    { id: ' + JSON.stringify(e.id) +
+               ', french: '  + JSON.stringify(e.french) +
+               ', english: ' + JSON.stringify(e.english) +
+               ', note: '    + JSON.stringify(e.note || '') +
+               ', date: '    + JSON.stringify(e.date) + ' }';
+      });
+      var content = 'window.frenchRegisterData = {\n\n  entries: [\n\n' +
+                    lines.join(',\n\n') +
+                    '\n\n  ]\n\n};\n';
+      var blob = new Blob([content], { type: 'text/javascript' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'french-register.js';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    frSeedFromFile();
 
     function frEsc(s) {
       return String(s)
@@ -507,6 +547,8 @@
     document.getElementById('frSearch').addEventListener('input', function() {
       frRender(frFilter(frLoad(), this.value));
     });
+
+    document.getElementById('frExportBtn').addEventListener('click', frExport);
   </script>
 </body>
 </html>
