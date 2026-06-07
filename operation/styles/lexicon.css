@@ -861,3 +861,414 @@
     font-size: 12px;
   }
 }
+
+/* ══════════════════════════════════════════════════
+   FRENCH REGISTER
+══════════════════════════════════════════════════ */
+
+/* ── Tab Bar ────────────────────────────────────── */
+
+.lex-tabs {
+  display: flex;
+  border-bottom: 2px solid #e0d4c4;
+  margin-bottom: 24px;
+}
+
+.lex-tab-btn {
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border: none;
+  background: none;
+  color: #aaa;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  letter-spacing: 0.04em;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.lex-tab-btn.active {
+  color: #8a611c;
+  border-bottom-color: #c28a2b;
+}
+
+.lex-tab-btn:hover:not(.active) {
+  color: #6b4a14;
+}
+
+/* ── Form Card ──────────────────────────────────── */
+
+.fr-form-card {
+  position: relative;
+  background: #1e1a0e;
+  border: 1px solid rgba(194,138,43,0.5);
+  border-radius: 12px;
+  padding: 22px 24px 22px 30px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.22);
+}
+
+.fr-form-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  background: rgba(194,138,43,0.45);
+  border-radius: 0 2px 2px 0;
+}
+
+.fr-form-title {
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(194,138,43,0.85);
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fr-form-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(194,138,43,0.2);
+}
+
+.fr-label-opt {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.fr-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fr-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fr-form-group.full {
+  grid-column: 1 / -1;
+}
+
+.fr-form-label {
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(194,138,43,0.72);
+}
+
+.fr-form-input {
+  background: rgba(0,0,0,0.42);
+  border: 1px solid rgba(194,138,43,0.28);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #f0ead8;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fr-form-input::placeholder {
+  color: rgba(240,234,216,0.28);
+}
+
+.fr-form-input:focus {
+  border-color: rgba(194,138,43,0.65);
+  box-shadow: 0 0 0 2px rgba(194,138,43,0.1);
+}
+
+.fr-form-btn {
+  width: 100%;
+  background: #c28a2b;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 11px 24px;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  transition: transform 0.14s, opacity 0.14s;
+}
+
+.fr-form-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.fr-form-error {
+  margin-top: 10px;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: #d45c5c;
+}
+
+/* ── Control Row ────────────────────────────────── */
+
+.fr-control-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.fr-count {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: #aaa;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Ledger ─────────────────────────────────────── */
+
+.fr-ledger {
+  background: white;
+  border: 2px solid #000;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+  margin-bottom: 16px;
+}
+
+.fr-ledger-header {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 68px;
+  padding: 8px 20px;
+  border-bottom: 2px solid #f0e8d4;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #8a611c;
+  text-transform: uppercase;
+  font-family: Georgia, serif;
+  background: #fafaf8;
+}
+
+.fr-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 68px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: start;
+  gap: 12px;
+  transition: background 0.12s;
+}
+
+.fr-row:last-child { border-bottom: none; }
+.fr-row:hover { background: #fdf8f0; }
+
+.fr-row-fr {
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.fr-row-note {
+  font-family: Georgia, serif;
+  font-size: 11px;
+  color: #aaa;
+  font-style: italic;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.fr-row-en {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #555;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.fr-row-date {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.fr-row-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.fr-btn-edit,
+.fr-btn-del {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  border: 1.5px solid;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.13s, border-color 0.13s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.fr-btn-edit {
+  border-color: rgba(194,138,43,0.4);
+  color: #8a611c;
+}
+
+.fr-btn-edit:hover {
+  background: rgba(194,138,43,0.1);
+  border-color: #8a611c;
+}
+
+.fr-btn-del {
+  border-color: rgba(180,60,60,0.3);
+  color: #b43c3c;
+}
+
+.fr-btn-del:hover {
+  background: rgba(180,60,60,0.08);
+  border-color: #b43c3c;
+}
+
+/* ── Edit Row ───────────────────────────────────── */
+
+.fr-edit-row {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fdf9f2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fr-edit-row:last-child { border-bottom: none; }
+
+.fr-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fr-edit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fr-edit-input {
+  background: white;
+  border: 1.5px solid #c49a50;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #111;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.fr-edit-input:focus {
+  border-color: #8a611c;
+  box-shadow: 0 0 0 2px rgba(138,97,28,0.1);
+}
+
+.fr-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fr-edit-save {
+  background: #c28a2b;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  transition: opacity 0.13s;
+}
+
+.fr-edit-save:hover { opacity: 0.9; }
+
+.fr-edit-cancel {
+  background: white;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s;
+}
+
+.fr-edit-cancel:hover {
+  border-color: #999;
+  color: #333;
+}
+
+/* ── Empty State ─────────────────────────────────── */
+
+.fr-empty {
+  text-align: center;
+  padding: 52px 20px;
+  color: #aaa;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.fr-empty strong {
+  display: block;
+  font-size: 17px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* ── French Register Responsive ─────────────────── */
+
+@media (max-width: 700px) {
+  .fr-form-grid { grid-template-columns: 1fr; }
+
+  .fr-ledger-header {
+    grid-template-columns: 1fr 1fr 56px;
+  }
+  .fr-ledger-header span:nth-child(3) { display: none; }
+
+  .fr-row {
+    grid-template-columns: 1fr 1fr 56px;
+  }
+  .fr-row-date { display: none; }
+
+  .fr-edit-grid { grid-template-columns: 1fr; }
+
+  .fr-control-row { flex-wrap: wrap; }
+}
