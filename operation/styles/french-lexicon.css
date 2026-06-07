@@ -1,0 +1,823 @@
+/* ===================================================
+   FRENCH LEXICON — Record & Index page styles
+   Extends lexicon.css; do not duplicate shared classes.
+=================================================== */
+
+/* ── Index: Control row ─────────────────────────── */
+
+.fl-control-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.fl-count {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: #aaa;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Index: Word list row addition ──────────────── */
+
+.fl-row-translation {
+  font-size: 14px;
+  color: #555;
+  font-family: Georgia, serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.fl-row-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  align-self: flex-start;
+}
+
+/* ── New Entry Form ──────────────────────────────── */
+
+.fl-form-wrap {
+  margin-bottom: 24px;
+}
+
+.fl-form-card {
+  background: #1e1a0e;
+  border: 1px solid rgba(194,138,43,0.5);
+  border-radius: 12px;
+  padding: 26px 28px;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.26);
+}
+
+.fl-form-header {
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(194,138,43,0.85);
+  margin: 0 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fl-form-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(194,138,43,0.2);
+}
+
+.fl-form-section {
+  margin-bottom: 22px;
+}
+
+.fl-form-section-title {
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(194,138,43,0.5);
+  margin: 0 0 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(194,138,43,0.1);
+}
+
+.fl-form-section-title .fl-opt {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-size: 9px;
+  opacity: 0.6;
+}
+
+.fl-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fl-form-grid.three {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+.fl-form-grid.one {
+  grid-template-columns: 1fr;
+}
+
+.fl-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fl-form-group.full {
+  grid-column: 1 / -1;
+}
+
+.fl-form-label {
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(194,138,43,0.72);
+}
+
+.fl-form-req { color: rgba(220,100,80,0.75); }
+
+.fl-form-opt {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 9px;
+  opacity: 0.6;
+}
+
+.fl-form-input,
+.fl-form-select,
+.fl-form-textarea {
+  background: rgba(0,0,0,0.42);
+  border: 1px solid rgba(194,138,43,0.28);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #f0ead8;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fl-form-textarea {
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.fl-form-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(194,138,43,0.6)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.fl-form-input::placeholder,
+.fl-form-textarea::placeholder { color: rgba(240,234,216,0.25); }
+
+.fl-form-input:focus,
+.fl-form-select:focus,
+.fl-form-textarea:focus {
+  border-color: rgba(194,138,43,0.65);
+  box-shadow: 0 0 0 2px rgba(194,138,43,0.1);
+}
+
+/* Formality radio chips */
+.fl-radio-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fl-radio-label { cursor: pointer; }
+
+.fl-radio-label input[type="radio"] { display: none; }
+
+.fl-radio-chip {
+  display: inline-block;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(194,138,43,0.25);
+  color: rgba(240,234,216,0.4);
+  background: rgba(0,0,0,0.28);
+  transition: background 0.13s, border-color 0.13s, color 0.13s;
+  user-select: none;
+}
+
+.fl-radio-label input:checked + .fl-radio-chip {
+  border-color: rgba(194,138,43,0.8);
+  background: rgba(194,138,43,0.15);
+  color: rgba(240,210,130,0.95);
+}
+
+/* Situation checkboxes */
+.fl-check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.fl-check-label { cursor: pointer; }
+
+.fl-check-label input[type="checkbox"] { display: none; }
+
+.fl-check-chip {
+  display: inline-block;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(194,138,43,0.2);
+  color: rgba(240,234,216,0.4);
+  background: rgba(0,0,0,0.22);
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  user-select: none;
+}
+
+.fl-check-label input:checked + .fl-check-chip {
+  border-color: rgba(194,138,43,0.65);
+  background: rgba(194,138,43,0.12);
+  color: rgba(240,210,130,0.9);
+}
+
+/* Form actions */
+.fl-form-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.fl-form-submit {
+  background: #c28a2b;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 11px 28px;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  transition: transform 0.14s, opacity 0.14s;
+}
+
+.fl-form-submit:hover { transform: translateY(-1px); opacity: 0.9; }
+
+.fl-form-cancel {
+  background: rgba(0,0,0,0.28);
+  border: 1px solid rgba(194,138,43,0.28);
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  color: rgba(240,234,216,0.45);
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s;
+}
+
+.fl-form-cancel:hover {
+  border-color: rgba(194,138,43,0.6);
+  color: rgba(240,234,216,0.8);
+}
+
+.fl-form-error {
+  margin-top: 10px;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: #d45c5c;
+}
+
+/* ══════════════════════════════════════════════════
+   RECORD PAGE
+══════════════════════════════════════════════════ */
+
+/* ── Hero additions ──────────────────────────────── */
+
+.fl-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.fl-lang-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: rgba(30,60,140,0.28);
+  border: 1px solid rgba(80,140,255,0.3);
+  color: rgba(140,190,255,0.85);
+  font-family: Georgia, serif;
+}
+
+.fl-edit-entry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(191,125,8,0.45);
+  background: transparent;
+  color: rgba(226,173,53,0.65);
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.fl-edit-entry-btn:hover {
+  background: rgba(184,136,26,0.12);
+  color: rgba(226,173,53,1);
+  border-color: rgba(184,136,26,0.8);
+}
+
+/* ── Translation panel ───────────────────────────── */
+
+.fl-primary {
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 14px;
+}
+
+.fl-alt-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #aaa;
+  font-family: Georgia, serif;
+  margin: 0 0 8px;
+}
+
+.fl-alt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.fl-alt-item {
+  font-family: Georgia, serif;
+  font-size: 14px;
+  color: #555;
+  background: #f8f8f8;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+  padding: 4px 12px;
+}
+
+/* ── Example block ───────────────────────────────── */
+
+.fl-example-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fl-example-pair {
+  border-left: 3px solid rgba(184,136,26,0.4);
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fl-example-lang {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a611c;
+  font-family: Georgia, serif;
+}
+
+.fl-example-fr {
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-style: italic;
+  color: #111;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.fl-example-en {
+  font-family: Georgia, serif;
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Context panel ───────────────────────────────── */
+
+.fl-context-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px 28px;
+  align-items: start;
+}
+
+.fl-context-row-label {
+  font-family: Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a611c;
+  padding-top: 7px;
+  white-space: nowrap;
+}
+
+.fl-formality-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 6px;
+}
+
+.fl-formality-badge.informal {
+  background: #f0f8f0;
+  border: 1.5px solid #6aab6a;
+  color: #2d6e2d;
+}
+
+.fl-formality-badge.neutral {
+  background: #f5f5f5;
+  border: 1.5px solid #bbb;
+  color: #555;
+}
+
+.fl-formality-badge.formal {
+  background: #f0f2f8;
+  border: 1.5px solid #6a7aab;
+  color: #2d3d6e;
+}
+
+.fl-formality-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.fl-formality-badge.informal .fl-formality-dot { background: #4a9a4a; }
+.fl-formality-badge.neutral  .fl-formality-dot { background: #999; }
+.fl-formality-badge.formal   .fl-formality-dot { background: #3d5eab; }
+
+.fl-situations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fl-situation-chip {
+  font-family: Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: #f5ede0;
+  border: 1px solid rgba(184,136,26,0.35);
+  color: #6b4a14;
+}
+
+/* ── Grammar panel ───────────────────────────────── */
+
+.fl-grammar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.fl-grammar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fl-grammar-label {
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a611c;
+}
+
+.fl-grammar-value {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #111;
+  line-height: 1.4;
+}
+
+/* ── Memory anchor ───────────────────────────────── */
+
+.fl-anchor-block {
+  background: rgba(194,138,43,0.07);
+  border-left: 4px solid rgba(194,138,43,0.55);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 20px;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #3a2800;
+  line-height: 1.75;
+}
+
+/* ── Common mistakes ─────────────────────────────── */
+
+.fl-mistakes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fl-mistake-item {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.fl-mistake-x {
+  flex-shrink: 0;
+  color: #c0392b;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.4;
+  font-family: Georgia, serif;
+}
+
+.fl-mistake-text {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* ── Traveler Notes ──────────────────────────────── */
+
+.fl-notes-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.fl-notes-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fl-notes-meta-label {
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a611c;
+}
+
+.fl-notes-meta-value {
+  font-family: Georgia, serif;
+  font-size: 14px;
+  color: #111;
+}
+
+.fl-notes-meta-value.muted {
+  color: #bbb;
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* ── Stars ───────────────────────────────────────── */
+
+.fl-stars {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.fl-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: #ddd;
+  transition: color 0.12s, transform 0.12s;
+  font-family: Georgia, serif;
+}
+
+.fl-star.filled { color: #c28a2b; }
+button.fl-star:hover { transform: scale(1.2); color: #c28a2b; }
+
+/* ── Mnemonic ────────────────────────────────────── */
+
+.fl-mnemonic-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #f0eadf;
+}
+
+.fl-mnemonic-label {
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a611c;
+  margin: 0 0 8px;
+}
+
+.fl-mnemonic-text {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  color: #444;
+  line-height: 1.65;
+}
+
+.fl-mnemonic-text.muted {
+  color: #ccc;
+  font-size: 13px;
+}
+
+/* ── Notes actions ───────────────────────────────── */
+
+.fl-notes-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.fl-btn-review {
+  background: #f5ede0;
+  border: 1.5px solid rgba(184,136,26,0.45);
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b4a14;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+
+.fl-btn-review:hover { background: #ede0cc; }
+
+.fl-btn-secondary {
+  background: white;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.13s, color 0.13s;
+}
+
+.fl-btn-secondary:hover { border-color: #999; color: #333; }
+
+.fl-btn-danger {
+  background: white;
+  border: 1.5px solid rgba(180,60,60,0.3);
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  color: #b43c3c;
+  cursor: pointer;
+  transition: border-color 0.13s, background 0.13s;
+  margin-left: auto;
+}
+
+.fl-btn-danger:hover {
+  border-color: #b43c3c;
+  background: rgba(180,60,60,0.06);
+}
+
+/* ── Notes edit form ─────────────────────────────── */
+
+.fl-notes-edit-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fl-notes-edit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fl-notes-input-label {
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a611c;
+}
+
+.fl-notes-textarea {
+  background: white;
+  border: 1.5px solid #c49a50;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: #111;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.fl-notes-textarea:focus {
+  border-color: #8a611c;
+  box-shadow: 0 0 0 2px rgba(138,97,28,0.1);
+}
+
+.fl-notes-edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fl-notes-save {
+  background: #c28a2b;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  transition: opacity 0.13s;
+}
+
+.fl-notes-save:hover { opacity: 0.9; }
+
+.fl-notes-cancel {
+  background: white;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.13s;
+}
+
+.fl-notes-cancel:hover { border-color: #999; }
+
+/* ── Responsive ──────────────────────────────────── */
+
+@media (max-width: 700px) {
+  .fl-form-grid       { grid-template-columns: 1fr; }
+  .fl-form-grid.three { grid-template-columns: 1fr; }
+  .fl-control-row     { gap: 10px; }
+  .fl-context-grid    { grid-template-columns: 1fr; }
+  .fl-notes-meta      { grid-template-columns: 1fr 1fr; }
+  .fl-grammar-grid    { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .fl-notes-meta      { grid-template-columns: 1fr; }
+}

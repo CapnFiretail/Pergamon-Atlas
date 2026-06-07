@@ -1,0 +1,7 @@
+window.frenchLexiconData = {
+
+  entries: [
+
+  ]
+
+};
