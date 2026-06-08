@@ -98,18 +98,32 @@
       <!-- French Lexicon Tab -->
       <div id="tab-register" style="display:none">
 
-        <div class="fr-control-row">
-          <div class="lex-search-wrap" style="max-width:440px">
+        <!-- Search + Random + New Entry -->
+        <div class="lex-search-row">
+          <div class="lex-search-wrap">
             <span class="lex-search-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             </span>
-            <input type="text" class="lex-search-input" id="flSearch" placeholder="Search French Lexicon..." autocomplete="off" spellcheck="false">
+            <input type="text" class="lex-search-input" id="flSearch" placeholder="Search the French Lexicon..." autocomplete="off" spellcheck="false">
           </div>
-          <span class="fr-count" id="flCount"></span>
+          <button class="lex-random-btn" id="flRandomBtn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+            Random Entry
+          </button>
           <a class="lex-random-btn" href="/french-lexicon/" style="text-decoration:none">+ New Entry</a>
         </div>
 
-        <div class="lex-word-list" id="flList" style="display:none"></div>
+        <!-- Recent Records -->
+        <p class="section-label" id="flFeaturedLabel">Recent Records</p>
+        <div class="lex-featured-grid" id="flFeaturedGrid"></div>
+
+        <!-- Browse by Letter -->
+        <div class="section-gap" id="flAlphaGap"></div>
+        <p class="section-label" id="flAlphaLabel">Browse by Letter</p>
+        <div class="lex-alpha-bar" id="flAlphaBar"></div>
+
+        <!-- Word list -->
+        <div class="lex-word-list" id="flList"></div>
         <div class="fr-empty" id="flEmpty" style="display:none">
           <strong>No entries yet</strong>
           Add your first French word using the New Entry button above.
@@ -330,42 +344,127 @@
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    function flRenderTab() {
-      flSeedFromFile();
-      var all   = flLoad();
-      var q     = ((document.getElementById('flSearch') || {}).value || '').trim().toLowerCase();
-      var items = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
-      if (q) items = items.filter(function(e) {
-        return (e.word||'').toLowerCase().includes(q) || (e.translation||'').toLowerCase().includes(q);
-      });
-
-      var countEl = document.getElementById('flCount');
-      var listEl  = document.getElementById('flList');
-      var emptyEl = document.getElementById('flEmpty');
-      var noResEl = document.getElementById('flNoResults');
-
-      if (countEl) countEl.textContent = all.length + ' entr' + (all.length === 1 ? 'y' : 'ies');
-      listEl.style.display  = 'none';
-      emptyEl.style.display = 'none';
-      noResEl.style.display = 'none';
-
-      if (all.length === 0) { emptyEl.style.display = 'block'; return; }
-      if (items.length === 0) { noResEl.style.display = 'block'; return; }
-
-      listEl.style.display = 'block';
-      listEl.innerHTML = items.map(function(e) {
-        return '<a class="lex-word-row" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
+    function flRowHTML(e) {
+      return '<div class="lex-word-row">' +
+        '<a class="fl-row-link" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
           '<span class="lex-row-word">' + flEsc(e.word || '') + '</span>' +
           (e.pronunciation ? '<span class="lex-row-pos">[' + flEsc(e.pronunciation) + ']</span>' : '') +
           '<span class="lex-row-dot">·</span>' +
           '<span class="lex-row-def">' + flEsc(e.translation || e.primary || '') + '</span>' +
-        '</a>';
-      }).join('');
+        '</a>' +
+        '<a class="fl-row-edit" href="/french-lexicon/?edit=' + flEsc(e.id) + '" title="Edit">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+        '</a>' +
+      '</div>';
+    }
+
+    function flRenderTab() {
+      flSeedFromFile();
+      var all    = flLoad();
+      var sorted = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
+      var q      = ((document.getElementById('flSearch') || {}).value || '').trim().toLowerCase();
+      var items  = q ? sorted.filter(function(e) {
+        return (e.word||'').toLowerCase().includes(q) ||
+               (e.translation||e.primary||'').toLowerCase().includes(q);
+      }) : sorted;
+
+      var listEl     = document.getElementById('flList');
+      var emptyEl    = document.getElementById('flEmpty');
+      var noResEl    = document.getElementById('flNoResults');
+      var featGrid   = document.getElementById('flFeaturedGrid');
+      var featLabel  = document.getElementById('flFeaturedLabel');
+      var alphaBar   = document.getElementById('flAlphaBar');
+      var alphaLabel = document.getElementById('flAlphaLabel');
+      var alphaGap   = document.getElementById('flAlphaGap');
+
+      listEl.innerHTML  = '';
+      listEl.style.display  = 'none';
+      emptyEl.style.display = 'none';
+      noResEl.style.display = 'none';
+
+      if (all.length === 0) {
+        emptyEl.style.display = 'block';
+        featGrid.innerHTML = ''; featLabel.style.display = featGrid.style.display = 'none';
+        alphaBar.innerHTML = ''; alphaLabel.style.display = alphaGap.style.display = alphaBar.style.display = 'none';
+        return;
+      }
+
+      // Recent Records (5 newest, shown only when not searching)
+      if (!q) {
+        featLabel.style.display = featGrid.style.display = '';
+        var recent = all.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); }).slice(0,5);
+        featGrid.innerHTML = recent.map(function(e) {
+          return '<a class="lex-feat-card" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
+            '<p class="lex-feat-word">' + flEsc(e.word||'') + '</p>' +
+            '<p class="lex-feat-pos">' + flEsc(e.pos||'') + '</p>' +
+            '<p class="lex-feat-snippet">' + flEsc(e.translation||e.primary||'') + '</p>' +
+          '</a>';
+        }).join('');
+      } else {
+        featLabel.style.display = featGrid.style.display = 'none';
+      }
+
+      // Alphabet bar (only when browsing, not searching)
+      if (!q && items.length > 0) {
+        alphaGap.style.display = alphaLabel.style.display = alphaBar.style.display = '';
+        var letters = new Set(items.map(function(e){ return (e.word||'A')[0].toUpperCase(); }));
+        alphaBar.innerHTML = '';
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(function(L) {
+          var btn = document.createElement('button');
+          btn.className = 'lex-alpha-btn';
+          btn.textContent = L;
+          if (!letters.has(L)) {
+            btn.disabled = true;
+          } else {
+            btn.addEventListener('click', function() {
+              document.getElementById('flSearch').value = '';
+              document.querySelectorAll('#flAlphaBar .lex-alpha-btn').forEach(function(b){ b.classList.remove('active'); });
+              btn.classList.add('active');
+              flRenderTab();
+              requestAnimationFrame(function() {
+                var sec = document.getElementById('fl-sec-' + L);
+                if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              });
+            });
+          }
+          alphaBar.appendChild(btn);
+        });
+      } else {
+        alphaGap.style.display = alphaLabel.style.display = alphaBar.style.display = 'none';
+      }
+
+      if (items.length === 0) { noResEl.style.display = 'block'; return; }
+
+      listEl.style.display = 'block';
+
+      if (q) {
+        listEl.innerHTML = items.map(flRowHTML).join('');
+      } else {
+        var groups = {};
+        items.forEach(function(e) {
+          var L = (e.word||'A')[0].toUpperCase();
+          if (!groups[L]) groups[L] = [];
+          groups[L].push(e);
+        });
+        listEl.innerHTML = Object.keys(groups).sort().map(function(L) {
+          return '<div class="lex-letter-section" id="fl-sec-' + L + '">' +
+            '<div class="lex-letter-header">' + L + '</div>' +
+            groups[L].map(flRowHTML).join('') +
+          '</div>';
+        }).join('');
+      }
     }
 
     flSeedFromFile();
 
     document.getElementById('flSearch').addEventListener('input', flRenderTab);
+
+    document.getElementById('flRandomBtn').addEventListener('click', function() {
+      var all = flLoad();
+      if (!all.length) return;
+      var e = all[Math.floor(Math.random() * all.length)];
+      window.location.href = '/french-lexicon/record.html?id=' + encodeURIComponent(e.id);
+    });
   </script>
 </body>
 </html>

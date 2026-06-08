@@ -33,7 +33,24 @@
     const data    = window.lexiconData;
     const entries = data.entries;
     const sorted  = [...entries].sort((a, b) => a.word.localeCompare(b.word));
-    const entry   = entries.find(e => e.slug === slug || e.word.toLowerCase() === slug);
+    let   entry   = entries.find(e => e.slug === slug || e.word.toLowerCase() === slug);
+
+    // ── User edits (localStorage overlay) ────────────
+    const LEX_EDITS_KEY = 'lex_user_edits_v1';
+    function lexLoadEdits() {
+      try { return JSON.parse(localStorage.getItem(LEX_EDITS_KEY) || '{}'); }
+      catch(e) { return {}; }
+    }
+    function lexSaveEdits(obj) { localStorage.setItem(LEX_EDITS_KEY, JSON.stringify(obj)); }
+
+    if (entry) {
+      const userEdit = lexLoadEdits()[entry.word];
+      if (userEdit) {
+        entry = Object.assign({}, entry);
+        if (userEdit.definitions && userEdit.definitions.length) entry.definitions = userEdit.definitions;
+        if (userEdit.example) entry.example = userEdit.example;
+      }
+    }
 
     // Update page title once we know the word
     if (entry) {
@@ -138,6 +155,10 @@
           <div class="lex-hero-wordblock">
             <h1>${h(entry.word)}</h1>
             <p class="lex-word-pronunciation">${h(entry.pronunciation)}&ensp;·&ensp;${h(entry.pos)}&ensp;·&ensp;English</p>
+            <button onclick="openLexEdit()" type="button" style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(0,0,0,0.18);background:rgba(0,0,0,0.04);color:#555;font-family:Georgia,serif;font-size:11px;letter-spacing:.06em;padding:5px 12px;border-radius:5px;cursor:pointer;text-decoration:none;transition:background .15s">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit Entry
+            </button>
           </div>
 
           <a href="/atlas-navigation/" class="lex-hero-artifact" aria-label="Atlas navigation">
@@ -184,7 +205,63 @@
         ${nearbyHTML}
 
       `;
+
+      // ── Append edit panel ───────────────────────
+      main.insertAdjacentHTML('beforeend', `
+        <div id="lexEditPanel" style="display:none;margin-top:32px">
+          <p class="section-label">Edit Entry</p>
+          <div class="lex-panel">
+            <div style="margin-bottom:16px">
+              <label style="font-family:Georgia,serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a611c;display:block;margin-bottom:8px">
+                Definitions <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#aaa">(one per line)</span>
+              </label>
+              <textarea id="lexEditDefs" rows="4" style="width:100%;box-sizing:border-box;font-family:Georgia,serif;font-size:14px;line-height:1.6;padding:10px 12px;border:1.5px solid #ddd;border-radius:6px;resize:vertical;color:#2c1a00"></textarea>
+            </div>
+            <div style="margin-bottom:20px">
+              <label style="font-family:Georgia,serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a611c;display:block;margin-bottom:8px">Example Usage</label>
+              <input id="lexEditExample" type="text" style="width:100%;box-sizing:border-box;font-family:Georgia,serif;font-size:14px;padding:10px 12px;border:1.5px solid #ddd;border-radius:6px;color:#2c1a00">
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button onclick="saveLexEdit()" style="font-family:Georgia,serif;font-size:12px;padding:9px 20px;background:#2c1a00;color:#fff;border:none;border-radius:6px;cursor:pointer">Save Changes</button>
+              <button onclick="closeLexEdit()" style="font-family:Georgia,serif;font-size:12px;padding:9px 20px;background:#fff;color:#666;border:1.5px solid #ccc;border-radius:6px;cursor:pointer">Cancel</button>
+              <button onclick="clearLexEdit()" style="font-family:Georgia,serif;font-size:12px;padding:9px 20px;background:#fff;color:#c00;border:1.5px solid #f0c0c0;border-radius:6px;cursor:pointer;margin-left:auto">Remove My Edits</button>
+            </div>
+          </div>
+        </div>
+      `);
     }
+
+    window.openLexEdit = function() {
+      var panel = document.getElementById('lexEditPanel');
+      if (!panel) return;
+      var defs = (entry.definitions || (entry.definition ? [entry.definition] : [])).join('\n');
+      document.getElementById('lexEditDefs').value    = defs;
+      document.getElementById('lexEditExample').value = entry.example || '';
+      panel.style.display = 'block';
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    window.closeLexEdit = function() {
+      var panel = document.getElementById('lexEditPanel');
+      if (panel) panel.style.display = 'none';
+    };
+
+    window.saveLexEdit = function() {
+      var defsRaw = (document.getElementById('lexEditDefs').value || '').split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+      var example = (document.getElementById('lexEditExample').value || '').trim();
+      var allEdits = lexLoadEdits();
+      allEdits[entry.word] = { definitions: defsRaw, example: example, dateEdited: new Date().toISOString().slice(0,10) };
+      lexSaveEdits(allEdits);
+      window.location.reload();
+    };
+
+    window.clearLexEdit = function() {
+      if (!confirm('Remove your personal edits for "' + entry.word + '"?')) return;
+      var allEdits = lexLoadEdits();
+      delete allEdits[entry.word];
+      lexSaveEdits(allEdits);
+      window.location.reload();
+    };
   </script>
 </body>
 </html>

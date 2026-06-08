@@ -3,6 +3,38 @@
    Extends lexicon.css; do not duplicate shared classes.
 =================================================== */
 
+/* ── Lexicon tab: word list rows ─────────────────── */
+
+.fl-row-link {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.fl-row-edit {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: #bbb;
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.lex-word-row:hover .fl-row-edit {
+  opacity: 1;
+}
+
+.fl-row-edit:hover {
+  color: #8a611c;
+}
+
 /* ── Index: Control row ─────────────────────────── */
 
 .fl-control-row {
