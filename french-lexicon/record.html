@@ -26,21 +26,11 @@
 
     // ── Storage ──────────────────────────────────────
     const FL_KEY      = 'fl_entries_v1';
-    const FL_NOTES    = 'fl_notes_v1';
     const FL_SEED_KEY = 'fl_seeded_count';
 
     function flLoad() {
       try { return JSON.parse(localStorage.getItem(FL_KEY) || '[]'); }
       catch(e) { return []; }
-    }
-
-    function flLoadNotes() {
-      try { return JSON.parse(localStorage.getItem(FL_NOTES) || '{}'); }
-      catch(e) { return {}; }
-    }
-
-    function flSaveNotes(obj) {
-      localStorage.setItem(FL_NOTES, JSON.stringify(obj));
     }
 
     function flSeedFromFile() {
@@ -51,8 +41,7 @@
       var existingIds = new Set(existing.map(function(e) { return e.id; }));
       var toAdd       = fileEntries.filter(function(e) { return !existingIds.has(e.id); });
       if (toAdd.length > 0) {
-        var updated = toAdd.concat(existing);
-        localStorage.setItem(FL_KEY, JSON.stringify(updated));
+        localStorage.setItem(FL_KEY, JSON.stringify(toAdd.concat(existing)));
       }
       localStorage.setItem(FL_SEED_KEY, fileEntries.length.toString());
     }
@@ -70,28 +59,14 @@
       return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
 
-    function starsHTML(conf, interactive, entryId) {
-      var out = '<div class="fl-stars">';
-      for (var i = 1; i <= 5; i++) {
-        if (interactive) {
-          out += '<button class="fl-star' + (i <= conf ? ' filled' : '') + '" type="button" ' +
-                 'onclick="setEditConf(' + i + ',' + entryId + ')" title="' + i + ' star' + (i>1?'s':'') + '">' +
-                 (i <= conf ? '★' : '☆') + '</button>';
-        } else {
-          out += '<span class="fl-star' + (i <= conf ? ' filled' : '') + '">' + (i <= conf ? '★' : '☆') + '</span>';
-        }
-      }
-      out += '</div>';
-      return out;
-    }
-
-    // ── Parse entry ───────────────────────────────────
+    // ── Find entry (by ?id= or ?word= fallback) ───────
     var params = new URLSearchParams(window.location.search);
-    var slug   = (params.get('word') || '').toLowerCase().trim();
-    var all    = flLoad();
-    var entry  = all.find(function(e) {
-      return (e.slug && e.slug === slug) || e.word.toLowerCase() === slug;
-    });
+    var entryId = (params.get('id') || '').trim();
+    var slug    = (params.get('word') || '').toLowerCase().trim();
+    var all     = flLoad();
+    var entry   = entryId
+      ? all.find(function(e) { return e.id === entryId; })
+      : all.find(function(e) { return (e.slug && e.slug === slug) || e.word.toLowerCase() === slug; });
 
     var main = document.getElementById('mainContent');
 
@@ -100,156 +75,31 @@
       loadSnippets('The French Lexicon');
       main.innerHTML = '<div class="lex-not-found">' +
         '<h2>Record Not Found</h2>' +
-        '<p>No indexed entry for <strong>"' + h(slug || 'that word') + '"</strong> was located in the French Lexicon.</p>' +
-        '<a class="lex-random-btn" href="/french-lexicon/">← Return to the French Lexicon</a>' +
+        '<p>No indexed entry was located in the French Lexicon.</p>' +
+        '<a class="lex-random-btn" href="/lexicon/" onclick="localStorage.setItem(\'lex_active_tab\',\'register\')">← French Lexicon</a>' +
         '</div>';
     } else {
       document.title = 'Pergamon Atlas | ' + entry.word + ' — The French Lexicon';
       loadSnippets(entry.word + ' — The French Lexicon');
-
       renderPage();
     }
-
-    // ── Notes state ───────────────────────────────────
-    var editConf = 0;
-
-    window.setEditConf = function(n) {
-      editConf = n;
-      var btns = document.querySelectorAll('#notesEditStars .fl-star');
-      btns.forEach(function(btn, i) {
-        btn.classList.toggle('filled', i < n);
-        btn.textContent = (i < n) ? '★' : '☆';
-      });
-    };
-
-    window.startNotesEdit = function() {
-      var notes = (flLoadNotes()[entry.id] || {});
-      editConf  = notes.confidence || 0;
-      document.getElementById('notesPanel').innerHTML = notesEditHTML(notes);
-    };
-
-    window.cancelNotesEdit = function() {
-      document.getElementById('notesPanel').innerHTML = notesViewHTML(flLoadNotes()[entry.id]);
-    };
-
-    window.saveNotes = function() {
-      var mnemonic = (document.getElementById('notesMnemonic') || {}).value || '';
-      var allNotes = flLoadNotes();
-      var existing = allNotes[entry.id] || {};
-      allNotes[entry.id] = {
-        confidence:    editConf,
-        mnemonic:      mnemonic.trim(),
-        timesReviewed: existing.timesReviewed || 0,
-        lastReviewed:  existing.lastReviewed  || null,
-        dateAdded:     existing.dateAdded     || new Date().toISOString().slice(0,10)
-      };
-      flSaveNotes(allNotes);
-      document.getElementById('notesPanel').innerHTML = notesViewHTML(allNotes[entry.id]);
-    };
-
-    window.markReviewed = function() {
-      var allNotes = flLoadNotes();
-      var n = allNotes[entry.id] || {};
-      n.timesReviewed = (n.timesReviewed || 0) + 1;
-      n.lastReviewed  = new Date().toISOString().slice(0,10);
-      if (!n.dateAdded) n.dateAdded = new Date().toISOString().slice(0,10);
-      allNotes[entry.id] = n;
-      flSaveNotes(allNotes);
-      document.getElementById('notesPanel').innerHTML = notesViewHTML(n);
-    };
 
     window.deleteEntry = function() {
       if (!confirm('Permanently remove "' + entry.word + '" from the French Lexicon?')) return;
       var updated = flLoad().filter(function(e) { return e.id !== entry.id; });
       localStorage.setItem(FL_KEY, JSON.stringify(updated));
-      window.location.href = '/french-lexicon/';
+      localStorage.setItem('lex_active_tab', 'register');
+      window.location.href = '/lexicon/';
     };
 
-    // ── Render functions ─────────────────────────────
-
-    function notesViewHTML(notes) {
-      notes = notes || {};
-      var conf      = notes.confidence    || 0;
-      var mnemonic  = notes.mnemonic      || '';
-      var timesRev  = notes.timesReviewed || 0;
-      var lastRev   = notes.lastReviewed  || null;
-      var dateAdded = notes.dateAdded     || entry.date || null;
-
-      var stars = '<div class="fl-stars">';
-      for (var i = 1; i <= 5; i++) {
-        stars += '<span class="fl-star' + (i <= conf ? ' filled' : '') + '">' + (i <= conf ? '★' : '☆') + '</span>';
-      }
-      stars += '</div>';
-
-      return '<div class="fl-notes-meta">' +
-        '<div class="fl-notes-meta-field"><div class="fl-notes-meta-label">Date Added</div>' +
-          '<div class="fl-notes-meta-value' + (!dateAdded?' muted':'') + '">' + (dateAdded ? fmtDate(dateAdded) : 'Not recorded') + '</div></div>' +
-        '<div class="fl-notes-meta-field"><div class="fl-notes-meta-label">Last Reviewed</div>' +
-          '<div class="fl-notes-meta-value' + (!lastRev?' muted':'') + '">' + (lastRev ? fmtDate(lastRev) : 'Never') + '</div></div>' +
-        '<div class="fl-notes-meta-field"><div class="fl-notes-meta-label">Times Reviewed</div>' +
-          '<div class="fl-notes-meta-value">' + timesRev + '</div></div>' +
-        '<div class="fl-notes-meta-field"><div class="fl-notes-meta-label">Confidence</div>' +
-          (conf > 0 ? stars : '<div class="fl-notes-meta-value muted">Not rated</div>') + '</div>' +
-        '</div>' +
-        (mnemonic
-          ? '<div class="fl-mnemonic-section"><div class="fl-mnemonic-label">Personal Mnemonic</div>' +
-            '<div class="fl-mnemonic-text">' + h(mnemonic) + '</div></div>'
-          : '<div class="fl-mnemonic-section"><div class="fl-mnemonic-label">Personal Mnemonic</div>' +
-            '<div class="fl-mnemonic-text muted">No mnemonic recorded.</div></div>') +
-        '<div class="fl-notes-actions">' +
-          '<button class="fl-btn-review" onclick="markReviewed()">Mark as Reviewed</button>' +
-          '<button class="fl-btn-secondary" onclick="startNotesEdit()">Edit Notes</button>' +
-          '<button class="fl-btn-danger" onclick="deleteEntry()">Delete Record</button>' +
-        '</div>';
-    }
-
-    function notesEditHTML(notes) {
-      notes = notes || {};
-      var conf     = editConf || notes.confidence || 0;
-      var mnemonic = notes.mnemonic || '';
-
-      var stars = '<div class="fl-stars" id="notesEditStars">';
-      for (var i = 1; i <= 5; i++) {
-        stars += '<button class="fl-star' + (i <= conf ? ' filled' : '') + '" type="button" ' +
-                 'onclick="setEditConf(' + i + ')" title="' + i + ' star' + (i>1?'s':'') + '">' +
-                 (i <= conf ? '★' : '☆') + '</button>';
-      }
-      stars += '</div>';
-
-      return '<div class="fl-notes-edit-wrap">' +
-        '<div class="fl-notes-edit-group">' +
-          '<div class="fl-notes-input-label">Confidence Rating</div>' +
-          stars +
-        '</div>' +
-        '<div class="fl-notes-edit-group">' +
-          '<label class="fl-notes-input-label" for="notesMnemonic">Personal Mnemonic</label>' +
-          '<textarea class="fl-notes-textarea" id="notesMnemonic" placeholder="A memory trick to help you remember this word...">' + h(mnemonic) + '</textarea>' +
-        '</div>' +
-        '<div class="fl-notes-edit-actions">' +
-          '<button class="fl-notes-save" onclick="saveNotes()">Save Notes</button>' +
-          '<button class="fl-notes-cancel" onclick="cancelNotesEdit()">Cancel</button>' +
-        '</div>' +
-      '</div>';
-    }
-
     function renderPage() {
-      var notes      = flLoadNotes()[entry.id] || {};
       var formality  = entry.formality || 'neutral';
-      var situations = entry.situations || [];
       var related    = entry.related || [];
 
       // ── Formality badge ──────────────────────────
       var fLabel = { informal: 'Informal', neutral: 'Neutral', formal: 'Formal' };
       var formalityHTML = '<span class="fl-formality-badge ' + h(formality) + '">' +
         '<span class="fl-formality-dot"></span>' + h(fLabel[formality] || formality) + '</span>';
-
-      // ── Situation chips ──────────────────────────
-      var sitLabels = { friends:'Friends', family:'Family', school:'School', work:'Work', travel:'Travel', texting:'Texting' };
-      var situationsHTML = situations.length
-        ? situations.map(function(s) {
-            return '<span class="fl-situation-chip">' + h(sitLabels[s]||s) + '</span>';
-          }).join('')
-        : '<span style="font-family:Georgia,serif;font-size:13px;color:#bbb;font-style:italic">None specified</span>';
 
       // ── Grammar panel ────────────────────────────
       var grammarFields = [];
@@ -279,25 +129,13 @@
           }).join('') + '</div>'
         : '<p style="font-family:Georgia,serif;font-size:14px;color:#bbb;font-style:italic;margin:0">No example recorded.</p>';
 
-      // ── Mistakes ──────────────────────────────────
-      var mistakes = entry.mistakes || [];
-      var mistakesHTML = mistakes.length
-        ? '<ul class="fl-mistakes-list">' +
-          mistakes.map(function(m) {
-            return '<li class="fl-mistake-item">' +
-              '<span class="fl-mistake-x">✗</span>' +
-              '<span class="fl-mistake-text">' + h(m) + '</span>' +
-            '</li>';
-          }).join('') + '</ul>'
-        : '<p style="font-family:Georgia,serif;font-size:14px;color:#bbb;font-style:italic;margin:0">No common mistakes recorded.</p>';
-
       // ── Related records ───────────────────────────
       var relatedHTML = '';
       if (related.length) {
         var cards = related.map(function(r) {
           var rel = all.find(function(e) { return (e.slug===r||e.word.toLowerCase()===r) && e.id !== entry.id; });
           if (rel) {
-            return '<a class="lex-cluster-card" href="/french-lexicon/record.html?word=' + encodeURIComponent(rel.slug||rel.word.toLowerCase()) + '">' +
+            return '<a class="lex-cluster-card" href="/french-lexicon/record.html?id=' + encodeURIComponent(rel.id) + '">' +
               '<span class="lex-cluster-card-word">' + h(rel.word) + '</span>' +
               '<span class="lex-cluster-card-pos">' + h(rel.pos||'') + '</span>' +
               '<span class="lex-cluster-card-addr">' + h(rel.atlas&&rel.atlas.address||'') + '</span>' +
@@ -322,13 +160,8 @@
           '</ul>'
         : '';
 
-      // ── Atlas address chip ─────────────────────────
+      // ── Atlas address ─────────────────────────────
       var address = (entry.atlas && entry.atlas.address) || '';
-
-      // ── Memory anchor ─────────────────────────────
-      var anchorHTML = entry.memoryAnchor
-        ? '<div class="fl-anchor-block">' + h(entry.memoryAnchor) + '</div>'
-        : '<p style="font-family:Georgia,serif;font-size:14px;color:#bbb;font-style:italic;margin:0">No memory anchor recorded.</p>';
 
       // ── Render ────────────────────────────────────
       main.innerHTML =
@@ -349,7 +182,7 @@
               '</a>' +
             '</div>' +
           '</div>' +
-          '<a href="/french-lexicon/" class="lex-hero-artifact" aria-label="French Lexicon index">' +
+          '<a href="/lexicon/" class="lex-hero-artifact" aria-label="French Lexicon index" onclick="localStorage.setItem(\'lex_active_tab\',\'register\')">' +
             '<span class="lex-hero-artifact-inner"></span>' +
             '<span style="font-size:28px;color:rgba(226,173,53,0.85);flex-shrink:0;line-height:1">⚜</span>' +
             '<span class="lex-hero-artifact-text">' +
@@ -375,11 +208,9 @@
         // Context
         '<div class="lex-panel">' +
           '<p class="lex-panel-label">Context</p>' +
-          '<div class="fl-context-grid">' +
+          '<div class="fl-context-grid one">' +
             '<div class="fl-context-row-label">Formality</div>' +
             '<div>' + formalityHTML + '</div>' +
-            '<div class="fl-context-row-label">Common Situations</div>' +
-            '<div class="fl-situations">' + situationsHTML + '</div>' +
           '</div>' +
         '</div>' +
 
@@ -389,31 +220,27 @@
           grammarHTML +
         '</div>' +
 
-        // Memory Anchor
-        '<div class="lex-panel">' +
-          '<p class="lex-panel-label">Memory Anchor</p>' +
-          anchorHTML +
-        '</div>' +
-
-        // Common Mistakes
-        '<div class="lex-panel">' +
-          '<p class="lex-panel-label">Common Mistakes</p>' +
-          mistakesHTML +
-        '</div>' +
-
         relatedHTML +
 
-        // Traveler Notes
-        '<p class="section-label" style="margin-top:32px">Traveler Notes</p>' +
+        // Date Added
+        '<p class="section-label" style="margin-top:32px">Record Info</p>' +
         '<div class="lex-panel">' +
-          '<div id="notesPanel">' + notesViewHTML(notes) + '</div>' +
+          '<div class="fl-notes-meta">' +
+            '<div class="fl-notes-meta-field">' +
+              '<div class="fl-notes-meta-label">Date Added</div>' +
+              '<div class="fl-notes-meta-value' + (!entry.date ? ' muted' : '') + '">' +
+                (entry.date ? fmtDate(entry.date) : 'Not recorded') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="fl-notes-actions">' +
+            '<button class="fl-btn-danger" onclick="deleteEntry()">Delete Record</button>' +
+          '</div>' +
         '</div>' +
 
         // Back link
         '<div style="margin-top:24px;margin-bottom:8px">' +
-          '<a href="/french-lexicon/" class="lex-random-btn" style="font-size:12px;padding:9px 16px">' +
-            '← French Lexicon' +
-          '</a>' +
+          '<a href="/lexicon/" class="lex-random-btn" style="font-size:12px;padding:9px 16px" onclick="localStorage.setItem(\'lex_active_tab\',\'register\')">← French Lexicon</a>' +
         '</div>';
     }
 

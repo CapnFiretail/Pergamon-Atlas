@@ -52,8 +52,8 @@
 
       <!-- Tab Bar -->
       <div class="lex-tabs">
-        <button class="lex-tab-btn active" id="tabBtnLexicon">Lexicon</button>
-        <button class="lex-tab-btn" id="tabBtnRegister">French Register</button>
+        <button class="lex-tab-btn active" id="tabBtnLexicon">English Lexicon</button>
+        <button class="lex-tab-btn" id="tabBtnRegister">French Lexicon</button>
       </div>
 
       <!-- Lexicon Tab -->
@@ -95,62 +95,26 @@
 
       </div>
 
-      <!-- French Register Tab -->
+      <!-- French Lexicon Tab -->
       <div id="tab-register" style="display:none">
 
-        <!-- Add Entry Form -->
-        <div class="fr-form-card">
-          <div class="fr-form-title">New Entry</div>
-          <div class="fr-form-grid">
-            <div class="fr-form-group">
-              <label class="fr-form-label" for="frFrench">French</label>
-              <input type="text" class="fr-form-input" id="frFrench" placeholder="e.g. bonjour" autocomplete="off" spellcheck="false" lang="fr">
-            </div>
-            <div class="fr-form-group">
-              <label class="fr-form-label" for="frEnglish">English</label>
-              <input type="text" class="fr-form-input" id="frEnglish" placeholder="e.g. good morning" autocomplete="off">
-            </div>
-            <div class="fr-form-group full">
-              <label class="fr-form-label" for="frNote">Note <span class="fr-label-opt">(optional)</span></label>
-              <input type="text" class="fr-form-input" id="frNote" placeholder="context, usage, memory hook..." autocomplete="off">
-            </div>
-            <div class="fr-form-group full">
-              <button class="fr-form-btn" id="frSubmit" type="button">Add to Register</button>
-            </div>
-          </div>
-          <div class="fr-form-error" id="frError" style="display:none"></div>
-        </div>
-
-        <!-- Search + count -->
         <div class="fr-control-row">
           <div class="lex-search-wrap" style="max-width:440px">
             <span class="lex-search-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             </span>
-            <input type="text" class="lex-search-input" id="frSearch" placeholder="Search entries..." autocomplete="off" spellcheck="false">
+            <input type="text" class="lex-search-input" id="flSearch" placeholder="Search French Lexicon..." autocomplete="off" spellcheck="false">
           </div>
-          <span class="fr-count" id="frCount"></span>
-          <button class="lex-random-btn" id="frExportBtn" type="button">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export Register
-          </button>
+          <span class="fr-count" id="flCount"></span>
+          <a class="lex-random-btn" href="/french-lexicon/" style="text-decoration:none">+ New Entry</a>
         </div>
 
-        <!-- Ledger -->
-        <div class="fr-ledger" id="frLedger" style="display:none">
-          <div class="fr-ledger-header">
-            <span>French</span>
-            <span>English</span>
-            <span>Added</span>
-            <span></span>
-          </div>
-          <div id="frRows"></div>
+        <div class="lex-word-list" id="flList" style="display:none"></div>
+        <div class="fr-empty" id="flEmpty" style="display:none">
+          <strong>No entries yet</strong>
+          Add your first French word using the New Entry button above.
         </div>
-        <div class="fr-empty" id="frEmpty" style="display:none">
-          <strong>No entries recorded yet</strong>
-          Add your first French word or phrase using the form above.
-        </div>
-        <div class="lex-no-results" id="frNoResults" style="display:none">No entries match that search.</div>
+        <div class="lex-no-results" id="flNoResults" style="display:none">No entries match that search.</div>
 
       </div>
 
@@ -160,7 +124,7 @@
 
   <script src="/operation/scripts/atlas.js"></script>
   <script src="/data/lexicon.js"></script>
-  <script src="/data/french-register.js"></script>
+  <script src="/data/french-lexicon.js"></script>
   <script>
     loadSnippets('The Lexicon');
 
@@ -325,7 +289,7 @@
         tabRegEl.style.display  = 'block';
         tabBtnLex.classList.remove('active');
         tabBtnReg.classList.add('active');
-        frRender(frLoad());
+        flRenderTab();
       } else {
         tabLexEl.style.display  = 'block';
         tabRegEl.style.display  = 'none';
@@ -340,215 +304,68 @@
     if (localStorage.getItem('lex_active_tab') === 'register') switchTab('register');
 
     // ══════════════════════════════════════════════
-    // FRENCH REGISTER
+    // FRENCH LEXICON TAB
     // ══════════════════════════════════════════════
 
-    const FR_KEY      = 'fr_register_v1';
-    const FR_SEED_KEY = 'fr_seeded_count';
+    const FL_KEY      = 'fl_entries_v1';
+    const FL_SEED_KEY = 'fl_seeded_count';
 
-    function frLoad() {
-      try { return JSON.parse(localStorage.getItem(FR_KEY) || '[]'); }
+    function flLoad() {
+      try { return JSON.parse(localStorage.getItem(FL_KEY) || '[]'); }
       catch(e) { return []; }
     }
 
-    function frSave(arr) {
-      localStorage.setItem(FR_KEY, JSON.stringify(arr));
-    }
-
-    function frSeedFromFile() {
-      var fileEntries = (window.frenchRegisterData && window.frenchRegisterData.entries) || [];
-      var lastCount   = parseInt(localStorage.getItem(FR_SEED_KEY) || '0', 10);
+    function flSeedFromFile() {
+      var fileEntries = (window.frenchLexiconData && window.frenchLexiconData.entries) || [];
+      var lastCount   = parseInt(localStorage.getItem(FL_SEED_KEY) || '0', 10);
       if (fileEntries.length <= lastCount) return;
-      var existing    = frLoad();
+      var existing    = flLoad();
       var existingIds = new Set(existing.map(function(e) { return e.id; }));
       var toAdd       = fileEntries.filter(function(e) { return !existingIds.has(e.id); });
-      if (toAdd.length > 0) frSave(toAdd.concat(existing));
-      localStorage.setItem(FR_SEED_KEY, fileEntries.length.toString());
+      if (toAdd.length > 0) localStorage.setItem(FL_KEY, JSON.stringify(toAdd.concat(existing)));
+      localStorage.setItem(FL_SEED_KEY, fileEntries.length.toString());
     }
 
-    function frExport() {
-      var all   = frLoad();
-      var lines = all.map(function(e) {
-        return '    { id: ' + JSON.stringify(e.id) +
-               ', french: '  + JSON.stringify(e.french) +
-               ', english: ' + JSON.stringify(e.english) +
-               ', note: '    + JSON.stringify(e.note || '') +
-               ', date: '    + JSON.stringify(e.date) + ' }';
+    function flEsc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function flRenderTab() {
+      flSeedFromFile();
+      var all   = flLoad();
+      var q     = ((document.getElementById('flSearch') || {}).value || '').trim().toLowerCase();
+      var items = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
+      if (q) items = items.filter(function(e) {
+        return (e.word||'').toLowerCase().includes(q) || (e.translation||'').toLowerCase().includes(q);
       });
-      var content = 'window.frenchRegisterData = {\n\n  entries: [\n\n' +
-                    lines.join(',\n\n') +
-                    '\n\n  ]\n\n};\n';
-      var blob = new Blob([content], { type: 'text/javascript' });
-      var url  = URL.createObjectURL(blob);
-      var a    = document.createElement('a');
-      a.href     = url;
-      a.download = 'french-register.js';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
 
-    frSeedFromFile();
+      var countEl = document.getElementById('flCount');
+      var listEl  = document.getElementById('flList');
+      var emptyEl = document.getElementById('flEmpty');
+      var noResEl = document.getElementById('flNoResults');
 
-    function frEsc(s) {
-      return String(s)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    function frFmtDate(iso) {
-      if (!iso) return '';
-      const d = new Date(iso + 'T12:00:00');
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
-    function frFilter(arr, q) {
-      q = (q || '').trim().toLowerCase();
-      if (!q) return arr;
-      return arr.filter(function(e) {
-        return e.french.toLowerCase().includes(q) ||
-               e.english.toLowerCase().includes(q) ||
-               (e.note && e.note.toLowerCase().includes(q));
-      });
-    }
-
-    function frCurrentItems() {
-      var q = (document.getElementById('frSearch') || {}).value || '';
-      return frFilter(frLoad(), q);
-    }
-
-    function frRender(items) {
-      var ledger  = document.getElementById('frLedger');
-      var rowsEl  = document.getElementById('frRows');
-      var emptyEl = document.getElementById('frEmpty');
-      var noResEl = document.getElementById('frNoResults');
-      var countEl = document.getElementById('frCount');
-      var all     = frLoad();
-
-      countEl.textContent = all.length + ' entr' + (all.length === 1 ? 'y' : 'ies') + ' on record';
+      if (countEl) countEl.textContent = all.length + ' entr' + (all.length === 1 ? 'y' : 'ies');
+      listEl.style.display  = 'none';
+      emptyEl.style.display = 'none';
       noResEl.style.display = 'none';
 
-      if (all.length === 0) {
-        ledger.style.display  = 'none';
-        emptyEl.style.display = 'block';
-        return;
-      }
-      emptyEl.style.display = 'none';
+      if (all.length === 0) { emptyEl.style.display = 'block'; return; }
+      if (items.length === 0) { noResEl.style.display = 'block'; return; }
 
-      if (items.length === 0) {
-        ledger.style.display  = 'none';
-        noResEl.style.display = 'block';
-        return;
-      }
-
-      ledger.style.display = 'block';
-      rowsEl.innerHTML = items.map(function(e) {
-        return '<div class="fr-row" data-id="' + frEsc(e.id) + '">' +
-          '<div class="fr-row-fr">' + frEsc(e.french) +
-            (e.note ? '<div class="fr-row-note">' + frEsc(e.note) + '</div>' : '') +
-          '</div>' +
-          '<div class="fr-row-en">' + frEsc(e.english) + '</div>' +
-          '<div class="fr-row-date">' + frEsc(frFmtDate(e.date)) + '</div>' +
-          '<div class="fr-row-actions">' +
-            '<button class="fr-btn-edit" title="Edit" onclick="frStartEdit(\'' + e.id + '\')">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-            '</button>' +
-            '<button class="fr-btn-del" title="Delete" onclick="frDelete(\'' + e.id + '\')">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
-            '</button>' +
-          '</div>' +
-        '</div>';
+      listEl.style.display = 'block';
+      listEl.innerHTML = items.map(function(e) {
+        return '<a class="lex-word-row" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
+          '<span class="lex-row-word">' + flEsc(e.word || '') + '</span>' +
+          (e.pronunciation ? '<span class="lex-row-pos">[' + flEsc(e.pronunciation) + ']</span>' : '') +
+          '<span class="lex-row-dot">·</span>' +
+          '<span class="lex-row-def">' + flEsc(e.translation || e.primary || '') + '</span>' +
+        '</a>';
       }).join('');
     }
 
-    function frStartEdit(id) {
-      var all = frLoad();
-      var e = all.find(function(x) { return x.id === id; });
-      if (!e) return;
-      var row = document.querySelector('.fr-row[data-id="' + id + '"]');
-      if (!row) return;
-      row.outerHTML =
-        '<div class="fr-edit-row" data-id="' + frEsc(e.id) + '">' +
-          '<div class="fr-edit-grid">' +
-            '<div class="fr-edit-group">' +
-              '<label class="fr-form-label" style="color:#8a611c">French</label>' +
-              '<input type="text" class="fr-edit-input" id="fedit-fr-' + e.id + '" value="' + frEsc(e.french) + '" autocomplete="off" spellcheck="false" lang="fr">' +
-            '</div>' +
-            '<div class="fr-edit-group">' +
-              '<label class="fr-form-label" style="color:#8a611c">English</label>' +
-              '<input type="text" class="fr-edit-input" id="fedit-en-' + e.id + '" value="' + frEsc(e.english) + '" autocomplete="off">' +
-            '</div>' +
-            '<div class="fr-edit-group" style="grid-column:1/-1">' +
-              '<label class="fr-form-label" style="color:#8a611c">Note</label>' +
-              '<input type="text" class="fr-edit-input" id="fedit-note-' + e.id + '" value="' + frEsc(e.note || '') + '" placeholder="optional..." autocomplete="off">' +
-            '</div>' +
-          '</div>' +
-          '<div class="fr-edit-actions">' +
-            '<button class="fr-edit-save" onclick="frSaveEdit(\'' + e.id + '\')">Save</button>' +
-            '<button class="fr-edit-cancel" onclick="frRender(frCurrentItems())">Cancel</button>' +
-          '</div>' +
-        '</div>';
-      var frInput = document.getElementById('fedit-fr-' + e.id);
-      if (frInput) frInput.focus();
-    }
+    flSeedFromFile();
 
-    function frSaveEdit(id) {
-      var frVal   = (document.getElementById('fedit-fr-'   + id) || {}).value || '';
-      var enVal   = (document.getElementById('fedit-en-'   + id) || {}).value || '';
-      var noteVal = (document.getElementById('fedit-note-' + id) || {}).value || '';
-      if (!frVal.trim() || !enVal.trim()) return;
-      var all = frLoad();
-      var idx = all.findIndex(function(x) { return x.id === id; });
-      if (idx < 0) return;
-      all[idx].french  = frVal.trim();
-      all[idx].english = enVal.trim();
-      all[idx].note    = noteVal.trim();
-      frSave(all);
-      frRender(frCurrentItems());
-    }
-
-    function frDelete(id) {
-      if (!confirm('Remove this entry from the register?')) return;
-      frSave(frLoad().filter(function(x) { return x.id !== id; }));
-      frRender(frCurrentItems());
-    }
-
-    document.getElementById('frSubmit').addEventListener('click', function() {
-      var frVal   = document.getElementById('frFrench').value.trim();
-      var enVal   = document.getElementById('frEnglish').value.trim();
-      var noteVal = document.getElementById('frNote').value.trim();
-      var errEl   = document.getElementById('frError');
-      if (!frVal || !enVal) {
-        errEl.textContent    = 'French and English fields are required.';
-        errEl.style.display  = 'block';
-        return;
-      }
-      errEl.style.display = 'none';
-      var all = frLoad();
-      all.unshift({
-        id:      Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-        french:  frVal,
-        english: enVal,
-        note:    noteVal,
-        date:    new Date().toISOString().slice(0, 10)
-      });
-      frSave(all);
-      document.getElementById('frFrench').value  = '';
-      document.getElementById('frEnglish').value = '';
-      document.getElementById('frNote').value    = '';
-      frRender(frFilter(all, document.getElementById('frSearch').value));
-      document.getElementById('frFrench').focus();
-    });
-
-    ['frFrench', 'frEnglish', 'frNote'].forEach(function(id) {
-      document.getElementById(id).addEventListener('keydown', function(ev) {
-        if (ev.key === 'Enter') document.getElementById('frSubmit').click();
-      });
-    });
-
-    document.getElementById('frSearch').addEventListener('input', function() {
-      frRender(frFilter(frLoad(), this.value));
-    });
-
-    document.getElementById('frExportBtn').addEventListener('click', frExport);
+    document.getElementById('flSearch').addEventListener('input', flRenderTab);
   </script>
 </body>
 </html>

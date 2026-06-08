@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
-  <title>Pergamon Atlas | The French Lexicon</title>
+  <title>Pergamon Atlas | French Lexicon — New Entry</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The French Lexicon — a language-learning archive within Pergamon Atlas. Every French word is a cataloged record with translations, usage context, grammar, and memory anchors for English speakers.">
+  <meta name="description" content="Add new words to the French Lexicon within Pergamon Atlas.">
   <link rel="stylesheet" href="/operation/styles/header.css">
   <link rel="stylesheet" href="/operation/styles/sidebar.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
@@ -41,25 +41,15 @@
 
       <!-- Controls -->
       <div class="fl-control-row">
-        <div class="lex-search-wrap">
-          <span class="lex-search-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          </span>
-          <input type="text" class="lex-search-input" id="flSearch" placeholder="Search the French Lexicon..." autocomplete="off" spellcheck="false">
-        </div>
-        <span class="fl-count" id="flCount"></span>
-        <button class="lex-random-btn" id="flNewBtn" type="button">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Entry
-        </button>
+        <a href="/lexicon/" class="lex-random-btn" style="text-decoration:none;background:#fff;border-color:#ccc;color:#555" onclick="localStorage.setItem('lex_active_tab','register')">← French Lexicon</a>
         <button class="lex-random-btn" id="flExportBtn" type="button" style="background:#fff;border-color:#ccc;color:#555">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export
         </button>
       </div>
 
-      <!-- New / Edit Entry Form -->
-      <div class="fl-form-wrap" id="flFormWrap" style="display:none">
+      <!-- Entry Form -->
+      <div class="fl-form-wrap" id="flFormWrap">
         <div class="fl-form-card">
           <div class="fl-form-header" id="flFormHeader">New Record</div>
           <input type="hidden" id="flEditId">
@@ -72,7 +62,7 @@
                 <input type="text" class="fl-form-input" id="flWord" placeholder="e.g. bonjour" autocomplete="off" spellcheck="false" lang="fr">
               </div>
               <div class="fl-form-group">
-                <label class="fl-form-label" for="flPron">Pronunciation <span class="fl-form-opt">(optional)</span></label>
+                <label class="fl-form-label" for="flPron">Pronunciation <span class="fl-form-opt">(auto-filled)</span></label>
                 <input type="text" class="fl-form-input" id="flPron" placeholder="e.g. /bɔ̃.ʒuʁ/" autocomplete="off">
               </div>
               <div class="fl-form-group">
@@ -124,24 +114,13 @@
 
           <div class="fl-form-section">
             <div class="fl-form-section-title">Context <span class="fl-opt">(optional)</span></div>
-            <div class="fl-form-grid">
+            <div class="fl-form-grid one">
               <div class="fl-form-group">
                 <label class="fl-form-label">Formality</label>
                 <div class="fl-radio-group">
                   <label class="fl-radio-label"><input type="radio" name="flFormality" value="informal"><span class="fl-radio-chip">Informal</span></label>
                   <label class="fl-radio-label"><input type="radio" name="flFormality" value="neutral" checked><span class="fl-radio-chip">Neutral</span></label>
                   <label class="fl-radio-label"><input type="radio" name="flFormality" value="formal"><span class="fl-radio-chip">Formal</span></label>
-                </div>
-              </div>
-              <div class="fl-form-group">
-                <label class="fl-form-label">Common Situations</label>
-                <div class="fl-check-group">
-                  <label class="fl-check-label"><input type="checkbox" name="flSit" value="friends"><span class="fl-check-chip">Friends</span></label>
-                  <label class="fl-check-label"><input type="checkbox" name="flSit" value="family"><span class="fl-check-chip">Family</span></label>
-                  <label class="fl-check-label"><input type="checkbox" name="flSit" value="school"><span class="fl-check-chip">School</span></label>
-                  <label class="fl-check-label"><input type="checkbox" name="flSit" value="work"><span class="fl-check-chip">Work</span></label>
-                  <label class="fl-check-label"><input type="checkbox" name="flSit" value="travel"><span class="fl-check-chip">Travel</span></label>
-                  <label class="fl-check-label"><input type="checkbox" name="flSit" value="texting"><span class="fl-check-chip">Texting</span></label>
                 </div>
               </div>
             </div>
@@ -179,20 +158,6 @@
             </div>
           </div>
 
-          <div class="fl-form-section">
-            <div class="fl-form-section-title">Learning <span class="fl-opt">(optional)</span></div>
-            <div class="fl-form-grid one">
-              <div class="fl-form-group">
-                <label class="fl-form-label" for="flAnchor">Memory Anchor</label>
-                <input type="text" class="fl-form-input" id="flAnchor" placeholder='e.g. "Used exactly like hey — casual and friendly."' autocomplete="off">
-              </div>
-              <div class="fl-form-group">
-                <label class="fl-form-label" for="flMistakes">Common Mistakes <span class="fl-form-opt">(one per line)</span></label>
-                <textarea class="fl-form-textarea" id="flMistakes" placeholder="e.g. Using this word in a formal email.&#10;Using this word when addressing a professor."></textarea>
-              </div>
-            </div>
-          </div>
-
           <div class="fl-form-section" style="margin-bottom:8px">
             <div class="fl-form-section-title">Connections <span class="fl-opt">(optional)</span></div>
             <div class="fl-form-grid one">
@@ -207,21 +172,9 @@
 
           <div class="fl-form-actions">
             <button class="fl-form-submit" id="flFormSubmit" type="button">Add to Lexicon</button>
-            <button class="fl-form-cancel" id="flFormCancel" type="button">Cancel</button>
+            <a href="/lexicon/" class="fl-form-cancel" style="text-decoration:none" onclick="localStorage.setItem('lex_active_tab','register')">Cancel</a>
           </div>
         </div>
-      </div>
-
-      <!-- Alphabet bar -->
-      <p class="section-label" id="flAlphaLabel" style="display:none">Browse by Letter</p>
-      <div class="lex-alpha-bar" id="flAlphaBar" style="display:none"></div>
-
-      <!-- Word list -->
-      <div class="lex-word-list" id="flWordList"></div>
-      <div class="lex-no-results" id="flNoResults" style="display:none">No records match that search.</div>
-      <div class="fr-empty" id="flEmpty" style="display:none">
-        <strong>No records cataloged yet</strong>
-        Add your first French word using the New Entry button above.
       </div>
 
     </main>
@@ -259,17 +212,50 @@
 
     flSeedFromFile();
 
-    // ── Helpers ──────────────────────────────────────
-    function h(s) {
-      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    // ── Auto-IPA ──────────────────────────────────────
+    function autoIPA(word) {
+      var s = word.toLowerCase();
+      s = s.replace(/ou/g, '\x01');          // protect ou → /u/
+      s = s.replace(/ll/g, '\x02');          // protect ll → /j/
+      s = s.replace(/eau|au/g, 'o');
+      s = s.replace(/ain|aim|ein/g, 'ɛ̃');
+      s = s.replace(/ai|ei/g, 'ɛ');
+      s = s.replace(/oi/g, 'wa');
+      s = s.replace(/an|am|en|em/g, 'ɑ̃');
+      s = s.replace(/in|im/g, 'ɛ̃');
+      s = s.replace(/on|om/g, 'õ');
+      s = s.replace(/un|um/g, 'œ̃');
+      s = s.replace(/ch/g, 'ʃ');
+      s = s.replace(/qu/g, 'k');
+      s = s.replace(/ph/g, 'f');
+      s = s.replace(/gn/g, 'ɲ');
+      s = s.replace(/th/g, 't');
+      s = s.replace(/c(?=[eiéèêyɛ])/g, 's');
+      s = s.replace(/ç/g, 's');
+      s = s.replace(/g(?=[eiéèêyɛ])/g, 'ʒ');
+      s = s.replace(/j/g, 'ʒ');
+      s = s.replace(/r/g, 'ʁ');
+      s = s.replace(/h/g, '');
+      s = s.replace(/[stdpgz]$/g, '');
+      s = s.replace(/e$/g, '');             // silent trailing e (before eʁ→e)
+      s = s.replace(/eʁ$/g, 'e');           // -er verb infinitives
+      s = s.replace(/é/g, 'e');
+      s = s.replace(/[èê]/g, 'ɛ');
+      s = s.replace(/â/g, 'ɑ');
+      s = s.replace(/ô/g, 'o');
+      s = s.replace(/î/g, 'i');
+      s = s.replace(/û/g, 'y');
+      s = s.replace(/u/g, 'y');             // remaining u → /y/ (BEFORE restoring ou)
+      s = s.replace(/\x01/g, 'u');          // restore ou → u
+      s = s.replace(/\x02/g, 'j');          // restore ll → j
+      return '/' + s + '/';
     }
 
+    // ── Helpers ──────────────────────────────────────
     function flGenAddress() {
       var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       var seg = function() {
-        return Array.from({length:5}, function() {
-          return c[Math.floor(Math.random() * c.length)];
-        }).join('');
+        return Array.from({length:5}, function() { return c[Math.floor(Math.random() * c.length)]; }).join('');
       };
       return seg() + '-' + seg() + '-' + seg();
     }
@@ -287,171 +273,38 @@
       URL.revokeObjectURL(url);
     }
 
-    // ── Render list ───────────────────────────────────
-    function flRender() {
-      var all    = flLoad();
-      var q      = (document.getElementById('flSearch').value || '').trim().toLowerCase();
-      var sorted = [...all].sort(function(a,b) { return a.word.localeCompare(b.word); });
-      var items  = q ? sorted.filter(function(e) {
-        return (e.word||'').toLowerCase().includes(q) ||
-               (e.primary||'').toLowerCase().includes(q) ||
-               (e.pronunciation||'').includes(q);
-      }) : sorted;
-
-      var countEl  = document.getElementById('flCount');
-      var listEl   = document.getElementById('flWordList');
-      var emptyEl  = document.getElementById('flEmpty');
-      var noResEl  = document.getElementById('flNoResults');
-      var alphaBar = document.getElementById('flAlphaBar');
-      var alphaLbl = document.getElementById('flAlphaLabel');
-
-      countEl.textContent = all.length + ' record' + (all.length === 1 ? '' : 's') + ' indexed';
-      noResEl.style.display = 'none';
-
-      if (all.length === 0) {
-        listEl.style.display   = 'none';
-        alphaBar.style.display = 'none';
-        alphaLbl.style.display = 'none';
-        emptyEl.style.display  = 'block';
-        return;
-      }
-      emptyEl.style.display = 'none';
-
-      if (items.length === 0) {
-        listEl.style.display  = 'none';
-        noResEl.style.display = 'block';
-        return;
-      }
-
-      // Alphabet bar (only when not searching)
-      if (!q) {
-        var letters = new Set(sorted.map(function(e) { return e.word[0].toUpperCase(); }));
-        alphaBar.innerHTML = '';
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(function(L) {
-          var btn = document.createElement('button');
-          btn.className = 'lex-alpha-btn';
-          btn.textContent = L;
-          if (!letters.has(L)) {
-            btn.disabled = true;
-          } else {
-            btn.addEventListener('click', function() {
-              document.querySelectorAll('#flAlphaBar .lex-alpha-btn').forEach(function(b) { b.classList.remove('active'); });
-              btn.classList.add('active');
-              var sec = document.getElementById('fl-section-' + L);
-              if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-          }
-          alphaBar.appendChild(btn);
-        });
-        alphaBar.style.display = 'flex';
-        alphaLbl.style.display = '';
-      } else {
-        alphaBar.style.display = 'none';
-        alphaLbl.style.display = 'none';
-      }
-
-      // Group alphabetically
-      var groups = {};
-      items.forEach(function(e) {
-        var L = e.word[0].toUpperCase();
-        if (!groups[L]) groups[L] = [];
-        groups[L].push(e);
-      });
-
-      listEl.innerHTML = '';
-      Object.keys(groups).sort().forEach(function(L) {
-        var section = document.createElement('div');
-        section.className = 'lex-letter-section';
-        section.id = 'fl-section-' + L;
-
-        var header = document.createElement('div');
-        header.className = 'lex-letter-header';
-        header.textContent = L;
-        section.appendChild(header);
-
-        groups[L].forEach(function(e) {
-          var row = document.createElement('a');
-          row.href = '/french-lexicon/record.html?word=' + encodeURIComponent(e.slug || e.word.toLowerCase());
-          row.className = 'lex-word-row';
-
-          var fColor  = { informal: '#4a9a4a', neutral: '#999', formal: '#3d5eab' };
-          var dotHTML = e.formality
-            ? '<span style="width:8px;height:8px;border-radius:50%;background:' + (fColor[e.formality]||'#ccc') + ';flex-shrink:0;margin-top:4px"></span>'
-            : '';
-
-          row.innerHTML =
-            '<span class="lex-row-word">' + h(e.word) + '</span>' +
-            '<span class="lex-row-pos">' + h(e.pos||'') + '</span>' +
-            '<span class="lex-row-dot">·</span>' +
-            '<span class="fl-row-translation">' + h(e.primary||'') + '</span>' +
-            dotHTML;
-          section.appendChild(row);
-        });
-
-        listEl.appendChild(section);
-      });
-
-      listEl.style.display = 'block';
-    }
-
     // ── Form ──────────────────────────────────────────
-    var formWrap = document.getElementById('flFormWrap');
-
-    function flResetFormDefaults() {
-      document.querySelector('input[name="flFormality"][value="neutral"]').checked = true;
-      document.querySelectorAll('input[name="flSit"]').forEach(function(c) { c.checked = false; });
-    }
-
     function flOpenForm(entry) {
-      document.getElementById('flEditId').value    = entry ? entry.id : '';
-      document.getElementById('flFormHeader').textContent = entry ? 'Edit Record' : 'New Record';
-      document.getElementById('flFormSubmit').textContent = entry ? 'Save Changes' : 'Add to Lexicon';
+      document.getElementById('flEditId').value            = entry ? entry.id : '';
+      document.getElementById('flFormHeader').textContent  = entry ? 'Edit Record' : 'New Record';
+      document.getElementById('flFormSubmit').textContent  = entry ? 'Save Changes' : 'Add to Lexicon';
 
       document.getElementById('flWord').value      = entry ? entry.word : '';
-      document.getElementById('flPron').value      = entry ? (entry.pronunciation||'') : '';
-      document.getElementById('flPos').value       = entry ? (entry.pos||'') : '';
-      document.getElementById('flPrimary').value   = entry ? (entry.primary||'') : '';
-      document.getElementById('flAlt').value       = entry ? (entry.alternatives||[]).join(', ') : '';
-      document.getElementById('flExFr').value      = entry ? ((entry.examples&&entry.examples[0]&&entry.examples[0].french)||'') : '';
-      document.getElementById('flExEn').value      = entry ? ((entry.examples&&entry.examples[0]&&entry.examples[0].english)||'') : '';
-      document.getElementById('flGender').value    = entry ? (entry.gender||'') : '';
-      document.getElementById('flPlural').value    = entry ? (entry.plural||'') : '';
-      document.getElementById('flConjGroup').value = entry ? (entry.conjugationGroup||'') : '';
-      document.getElementById('flIrregular').value = entry ? (entry.irregularForms||'') : '';
-      document.getElementById('flAnchor').value    = entry ? (entry.memoryAnchor||'') : '';
-      document.getElementById('flMistakes').value  = entry ? (entry.mistakes||[]).join('\n') : '';
-      document.getElementById('flRelated').value   = entry ? (entry.related||[]).join(', ') : '';
+      document.getElementById('flPron').value      = entry ? (entry.pronunciation || '') : '';
+      document.getElementById('flPos').value       = entry ? (entry.pos || '') : '';
+      document.getElementById('flPrimary').value   = entry ? (entry.primary || '') : '';
+      document.getElementById('flAlt').value       = entry ? (entry.alternatives || []).join(', ') : '';
+      document.getElementById('flExFr').value      = entry ? ((entry.examples && entry.examples[0] && entry.examples[0].french) || '') : '';
+      document.getElementById('flExEn').value      = entry ? ((entry.examples && entry.examples[0] && entry.examples[0].english) || '') : '';
+      document.getElementById('flGender').value    = entry ? (entry.gender || '') : '';
+      document.getElementById('flPlural').value    = entry ? (entry.plural || '') : '';
+      document.getElementById('flConjGroup').value = entry ? (entry.conjugationGroup || '') : '';
+      document.getElementById('flIrregular').value = entry ? (entry.irregularForms || '') : '';
+      document.getElementById('flRelated').value   = entry ? (entry.related || []).join(', ') : '';
 
       var formality = (entry && entry.formality) || 'neutral';
       document.querySelectorAll('input[name="flFormality"]').forEach(function(r) {
         r.checked = (r.value === formality);
       });
 
-      var situations = (entry && entry.situations) || [];
-      document.querySelectorAll('input[name="flSit"]').forEach(function(c) {
-        c.checked = situations.includes(c.value);
-      });
-
       document.getElementById('flFormError').style.display = 'none';
-      formWrap.style.display = 'block';
-      formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(function() { document.getElementById('flWord').focus(); }, 350);
-    }
-
-    function flCloseForm() {
-      formWrap.style.display = 'none';
-      document.getElementById('flEditId').value = '';
-      flResetFormDefaults();
-      // Clear ?edit= from URL without reloading
-      var url = new URL(window.location.href);
-      url.searchParams.delete('edit');
-      window.history.replaceState(null, '', url.toString());
+      document.getElementById('flWord').focus();
     }
 
     function flSubmitForm() {
-      var word    = (document.getElementById('flWord').value||'').trim();
+      var word    = (document.getElementById('flWord').value || '').trim();
       var pos     = document.getElementById('flPos').value;
-      var primary = (document.getElementById('flPrimary').value||'').trim();
+      var primary = (document.getElementById('flPrimary').value || '').trim();
       var errEl   = document.getElementById('flFormError');
       var editId  = document.getElementById('flEditId').value;
 
@@ -462,10 +315,10 @@
       }
 
       var slug = word.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-àâéèêëîïôùûüç]/g, '');
-
-      // Check for duplicate slug (excluding current edit)
-      var all = flLoad();
-      var duplicate = all.find(function(e) { return (e.slug===slug||e.word.toLowerCase()===word.toLowerCase()) && e.id !== editId; });
+      var all  = flLoad();
+      var duplicate = all.find(function(e) {
+        return (e.slug === slug || e.word.toLowerCase() === word.toLowerCase()) && e.id !== editId;
+      });
       if (duplicate) {
         errEl.textContent   = '"' + word + '" is already in the Lexicon.';
         errEl.style.display = 'block';
@@ -475,67 +328,67 @@
       errEl.style.display = 'none';
 
       var formalityEl = document.querySelector('input[name="flFormality"]:checked');
-      var situations  = [];
-      document.querySelectorAll('input[name="flSit"]:checked').forEach(function(c) { situations.push(c.value); });
-
-      var altRaw  = (document.getElementById('flAlt').value||'').trim();
-      var exFr    = (document.getElementById('flExFr').value||'').trim();
-      var exEn    = (document.getElementById('flExEn').value||'').trim();
-      var mistakes = (document.getElementById('flMistakes').value||'').split('\n').map(function(s){return s.trim();}).filter(Boolean);
-      var related  = (document.getElementById('flRelated').value||'').split(',').map(function(s){
+      var altRaw  = (document.getElementById('flAlt').value || '').trim();
+      var exFr    = (document.getElementById('flExFr').value || '').trim();
+      var exEn    = (document.getElementById('flExEn').value || '').trim();
+      var related = (document.getElementById('flRelated').value || '').split(',').map(function(s) {
         return s.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-àâéèêëîïôùûüç]/g, '');
       }).filter(Boolean);
 
-      var existing = editId ? all.find(function(e){return e.id===editId;}) : null;
+      var existing = editId ? all.find(function(e) { return e.id === editId; }) : null;
 
       var entry = {
-        id:               editId || (Date.now().toString(36) + Math.random().toString(36).slice(2,5)),
+        id:               editId || (Date.now().toString(36) + Math.random().toString(36).slice(2, 5)),
         word:             word,
         slug:             slug,
-        pronunciation:    (document.getElementById('flPron').value||'').trim(),
+        pronunciation:    (document.getElementById('flPron').value || '').trim(),
         pos:              pos,
+        translation:      primary,
         primary:          primary,
-        alternatives:     altRaw ? altRaw.split(',').map(function(s){return s.trim();}).filter(Boolean) : [],
-        examples:         (exFr||exEn) ? [{ french: exFr, english: exEn }] : [],
+        alternatives:     altRaw ? altRaw.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : [],
+        examples:         (exFr || exEn) ? [{ french: exFr, english: exEn }] : [],
         formality:        (formalityEl && formalityEl.value) || 'neutral',
-        situations:       situations,
         gender:           document.getElementById('flGender').value || '',
-        plural:           (document.getElementById('flPlural').value||'').trim(),
+        plural:           (document.getElementById('flPlural').value || '').trim(),
         conjugationGroup: document.getElementById('flConjGroup').value || '',
-        irregularForms:   (document.getElementById('flIrregular').value||'').trim(),
-        memoryAnchor:     (document.getElementById('flAnchor').value||'').trim(),
-        mistakes:         mistakes,
+        irregularForms:   (document.getElementById('flIrregular').value || '').trim(),
         related:          related,
         atlas:            existing ? existing.atlas : { address: flGenAddress() },
-        date:             existing ? existing.date : new Date().toISOString().slice(0,10)
+        date:             existing ? existing.date  : new Date().toISOString().slice(0, 10)
       };
 
       if (editId) {
-        var idx = all.findIndex(function(e){return e.id===editId;});
+        var idx = all.findIndex(function(e) { return e.id === editId; });
         if (idx >= 0) all[idx] = entry; else all.unshift(entry);
+        flSave(all);
+        window.location.href = '/french-lexicon/record.html?id=' + encodeURIComponent(entry.id);
       } else {
         all.unshift(entry);
+        flSave(all);
+        localStorage.setItem('lex_active_tab', 'register');
+        window.location.href = '/lexicon/';
       }
-      flSave(all);
-      flCloseForm();
-      flRender();
     }
 
+    // ── Auto-IPA on word blur ─────────────────────────
+    document.getElementById('flWord').addEventListener('blur', function() {
+      var pronEl = document.getElementById('flPron');
+      if (this.value.trim() && !pronEl.value.trim()) {
+        pronEl.value = autoIPA(this.value.trim());
+      }
+    });
+
     // ── Event listeners ───────────────────────────────
-    document.getElementById('flNewBtn').addEventListener('click', function() { flOpenForm(null); });
-    document.getElementById('flFormCancel').addEventListener('click', flCloseForm);
     document.getElementById('flFormSubmit').addEventListener('click', flSubmitForm);
     document.getElementById('flExportBtn').addEventListener('click', flExport);
-    document.getElementById('flSearch').addEventListener('input', flRender);
 
-    // Enter key in any form input submits
     document.querySelectorAll('.fl-form-input, .fl-form-select').forEach(function(el) {
       el.addEventListener('keydown', function(ev) {
         if (ev.key === 'Enter') flSubmitForm();
       });
     });
 
-    // Handle ?edit=ID in URL (coming from record page)
+    // ── Handle ?edit=ID ───────────────────────────────
     (function() {
       var params = new URLSearchParams(window.location.search);
       var editId = params.get('edit');
@@ -543,8 +396,6 @@
       var entry = flLoad().find(function(e) { return e.id === editId; });
       if (entry) flOpenForm(entry);
     })();
-
-    flRender();
   </script>
 </body>
 </html>
