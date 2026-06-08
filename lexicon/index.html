@@ -54,6 +54,7 @@
       <div class="lex-tabs">
         <button class="lex-tab-btn active" id="tabBtnLexicon">English Lexicon</button>
         <button class="lex-tab-btn" id="tabBtnRegister">French Lexicon</button>
+        <button class="lex-tab-btn" id="tabBtnPhrases">Phrases</button>
       </div>
 
       <!-- Lexicon Tab -->
@@ -129,6 +130,28 @@
           Add your first French word using the New Entry button above.
         </div>
         <div class="lex-no-results" id="flNoResults" style="display:none">No entries match that search.</div>
+
+      </div>
+
+      <!-- Phrases Tab -->
+      <div id="tab-phrases" style="display:none">
+
+        <div class="lex-search-row">
+          <div class="lex-search-wrap">
+            <span class="lex-search-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </span>
+            <input type="text" class="lex-search-input" id="phSearch" placeholder="Search phrases..." autocomplete="off" spellcheck="false">
+          </div>
+          <a class="lex-random-btn" href="/french-lexicon/" style="text-decoration:none">+ New Phrase</a>
+        </div>
+
+        <div class="lex-word-list" id="phList"></div>
+        <div class="fr-empty" id="phEmpty" style="display:none">
+          <strong>No phrases yet</strong>
+          Add your first French phrase using the New Phrase button above — select Expression as the word type.
+        </div>
+        <div class="lex-no-results" id="phNoResults" style="display:none">No phrases match that search.</div>
 
       </div>
 
@@ -293,29 +316,30 @@
 
     const tabLexEl  = document.getElementById('tab-lexicon');
     const tabRegEl  = document.getElementById('tab-register');
+    const tabPhEl   = document.getElementById('tab-phrases');
     const tabBtnLex = document.getElementById('tabBtnLexicon');
     const tabBtnReg = document.getElementById('tabBtnRegister');
+    const tabBtnPhr = document.getElementById('tabBtnPhrases');
 
     function switchTab(tab) {
-      if (tab === 'register') {
-        tabLexEl.style.display  = 'none';
-        tabRegEl.style.display  = 'block';
-        tabBtnLex.classList.remove('active');
-        tabBtnReg.classList.add('active');
-        flRenderTab();
-      } else {
-        tabLexEl.style.display  = 'block';
-        tabRegEl.style.display  = 'none';
-        tabBtnLex.classList.add('active');
-        tabBtnReg.classList.remove('active');
-      }
+      tabLexEl.style.display = tab === 'lexicon'  ? 'block' : 'none';
+      tabRegEl.style.display = tab === 'register' ? 'block' : 'none';
+      tabPhEl.style.display  = tab === 'phrases'  ? 'block' : 'none';
+      tabBtnLex.classList.toggle('active', tab === 'lexicon');
+      tabBtnReg.classList.toggle('active', tab === 'register');
+      tabBtnPhr.classList.toggle('active', tab === 'phrases');
+      if (tab === 'register') flRenderTab();
+      if (tab === 'phrases')  flRenderPhrases();
     }
 
     tabBtnLex.addEventListener('click', () => switchTab('lexicon'));
     tabBtnReg.addEventListener('click', () => switchTab('register'));
+    tabBtnPhr.addEventListener('click', () => switchTab('phrases'));
 
-    // Only open French tab when explicitly requested via ?tab=french
-    if (new URLSearchParams(window.location.search).get('tab') === 'french') switchTab('register');
+    // Open the correct tab when requested via ?tab=
+    var _tabParam = new URLSearchParams(window.location.search).get('tab');
+    if (_tabParam === 'french') switchTab('register');
+    else if (_tabParam === 'phrases') switchTab('phrases');
 
     // ══════════════════════════════════════════════
     // FRENCH LEXICON TAB
@@ -348,7 +372,7 @@
       return '<div class="lex-word-row">' +
         '<a class="fl-row-link" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
           '<span class="lex-row-word">' + flEsc(e.word || '') + '</span>' +
-          (e.pronunciation ? '<span class="lex-row-pos">[' + flEsc(e.pronunciation) + ']</span>' : '') +
+          (e.pos ? '<span class="lex-row-pos">' + flEsc(e.pos) + '</span>' : '') +
           '<span class="lex-row-dot">·</span>' +
           '<span class="lex-row-def">' + flEsc(e.translation || e.primary || '') + '</span>' +
         '</a>' +
@@ -360,7 +384,7 @@
 
     function flRenderTab() {
       flSeedFromFile();
-      var all    = flLoad();
+      var all    = flLoad().filter(function(e){ return (e.pos||'').toLowerCase() !== 'expression'; });
       var sorted = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
       var q      = ((document.getElementById('flSearch') || {}).value || '').trim().toLowerCase();
       var items  = q ? sorted.filter(function(e) {
@@ -460,11 +484,43 @@
     document.getElementById('flSearch').addEventListener('input', flRenderTab);
 
     document.getElementById('flRandomBtn').addEventListener('click', function() {
-      var all = flLoad();
+      var all = flLoad().filter(function(e){ return (e.pos||'').toLowerCase() !== 'expression'; });
       if (!all.length) return;
       var e = all[Math.floor(Math.random() * all.length)];
       window.location.href = '/french-lexicon/record.html?id=' + encodeURIComponent(e.id);
     });
+
+    // ══════════════════════════════════════════════
+    // PHRASES TAB
+    // ══════════════════════════════════════════════
+
+    function flRenderPhrases() {
+      flSeedFromFile();
+      var all    = flLoad().filter(function(e){ return (e.pos||'').toLowerCase() === 'expression'; });
+      var sorted = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
+      var q      = ((document.getElementById('phSearch') || {}).value || '').trim().toLowerCase();
+      var items  = q ? sorted.filter(function(e) {
+        return (e.word||'').toLowerCase().includes(q) ||
+               (e.translation||e.primary||'').toLowerCase().includes(q);
+      }) : sorted;
+
+      var listEl  = document.getElementById('phList');
+      var emptyEl = document.getElementById('phEmpty');
+      var noResEl = document.getElementById('phNoResults');
+
+      listEl.innerHTML = '';
+      listEl.style.display  = 'none';
+      emptyEl.style.display = 'none';
+      noResEl.style.display = 'none';
+
+      if (all.length === 0) { emptyEl.style.display = 'block'; return; }
+      if (items.length === 0) { noResEl.style.display = 'block'; return; }
+
+      listEl.style.display = 'block';
+      listEl.innerHTML = items.map(flRowHTML).join('');
+    }
+
+    document.getElementById('phSearch').addEventListener('input', flRenderPhrases);
   </script>
 </body>
 </html>
