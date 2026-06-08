@@ -54,7 +54,6 @@
       <div class="lex-tabs">
         <button class="lex-tab-btn active" id="tabBtnLexicon">English Lexicon</button>
         <button class="lex-tab-btn" id="tabBtnRegister">French Lexicon</button>
-        <button class="lex-tab-btn" id="tabBtnPhrases">Phrases</button>
       </div>
 
       <!-- Lexicon Tab -->
@@ -112,6 +111,7 @@
             Random Entry
           </button>
           <a class="lex-random-btn" href="/french-lexicon/" style="text-decoration:none">+ New Entry</a>
+          <button class="lex-random-btn" id="flPhrasesBtn" type="button">Phrases</button>
         </div>
 
         <!-- Recent Records -->
@@ -133,27 +133,6 @@
 
       </div>
 
-      <!-- Phrases Tab -->
-      <div id="tab-phrases" style="display:none">
-
-        <div class="lex-search-row">
-          <div class="lex-search-wrap">
-            <span class="lex-search-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            </span>
-            <input type="text" class="lex-search-input" id="phSearch" placeholder="Search phrases..." autocomplete="off" spellcheck="false">
-          </div>
-          <a class="lex-random-btn" href="/french-lexicon/" style="text-decoration:none">+ New Phrase</a>
-        </div>
-
-        <div class="lex-word-list" id="phList"></div>
-        <div class="fr-empty" id="phEmpty" style="display:none">
-          <strong>No phrases yet</strong>
-          Add your first French phrase using the New Phrase button above — select Expression as the word type.
-        </div>
-        <div class="lex-no-results" id="phNoResults" style="display:none">No phrases match that search.</div>
-
-      </div>
 
     </main>
   </div>
@@ -316,30 +295,22 @@
 
     const tabLexEl  = document.getElementById('tab-lexicon');
     const tabRegEl  = document.getElementById('tab-register');
-    const tabPhEl   = document.getElementById('tab-phrases');
     const tabBtnLex = document.getElementById('tabBtnLexicon');
     const tabBtnReg = document.getElementById('tabBtnRegister');
-    const tabBtnPhr = document.getElementById('tabBtnPhrases');
 
     function switchTab(tab) {
       tabLexEl.style.display = tab === 'lexicon'  ? 'block' : 'none';
       tabRegEl.style.display = tab === 'register' ? 'block' : 'none';
-      tabPhEl.style.display  = tab === 'phrases'  ? 'block' : 'none';
       tabBtnLex.classList.toggle('active', tab === 'lexicon');
       tabBtnReg.classList.toggle('active', tab === 'register');
-      tabBtnPhr.classList.toggle('active', tab === 'phrases');
       if (tab === 'register') flRenderTab();
-      if (tab === 'phrases')  flRenderPhrases();
     }
 
-    tabBtnLex.addEventListener('click', () => switchTab('lexicon'));
-    tabBtnReg.addEventListener('click', () => switchTab('register'));
-    tabBtnPhr.addEventListener('click', () => switchTab('phrases'));
+    tabBtnLex.addEventListener('click', () => { flMode = 'words'; switchTab('lexicon'); });
+    tabBtnReg.addEventListener('click', () => { flMode = 'words'; switchTab('register'); });
 
-    // Open the correct tab when requested via ?tab=
-    var _tabParam = new URLSearchParams(window.location.search).get('tab');
-    if (_tabParam === 'french') switchTab('register');
-    else if (_tabParam === 'phrases') switchTab('phrases');
+    // Only open French tab when explicitly requested via ?tab=french
+    if (new URLSearchParams(window.location.search).get('tab') === 'french') switchTab('register');
 
     // ══════════════════════════════════════════════
     // FRENCH LEXICON TAB
@@ -368,23 +339,27 @@
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    var flMode = 'words';
+
     function flRowHTML(e) {
-      return '<div class="lex-word-row">' +
-        '<a class="fl-row-link" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
-          '<span class="lex-row-word">' + flEsc(e.word || '') + '</span>' +
-          (e.pos ? '<span class="lex-row-pos">' + flEsc(e.pos) + '</span>' : '') +
-          '<span class="lex-row-dot">·</span>' +
-          '<span class="lex-row-def">' + flEsc(e.translation || e.primary || '') + '</span>' +
-        '</a>' +
-        '<a class="fl-row-edit" href="/french-lexicon/?edit=' + flEsc(e.id) + '" title="Edit">' +
-          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
-        '</a>' +
-      '</div>';
+      var def = e.translation || e.primary || '';
+      if (def.length > 90) def = def.slice(0, 90).trimEnd() + '…';
+      return '<a class="lex-word-row" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
+        '<span class="lex-row-word">' + flEsc(e.word || '') + '</span>' +
+        '<span class="lex-row-pos">' + flEsc(e.pos || '') + '</span>' +
+        '<span class="lex-row-dot">·</span>' +
+        '<span class="lex-row-def">' + flEsc(def) + '</span>' +
+      '</a>';
     }
 
     function flRenderTab() {
       flSeedFromFile();
-      var all    = flLoad().filter(function(e){ return (e.pos||'').toLowerCase() !== 'expression'; });
+      var rawAll = flLoad();
+      var all    = rawAll.filter(function(e){
+        return flMode === 'phrases'
+          ? (e.pos||'').toLowerCase() === 'expression'
+          : (e.pos||'').toLowerCase() !== 'expression';
+      });
       var sorted = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
       var q      = ((document.getElementById('flSearch') || {}).value || '').trim().toLowerCase();
       var items  = q ? sorted.filter(function(e) {
@@ -407,16 +382,20 @@
       noResEl.style.display = 'none';
 
       if (all.length === 0) {
+        emptyEl.innerHTML = flMode === 'phrases'
+          ? '<strong>No phrases yet</strong> Add your first French phrase using the New Entry button above — select Expression as the word type.'
+          : '<strong>No entries yet</strong> Add your first French word using the New Entry button above.';
         emptyEl.style.display = 'block';
         featGrid.innerHTML = ''; featLabel.style.display = featGrid.style.display = 'none';
         alphaBar.innerHTML = ''; alphaLabel.style.display = alphaGap.style.display = alphaBar.style.display = 'none';
         return;
       }
 
-      // Recent Records (5 newest, shown only when not searching)
-      if (!q) {
+      // Recent Records (words mode only, not searching)
+      if (flMode === 'words' && !q) {
         featLabel.style.display = featGrid.style.display = '';
-        var recent = all.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); }).slice(0,5);
+        var recent = rawAll.filter(function(e){ return (e.pos||'').toLowerCase() !== 'expression'; })
+          .sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); }).slice(0,5);
         featGrid.innerHTML = recent.map(function(e) {
           return '<a class="lex-feat-card" href="/french-lexicon/record.html?id=' + flEsc(e.id) + '">' +
             '<p class="lex-feat-word">' + flEsc(e.word||'') + '</p>' +
@@ -428,7 +407,7 @@
         featLabel.style.display = featGrid.style.display = 'none';
       }
 
-      // Alphabet bar (only when browsing, not searching)
+      // Alphabet bar (not searching)
       if (!q && items.length > 0) {
         alphaGap.style.display = alphaLabel.style.display = alphaBar.style.display = '';
         var letters = new Set(items.map(function(e){ return (e.word||'A')[0].toUpperCase(); }));
@@ -490,37 +469,16 @@
       window.location.href = '/french-lexicon/record.html?id=' + encodeURIComponent(e.id);
     });
 
-    // ══════════════════════════════════════════════
-    // PHRASES TAB
-    // ══════════════════════════════════════════════
-
-    function flRenderPhrases() {
-      flSeedFromFile();
-      var all    = flLoad().filter(function(e){ return (e.pos||'').toLowerCase() === 'expression'; });
-      var sorted = all.slice().sort(function(a,b){ return (a.word||'').localeCompare(b.word||''); });
-      var q      = ((document.getElementById('phSearch') || {}).value || '').trim().toLowerCase();
-      var items  = q ? sorted.filter(function(e) {
-        return (e.word||'').toLowerCase().includes(q) ||
-               (e.translation||e.primary||'').toLowerCase().includes(q);
-      }) : sorted;
-
-      var listEl  = document.getElementById('phList');
-      var emptyEl = document.getElementById('phEmpty');
-      var noResEl = document.getElementById('phNoResults');
-
-      listEl.innerHTML = '';
-      listEl.style.display  = 'none';
-      emptyEl.style.display = 'none';
-      noResEl.style.display = 'none';
-
-      if (all.length === 0) { emptyEl.style.display = 'block'; return; }
-      if (items.length === 0) { noResEl.style.display = 'block'; return; }
-
-      listEl.style.display = 'block';
-      listEl.innerHTML = items.map(flRowHTML).join('');
-    }
-
-    document.getElementById('phSearch').addEventListener('input', flRenderPhrases);
+    document.getElementById('flPhrasesBtn').addEventListener('click', function() {
+      flMode = (flMode === 'phrases') ? 'words' : 'phrases';
+      var active = flMode === 'phrases';
+      this.style.background   = active ? 'rgba(191,125,8,0.18)' : '';
+      this.style.borderColor  = active ? 'rgba(191,125,8,0.6)'  : '';
+      this.style.color        = active ? 'rgba(226,173,53,1)'   : '';
+      this.textContent        = active ? '← Words' : 'Phrases';
+      document.getElementById('flSearch').value = '';
+      flRenderTab();
+    });
   </script>
 </body>
 </html>
