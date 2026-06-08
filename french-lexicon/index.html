@@ -41,7 +41,7 @@
 
       <!-- Controls -->
       <div class="fl-control-row">
-        <a href="/lexicon/" class="lex-random-btn" style="text-decoration:none;background:#fff;border-color:#ccc;color:#555" onclick="localStorage.setItem('lex_active_tab','register')">← French Lexicon</a>
+        <a href="/lexicon/?tab=french" class="lex-random-btn" style="text-decoration:none;background:#fff;border-color:#ccc;color:#555">← French Lexicon</a>
         <button class="lex-random-btn" id="flExportBtn" type="button" style="background:#fff;border-color:#ccc;color:#555">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export
@@ -172,7 +172,7 @@
 
           <div class="fl-form-actions">
             <button class="fl-form-submit" id="flFormSubmit" type="button">Add to Lexicon</button>
-            <a href="/lexicon/" class="fl-form-cancel" style="text-decoration:none" onclick="localStorage.setItem('lex_active_tab','register')">Cancel</a>
+            <a href="/lexicon/?tab=french" class="fl-form-cancel" style="text-decoration:none">Cancel</a>
           </div>
         </div>
       </div>
@@ -365,8 +365,7 @@
       } else {
         all.unshift(entry);
         flSave(all);
-        localStorage.setItem('lex_active_tab', 'register');
-        window.location.href = '/lexicon/';
+        window.location.href = '/lexicon/?tab=french';
       }
     }
 

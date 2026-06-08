@@ -297,7 +297,6 @@
     const tabBtnReg = document.getElementById('tabBtnRegister');
 
     function switchTab(tab) {
-      localStorage.setItem('lex_active_tab', tab);
       if (tab === 'register') {
         tabLexEl.style.display  = 'none';
         tabRegEl.style.display  = 'block';
@@ -315,7 +314,8 @@
     tabBtnLex.addEventListener('click', () => switchTab('lexicon'));
     tabBtnReg.addEventListener('click', () => switchTab('register'));
 
-    if (localStorage.getItem('lex_active_tab') === 'register') switchTab('register');
+    // Only open French tab when explicitly requested via ?tab=french
+    if (new URLSearchParams(window.location.search).get('tab') === 'french') switchTab('register');
 
     // ══════════════════════════════════════════════
     // FRENCH LEXICON TAB

@@ -76,7 +76,7 @@
       main.innerHTML = '<div class="lex-not-found">' +
         '<h2>Record Not Found</h2>' +
         '<p>No indexed entry was located in the French Lexicon.</p>' +
-        '<a class="lex-random-btn" href="/lexicon/" onclick="localStorage.setItem(\'lex_active_tab\',\'register\')">← French Lexicon</a>' +
+        '<a class="lex-random-btn" href="/lexicon/?tab=french">← French Lexicon</a>' +
         '</div>';
     } else {
       document.title = 'Pergamon Atlas | ' + entry.word + ' — The French Lexicon';
@@ -88,8 +88,7 @@
       if (!confirm('Permanently remove "' + entry.word + '" from the French Lexicon?')) return;
       var updated = flLoad().filter(function(e) { return e.id !== entry.id; });
       localStorage.setItem(FL_KEY, JSON.stringify(updated));
-      localStorage.setItem('lex_active_tab', 'register');
-      window.location.href = '/lexicon/';
+      window.location.href = '/lexicon/?tab=french';
     };
 
     function renderPage() {
@@ -182,7 +181,7 @@
               '</a>' +
             '</div>' +
           '</div>' +
-          '<a href="/lexicon/" class="lex-hero-artifact" aria-label="French Lexicon index" onclick="localStorage.setItem(\'lex_active_tab\',\'register\')">' +
+          '<a href="/lexicon/?tab=french" class="lex-hero-artifact" aria-label="French Lexicon index">' +
             '<span class="lex-hero-artifact-inner"></span>' +
             '<span style="font-size:28px;color:rgba(226,173,53,0.85);flex-shrink:0;line-height:1">⚜</span>' +
             '<span class="lex-hero-artifact-text">' +
@@ -240,7 +239,7 @@
 
         // Back link
         '<div style="margin-top:24px;margin-bottom:8px">' +
-          '<a href="/lexicon/" class="lex-random-btn" style="font-size:12px;padding:9px 16px" onclick="localStorage.setItem(\'lex_active_tab\',\'register\')">← French Lexicon</a>' +
+          '<a href="/lexicon/?tab=french" class="lex-random-btn" style="font-size:12px;padding:9px 16px">← French Lexicon</a>' +
         '</div>';
     }
 
