@@ -151,17 +151,6 @@
       background: #ddd;
     }
 
-    .notice-box {
-      margin-top: 20px;
-      background: #f8f5ee;
-      border: 1px solid #e0c98a;
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: #6a5210;
-      line-height: 1.6;
-    }
-
     .coming-soon-card {
       background: white;
       border: 2px solid #000;
@@ -203,6 +192,81 @@
       .feature-list { grid-template-columns: 1fr; }
       .auth-card { padding: 20px; }
     }
+
+    .hidden { display: none !important; }
+
+    .account-loading {
+      max-width: 860px;
+      padding: 40px 0;
+      text-align: center;
+      color: #666;
+      font-size: 15px;
+    }
+
+    .member-card {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      max-width: 480px;
+    }
+    .member-card h3 {
+      margin: 0 0 20px;
+      font-size: 22px;
+      color: #111;
+    }
+    .member-field {
+      margin-bottom: 18px;
+    }
+    .member-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #8a611c;
+      margin-bottom: 4px;
+    }
+    .member-value {
+      font-size: 16px;
+      color: #111;
+      font-family: Georgia, serif;
+    }
+    .member-address-field {
+      background: #111;
+      border: 2px solid #8a611c;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+    }
+    .member-address-field .member-label {
+      color: #d9b874;
+    }
+    .member-address-value {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 19px;
+      letter-spacing: 0.06em;
+      color: #f0d39b;
+      font-weight: 700;
+    }
+
+    .form-message {
+      margin-top: 16px;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .form-message.error {
+      background: #fbeaea;
+      border: 1px solid #d99;
+      color: #8a2020;
+    }
+    .form-message.info {
+      background: #f8f5ee;
+      border: 1px solid #e0c98a;
+      color: #6a5210;
+    }
   </style>
 </head>
 <body>
@@ -216,64 +280,94 @@
         <p>Sign in or create an account to save your progress, bookmark artifacts, and access your Atlas history.</p>
       </section>
 
-      <div class="account-layout">
-        <div class="auth-card">
-          <h3>Sign In</h3>
-          <p class="card-sub">Access your existing Pergamon Atlas account.</p>
+      <div id="account-loading" class="account-loading">Loading your Atlas session…</div>
 
-          <form id="signin-form">
-            <div class="field-group">
-              <label for="signin-email">Email</label>
-              <input type="email" id="signin-email" name="email" placeholder="your@email.com">
-            </div>
-            <div class="field-group">
-              <label for="signin-password">Password</label>
-              <input type="password" id="signin-password" name="password" placeholder="••••••••">
-            </div>
-            <button type="submit" class="auth-btn">Sign In</button>
-          </form>
+      <div id="account-guest" class="hidden">
+        <div class="account-layout">
+          <div class="auth-card">
+            <h3>Sign In</h3>
+            <p class="card-sub">Access your existing Pergamon Atlas account.</p>
 
-          <div class="notice-box">
-            Account login is not yet active. Backend support is coming soon.
+            <form id="signin-form">
+              <div class="field-group">
+                <label for="signin-email">Email</label>
+                <input type="email" id="signin-email" name="email" placeholder="your@email.com" required>
+              </div>
+              <div class="field-group">
+                <label for="signin-password">Password</label>
+                <input type="password" id="signin-password" name="password" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="auth-btn">Sign In</button>
+            </form>
+
+            <div id="signin-message" class="form-message hidden"></div>
+          </div>
+
+          <div class="auth-card">
+            <h3>Create Account</h3>
+            <p class="card-sub">Register to get the most out of the Atlas.</p>
+
+            <form id="signup-form">
+              <div class="field-group">
+                <label for="signup-name">Display Name</label>
+                <input type="text" id="signup-name" name="name" placeholder="Your name or handle">
+              </div>
+              <div class="field-group">
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" name="email" placeholder="your@email.com" required>
+              </div>
+              <div class="field-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" placeholder="Choose a password" required minlength="6">
+              </div>
+              <button type="submit" class="auth-btn">Create Account</button>
+            </form>
+
+            <div id="signup-message" class="form-message hidden"></div>
           </div>
         </div>
 
-        <div class="auth-card">
-          <h3>Create Account</h3>
-          <p class="card-sub">Register to get the most out of the Atlas.</p>
-
-          <form id="signup-form">
-            <div class="field-group">
-              <label for="signup-name">Display Name</label>
-              <input type="text" id="signup-name" name="name" placeholder="Your name or handle">
-            </div>
-            <div class="field-group">
-              <label for="signup-email">Email</label>
-              <input type="email" id="signup-email" name="email" placeholder="your@email.com">
-            </div>
-            <div class="field-group">
-              <label for="signup-password">Password</label>
-              <input type="password" id="signup-password" name="password" placeholder="Choose a password">
-            </div>
-            <button type="submit" class="auth-btn">Create Account</button>
-          </form>
-
-          <div class="notice-box">
-            Registration is not yet active. Backend support is coming soon.
-          </div>
+        <div class="coming-soon-card">
+          <h3>What Your Account Will Do</h3>
+          <ul class="feature-list">
+            <li>Bookmark artifacts and return to them later</li>
+            <li>Track which pages you've visited in the Atlas</li>
+            <li>Save custom notes on any artifact</li>
+            <li>View your full Atlas exploration history</li>
+            <li>Unlock account-exclusive Atlas features</li>
+            <li>Sync your data across devices</li>
+          </ul>
         </div>
       </div>
 
-      <div class="coming-soon-card">
-        <h3>What Your Account Will Do</h3>
-        <ul class="feature-list">
-          <li>Bookmark artifacts and return to them later</li>
-          <li>Track which pages you've visited in the Atlas</li>
-          <li>Save custom notes on any artifact</li>
-          <li>View your full Atlas exploration history</li>
-          <li>Unlock account-exclusive Atlas features</li>
-          <li>Sync your data across devices</li>
-        </ul>
+      <div id="account-member" class="hidden">
+        <div class="member-card">
+          <h3>Your Account</h3>
+
+          <div class="member-address-field">
+            <div class="member-label">Atlas Address</div>
+            <div id="member-address" class="member-address-value">—</div>
+          </div>
+
+          <div class="member-field">
+            <div class="member-label">Display Name</div>
+            <div id="member-name" class="member-value">—</div>
+          </div>
+          <div class="member-field">
+            <div class="member-label">Email</div>
+            <div id="member-email" class="member-value">—</div>
+          </div>
+          <div class="member-field">
+            <div class="member-label">Access Level</div>
+            <div id="member-access" class="member-value">—</div>
+          </div>
+          <div class="member-field">
+            <div class="member-label">Member Since</div>
+            <div id="member-since" class="member-value">—</div>
+          </div>
+
+          <button type="button" id="signout-btn" class="auth-btn secondary">Sign Out</button>
+        </div>
       </div>
 
     </main>
@@ -282,14 +376,143 @@
   <script src="/operation/scripts/atlas.js"></script>
   <script>
     loadSnippets('Account');
-
-    document.getElementById('signin-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-    });
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-    });
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/operation/scripts/auth/supabase-config.js"></script>
+  <script src="/operation/scripts/auth/supabase.js"></script>
+  <script src="/operation/scripts/auth/auth.js"></script>
+  <script src="/operation/scripts/auth/permissions.js"></script>
+
+  <script>
+    (function () {
+      var loadingEl = document.getElementById('account-loading');
+      var guestEl   = document.getElementById('account-guest');
+      var memberEl  = document.getElementById('account-member');
+
+      function showMessage(el, text, type) {
+        el.textContent = text;
+        el.classList.remove('hidden', 'error', 'info');
+        el.classList.add(type || 'error');
+      }
+      function clearMessage(el) {
+        el.textContent = '';
+        el.classList.add('hidden');
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '—';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      }
+
+      function renderMember(session, profile) {
+        document.getElementById('member-address').textContent = profile ? ('ATLAS-' + profile.atlas_address) : '—';
+        document.getElementById('member-name').textContent = profile ? profile.display_name : '—';
+        document.getElementById('member-email').textContent = session.user.email || '—';
+        document.getElementById('member-access').textContent = window.PergamonPermissions.getAccessLevelLabel(profile);
+        document.getElementById('member-since').textContent = formatDate(profile && profile.created_at);
+
+        loadingEl.classList.add('hidden');
+        guestEl.classList.add('hidden');
+        memberEl.classList.remove('hidden');
+      }
+
+      function renderGuest() {
+        loadingEl.classList.add('hidden');
+        memberEl.classList.add('hidden');
+        guestEl.classList.remove('hidden');
+      }
+
+      async function refreshAuthState() {
+        try {
+          var result = await window.PergamonAuth.getCurrentUserAndProfile();
+          if (result.session) {
+            renderMember(result.session, result.profile);
+          } else {
+            renderGuest();
+          }
+        } catch (err) {
+          console.error('Pergamon Auth: failed to resolve session', err);
+          renderGuest();
+        }
+      }
+
+      // Sign in
+      document.getElementById('signin-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var msgEl = document.getElementById('signin-message');
+        clearMessage(msgEl);
+
+        var email = document.getElementById('signin-email').value.trim();
+        var password = document.getElementById('signin-password').value;
+
+        var submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        try {
+          var res = await window.PergamonAuth.signIn({ email: email, password: password });
+          if (res.error) {
+            showMessage(msgEl, res.error.message, 'error');
+            return;
+          }
+          await refreshAuthState();
+        } catch (err) {
+          showMessage(msgEl, 'Something went wrong signing in. Please try again.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+
+      // Sign up
+      document.getElementById('signup-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var msgEl = document.getElementById('signup-message');
+        clearMessage(msgEl);
+
+        var displayName = document.getElementById('signup-name').value.trim();
+        var email = document.getElementById('signup-email').value.trim();
+        var password = document.getElementById('signup-password').value;
+
+        var submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        try {
+          var res = await window.PergamonAuth.signUp({ email: email, password: password, displayName: displayName });
+          if (res.error) {
+            showMessage(msgEl, res.error.message, 'error');
+            return;
+          }
+          if (res.data && res.data.session) {
+            await refreshAuthState();
+          } else {
+            showMessage(msgEl, 'Account created. Check your email to confirm before signing in.', 'info');
+          }
+        } catch (err) {
+          showMessage(msgEl, 'Something went wrong creating your account. Please try again.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+
+      // Sign out
+      document.getElementById('signout-btn').addEventListener('click', async function () {
+        this.disabled = true;
+        try {
+          await window.PergamonAuth.signOut();
+          renderGuest();
+        } finally {
+          this.disabled = false;
+        }
+      });
+
+      window.PergamonAuth.onAuthStateChange(function () {
+        refreshAuthState();
+      });
+
+      refreshAuthState();
+    })();
+  </script>
+
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>
