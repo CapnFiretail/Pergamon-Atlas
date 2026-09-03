@@ -7,7 +7,8 @@ function loadSnippets(pageName) {
   fetch('/operation/snippets/header.html')
     .then(r => r.text())
     .then(html => {
-      document.getElementById('header-placeholder').innerHTML = html;
+      const placeholder = document.getElementById('header-placeholder');
+      placeholder.innerHTML = html;
       const el = document.querySelector('.page-title-text');
       if (el) el.textContent = suffix;
 
@@ -19,12 +20,15 @@ function loadSnippets(pageName) {
           }
         });
       }
+
+      if (window.PergamonVisibility) window.PergamonVisibility.applyNavVisibility(placeholder);
     });
 
   fetch('/operation/snippets/sidebar.html')
     .then(r => r.text())
     .then(html => {
-      document.getElementById('sidebar-placeholder').innerHTML = html;
+      const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+      sidebarPlaceholder.innerHTML = html;
 
       // Active link highlighting
       const path = window.location.pathname;
@@ -64,13 +68,26 @@ function loadSnippets(pageName) {
         });
       }
 
-      try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-
+      // The ad slot lives inside [data-visibility="admin"] (ads are hidden
+      // in Public View — see visibility architecture). Pushing an ad
+      // request into a hidden, zero-size container throws in adsbygoogle,
+      // so only push once the view is confirmed to actually show it.
+      if (window.PergamonVisibility) {
+        window.PergamonVisibility.applyNavVisibility(sidebarPlaceholder).then(function (view) {
+          if (view === 'admin') {
+            try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+          }
+        });
+      } else {
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+      }
     });
 
   fetch('/operation/snippets/footer.html')
     .then(r => r.text())
     .then(html => {
-      document.getElementById('footer-placeholder').innerHTML = html;
+      const footerPlaceholder = document.getElementById('footer-placeholder');
+      footerPlaceholder.innerHTML = html;
+      if (window.PergamonVisibility) window.PergamonVisibility.applyNavVisibility(footerPlaceholder);
     });
 }

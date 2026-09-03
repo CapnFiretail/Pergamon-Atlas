@@ -14,6 +14,7 @@
   "chamber": "GM",
   "seed": 3303241631,
   "code_seed": 1778368695,
+  "visibility": "public",
   "coords": {
     "x": -13654258,
     "y": -15146214,
@@ -362,6 +363,8 @@
 </div>
 
 <div id="footer-placeholder"></div>
+<script src="/operation/scripts/atlas.js"></script>
+
 
 <!-- PROMOTION DIALOG -->
 <div class="promo-overlay hidden" id="promoDialog">
@@ -372,7 +375,6 @@
 </div>
 
 <!-- SNIPPET LOADER -->
-<script src="/operation/scripts/atlas.js"></script>
 <script>loadSnippets('Games');</script>
 
 <!-- CHESS ENGINE -->
@@ -1170,8 +1172,12 @@ function setMode(newMode) {
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 resetGame();
 </script>
-
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>

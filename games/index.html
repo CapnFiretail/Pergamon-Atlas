@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Games",
+  "date": "2026-09-02",
+  "time": "21:29:10",
+  "chamber": "PG",
+  "seed": 2274967503,
+  "code_seed": 1788398950,
+  "visibility": "public",
+  "coords": {
+    "x": -9003482,
+    "y": 13583042,
+    "z": -16388302
+  },
+  "address": "DHVDC-JEDNR-S56T2"
+}
+</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Games</title>
   <meta charset="utf-8">
@@ -317,8 +334,49 @@
     </main>
   </div>
   <div id="footer-placeholder"></div>
+<script src="/operation/scripts/atlas.js"></script>
 
-  <script src="/operation/scripts/atlas.js"></script>
   <script>loadSnippets('Games');</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+
+<script>
+  // Deferred to DOMContentLoaded: script tag position on this page doesn't
+  // guarantee PergamonVisibility/entries.js have executed yet.
+  //
+  // The matching Atlas entry (entries.js) is the sole source of truth for
+  // visibility here — cards are matched to their entry by href, and carry
+  // no visibility of their own, rather than duplicating a value that
+  // could drift out of sync with entries.js.
+  document.addEventListener('DOMContentLoaded', async function () {
+    if (!window.PergamonVisibility) return;
+
+    var atlasGames = (window.atlasEntries && window.atlasEntries.games) || [];
+    var byPath = {};
+    atlasGames.forEach(function (g) { byPath[g.path] = g; });
+
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.featured-grid .feat-card'));
+    var checks = await Promise.all(cards.map(function (card) {
+      var path = card.getAttribute('href').replace(/\/$/, '');
+      return window.PergamonVisibility.isVisibleInCurrentView(byPath[path]);
+    }));
+
+    var visibleCount = 0;
+    cards.forEach(function (card, i) {
+      if (checks[i]) { visibleCount++; }
+      else { card.style.display = 'none'; }
+    });
+
+    var countEl = document.querySelector('.catalog-count-num');
+    if (countEl) countEl.textContent = String(visibleCount);
+  });
+</script>
 </body>
 </html>

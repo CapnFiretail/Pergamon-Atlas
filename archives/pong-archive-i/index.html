@@ -14,6 +14,7 @@
   "chamber": "GM",
   "seed": 2567689826,
   "code_seed": 1778368695,
+  "visibility": "public",
   "coords": {
     "x": 3921454,
     "y": 6084875,
@@ -92,7 +93,8 @@
     </main>
   </div>
   <div id="footer-placeholder"></div>
-  <script src="/operation/scripts/atlas.js"></script>
+<script src="/operation/scripts/atlas.js"></script>
+
   <script>
     loadSnippets('Games');
 
@@ -184,9 +186,14 @@
     ctx.fillStyle='#f0d39b';ctx.font='bold 20px Georgia';ctx.textAlign='center';
     ctx.fillText('Press Start to play',W/2,H/2);
   </script>
-
-  <script src="/data/pergamon-address.js"></script>
-  <script src="/data/entries.js"></script>
-  <script src="/data/atlas-reference.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
 </body>
 </html>

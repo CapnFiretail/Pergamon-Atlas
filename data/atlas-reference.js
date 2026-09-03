@@ -21,7 +21,7 @@
 
   // ── Init ─────────────────────────────────────────────────────────────────
 
-  function init() {
+  async function init() {
     const metaEl = document.getElementById('atlas-meta');
     if (!metaEl) return;
 
@@ -30,7 +30,7 @@
     catch { return; }
 
     const PA = window.PergamonAddress;
-    const all = (typeof window.atlasEntries !== 'undefined')
+    const rawAll = (typeof window.atlasEntries !== 'undefined')
       ? [
           ...window.atlasEntries.tools,
           ...window.atlasEntries.games,
@@ -38,9 +38,23 @@
           ...(window.atlasEntries.pages || [])
         ]
       : [];
-    const allArchived = (typeof window.atlasEntries !== 'undefined')
+    const rawArchived = (typeof window.atlasEntries !== 'undefined')
       ? (window.atlasEntries.archived || [])
       : [];
+
+    // Public Atlas Navigation must only ever perceive publicly visible
+    // entries — Nearby, Jump to Address, Random Jump, and the Catalogs tab
+    // all read from `all`/`allArchived` below, so filtering once here
+    // closes all of those surfaces at a single point. Admin Public Preview
+    // resolves to the exact same filtered set as a guest/user; Admin View
+    // sees everything, unfiltered. Archived entries are entirely excluded
+    // from the public universe regardless of any visibility tag.
+    const all = window.PergamonVisibility
+      ? await window.PergamonVisibility.getVisibleEntries(rawAll)
+      : rawAll;
+    const allArchived = window.PergamonVisibility
+      ? await window.PergamonVisibility.getVisibleEntries(rawArchived)
+      : rawArchived;
 
     const currentPath = window.location.pathname
       .replace(/\/index\.html$/, '')
@@ -167,7 +181,7 @@
           </div>
           <div class="ar-bar-right">
             <button type="button" class="ar-bar-ref-btn" aria-haspopup="menu" aria-expanded="false">
-              <span>ATLAS REFERENCE</span>
+              <span>ATLAS NAVIGATION</span>
               <svg class="ar-bar-chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
             </button>
           </div>

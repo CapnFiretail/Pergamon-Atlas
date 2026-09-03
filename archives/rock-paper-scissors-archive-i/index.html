@@ -9,6 +9,7 @@
   "chamber": "GM",
   "seed": 3360512345,
   "code_seed": 1778368695,
+  "visibility": "public",
   "coords": {
     "x": 2863617,
     "y": -744582,
@@ -91,7 +92,8 @@
     </main>
   </div>
   <div id="footer-placeholder"></div>
-  <script src="/operation/scripts/atlas.js"></script>
+<script src="/operation/scripts/atlas.js"></script>
+
   <script>
     loadSnippets('Games');
 
@@ -127,7 +129,12 @@
 
     function reset(){scores={you:0,tie:0,ai:0};history=[];document.getElementById('scoreYou').textContent=0;document.getElementById('scoreTie').textContent=0;document.getElementById('scoreAI').textContent=0;document.getElementById('emojiYou').textContent='❓';document.getElementById('emojiCPU').textContent='❓';document.getElementById('resultMsg').className='result-msg';document.getElementById('resultMsg').textContent='Choose your move!';document.getElementById('histRow').innerHTML='';}
   </script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>

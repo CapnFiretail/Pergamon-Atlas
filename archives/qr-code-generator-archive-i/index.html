@@ -9,6 +9,7 @@
   "chamber": "TL",
   "seed": 1706199008,
   "code_seed": 1778368695,
+  "visibility": "public",
   "coords": {
     "x": -12020715,
     "y": -4620480,
@@ -341,6 +342,8 @@
   </div>
 
   <div id="footer-placeholder"></div>
+<script src="/operation/scripts/atlas.js"></script>
+
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -434,12 +437,15 @@ const qrText = document.getElementById('qrText');
       }
     });
   </script>
-
-
+<script>loadSnippets('Tools');</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>
-<script src="/operation/scripts/atlas.js"></script>
-<script>loadSnippets('Tools');</script>
 </body>
 </html>

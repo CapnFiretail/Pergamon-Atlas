@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Tools",
+  "date": "2026-09-02",
+  "time": "21:29:10",
+  "chamber": "PG",
+  "seed": 751231259,
+  "code_seed": 1788398950,
+  "visibility": "public",
+  "coords": {
+    "x": 16044106,
+    "y": 10073206,
+    "z": -7917741
+  },
+  "address": "5DASQ-PK835-28NU5"
+}
+</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
   <title>Pergamon Atlas | Tools</title>
   <meta charset="utf-8">
@@ -50,133 +67,128 @@
     .tc-chapter { grid-column: 1 / -1; }
 
     /* ── Card ────────────────────────────────────────────────── */
+    /* Same Pergamon house-card family as Games (.feat-card / .content-card):
+       white shell, 2px black border, matching radius/shadow scale, and the
+       same lift+shadow+gold hover language — kept rectangular rather than
+       square, with a wide hero band instead of a square preview panel. */
 
     .tc-card {
-      display: block;
-      background: #1e1a0e;
-      border: 1px solid rgba(184,136,26,0.55);
-      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border: 2px solid #000;
+      border-radius: 14px;
       text-decoration: none;
       color: inherit;
-      position: relative;
       overflow: hidden;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.28);
-      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-    }
-
-    /* Left gold accent bar — always visible */
-    .tc-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: rgba(184,136,26,0.48);
-      border-radius: 10px 0 0 10px;
-      z-index: 1;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
     }
 
     .tc-card:hover {
-      border-color: rgba(184,136,26,0.82);
-      background: #252016;
-      box-shadow: 0 4px 22px rgba(0,0,0,0.36);
-    }
-    .tc-card:hover::before { background: rgba(184,136,26,0.72); }
-
-    /* ── Head ────────────────────────────────────────────────── */
-
-    .tc-head {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 15px 18px 12px 20px;
-      position: relative;
-      z-index: 2;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+      border-color: #8a611c;
     }
 
-    .tc-icon-wrap {
-      width: 42px;
-      height: 42px;
-      background: #070504;
-      border: 1px solid rgba(184,136,26,0.13);
-      border-radius: 8px;
+    /* ── Hero band ───────────────────────────────────────────── */
+
+    .tc-hero {
+      height: 72px;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
-      line-height: 1;
-      flex-shrink: 0;
+      background:
+        radial-gradient(circle at 30% 50%, rgba(184,136,26,0.22), transparent 65%),
+        #111;
+      border-bottom: 2px solid #000;
+      transition: background 0.18s;
     }
 
-    .tc-title { flex: 1; min-width: 0; }
+    .tc-card:hover .tc-hero {
+      background:
+        radial-gradient(circle at 30% 50%, rgba(184,136,26,0.34), transparent 65%),
+        #111;
+    }
+
+    .tc-hero-icon {
+      font-size: 32px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    }
+
+    /* ── Body ────────────────────────────────────────────────── */
+
+    .tc-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 18px 16px;
+      flex: 1;
+    }
+
+    .tc-body-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
     .tc-name {
+      margin: 0;
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
-      color: #fff;
-      line-height: 1.2;
-      white-space: nowrap;
+      color: #111;
+      line-height: 1.25;
+    }
+
+    .tc-desc {
+      font-size: 13.5px;
+      color: #444;
+      line-height: 1.55;
       overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .tc-code {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 10px;
-      color: #e2ad35;
-      letter-spacing: 0.07em;
-      margin-top: 3px;
-      white-space: nowrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
 
-    /* ── Seal group (address + button) ──────────────────────── */
+    /* ── Artifact Code / Atlas Address row ──────────────────── */
 
-    .tc-seal-group {
+    .tc-meta-row {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 9px;
-      flex-shrink: 0;
+      gap: 4px 10px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10.5px;
+      letter-spacing: 0.05em;
     }
 
-    .tc-seal-addr {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 10px;
-      color: #e2ad35;
-      letter-spacing: 0.07em;
-      white-space: nowrap;
-    }
+    .tc-code { color: #8a611c; font-weight: 700; }
+    .tc-addr { color: #999; }
 
     /* ── Seal button ─────────────────────────────────────────── */
 
     .tc-seal {
-      width: 32px;
-      height: 32px;
-      background: rgba(184,136,26,0.07);
-      border: 1px solid rgba(184,136,26,0.28);
+      width: 30px;
+      height: 30px;
+      background: rgba(138,97,28,0.06);
+      border: 1px solid rgba(138,97,28,0.4);
       border-radius: 6px;
-      color: #e2ad35;
+      color: #8a611c;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-      z-index: 3;
+      transition: background 0.15s, border-color 0.15s;
     }
     .tc-seal svg { pointer-events: none; }
     .tc-seal:hover {
-      background: rgba(184,136,26,0.16);
-      border-color: rgba(184,136,26,0.55);
-      color: #e2ad35;
-    }
-
-    /* ── Divider ─────────────────────────────────────────────── */
-
-    .tc-rule {
-      height: 1px;
-      background: rgba(184,136,26,0.09);
-      margin: 0 20px;
-      position: relative;
-      z-index: 2;
+      background: rgba(138,97,28,0.14);
+      border-color: #8a611c;
     }
 
     /* ── Foot ────────────────────────────────────────────────── */
@@ -185,54 +197,24 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      padding: 11px 18px 14px 20px;
-      position: relative;
-      z-index: 2;
+      gap: 12px;
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
     }
 
-    .tc-left { flex: 1; min-width: 0; }
-
-    .tc-desc {
-      font-size: 13px;
-      color: rgba(237,233,224,0.75);
-      line-height: 1.58;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+    .tc-indexed {
+      font-size: 11px;
+      color: #999;
     }
-
-    .tc-meta {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-      font-size: 10.5px;
-      color: #e2ad35;
-      letter-spacing: 0.04em;
-    }
-
-    /* ── Open Artifact button ────────────────────────────────── */
 
     .tc-action {
       font-family: Georgia, serif;
-      font-size: 11.5px;
-      color: #e2ad35;
-      border: 1px solid rgba(184,136,26,0.5);
-      border-radius: 5px;
-      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #8a611c;
       white-space: nowrap;
-      flex-shrink: 0;
-      letter-spacing: 0.06em;
-      background: rgba(184,136,26,0.07);
-      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-    }
-    .tc-card:hover .tc-action {
-      border-color: rgba(184,136,26,0.78);
-      background: rgba(184,136,26,0.12);
-      box-shadow: 0 0 18px rgba(184,136,26,0.14);
+      letter-spacing: 0.02em;
     }
 
     /* ── Mobile ──────────────────────────────────────────────── */
@@ -242,13 +224,11 @@
     }
 
     @media (max-width: 640px) {
-      .tc-head { padding: 12px 14px 10px 14px; gap: 10px; }
-      .tc-foot { padding: 9px 14px 12px 14px; flex-wrap: wrap; gap: 10px; }
-      .tc-rule { margin: 0 14px; }
-      .tc-icon-wrap { width: 36px; height: 36px; font-size: 16px; }
-      .tc-name { font-size: 15px; }
-      .tc-action { font-size: 11px; padding: 5px 11px; }
-      .tc-seal-tip { display: none; }
+      .tc-hero { height: 60px; }
+      .tc-hero-icon { font-size: 26px; }
+      .tc-body { padding: 12px 14px 14px; }
+      .tc-name { font-size: 16px; }
+      .tc-action { font-size: 11px; }
       .tc-chapter { margin: 28px 0 8px; }
       .tc-chapter-label { font-size: 10px; }
     }
@@ -293,15 +273,15 @@
 </div>
 
 <div id="footer-placeholder"></div>
-
-<script src="/data/pergamon-address.js"></script>
-<script src="/data/entries.js"></script>
-<script src="/data/atlas-reference.js"></script>
 <script src="/operation/scripts/atlas.js"></script>
+
 <script>
   loadSnippets('Tools');
 
-  (function () {
+  // Deferred to DOMContentLoaded: the indexer clusters PergamonVisibility
+  // and entries.js in the late script block, after this tag, so this must
+  // not assume they're defined yet at the time this script tag runs.
+  document.addEventListener('DOMContentLoaded', async function () {
 
     /* ── Archive seal SVG ──────────────────────────────────── */
     var SEAL = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="6.5,0.5 12.5,3.7 12.5,9.3 6.5,12.5 0.5,9.3 0.5,3.7" stroke="currentColor" stroke-width="1.1" fill="none"/><circle cx="6.5" cy="6.5" r="1.8" fill="currentColor"/></svg>';
@@ -340,10 +320,23 @@
         .replace(/"/g,'&quot;');
     }
 
+    /* ── Visibility: the matching Atlas entry (entries.js) is the sole  ──
+       source of truth for whether a catalog item is publicly visible —
+       this CATALOG array intentionally carries no visibility of its own. */
+    var visibleCatalog = CATALOG;
+    if (window.PergamonVisibility) {
+      var checks = await Promise.all(CATALOG.map(function (item) {
+        return window.PergamonVisibility.isVisibleInCurrentView(byPath[item[0]]);
+      }));
+      visibleCatalog = CATALOG.filter(function (_, i) { return checks[i]; });
+    }
+    var countEl = document.querySelector('.catalog-count-num');
+    if (countEl) countEl.textContent = String(visibleCatalog.length);
+
     /* ── Render ────────────────────────────────────────────── */
     var html = '';
 
-    CATALOG.forEach(function(item) {
+    visibleCatalog.forEach(function(item) {
       var path  = item[0];
       var icon  = item[1];
       var desc  = item[2];
@@ -358,35 +351,40 @@
 
       html +=
         '<a href="' + path + '/" class="tc-card">' +
-          '<div class="tc-head">' +
-            '<div class="tc-icon-wrap">' + icon + '</div>' +
-            '<div class="tc-title">' +
-              '<div class="tc-name">' + esc(name) + '</div>' +
-              '<div class="tc-code">' + esc(artCode) + '</div>' +
-            '</div>' +
-            '<div class="tc-seal-group">' +
-              '<span class="tc-seal-addr">' + esc(fullAddr) + '</span>' +
+          '<div class="tc-hero"><span class="tc-hero-icon">' + icon + '</span></div>' +
+          '<div class="tc-body">' +
+            '<div class="tc-body-top">' +
+              '<h3 class="tc-name">' + esc(name) + '</h3>' +
               '<button class="tc-seal" title="Open in Atlas Decoder"' +
                 ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/archives/atlas-decoder-archive-i/\'">' +
                 SEAL +
               '</button>' +
             '</div>' +
-          '</div>' +
-          '<div class="tc-rule"></div>' +
-          '<div class="tc-foot">' +
-            '<div class="tc-left">' +
-              '<div class="tc-desc">' + esc(desc) + '</div>' +
-              '<div class="tc-meta">Indexed ' + esc(dated) + '</div>' +
+            '<div class="tc-desc">' + esc(desc) + '</div>' +
+            '<div class="tc-meta-row">' +
+              '<span class="tc-code">' + esc(artCode) + '</span>' +
+              '<span class="tc-addr">' + esc(fullAddr) + '</span>' +
             '</div>' +
-            '<span class="tc-action">Open Artifact &#8594;</span>' +
+            '<div class="tc-foot">' +
+              '<span class="tc-indexed">Indexed ' + esc(dated) + '</span>' +
+              '<span class="tc-action">Open Artifact &#8594;</span>' +
+            '</div>' +
           '</div>' +
         '</a>';
     });
 
     document.getElementById('tc-list').innerHTML = html;
 
-  })();
+  });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
 </body>
 </html>

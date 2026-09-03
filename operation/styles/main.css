@@ -76,6 +76,14 @@ body{
   }
 }
 
+/* === Public/Admin view visibility ========================================= */
+/* Hidden by default (fail-closed) until atlas-visibility.js confirms an   */
+/* authenticated admin session is looking at Admin View. Prevents any      */
+/* flash of admin-only nav (Lexicon, Chess Forge platform, Archives, the   */
+/* admin view toggle) for guests/users while the session check resolves.   */
+[data-visibility="admin"] { display: none; }
+/* === end Public/Admin view visibility ===================================== */
+
 /* === Game / Tool Hero Banner ============================================= */
 
 .game-hero {

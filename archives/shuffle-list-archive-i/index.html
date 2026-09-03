@@ -9,6 +9,7 @@
   "chamber": "TL",
   "seed": 2892592086,
   "code_seed": 1778368695,
+  "visibility": "public",
   "coords": {
     "x": 8097272,
     "y": -4051936,
@@ -109,7 +110,8 @@
     </main>
   </div>
   <div id="footer-placeholder"></div>
-  <script src="/operation/scripts/atlas.js"></script>
+<script src="/operation/scripts/atlas.js"></script>
+
   <script>loadSnippets('Tools');</script>
   <script>
   let lastResult=[];
@@ -175,7 +177,12 @@
 
   updateCount();
   </script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>

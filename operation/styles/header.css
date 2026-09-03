@@ -168,6 +168,32 @@ body{
 }
 
 /* =========================
+   ADMIN VIEW TOGGLE
+   (hidden by default in main.css via [data-visibility="admin"];
+   only ever shown once a real admin session is confirmed)
+========================= */
+.view-toggle-btn{
+  background: transparent;
+  color: #9fd6a8;
+  border: 1.5px solid #3f7a4a;
+  border-radius: 999px;
+  padding: 13px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Georgia, serif;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-toggle-btn:hover{
+  background: rgba(63, 122, 74, 0.15);
+  color: #c8f0cd;
+  border-color: #5aa668;
+}
+
+/* =========================
    ACCOUNT BUTTON
 ========================= */
 .account-btn{
@@ -293,6 +319,11 @@ body{
   .header-actions{
     flex-shrink: 0;
     gap: 0;
+  }
+
+  .view-toggle-btn{
+    padding: 8px 10px;
+    font-size: 12px;
   }
 
   .account-btn{

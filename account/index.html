@@ -9,6 +9,7 @@
   "chamber": "PG",
   "seed": 2126867460,
   "code_seed": 1778374433,
+  "visibility": "public",
   "coords": {
     "x": 9778095,
     "y": 3704239,
@@ -373,19 +374,19 @@
     </main>
   </div>
   <div id="footer-placeholder"></div>
-  <script src="/operation/scripts/atlas.js"></script>
+<script src="/operation/scripts/atlas.js"></script>
+
   <script>
     loadSnippets('Account');
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="/operation/scripts/auth/supabase-config.js"></script>
-  <script src="/operation/scripts/auth/supabase.js"></script>
-  <script src="/operation/scripts/auth/auth.js"></script>
-  <script src="/operation/scripts/auth/permissions.js"></script>
-
   <script>
-    (function () {
+    // Deferred to DOMContentLoaded rather than run inline: the indexer
+    // manages the canonical Atlas/auth script block as a single unit and
+    // may place it after this tag in the file. DOMContentLoaded only fires
+    // once every synchronous script in the document (regardless of order)
+    // has executed, so this stays correct however the indexer orders things.
+    document.addEventListener('DOMContentLoaded', function () {
       var loadingEl = document.getElementById('account-loading');
       var guestEl   = document.getElementById('account-guest');
       var memberEl  = document.getElementById('account-member');
@@ -510,9 +511,14 @@
       });
 
       refreshAuthState();
-    })();
+    });
   </script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
 <script src="/data/atlas-reference.js"></script>

@@ -11,6 +11,13 @@ const SECTORS = {
 };
 
 // Individual pages indexed as PG (Page) chamber — not directory-scanned
+//
+// `visibility` here is a one-time editorial seed for pages that need to
+// diverge from the default migration rule (see computeVisibility below):
+// pre-existing pages migrate to "public" automatically, so only pages that
+// are brand-new to the indexer but should still launch public (Tools/Games
+// catalogs) or that must stay admin-only despite already being indexed
+// (Archives) need an explicit override.
 const PAGES = [
   { file: path.join(ROOT, 'index.html'),                         pagePath: '/',                  name: 'Pergamon Atlas' },
   { file: path.join(ROOT, 'atlas-explorer', 'index.html'),       pagePath: '/atlas-explorer',    name: 'Atlas Explorer' },
@@ -19,7 +26,9 @@ const PAGES = [
   { file: path.join(ROOT, 'suggestions', 'index.html'), pagePath: '/suggestions', name: 'Suggestions'    },
   { file: path.join(ROOT, 'account', 'index.html'),     pagePath: '/account',     name: 'Account'        },
   { file: path.join(ROOT, 'updates', 'index.html'),     pagePath: '/updates',     name: 'Update Log'     },
-  { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',                name: 'Archives'          },
+  { file: path.join(ROOT, 'tools', 'index.html'),       pagePath: '/tools',       name: 'Tools',       visibility: 'public' },
+  { file: path.join(ROOT, 'games', 'index.html'),       pagePath: '/games',       name: 'Games',       visibility: 'public' },
+  { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',                name: 'Archives',         visibility: 'admin' },
   { file: path.join(ROOT, 'archives', 'chess-forge-prototype',        'index.html'), pagePath: '/archives/chess-forge-prototype',        name: 'Chess Forge (Prototype)'        },
   { file: path.join(ROOT, 'archives', 'chess-forge-archive-i',        'index.html'), pagePath: '/archives/chess-forge-archive-i',        name: 'Chess Forge (Archive I)'        },
   { file: path.join(ROOT, 'archives', 'atlas-runner-prototype',       'index.html'), pagePath: '/archives/atlas-runner-prototype',       name: 'Atlas Runner (Prototype)'       },
@@ -172,8 +181,27 @@ function injectOrUpdateMeta(html, meta) {
   return html.replace('<head>', '<head>\n  ' + tag);
 }
 
+// /operation/scripts/atlas.js defines loadSnippets(), which every page
+// calls inline, early, right after <div id="footer-placeholder">— NOT at
+// the end of the file. It is handled separately (ensureEarlyScript, below)
+// and left wherever it already is: pages depend on it running before their
+// own inline loadSnippets(...) call, which is architecturally early, so it
+// must never be swept into the "late" block with everything else.
+const EARLY_SCRIPT = '/operation/scripts/atlas.js';
+
+// Order matters: each depends on the ones before it (Supabase client ->
+// auth -> permissions -> visibility), and atlas-reference.js needs
+// PergamonVisibility defined before it runs. ensureAtlasScripts below
+// always fully re-derives this block in this exact order, clustered right
+// before </body> — i.e. after EARLY_SCRIPT and after any page-specific
+// inline script, both of which sit earlier in the document.
 const ATLAS_SCRIPTS = [
-  '/operation/scripts/atlas.js',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+  '/operation/scripts/auth/supabase-config.js',
+  '/operation/scripts/auth/supabase.js',
+  '/operation/scripts/auth/auth.js',
+  '/operation/scripts/auth/permissions.js',
+  '/operation/scripts/auth/atlas-visibility.js',
   '/data/pergamon-address.js',
   '/data/entries.js',
   '/data/atlas-reference.js',
@@ -192,14 +220,36 @@ function stripOldScripts(html) {
   return result;
 }
 
+function scriptTagRegex(src) {
+  return new RegExp(`\\s*<script[^>]+src="${src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*></script>`, 'g');
+}
+
+// Non-destructive: only inserts EARLY_SCRIPT if it's entirely absent, and
+// never moves an existing tag — pages that already have it (all currently
+// indexed pages) are left exactly as-is.
+function ensureEarlyScript(html) {
+  if (html.includes(EARLY_SCRIPT)) return html;
+  const tag = `<script src="${EARLY_SCRIPT}"></script>\n`;
+  if (html.includes('<div id="footer-placeholder"></div>')) {
+    return html.replace('<div id="footer-placeholder"></div>', `<div id="footer-placeholder"></div>\n${tag}`);
+  }
+  return html.replace('</body>', tag + '</body>');
+}
+
 function ensureAtlasScripts(html) {
   let result = html;
-  for (const src of ATLAS_SCRIPTS) {
-    if (!result.includes(src)) {
-      result = result.replace('</body>', `<script src="${src}"></script>\n</body>`);
-    }
+  // Strip every known tag — including EARLY_SCRIPT — wherever it currently
+  // sits, then re-append the late block and let ensureEarlyScript reinsert
+  // EARLY_SCRIPT fresh in its correct early position. This makes the whole
+  // pass self-correcting: even a page where EARLY_SCRIPT ended up
+  // misplaced (e.g. from a previous version of this function) gets fixed
+  // on the next run, not just pages that never had it moved.
+  for (const src of [EARLY_SCRIPT, ...ATLAS_SCRIPTS]) {
+    result = result.replace(scriptTagRegex(src), '');
   }
-  return result;
+  const block = ATLAS_SCRIPTS.map(src => `<script src="${src}"></script>`).join('\n') + '\n';
+  result = result.replace('</body>', block + '</body>');
+  return ensureEarlyScript(result);
 }
 
 function stripInlineFetches(html) {
@@ -254,6 +304,22 @@ function nowSeconds() {
   return Math.floor(Date.now() / 1000);
 }
 
+// --- Visibility ---
+//
+// Existence in the Atlas != publication to the public. Brand-new content
+// (no atlas-meta found at all before this run) defaults to "admin" so it
+// has to be explicitly published rather than silently going live. Content
+// that was ALREADY indexed before this rule existed migrates to "public"
+// automatically, so this change doesn't retroactively hide the site.
+// `override` lets specific call sites seed an explicit value regardless
+// (e.g. Tools/Games catalogs launching public despite being new to the
+// indexer; Archives staying admin-only despite already being indexed).
+function computeVisibility(rawExisting, override) {
+  if (rawExisting && rawExisting.visibility) return rawExisting.visibility;
+  if (override) return override;
+  return rawExisting ? 'public' : 'admin';
+}
+
 // --- Index ---
 
 const allEntries = [];
@@ -273,19 +339,21 @@ for (const [type, sector] of Object.entries(SECTORS)) {
 
     const html         = fs.readFileSync(htmlPath, 'utf-8');
     const pagePath     = `/${type}/${dir}`;
-    const existing     = extractMeta(html) || {};
+    const rawExisting  = extractMeta(html);
+    const existing     = rawExisting || {};
 
     const seed    = computeSeed(pagePath);
     const coords  = computeCoords(seed);
     const address = PA.coordsToAddress(coords.x, coords.y, coords.z);
 
     const meta = {
-      name:      existing.name      || toTitleCase(dir),
-      date:      existing.date      || today(),
-      time:      existing.time      || nowTime(),
-      chamber:   existing.archived  ? existing.chamber : sector.chamber,
+      name:       existing.name      || toTitleCase(dir),
+      date:       existing.date      || today(),
+      time:       existing.time      || nowTime(),
+      chamber:    existing.archived  ? existing.chamber : sector.chamber,
       seed,
-      code_seed: existing.code_seed || nowSeconds(),
+      code_seed:  existing.code_seed || nowSeconds(),
+      visibility: computeVisibility(rawExisting),
       coords,
       address
     };
@@ -316,20 +384,22 @@ for (const [type, sector] of Object.entries(SECTORS)) {
 for (const page of PAGES) {
   if (!fs.existsSync(page.file)) continue;
 
-  const html     = fs.readFileSync(page.file, 'utf-8');
-  const existing = extractMeta(html) || {};
+  const html        = fs.readFileSync(page.file, 'utf-8');
+  const rawExisting = extractMeta(html);
+  const existing    = rawExisting || {};
 
   const seed    = computeSeed(page.pagePath);
   const coords  = computeCoords(seed);
   const address = PA.coordsToAddress(coords.x, coords.y, coords.z);
 
   const meta = {
-    name:      page.name,
-    date:      existing.date      || today(),
-    time:      existing.time      || nowTime(),
-    chamber:   existing.archived  ? existing.chamber : 'PG',
+    name:       page.name,
+    date:       existing.date      || today(),
+    time:       existing.time      || nowTime(),
+    chamber:    existing.archived  ? existing.chamber : 'PG',
     seed,
-    code_seed: existing.code_seed || nowSeconds(),
+    code_seed:  existing.code_seed || nowSeconds(),
+    visibility: computeVisibility(rawExisting, page.visibility),
     coords,
     address
   };
@@ -376,6 +446,7 @@ const archived = allEntries.filter(e => e.type === 'archived');
 
 function formatEntry(e) {
   let s = `    { path: "${e.path}", name: "${e.name}", date: "${e.date}", time: "${e.time || ''}", chamber: "${e.chamber}", seed: ${e.seed}, code_seed: ${e.code_seed || 0}, address: "${e.address}", coords: { x: ${e.coords.x}, y: ${e.coords.y}, z: ${e.coords.z} }`;
+  if (e.visibility)  s += `, visibility: "${e.visibility}"`;
   if (e.archived)    s += `, archived: true, archive_date: "${e.archive_date || ''}"`;
   if (e.description) s += `, description: "${e.description}"`;
   if (e.tags)        s += `, tags: ${JSON.stringify(e.tags)}`;
