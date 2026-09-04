@@ -83,6 +83,24 @@
     return { session, profile: profile || null, error: profileError || null };
   }
 
+  // Pergamon Publishing v1 — runtime visibility overrides (see
+  // supabase/migrations/0002_atlas_visibility_overrides.sql). Readable by
+  // anyone (RLS: select using (true)); insert/update/delete are enforced
+  // admin-only by RLS checking profiles.role, not by anything in this file
+  // or the caller — atlas-visibility.js still guards the UI for UX, but
+  // the database is the actual trust boundary.
+  async function getVisibilityOverrides() {
+    return client().from('atlas_visibility_overrides').select('path, visibility');
+  }
+
+  async function setVisibilityOverride(path, visibility) {
+    return client().from('atlas_visibility_overrides').upsert({ path, visibility });
+  }
+
+  async function deleteVisibilityOverride(path) {
+    return client().from('atlas_visibility_overrides').delete().eq('path', path);
+  }
+
   window.PergamonAuth = {
     signUp,
     signIn,
@@ -91,6 +109,9 @@
     onAuthStateChange,
     getProfile,
     updateDisplayName,
-    getCurrentUserAndProfile
+    getCurrentUserAndProfile,
+    getVisibilityOverrides,
+    setVisibilityOverride,
+    deleteVisibilityOverride
   };
 })();

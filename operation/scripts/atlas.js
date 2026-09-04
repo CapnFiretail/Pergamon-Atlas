@@ -113,31 +113,79 @@ function loadSnippets(pageName) {
       const footerPlaceholder = document.getElementById('footer-placeholder');
       footerPlaceholder.innerHTML = html;
 
-      // Page Status reads the CURRENT page's own atlas-meta (read-only —
-      // no mutation happens client-side). Pages with no atlas-meta at all
-      // (not part of the Atlas indexing system) have nothing to publish,
-      // so the whole panel is force-hidden rather than shown with
-      // placeholder text — chained after applyNavVisibility resolves so
-      // this always has the final say over the panel's display, rather
-      // than racing its own async role/view toggle.
+      // Page Status shows EFFECTIVE visibility (override if one exists,
+      // else the page's static atlas-meta visibility) — never static alone.
+      // Pages with no atlas-meta at all (not part of the Atlas indexing
+      // system) have nothing to publish, so the whole panel is
+      // force-hidden rather than shown with placeholder text — chained
+      // after applyNavVisibility resolves so this always has the final say
+      // over the panel's display, rather than racing its own async
+      // role/view toggle.
       const applyPromise = waitForPergamonVisibility().then(function (pv) {
         return pv ? pv.applyNavVisibility(footerPlaceholder) : null;
       });
 
-      applyPromise.then(function () {
+      applyPromise.then(async function () {
         const panel = document.getElementById('footer-admin-panel');
         const metaEl = document.getElementById('atlas-meta');
         if (!panel) return;
         if (!metaEl) { panel.style.display = 'none'; return; }
-        try {
-          const meta = JSON.parse(metaEl.textContent);
-          const statusEl = document.getElementById('footer-page-status');
-          const btn = document.getElementById('footer-publish-btn');
-          const isPublic = meta.visibility === 'public';
+
+        const pv = await waitForPergamonVisibility();
+        if (!pv) { panel.style.display = 'none'; return; }
+
+        let meta;
+        try { meta = JSON.parse(metaEl.textContent); }
+        catch (e) { panel.style.display = 'none'; return; }
+
+        const statusEl = document.getElementById('footer-page-status');
+        const btn = document.getElementById('footer-publish-btn');
+        const errEl = document.getElementById('footer-publish-error');
+        const currentPath = pv.normalizePath(window.location.pathname);
+
+        async function refreshStatus() {
+          const effective = await pv.getEffectiveVisibility(currentPath, meta.visibility);
+          const isPublic = effective === 'public';
           if (statusEl) statusEl.textContent = isPublic ? 'Public' : 'Admin Only';
-          if (btn) btn.textContent = isPublic ? 'Remove from Public' : 'Publish to Public';
-        } catch (e) {
-          panel.style.display = 'none';
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = isPublic ? 'Remove from Public' : 'Publish to Public';
+            btn.dataset.desired = isPublic ? 'admin' : 'public';
+          }
+        }
+
+        await refreshStatus();
+
+        if (btn && !btn.dataset.wired) {
+          btn.dataset.wired = '1';
+          btn.addEventListener('click', async function () {
+            const desired = btn.dataset.desired; // 'public' or 'admin' — set by refreshStatus()
+            const previousLabel = btn.textContent.trim();
+            btn.disabled = true;
+            btn.textContent = desired === 'public' ? 'Publishing…' : 'Removing…';
+            if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+
+            const action = desired === 'public' ? pv.publishPage : pv.unpublishPage;
+            let result;
+            try {
+              result = await action(currentPath, meta.visibility);
+            } catch (err) {
+              result = { error: { message: err && err.message ? err.message : 'Unknown error' } };
+            }
+
+            if (result && result.error) {
+              console.error('Pergamon Publishing: mutation failed', result.error);
+              btn.disabled = false;
+              btn.textContent = previousLabel;
+              if (errEl) {
+                errEl.textContent = 'Could not update publication status. Please try again.';
+                errEl.style.display = '';
+              }
+              return;
+            }
+
+            await refreshStatus();
+          });
         }
       });
     });

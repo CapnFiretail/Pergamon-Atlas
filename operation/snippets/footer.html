@@ -16,21 +16,22 @@
   </div>
 
   <!-- Page-level publish control. Requires ROLE=admin AND VIEW=admin — see
-       atlas-visibility.js. The button is intentionally inert (disabled):
-       publishing is an administrative mutation that needs a trusted
-       Supabase-backed action, not something this static frontend can do
-       safely on its own yet. This wires up the location/gating/status
-       display now so a future trusted action can plug in cleanly. -->
+       atlas-visibility.js. Publishing is a real trusted Supabase mutation
+       (atlas_visibility_overrides, RLS admin-only) — the button being
+       hidden/shown here is only ever a UX convenience, never the security
+       boundary. -->
   <div class="footer-admin-panel" id="footer-admin-panel" data-admin-control="view" style="display:none">
     <div class="footer-admin-panel-inner">
       <div class="footer-admin-status">
         <span class="footer-admin-label">Page Status</span>
         <span class="footer-admin-value" id="footer-page-status">—</span>
       </div>
-      <button type="button" class="footer-publish-btn" id="footer-publish-btn" disabled
-        title="Publishing requires a trusted backend action, not yet implemented.">
-        Publish to Public
-      </button>
+      <div class="footer-admin-action">
+        <span class="footer-publish-error" id="footer-publish-error" style="display:none"></span>
+        <button type="button" class="footer-publish-btn" id="footer-publish-btn">
+          Publish to Public
+        </button>
+      </div>
     </div>
   </div>
 </footer>

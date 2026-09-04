@@ -3,35 +3,55 @@
 // Layer separation (do not conflate these):
 //   Layer 0 (pergamon-address.js / entries.js coords+address) — does this
 //     exist, and where?
-//   Visibility (this file, entry.visibility)                 — who can
-//     currently perceive it?
-//   Catalogs (tools/games CATALOG data)                       — how is it
-//     organized and related?
-//   Archives (entry.archived)                                 — what
-//     happened to it historically? Archived entries are NEVER part of the
-//     public-facing universe, independent of any visibility tag.
+//   Static visibility (entry.visibility, baked into atlas-meta/entries.js
+//     at index time) — the page's baseline: who could perceive it if
+//     nothing had ever overridden that.
+//   Runtime visibility override (Supabase atlas_visibility_overrides,
+//     see migration 0002) — an admin's Publish/Remove decision, if one has
+//     been made. Stores ONLY the differences from the static baseline.
+//   Effective visibility — override if one exists for the page's
+//     normalized path, otherwise the static value. Every public-facing
+//     surface (Atlas Navigation, search, catalogs, the footer's own Page
+//     Status) reads EFFECTIVE visibility, never static visibility alone.
+//   Catalogs (tools/games CATALOG data) — how is it organized and
+//     related? Independent of visibility; publishing a page never adds it
+//     to a catalog that didn't already reference it.
+//   Archives (entry.archived) — what happened to it historically?
+//     Archived entries are NEVER part of the public-facing universe,
+//     independent of any visibility tag or override.
 //
-// Three separate questions, each with its own gating:
+// Four separate questions, each with its own gating:
 //   ROLE  — who is the person? guest | user | admin. Resolved once from
 //           the live Supabase session and cached for the page's lifetime.
 //   VIEW  — which version of Pergamon are they currently looking at?
 //           public | admin. Only ever "admin" for an authenticated admin
 //           who hasn't toggled Public Preview.
-//   PAGE VISIBILITY — entry.visibility, public | admin, per Atlas entry.
+//   STATIC PAGE VISIBILITY — entry.visibility, public | admin, baked in
+//           at index time.
+//   EFFECTIVE PAGE VISIBILITY — override if present, else static. This is
+//           what "can this be perceived" actually means at runtime.
 //
 // Admin CONTROLS (e.g. the header's view toggle) are gated by ROLE alone,
 // so an admin keeps access to them even while previewing the public site.
-// Admin CONTENT (the dev homepage, hidden nav links, an unpublished page)
-// is gated by VIEW, so Public Preview genuinely shows the public universe.
-// Conflating the two was the bug where the view toggle vanished the
-// moment an admin switched to Public Preview, with no way back short of
-// clearing localStorage by hand.
+// Admin CONTENT (the dev homepage, hidden nav links) is gated by VIEW, so
+// Public Preview genuinely shows the public universe. The footer's PUBLISH
+// control is gated by ROLE AND VIEW together (see data-admin-control="view"
+// below) — it only makes sense while actively working in Admin View.
+//
+// Readiness contract: call PergamonVisibility.ready() before assuming
+// role/view/overrides are all settled. Every exposed async function
+// already awaits what it needs internally, so most callers never need
+// ready() directly — it exists for callers that want one predictable gate
+// up front (e.g. the footer, which needs role+view+overrides all resolved
+// before it can safely decide what to render) rather than scattering their
+// own polling/timeouts.
 //
 // Load order: auth.js -> permissions.js -> atlas-visibility.js
 
 (function () {
   var VIEW_PREF_KEY = 'pergamonAdminView';
   var statePromise = null;
+  var overridesPromise = null;
 
   // atlas.js calls applyNavVisibility() from inside loadSnippets()'s fetch
   // callbacks, which fire as soon as each local snippet file resolves —
@@ -99,6 +119,59 @@
     return statePromise;
   }
 
+  // Fetches every visibility override once per page load (cached) rather
+  // than a per-entry query — the table only ever holds pages that differ
+  // from their static baseline, so it's expected to stay small. Returns a
+  // plain { normalizedPath: 'public'|'admin' } map. On any failure this
+  // falls back to an empty map (i.e. every page falls back to its static
+  // visibility) rather than breaking the shell — see the module doc for
+  // why that's the safe direction to fail in.
+  async function fetchOverrides() {
+    if (overridesPromise) return overridesPromise;
+    overridesPromise = (async function () {
+      try {
+        var auth = await waitForDep(function () { return window.PergamonAuth; });
+        if (!auth || !auth.getVisibilityOverrides) {
+          console.warn('Pergamon Visibility: PergamonAuth.getVisibilityOverrides unavailable — falling back to static visibility only');
+          return {};
+        }
+        var result = await auth.getVisibilityOverrides();
+        if (result.error) {
+          console.warn('Pergamon Visibility: failed to fetch visibility overrides — falling back to static visibility only', result.error);
+          return {};
+        }
+        var map = {};
+        (result.data || []).forEach(function (row) { map[row.path] = row.visibility; });
+        return map;
+      } catch (err) {
+        console.error('Pergamon Visibility: override fetch threw — falling back to static visibility only', err);
+        return {};
+      }
+    })();
+    return overridesPromise;
+  }
+
+  // Resolves once role, view, AND overrides are all settled. Most exposed
+  // functions below await what they individually need rather than this,
+  // but callers that want one predictable gate before touching anything
+  // (the footer publish panel) can use this instead of composing their own.
+  async function ready() {
+    await resolveState();
+    await fetchOverrides();
+  }
+
+  // Same normalization entries.js/the indexer already uses for path
+  // comparisons (see atlas-reference.js's currentPath), so /tools/foo,
+  // /tools/foo/, and /tools/foo/index.html all key to the same override
+  // row rather than being treated as three different pages. Root stays
+  // exactly "/".
+  function normalizePath(path) {
+    if (!path) return '/';
+    var p = String(path).replace(/\/index\.html$/, '');
+    if (p.length > 1) p = p.replace(/\/+$/, '');
+    return p || '/';
+  }
+
   // Returns a Promise<'public'|'admin'>. Guest/user always resolve
   // 'public'. Admin resolves 'admin' unless they've toggled Public Preview,
   // and that preference is only ever consulted after isAdmin(profile) has
@@ -115,37 +188,110 @@
     return (await resolveState()).isAdmin;
   }
 
-  // Pure, synchronous: given one Atlas entry, is it part of the public
-  // universe? Archived entries are always excluded regardless of tag.
-  function isPubliclyVisible(entry) {
-    return !!entry && !entry.archived && entry.visibility === 'public';
+  // Effective visibility for one Atlas entry: the override for its
+  // normalized path if one exists, otherwise its static visibility.
+  // `overrides` is optional — omit it for a static-only check; internal
+  // callers below always pass the resolved cache so entry filtering is
+  // override-aware.
+  function isPubliclyVisible(entry, overrides) {
+    if (!entry || entry.archived) return false;
+    var key = normalizePath(entry.path);
+    var v = (overrides && Object.prototype.hasOwnProperty.call(overrides, key))
+      ? overrides[key]
+      : entry.visibility;
+    return v === 'public';
   }
 
   async function isVisibleInCurrentView(entry) {
     var view = await currentAtlasView();
     if (view === 'admin') return !!entry;
-    return isPubliclyVisible(entry);
+    var overrides = await fetchOverrides();
+    return isPubliclyVisible(entry, overrides);
   }
 
   async function getVisibleEntries(list) {
     var view = await currentAtlasView();
     if (view === 'admin') return (list || []).slice();
-    return (list || []).filter(isPubliclyVisible);
+    var overrides = await fetchOverrides();
+    return (list || []).filter(function (e) { return isPubliclyVisible(e, overrides); });
   }
 
   // Convenience for consumers of the full window.atlasEntries shape.
   // Admin view returns it unchanged; public view drops archived entirely
-  // and filters everything else through isPubliclyVisible.
+  // and filters everything else through isPubliclyVisible (override-aware).
   async function filterAtlasEntries(atlasEntries) {
     if (!atlasEntries) return atlasEntries;
     var view = await currentAtlasView();
     if (view === 'admin') return atlasEntries;
+    var overrides = await fetchOverrides();
+    var pred = function (e) { return isPubliclyVisible(e, overrides); };
     return {
-      tools: (atlasEntries.tools || []).filter(isPubliclyVisible),
-      games: (atlasEntries.games || []).filter(isPubliclyVisible),
-      pages: (atlasEntries.pages || []).filter(isPubliclyVisible),
+      tools: (atlasEntries.tools || []).filter(pred),
+      games: (atlasEntries.games || []).filter(pred),
+      pages: (atlasEntries.pages || []).filter(pred),
       archived: []
     };
+  }
+
+  // Effective visibility for a single path — used by the footer's Page
+  // Status display, which has a static baseline (the current page's own
+  // atlas-meta) but needs to know whether an override has changed it.
+  async function getEffectiveVisibility(path, staticVisibility) {
+    var overrides = await fetchOverrides();
+    var key = normalizePath(path);
+    if (Object.prototype.hasOwnProperty.call(overrides, key)) return overrides[key];
+    return staticVisibility;
+  }
+
+  // The actual publish/unpublish mutation. This is a real administrative
+  // write — the client-side isAdmin check below is only for a fast,
+  // friendly failure message; the database (RLS on
+  // atlas_visibility_overrides, see migration 0002) is the real trust
+  // boundary and will reject this outright for a non-admin regardless of
+  // what this function does.
+  //
+  // Redundant-override cleanup (see module doc): if the desired value
+  // matches the page's static baseline, the override row is deleted
+  // instead of written, so this table only ever holds actual differences.
+  async function setEffectiveVisibility(path, desiredVisibility, staticVisibility) {
+    var state = await resolveState();
+    if (!state.isAdmin) {
+      return { error: { message: 'Not authorized: admin role required.' } };
+    }
+    var auth = window.PergamonAuth;
+    if (!auth) {
+      return { error: { message: 'Auth not available.' } };
+    }
+
+    var key = normalizePath(path);
+    var result;
+    try {
+      result = (desiredVisibility === staticVisibility)
+        ? await auth.deleteVisibilityOverride(key)
+        : await auth.setVisibilityOverride(key, desiredVisibility);
+    } catch (err) {
+      console.error('Pergamon Visibility: publish mutation threw', err);
+      return { error: { message: err && err.message ? err.message : 'Unknown error' } };
+    }
+
+    if (!result.error) {
+      // Invalidate and eagerly refresh so any surface reading overrides
+      // right after this resolves sees the change immediately, without
+      // needing a page reload.
+      overridesPromise = null;
+      await fetchOverrides();
+    } else {
+      console.error('Pergamon Visibility: publish mutation rejected', result.error);
+    }
+    return result;
+  }
+
+  function publishPage(path, staticVisibility) {
+    return setEffectiveVisibility(path, 'public', staticVisibility);
+  }
+
+  function unpublishPage(path, staticVisibility) {
+    return setEffectiveVisibility(path, 'admin', staticVisibility);
   }
 
   // Shell elements with no Atlas entry of their own use one of three
@@ -163,6 +309,12 @@
   // main.css hides all three by default (fail-closed) so there is no flash
   // of admin-only nav before this resolves; data-visibility="public" is
   // visible by default and only hidden here once admin view is confirmed.
+  //
+  // This function only touches ROLE/VIEW-gated shell elements — it does
+  // NOT touch Atlas entries or overrides, so it never needs to wait on
+  // fetchOverrides(). The footer's own Page Status text/button (which DOES
+  // need effective per-page visibility) is populated separately in
+  // atlas.js, chained after this resolves.
   async function applyNavVisibility(scopeEl) {
     var root = scopeEl || document;
     var state = await resolveState();
@@ -200,12 +352,17 @@
   }
 
   window.PergamonVisibility = {
+    ready: ready,
     currentAtlasView: currentAtlasView,
     isAdminRole: isAdminRole,
+    normalizePath: normalizePath,
     isPubliclyVisible: isPubliclyVisible,
     isVisibleInCurrentView: isVisibleInCurrentView,
     getVisibleEntries: getVisibleEntries,
     filterAtlasEntries: filterAtlasEntries,
+    getEffectiveVisibility: getEffectiveVisibility,
+    publishPage: publishPage,
+    unpublishPage: unpublishPage,
     applyNavVisibility: applyNavVisibility
   };
 })();
