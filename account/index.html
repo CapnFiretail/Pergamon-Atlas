@@ -81,15 +81,23 @@
       gap: 6px;
       margin-bottom: 16px;
     }
-    label {
+    /* Scoped under .account-page (see <body class="account-page">) so
+       these never collide with the shared header's own input/label rules
+       once it's injected into this same document — bare `input`/`label`
+       selectors here previously matched the header's search <input
+       type="text"> too, and won the cascade tiebreak since this block
+       loads after header.css at equal specificity, repainting the header
+       search box in the account form's light style instead of header.css's
+       dark pill style. */
+    .account-page label {
       font-size: 14px;
       font-weight: 700;
       color: #222;
       font-family: Georgia, serif;
     }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
+    .account-page input[type="text"],
+    .account-page input[type="email"],
+    .account-page input[type="password"] {
       font-family: Georgia, serif;
       font-size: 15px;
       color: #111;
@@ -101,9 +109,9 @@
       width: 100%;
       transition: border-color 0.15s;
     }
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
+    .account-page input[type="text"]:focus,
+    .account-page input[type="email"]:focus,
+    .account-page input[type="password"]:focus {
       outline: none;
       border-color: #8a611c;
       background: #fff;
@@ -274,7 +282,7 @@
   <div id="header-placeholder"></div>
   <div class="layout">
     <div id="sidebar-placeholder"></div>
-    <main class="main-content">
+    <main class="main-content account-page">
 
       <section class="account-hero">
         <h2>Your Account</h2>

@@ -73,12 +73,24 @@
           throw new Error('PergamonAuth/PergamonPermissions did not become available in time');
         }
         var result = await auth.getCurrentUserAndProfile();
-        var isAdmin = !!(result.session && permissions.isAdmin(result.profile));
-        if (isAdmin) {
-          var pref = null;
-          try { pref = localStorage.getItem(VIEW_PREF_KEY); } catch (e) {}
-          return { isAdmin: true, view: pref === 'public' ? 'public' : 'admin' };
+        if (!result.session) {
+          console.debug('Pergamon Visibility: no session -> public (this is correct for guest/user)');
+          return { isAdmin: false, view: 'public' };
         }
+        if (result.error) {
+          console.warn('Pergamon Visibility: session present but profile fetch errored -> public', result.error);
+          return { isAdmin: false, view: 'public' };
+        }
+        var isAdmin = permissions.isAdmin(result.profile);
+        if (!isAdmin) {
+          console.debug('Pergamon Visibility: authenticated but role is not admin -> public', result.profile && result.profile.role);
+          return { isAdmin: false, view: 'public' };
+        }
+        var pref = null;
+        try { pref = localStorage.getItem(VIEW_PREF_KEY); } catch (e) {}
+        var view = pref === 'public' ? 'public' : 'admin';
+        console.debug('Pergamon Visibility: resolved isAdmin=true, view=' + view + ' (this must never depend on the current page — only on role + Public Preview preference)');
+        return { isAdmin: true, view: view };
       } catch (err) {
         console.error('Pergamon Visibility: failed to resolve session', err);
       }
