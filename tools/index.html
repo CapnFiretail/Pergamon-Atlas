@@ -67,87 +67,93 @@
     .tc-chapter { grid-column: 1 / -1; }
 
     /* ── Card ────────────────────────────────────────────────── */
-    /* Same Pergamon house-card family as Games (.feat-card / .content-card):
-       white shell, 2px black border, matching radius/shadow scale, and the
-       same lift+shadow+gold hover language — kept rectangular rather than
-       square, with a wide hero band instead of a square preview panel. */
+    /* One component, themed via [data-theme] on the #tc-list ancestor —
+       see the reference image (tool-card.png): a warm-ivory/gold "Light"
+       card and a charcoal/gold "Dark" card, same structure, same class
+       names. Light is the default/base styling (no ancestor selector
+       needed) so Public Pergamon — which never sets data-theme="dark" —
+       always renders it even before JS resolves appearance; Dark is an
+       override layered on top. Kept noticeably wider than tall (the
+       reference itself is closer to square) to fit this catalog's
+       existing 2-column grid. */
 
     .tc-card {
       display: flex;
       flex-direction: column;
-      background: white;
-      border: 2px solid #000;
-      border-radius: 14px;
+      background: #fdfbf5;
+      border: 1.5px solid rgba(138,97,28,0.4);
+      border-radius: 18px;
       text-decoration: none;
       color: inherit;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      padding: 22px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.04);
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s, background 0.18s;
     }
 
     .tc-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06), 0 14px 28px rgba(0,0,0,0.07);
       border-color: #8a611c;
     }
 
-    /* ── Hero band ───────────────────────────────────────────── */
+    /* ── Top row: icon tile + seal ───────────────────────────── */
 
-    .tc-hero {
-      height: 72px;
+    .tc-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .tc-icon-tile {
+      width: 52px;
+      height: 52px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background:
-        radial-gradient(circle at 30% 50%, rgba(184,136,26,0.22), transparent 65%),
-        #111;
-      border-bottom: 2px solid #000;
-      transition: background 0.18s;
-    }
-
-    .tc-card:hover .tc-hero {
-      background:
-        radial-gradient(circle at 30% 50%, rgba(184,136,26,0.34), transparent 65%),
-        #111;
-    }
-
-    .tc-hero-icon {
-      font-size: 32px;
+      background: #f4ece0;
+      border-radius: 13px;
+      font-size: 24px;
       line-height: 1;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
     }
 
-    /* ── Body ────────────────────────────────────────────────── */
-
-    .tc-body {
+    .tc-seal {
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: 1px solid rgba(138,97,28,0.35);
+      border-radius: 9px;
+      color: #8a611c;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 14px 18px 16px;
-      flex: 1;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tc-seal svg { pointer-events: none; }
+    .tc-seal:hover {
+      background: rgba(138,97,28,0.1);
+      border-color: #8a611c;
     }
 
-    .tc-body-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-    }
+    /* ── Title / description ─────────────────────────────────── */
 
     .tc-name {
-      margin: 0;
+      margin: 0 0 8px;
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 700;
-      color: #111;
-      line-height: 1.25;
+      color: #1a1a1a;
+      line-height: 1.2;
     }
 
     .tc-desc {
-      font-size: 13.5px;
-      color: #444;
-      line-height: 1.55;
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: #6b6b6b;
+      line-height: 1.6;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -160,35 +166,21 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 4px 10px;
+      gap: 4px 12px;
       font-family: 'Courier New', Courier, monospace;
-      font-size: 10.5px;
-      letter-spacing: 0.05em;
+      font-size: 11px;
+      letter-spacing: 0.03em;
     }
 
     .tc-code { color: #8a611c; font-weight: 700; }
-    .tc-addr { color: #999; }
+    .tc-addr { color: #9a9a9a; }
 
-    /* ── Seal button ─────────────────────────────────────────── */
+    /* ── Divider ─────────────────────────────────────────────── */
 
-    .tc-seal {
-      width: 30px;
-      height: 30px;
-      background: rgba(138,97,28,0.06);
-      border: 1px solid rgba(138,97,28,0.4);
-      border-radius: 6px;
-      color: #8a611c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .tc-seal svg { pointer-events: none; }
-    .tc-seal:hover {
-      background: rgba(138,97,28,0.14);
-      border-color: #8a611c;
+    .tc-divider {
+      height: 1px;
+      background: rgba(0,0,0,0.08);
+      margin: 16px 0 14px;
     }
 
     /* ── Foot ────────────────────────────────────────────────── */
@@ -198,23 +190,57 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-top: 4px;
-      padding-top: 10px;
-      border-top: 1px solid #eee;
     }
 
     .tc-indexed {
-      font-size: 11px;
+      font-size: 12px;
       color: #999;
     }
 
     .tc-action {
       font-family: Georgia, serif;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       color: #8a611c;
       white-space: nowrap;
       letter-spacing: 0.02em;
+    }
+
+    /* ── Dark appearance (Admin View only — see PergamonVisibility.
+       currentAppearance()) ─────────────────────────────────────── */
+
+    #tc-list[data-theme="dark"] .tc-card {
+      background: linear-gradient(160deg, #201c16 0%, #14110c 100%);
+      border-color: rgba(224,179,74,0.55);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    #tc-list[data-theme="dark"] .tc-card:hover {
+      border-color: #e0b34a;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+    }
+    #tc-list[data-theme="dark"] .tc-icon-tile {
+      background: #171310;
+      color: #e0b34a;
+    }
+    #tc-list[data-theme="dark"] .tc-seal {
+      border-color: rgba(224,179,74,0.4);
+      color: #e0b34a;
+    }
+    #tc-list[data-theme="dark"] .tc-seal:hover {
+      background: rgba(224,179,74,0.12);
+      border-color: #e0b34a;
+    }
+    #tc-list[data-theme="dark"] .tc-name { color: #f5efe2; }
+    #tc-list[data-theme="dark"] .tc-desc { color: #a3a3a3; }
+    #tc-list[data-theme="dark"] .tc-addr { color: #8a8a8a; }
+    #tc-list[data-theme="dark"] .tc-code { color: #e0b34a; }
+    #tc-list[data-theme="dark"] .tc-divider { background: rgba(255,255,255,0.08); }
+    #tc-list[data-theme="dark"] .tc-indexed { color: #8a8a8a; }
+    #tc-list[data-theme="dark"] .tc-action {
+      color: #1a1512;
+      background: linear-gradient(135deg, #e0b34a, #c08a2a);
+      padding: 8px 16px;
+      border-radius: 999px;
     }
 
     /* ── Mobile ──────────────────────────────────────────────── */
@@ -224,11 +250,10 @@
     }
 
     @media (max-width: 640px) {
-      .tc-hero { height: 60px; }
-      .tc-hero-icon { font-size: 26px; }
-      .tc-body { padding: 12px 14px 14px; }
-      .tc-name { font-size: 16px; }
-      .tc-action { font-size: 11px; }
+      .tc-card { padding: 18px 18px; }
+      .tc-icon-tile { width: 46px; height: 46px; font-size: 21px; }
+      .tc-name { font-size: 19px; }
+      .tc-action { font-size: 12px; }
       .tc-chapter { margin: 28px 0 8px; }
       .tc-chapter-label { font-size: 10px; }
     }
@@ -274,6 +299,7 @@
 
 <div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
+
 
 <script>
   loadSnippets('Tools');
@@ -322,12 +348,20 @@
 
     /* ── Visibility: the matching Atlas entry (entries.js) is the sole  ──
        source of truth for whether a catalog item is publicly visible —
-       this CATALOG array intentionally carries no visibility of its own. */
+       this CATALOG array intentionally carries no visibility of its own.
+       Resolved in parallel with Appearance below, so the grid is built
+       once, already themed correctly, with nothing to flash-correct. */
     var visibleCatalog = CATALOG;
+    var theme = 'light';
     if (window.PergamonVisibility) {
-      var checks = await Promise.all(CATALOG.map(function (item) {
-        return window.PergamonVisibility.isVisibleInCurrentView(byPath[item[0]]);
-      }));
+      var results = await Promise.all([
+        Promise.all(CATALOG.map(function (item) {
+          return window.PergamonVisibility.isVisibleInCurrentView(byPath[item[0]]);
+        })),
+        window.PergamonVisibility.currentAppearance()
+      ]);
+      var checks = results[0];
+      theme = results[1];
       visibleCatalog = CATALOG.filter(function (_, i) { return checks[i]; });
     }
     var countEl = document.querySelector('.catalog-count-num');
@@ -351,29 +385,30 @@
 
       html +=
         '<a href="' + path + '/" class="tc-card">' +
-          '<div class="tc-hero"><span class="tc-hero-icon">' + icon + '</span></div>' +
-          '<div class="tc-body">' +
-            '<div class="tc-body-top">' +
-              '<h3 class="tc-name">' + esc(name) + '</h3>' +
-              '<button class="tc-seal" title="Open in Atlas Decoder"' +
-                ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/archives/atlas-decoder-archive-i/\'">' +
-                SEAL +
-              '</button>' +
-            '</div>' +
-            '<div class="tc-desc">' + esc(desc) + '</div>' +
-            '<div class="tc-meta-row">' +
-              '<span class="tc-code">' + esc(artCode) + '</span>' +
-              '<span class="tc-addr">' + esc(fullAddr) + '</span>' +
-            '</div>' +
-            '<div class="tc-foot">' +
-              '<span class="tc-indexed">Indexed ' + esc(dated) + '</span>' +
-              '<span class="tc-action">Open Artifact &#8594;</span>' +
-            '</div>' +
+          '<div class="tc-top">' +
+            '<div class="tc-icon-tile">' + icon + '</div>' +
+            '<button class="tc-seal" title="Open in Atlas Decoder"' +
+              ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/archives/atlas-decoder-archive-i/\'">' +
+              SEAL +
+            '</button>' +
+          '</div>' +
+          '<h3 class="tc-name">' + esc(name) + '</h3>' +
+          '<p class="tc-desc">' + esc(desc) + '</p>' +
+          '<div class="tc-meta-row">' +
+            '<span class="tc-code">' + esc(artCode) + '</span>' +
+            '<span class="tc-addr">' + esc(fullAddr) + '</span>' +
+          '</div>' +
+          '<div class="tc-divider"></div>' +
+          '<div class="tc-foot">' +
+            '<span class="tc-indexed">Indexed ' + esc(dated) + '</span>' +
+            '<span class="tc-action">Open Artifact &#8594;</span>' +
           '</div>' +
         '</a>';
     });
 
-    document.getElementById('tc-list').innerHTML = html;
+    var listEl = document.getElementById('tc-list');
+    listEl.dataset.theme = theme;
+    listEl.innerHTML = html;
 
   });
 </script>

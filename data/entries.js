@@ -30,7 +30,8 @@ window.atlasEntries = {
     { path: "/updates", name: "Update Log", date: "2026-05-09", time: "21:41:24", chamber: "PG", seed: 1115875289, code_seed: 1778377284, address: "XVNXW-PJHS7-25QB7", coords: { x: 1892596, y: 10047828, z: -8018635 }, visibility: "public" },
     { path: "/tools", name: "Tools", date: "2026-09-02", time: "21:29:10", chamber: "PG", seed: 751231259, code_seed: 1788398950, address: "5DASQ-PK835-28NU5", coords: { x: 16044106, y: 10073206, z: -7917741 }, visibility: "public" },
     { path: "/games", name: "Games", date: "2026-09-02", time: "21:29:10", chamber: "PG", seed: 2274967503, code_seed: 1788398950, address: "DHVDC-JEDNR-S56T2", coords: { x: -9003482, y: 13583042, z: -16388302 }, visibility: "public" },
-    { path: "/archives", name: "Archives", date: "2026-05-09", time: "21:13:33", chamber: "PG", seed: 46203695, code_seed: 1778375613, address: "XVNBT-2AA3B-GFVXH", coords: { x: 1892983, y: -3322768, z: 7001007 }, visibility: "admin" }
+    { path: "/archives", name: "Archives", date: "2026-05-09", time: "21:13:33", chamber: "PG", seed: 46203695, code_seed: 1778375613, address: "XVNBT-2AA3B-GFVXH", coords: { x: 1892983, y: -3322768, z: 7001007 }, visibility: "admin" },
+    { path: "/settings", name: "Settings", date: "2026-09-04", time: "11:39:38", chamber: "PG", seed: 1185644464, code_seed: 1788536378, address: "Y5TCZ-TJA74-ZWLN3", coords: { x: 2659857, y: -10924811, z: -9292655 }, visibility: "admin" }
   ],
 
   archived: [

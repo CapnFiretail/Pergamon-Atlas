@@ -64,6 +64,7 @@ function loadSnippets(pageName) {
         else if (href === '/atlas-navigation/' && path.startsWith('/atlas-navigation')) link.classList.add('active');
         else if (href === '/lexicon/' && path.startsWith('/lexicon')) link.classList.add('active');
         else if (href === '/archives' && path.startsWith('/archives')) link.classList.add('active');
+        else if (href === '/settings/' && path.startsWith('/settings')) link.classList.add('active');
         else if (href === '/help' && path.startsWith('/help')) link.classList.add('active');
         else if (href === '/suggestions' && path.startsWith('/suggestions')) link.classList.add('active');
       });

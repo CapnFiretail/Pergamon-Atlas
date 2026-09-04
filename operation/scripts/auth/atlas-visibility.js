@@ -294,6 +294,41 @@
     return setEffectiveVisibility(path, 'admin', staticVisibility);
   }
 
+  // ── Appearance (Light/Dark) — a FIFTH, independent concern ────────────────
+  // Not ROLE, not VIEW, not PAGE VISIBILITY: a purely presentational
+  // preference for Admin Pergamon only. Public Pergamon — including Admin
+  // Public Preview — always renders Light, regardless of what's stored, so
+  // switching to Public Preview must never read (or clear) this preference.
+  // Plain localStorage is intentional here: this is UI presentation, not
+  // authorization, publishing state, or sensitive data.
+  var APPEARANCE_PREF_KEY = 'pergamonAppearance';
+
+  function getStoredAppearance() {
+    try {
+      return localStorage.getItem(APPEARANCE_PREF_KEY) === 'dark' ? 'dark' : 'light';
+    } catch (e) {
+      return 'light';
+    }
+  }
+
+  function setStoredAppearance(value) {
+    try {
+      localStorage.setItem(APPEARANCE_PREF_KEY, value === 'dark' ? 'dark' : 'light');
+    } catch (e) {}
+  }
+
+  // Effective appearance for admin-gated presentational surfaces (the
+  // redesigned Tool cards, for now). Resolves 'light' for anyone not
+  // currently IN Admin View — guest, user, and an admin in Public Preview
+  // all get 'light' unconditionally, even if 'dark' is sitting in
+  // localStorage. The stored preference itself is never touched by this
+  // read, so it's exactly where it was once the admin returns to Admin View.
+  async function currentAppearance() {
+    var state = await resolveState();
+    if (state.view !== 'admin') return 'light';
+    return getStoredAppearance();
+  }
+
   // Shell elements with no Atlas entry of their own use one of three
   // markers, each gated differently:
   //
@@ -355,6 +390,9 @@
     ready: ready,
     currentAtlasView: currentAtlasView,
     isAdminRole: isAdminRole,
+    getStoredAppearance: getStoredAppearance,
+    setStoredAppearance: setStoredAppearance,
+    currentAppearance: currentAppearance,
     normalizePath: normalizePath,
     isPubliclyVisible: isPubliclyVisible,
     isVisibleInCurrentView: isVisibleInCurrentView,

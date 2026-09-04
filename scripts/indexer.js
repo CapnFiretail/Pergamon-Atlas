@@ -29,6 +29,7 @@ const PAGES = [
   { file: path.join(ROOT, 'tools', 'index.html'),       pagePath: '/tools',       name: 'Tools',       visibility: 'public' },
   { file: path.join(ROOT, 'games', 'index.html'),       pagePath: '/games',       name: 'Games',       visibility: 'public' },
   { file: path.join(ROOT, 'archives', 'index.html'),             pagePath: '/archives',                name: 'Archives',         visibility: 'admin' },
+  { file: path.join(ROOT, 'settings', 'index.html'),    pagePath: '/settings',    name: 'Settings' },
   { file: path.join(ROOT, 'archives', 'chess-forge-prototype',        'index.html'), pagePath: '/archives/chess-forge-prototype',        name: 'Chess Forge (Prototype)'        },
   { file: path.join(ROOT, 'archives', 'chess-forge-archive-i',        'index.html'), pagePath: '/archives/chess-forge-archive-i',        name: 'Chess Forge (Archive I)'        },
   { file: path.join(ROOT, 'archives', 'atlas-runner-prototype',       'index.html'), pagePath: '/archives/atlas-runner-prototype',       name: 'Atlas Runner (Prototype)'       },
