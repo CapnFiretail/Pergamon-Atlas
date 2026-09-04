@@ -54,7 +54,11 @@ body{
   align-items: center;
   gap: 14px;
   min-width: 0;
-  flex: 1 1 auto;
+  /* flex-grow: 0 is deliberate — flex:1 here would stretch this <a> to
+     fill the empty space between the title and header-actions, making the
+     whole blank header background clickable-to-home. It only needs to
+     shrink (not grow) so long titles can still truncate. */
+  flex: 0 1 auto;
   text-decoration: none;
   color: inherit;
 }
@@ -169,8 +173,8 @@ body{
 
 /* =========================
    ADMIN VIEW TOGGLE
-   (hidden by default in main.css via [data-visibility="admin"];
-   only ever shown once a real admin session is confirmed)
+   (hidden by default in main.css via [data-admin-control]; gated by ROLE
+   only, so it stays visible in both Admin View and Public Preview)
 ========================= */
 .view-toggle-btn{
   background: transparent;
@@ -276,7 +280,7 @@ body{
   }
 
   .brand{
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
     gap: 10px;
   }

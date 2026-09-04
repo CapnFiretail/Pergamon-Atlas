@@ -32,10 +32,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="/styles/header.css">
-  <link rel="stylesheet" href="/styles/sidebar.css">
-  <link rel="stylesheet" href="/styles/main.css">
-  <link rel="stylesheet" href="/styles/footer.css">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
 
   <style>
     /* ── PAGE SHELL ───────────────────────────────────────── */
@@ -350,41 +350,6 @@
   <div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
 
-
-  <script>
-    // ── SNIPPET LOADING ───────────────────────────────────────
-    const pageName = 'Chess Forge';
-    const pageHeaderSuffix = ' | ' + pageName;
-
-    fetch('/snippets/header.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('header-placeholder').innerHTML = html;
-        const el = document.querySelector('.page-title-text');
-        if (el) el.textContent = pageHeaderSuffix;
-      });
-
-    fetch('/snippets/sidebar.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('sidebar-placeholder').innerHTML = html;
-        const path = window.location.pathname;
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-          const href = link.getAttribute('href');
-          if (href === '/' && path === '/') link.classList.add('active');
-          else if (href === '/tools' && path.startsWith('/tools')) link.classList.add('active');
-          else if (href === '/games' && path.startsWith('/games')) link.classList.add('active');
-          else if ((href === '/pages/help' || href === '/help') &&
-                   (path.startsWith('/pages/help') || path.startsWith('/help'))) link.classList.add('active');
-        });
-        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
-      });
-
-    fetch('/snippets/footer.html')
-      .then(r => r.text())
-      .then(html => { document.getElementById('footer-placeholder').innerHTML = html; });
-  </script>
 
   <script>
     // ── PIECE UNICODE MAP ─────────────────────────────────────

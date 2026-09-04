@@ -240,7 +240,7 @@
         <p class="public-hero-tagline">The Internet's Living Library</p>
       </section>
 
-      <div data-visibility="admin">
+      <div data-visibility="admin" style="display:none">
 
         <section class="hero-section">
           <div class="hero-card">
@@ -341,7 +341,9 @@ renderUpdates(atlasUpdates, 'updates-placeholder', 2);
   // this page's own body content needs the same call since it isn't
   // inside one of those placeholders.
   document.addEventListener('DOMContentLoaded', function () {
-    if (window.PergamonVisibility) window.PergamonVisibility.applyNavVisibility(document);
+    waitForPergamonVisibility().then(function (pv) {
+      if (pv) pv.applyNavVisibility(document);
+    });
   });
 </script>
 </body>

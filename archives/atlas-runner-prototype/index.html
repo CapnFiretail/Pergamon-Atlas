@@ -27,10 +27,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="/styles/header.css">
-  <link rel="stylesheet" href="/styles/sidebar.css">
-  <link rel="stylesheet" href="/styles/main.css">
-  <link rel="stylesheet" href="/styles/footer.css">
+  <link rel="stylesheet" href="/operation/styles/header.css">
+  <link rel="stylesheet" href="/operation/styles/sidebar.css">
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
 
   <style>
     .archive-banner {
@@ -403,35 +403,6 @@
   <div id="footer-placeholder"></div>
 <script src="/operation/scripts/atlas.js"></script>
 
-
-  <script>
-    const pageName = "Atlas Runner V1 (Archived)";
-    const pageHeaderSuffix = pageName ? " | " + pageName : "";
-
-    fetch('/snippets/header.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('header-placeholder').innerHTML = data;
-        const el = document.querySelector('.page-title-text');
-        if (el) el.textContent = pageHeaderSuffix;
-      });
-
-    fetch('/snippets/sidebar.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('sidebar-placeholder').innerHTML = data;
-        const path = window.location.pathname;
-        document.querySelectorAll('.sidebar a').forEach(link => {
-          link.classList.remove('active');
-          if (path.startsWith('/games') && link.getAttribute('href') === '/games') link.classList.add('active');
-        });
-        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
-      });
-
-    fetch('/snippets/footer.html')
-      .then(res => res.text())
-      .then(data => { document.getElementById('footer-placeholder').innerHTML = data; });
-  </script>
 
   <script>
     const canvas = document.getElementById('runnerCanvas');

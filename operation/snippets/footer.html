@@ -9,9 +9,28 @@
       <a href="/">Home</a>
       <a href="/tools">Tools</a>
       <a href="/games">Games</a>
-      <a href="/lexicon/" data-visibility="admin">Lexicon</a>
+      <a href="/lexicon/" data-visibility="admin" style="display:none">Lexicon</a>
       <a href="/help">Help</a>
       <a href="/suggestions">Suggestions</a>
     </nav>
+  </div>
+
+  <!-- Page-level publish control. Requires ROLE=admin AND VIEW=admin — see
+       atlas-visibility.js. The button is intentionally inert (disabled):
+       publishing is an administrative mutation that needs a trusted
+       Supabase-backed action, not something this static frontend can do
+       safely on its own yet. This wires up the location/gating/status
+       display now so a future trusted action can plug in cleanly. -->
+  <div class="footer-admin-panel" id="footer-admin-panel" data-admin-control="view" style="display:none">
+    <div class="footer-admin-panel-inner">
+      <div class="footer-admin-status">
+        <span class="footer-admin-label">Page Status</span>
+        <span class="footer-admin-value" id="footer-page-status">—</span>
+      </div>
+      <button type="button" class="footer-publish-btn" id="footer-publish-btn" disabled
+        title="Publishing requires a trusted backend action, not yet implemented.">
+        Publish to Public
+      </button>
+    </div>
   </div>
 </footer>

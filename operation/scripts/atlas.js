@@ -1,6 +1,26 @@
 // atlas.js — shared snippet loader for all Pergamon Atlas pages
 // Usage: loadSnippets('Page Name') at the bottom of each page
 
+// The fetch() calls below resolve independently of the late auth/
+// visibility script block (see indexer.js) finishing execution — a local
+// snippet fetch can settle before those <script> tags have even run.
+// Waiting here (rather than a same-tick `if (window.PergamonVisibility)`
+// check) avoids silently skipping applyNavVisibility() when this callback
+// simply won the race and ran first; it does eventually show up.
+function waitForPergamonVisibility(timeoutMs) {
+  return new Promise(function (resolve) {
+    if (window.PergamonVisibility) { resolve(window.PergamonVisibility); return; }
+    var elapsed = 0;
+    var iv = setInterval(function () {
+      elapsed += 50;
+      if (window.PergamonVisibility || elapsed >= (timeoutMs || 5000)) {
+        clearInterval(iv);
+        resolve(window.PergamonVisibility || null);
+      }
+    }, 50);
+  });
+}
+
 function loadSnippets(pageName) {
   const suffix = pageName ? ' | ' + pageName : '';
 
@@ -21,7 +41,9 @@ function loadSnippets(pageName) {
         });
       }
 
-      if (window.PergamonVisibility) window.PergamonVisibility.applyNavVisibility(placeholder);
+      waitForPergamonVisibility().then(function (pv) {
+        if (pv) pv.applyNavVisibility(placeholder);
+      });
     });
 
   fetch('/operation/snippets/sidebar.html')
@@ -72,15 +94,17 @@ function loadSnippets(pageName) {
       // in Public View — see visibility architecture). Pushing an ad
       // request into a hidden, zero-size container throws in adsbygoogle,
       // so only push once the view is confirmed to actually show it.
-      if (window.PergamonVisibility) {
-        window.PergamonVisibility.applyNavVisibility(sidebarPlaceholder).then(function (view) {
-          if (view === 'admin') {
-            try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-          }
-        });
-      } else {
-        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-      }
+      waitForPergamonVisibility().then(function (pv) {
+        if (pv) {
+          pv.applyNavVisibility(sidebarPlaceholder).then(function (view) {
+            if (view === 'admin') {
+              try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+            }
+          });
+        } else {
+          try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        }
+      });
     });
 
   fetch('/operation/snippets/footer.html')
@@ -88,6 +112,33 @@ function loadSnippets(pageName) {
     .then(html => {
       const footerPlaceholder = document.getElementById('footer-placeholder');
       footerPlaceholder.innerHTML = html;
-      if (window.PergamonVisibility) window.PergamonVisibility.applyNavVisibility(footerPlaceholder);
+
+      // Page Status reads the CURRENT page's own atlas-meta (read-only —
+      // no mutation happens client-side). Pages with no atlas-meta at all
+      // (not part of the Atlas indexing system) have nothing to publish,
+      // so the whole panel is force-hidden rather than shown with
+      // placeholder text — chained after applyNavVisibility resolves so
+      // this always has the final say over the panel's display, rather
+      // than racing its own async role/view toggle.
+      const applyPromise = waitForPergamonVisibility().then(function (pv) {
+        return pv ? pv.applyNavVisibility(footerPlaceholder) : null;
+      });
+
+      applyPromise.then(function () {
+        const panel = document.getElementById('footer-admin-panel');
+        const metaEl = document.getElementById('atlas-meta');
+        if (!panel) return;
+        if (!metaEl) { panel.style.display = 'none'; return; }
+        try {
+          const meta = JSON.parse(metaEl.textContent);
+          const statusEl = document.getElementById('footer-page-status');
+          const btn = document.getElementById('footer-publish-btn');
+          const isPublic = meta.visibility === 'public';
+          if (statusEl) statusEl.textContent = isPublic ? 'Public' : 'Admin Only';
+          if (btn) btn.textContent = isPublic ? 'Remove from Public' : 'Publish to Public';
+        } catch (e) {
+          panel.style.display = 'none';
+        }
+      });
     });
 }

@@ -77,11 +77,18 @@ body{
 }
 
 /* === Public/Admin view visibility ========================================= */
-/* Hidden by default (fail-closed) until atlas-visibility.js confirms an   */
-/* authenticated admin session is looking at Admin View. Prevents any      */
-/* flash of admin-only nav (Lexicon, Chess Forge platform, Archives, the   */
-/* admin view toggle) for guests/users while the session check resolves.   */
-[data-visibility="admin"] { display: none; }
+/* Elements gated by data-visibility="admin" or data-admin-control default
+   to hidden via an inline style="display:none" written directly in their
+   markup (sidebar.html, footer.html, header.html, index.html) — NOT a
+   stylesheet rule here. atlas-visibility.js's applyNavVisibility() reveals
+   them by clearing that inline style, which only works if nothing else in
+   the cascade also claims `display` for the same element; a stylesheet
+   default-hide rule at this specificity is silently beaten by more
+   specific component rules for some elements (e.g. .sidebar a) and wins
+   over others with no display rule of their own (e.g. a plain <button>),
+   producing exactly the kind of "reveals for some elements, not others"
+   bug this comment used to hide. Keep the default-hide inline, per element,
+   so revealing it is always a matter of removing that one declaration. */
 /* === end Public/Admin view visibility ===================================== */
 
 /* === Game / Tool Hero Banner ============================================= */
