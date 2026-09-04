@@ -350,19 +350,38 @@
        source of truth for whether a catalog item is publicly visible —
        this CATALOG array intentionally carries no visibility of its own.
        Resolved in parallel with Appearance below, so the grid is built
-       once, already themed correctly, with nothing to flash-correct. */
+       once, already themed correctly, with nothing to flash-correct.
+       Every function this calls (resolveState/fetchOverrides) already has
+       its own internal try/catch and never rejects — but this outer guard
+       is the backstop: VISIBILITY deciding whether cards exist must never
+       be able to also decide the catalog renders nothing on a genuine
+       failure. On any unexpected error, fall back to static visibility
+       (public-only, matching entries.js's own visibility field with no
+       override applied) rather than an empty catalog, and Light rather
+       than an unresolved theme — the same "fail toward showing less, but
+       still render" direction used elsewhere (footer Page Status, override
+       fetch itself). */
     var visibleCatalog = CATALOG;
     var theme = 'light';
     if (window.PergamonVisibility) {
-      var results = await Promise.all([
-        Promise.all(CATALOG.map(function (item) {
-          return window.PergamonVisibility.isVisibleInCurrentView(byPath[item[0]]);
-        })),
-        window.PergamonVisibility.currentAppearance()
-      ]);
-      var checks = results[0];
-      theme = results[1];
-      visibleCatalog = CATALOG.filter(function (_, i) { return checks[i]; });
+      try {
+        var results = await Promise.all([
+          Promise.all(CATALOG.map(function (item) {
+            return window.PergamonVisibility.isVisibleInCurrentView(byPath[item[0]]);
+          })),
+          window.PergamonVisibility.currentAppearance()
+        ]);
+        var checks = results[0];
+        theme = results[1];
+        visibleCatalog = CATALOG.filter(function (_, i) { return checks[i]; });
+      } catch (err) {
+        console.error('Pergamon Tools: visibility/appearance resolution failed — falling back to static public visibility, Light', err);
+        visibleCatalog = CATALOG.filter(function (item) {
+          var e = byPath[item[0]];
+          return !!e && !e.archived && e.visibility === 'public';
+        });
+        theme = 'light';
+      }
     }
     var countEl = document.querySelector('.catalog-count-num');
     if (countEl) countEl.textContent = String(visibleCatalog.length);
