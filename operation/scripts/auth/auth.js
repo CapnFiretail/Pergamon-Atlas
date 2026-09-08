@@ -101,6 +101,49 @@
     return client().from('atlas_visibility_overrides').delete().eq('path', path);
   }
 
+  // Homepage customization v1 — homepage_settings + the 'homepage' Storage
+  // bucket (see supabase/migrations/0003 and 0004). Same trust model as the
+  // visibility overrides above: RLS on profiles.role is the real boundary;
+  // homepage-config.js's admin guard is UX only. The single row is keyed
+  // id = true and seeded by the migration, so writes are always UPDATE.
+  //
+  // The SELECT RLS policy returns the row to anon only while
+  // published = true, so getHomepageSettings() resolves { data: null } for
+  // a guest on an unpublished homepage — that is expected, not an error.
+  async function getHomepageSettings() {
+    return client()
+      .from('homepage_settings')
+      .select('hero_image_path, featured_path, published, published_at, updated_at')
+      .eq('id', true)
+      .maybeSingle();
+  }
+
+  async function updateHomepageSettings(patch) {
+    return client().from('homepage_settings').update(patch).eq('id', true);
+  }
+
+  // String-building only — does not hit RLS. Returns the CDN URL for an
+  // object path within the public 'homepage' bucket.
+  function homepageAssetPublicUrl(path) {
+    if (!path) return null;
+    var res = client().storage.from('homepage').getPublicUrl(path);
+    return (res && res.data && res.data.publicUrl) || null;
+  }
+
+  async function uploadHomepageAsset(path, file) {
+    return client().storage.from('homepage').upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file && file.type
+    });
+  }
+
+  async function removeHomepageAsset(paths) {
+    return client().storage
+      .from('homepage')
+      .remove(Array.isArray(paths) ? paths : [paths]);
+  }
+
   window.PergamonAuth = {
     signUp,
     signIn,
@@ -112,6 +155,11 @@
     getCurrentUserAndProfile,
     getVisibilityOverrides,
     setVisibilityOverride,
-    deleteVisibilityOverride
+    deleteVisibilityOverride,
+    getHomepageSettings,
+    updateHomepageSettings,
+    homepageAssetPublicUrl,
+    uploadHomepageAsset,
+    removeHomepageAsset
   };
 })();

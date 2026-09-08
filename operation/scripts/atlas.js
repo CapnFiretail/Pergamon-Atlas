@@ -21,6 +21,26 @@ function waitForPergamonVisibility(timeoutMs) {
   });
 }
 
+// window.PergamonHomepage is defined by homepage-config.js, which ONLY
+// index.html loads. The footer publish panel needs it there (on '/',
+// publishing promotes the configurable homepage instead of writing a
+// per-path visibility override). Resolves null on every other page and
+// within the timeout if the homepage-only script is somehow absent — the
+// caller must handle that.
+function waitForPergamonHomepage(timeoutMs) {
+  return new Promise(function (resolve) {
+    if (window.PergamonHomepage) { resolve(window.PergamonHomepage); return; }
+    var elapsed = 0;
+    var iv = setInterval(function () {
+      elapsed += 50;
+      if (window.PergamonHomepage || elapsed >= (timeoutMs || 5000)) {
+        clearInterval(iv);
+        resolve(window.PergamonHomepage || null);
+      }
+    }, 50);
+  });
+}
+
 function loadSnippets(pageName) {
   const suffix = pageName ? ' | ' + pageName : '';
 
@@ -144,7 +164,35 @@ function loadSnippets(pageName) {
         const errEl = document.getElementById('footer-publish-error');
         const currentPath = pv.normalizePath(window.location.pathname);
 
+        // '/' is a special publishing case. It stays permanently
+        // visibility:"public" and is never given an atlas_visibility_
+        // overrides row — Home must always be in navigation/search and '/'
+        // always reachable. Instead, the same button promotes/demotes the
+        // *configurable* homepage via homepage_settings.published (see
+        // homepage-config.js). Every other page keeps the ordinary
+        // per-path override behaviour untouched.
+        const isHomepage = currentPath === '/';
+        const ph = isHomepage ? await waitForPergamonHomepage() : null;
+        if (isHomepage && !ph) { panel.style.display = 'none'; return; }
+
         async function refreshStatus() {
+          if (isHomepage) {
+            const published = await ph.isPublished();
+            if (statusEl) {
+              statusEl.textContent = published
+                ? 'New homepage (public)'
+                : 'Classic homepage (public)';
+            }
+            if (btn) {
+              btn.disabled = false;
+              btn.textContent = published ? 'Remove from Public' : 'Publish to Public';
+              btn.dataset.desired = published ? 'unpublish' : 'publish';
+              btn.title = published
+                ? 'Return visitors to the classic homepage'
+                : 'Promote the new configurable homepage to all visitors';
+            }
+            return;
+          }
           const effective = await pv.getEffectiveVisibility(currentPath, meta.visibility);
           const isPublic = effective === 'public';
           if (statusEl) statusEl.textContent = isPublic ? 'Public' : 'Admin Only';
@@ -160,16 +208,21 @@ function loadSnippets(pageName) {
         if (btn && !btn.dataset.wired) {
           btn.dataset.wired = '1';
           btn.addEventListener('click', async function () {
-            const desired = btn.dataset.desired; // 'public' or 'admin' — set by refreshStatus()
+            const desired = btn.dataset.desired; // set by refreshStatus()
             const previousLabel = btn.textContent.trim();
+            const publishing = desired === 'public' || desired === 'publish';
             btn.disabled = true;
-            btn.textContent = desired === 'public' ? 'Publishing…' : 'Removing…';
+            btn.textContent = publishing ? 'Publishing…' : 'Removing…';
             if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
 
-            const action = desired === 'public' ? pv.publishPage : pv.unpublishPage;
             let result;
             try {
-              result = await action(currentPath, meta.visibility);
+              if (isHomepage) {
+                result = publishing ? await ph.publish() : await ph.unpublish();
+              } else {
+                const action = publishing ? pv.publishPage : pv.unpublishPage;
+                result = await action(currentPath, meta.visibility);
+              }
             } catch (err) {
               result = { error: { message: err && err.message ? err.message : 'Unknown error' } };
             }
