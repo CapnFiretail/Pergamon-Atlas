@@ -113,7 +113,7 @@
   async function getHomepageSettings() {
     return client()
       .from('homepage_settings')
-      .select('hero_image_path, featured_path, published, published_at, updated_at')
+      .select('hero_image_path, hero_image_zoom, hero_image_x, hero_image_y, featured_path, featured_description, published, published_at, updated_at')
       .eq('id', true)
       .maybeSingle();
   }

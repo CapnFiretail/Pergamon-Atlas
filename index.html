@@ -172,8 +172,16 @@
       transition:border-color 0.2s ease, background-color 0.2s ease;
     }
 
+    /* Quick Access cards want more definition against the dark ground than
+       the shared .pa-panel border gives (later rule, equal specificity, so
+       this wins) — same gold accent, just thicker and less transparent.
+       Nothing else about the card changes. */
+    .qa-card{
+      border:1.5px solid rgba(224,179,74,0.42);
+    }
+
     .qa-card:hover{
-      border-color:rgba(224,179,74,0.55);
+      border-color:rgba(224,179,74,0.75);
       background:#1a1611;
     }
 
@@ -225,7 +233,10 @@
        the bootstrap script when homepage_settings.hero_image_path is set.
        A low aspect-ratio plus a max-height cap and align-self:center mean
        the image sizes from the column width but stops well short of the
-       text height, so the hero stays a short horizontal band. */
+       text height, so the hero stays a short horizontal band.
+       The gold border belongs to the FRAME, so it stays put regardless of
+       the image's crop/zoom/position. Same accent as the rest of the
+       homepage (rgba(224,179,74,…) === #e0b34a), just more defined. */
     .atlas-hero-image{
       position:relative;
       overflow:hidden;
@@ -234,15 +245,27 @@
       max-height:132px;
       align-self:center;
       background:#1c1c1a;
+      border:2px solid rgba(224,179,74,0.55);
       border-radius:8px;
     }
 
+    /* Crop/zoom is presentation-only — no cropped file is produced. The
+       three custom properties come from homepage_settings
+       (hero_image_x/_y/_zoom), set on #hero-image by the bootstrap script;
+       defaults 50%/50%/1 = centred, no zoom. object-fit:cover is the
+       zoom-1 baseline; object-position pans; scale() zooms toward the same
+       point. The modal crop editor drives an identical .atlas-hero-image /
+       .atlas-hero-image-img pair with the same properties, so its preview
+       matches this frame exactly. */
     .atlas-hero-image-img{
       position:absolute;
       inset:0;
       width:100%;
       height:100%;
       object-fit:cover;
+      object-position:var(--hero-x, 50%) var(--hero-y, 50%);
+      transform:scale(var(--hero-zoom, 1));
+      transform-origin:var(--hero-x, 50%) var(--hero-y, 50%);
       display:block;
     }
 
@@ -274,21 +297,6 @@
       opacity:1;
       background:rgba(18,17,16,0.92);
     }
-
-    .hero-image-status{
-      position:absolute;
-      left:8px;
-      bottom:8px;
-      z-index:2;
-      font-size:11px;
-      padding:3px 8px;
-      border-radius:6px;
-      background:rgba(18,17,16,0.88);
-      color:#a3a3a3;
-    }
-
-    .hero-image-status.is-error{ color:#f0a0a0; }
-    .hero-image-status.is-ok{ color:#9fd39f; }
 
     /* Section eyebrow + trailing rule. */
     .section-label{
@@ -488,6 +496,225 @@
       color:#f0c161;
     }
 
+    /* The featured card is a <div> with a stretched link on the title, so
+       the whole card still navigates while the admin description editor
+       (button + textarea) can sit above it and take its own clicks. */
+    .featured-card{ position:relative; }
+
+    .featured-card-title a.featured-card-link{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .featured-card-link::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+    }
+
+    /* Description row + its admin-only edit pencil. Raised above the
+       stretched link so the pencil is clickable. */
+    .featured-desc-row{
+      position:relative;
+      z-index:2;
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      margin:0 0 14px 0;
+    }
+
+    .featured-desc-row .featured-card-desc{
+      margin:0;
+    }
+
+    .featured-desc-edit{
+      flex:0 0 auto;
+      margin-top:1px;
+      background:none;
+      border:0;
+      color:#8f877a;
+      font-size:13px;
+      line-height:1;
+      cursor:pointer;
+      opacity:0.6;
+      transition:opacity 0.15s ease, color 0.15s ease;
+    }
+
+    .featured-card:hover .featured-desc-edit,
+    .featured-desc-edit:focus-visible{
+      opacity:1;
+      color:#e0b34a;
+    }
+
+    .featured-desc-editor{
+      position:relative;
+      z-index:2;
+      margin:0 0 14px 0;
+    }
+
+    .featured-desc-input{
+      width:100%;
+      box-sizing:border-box;
+      background:#100e0b;
+      color:#f0ece2;
+      border:1px solid rgba(224,179,74,0.22);
+      border-radius:6px;
+      padding:8px 10px;
+      font-family:Georgia, serif;
+      font-size:13px;
+      line-height:1.5;
+      resize:vertical;
+    }
+
+    .featured-desc-editor-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .featured-desc-btn{
+      border:1px solid rgba(224,179,74,0.4);
+      background:transparent;
+      color:#e0b34a;
+      border-radius:6px;
+      padding:5px 12px;
+      font-family:Georgia, serif;
+      font-size:11px;
+      cursor:pointer;
+      transition:background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .featured-desc-btn.ghost{ border-color:rgba(255,255,255,0.14); color:#a3a3a3; }
+    .featured-desc-btn:hover{ background:rgba(224,179,74,0.1); border-color:#e0b34a; }
+    .featured-desc-btn.ghost:hover{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.25); }
+
+    .featured-desc-status{ font-size:11px; color:#a3a3a3; white-space:nowrap; }
+    .featured-desc-status.is-error{ color:#f0a0a0; }
+    .featured-desc-status.is-ok{ color:#9fd39f; }
+
+    /* ── Hero image crop editor modal ──────────────────────────────────── */
+    .hero-crop-modal{
+      position:fixed;
+      inset:0;
+      z-index:1000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .hero-crop-backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(8,7,6,0.72);
+    }
+
+    .hero-crop-dialog{
+      position:relative;
+      width:100%;
+      max-width:440px;
+      padding:18px;
+      background:#161310;
+    }
+
+    .hero-crop-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:#e0b34a;
+      margin-bottom:14px;
+    }
+
+    .hero-crop-x{
+      background:none;
+      border:0;
+      color:#8f877a;
+      font-size:20px;
+      line-height:1;
+      cursor:pointer;
+      padding:0 4px;
+    }
+
+    .hero-crop-x:hover{ color:#f5efe2; }
+
+    /* Same class as the real hero frame → identical rendering. Only the
+       layout props inherited from the hero's flex parent are neutralised. */
+    .hero-crop-preview{
+      flex:none;
+      align-self:auto;
+      width:100%;
+      max-height:none;
+      margin-bottom:14px;
+    }
+
+    .hero-crop-empty{
+      margin:0 0 14px;
+      font-size:12px;
+      line-height:1.5;
+      color:#a3a3a3;
+    }
+
+    .hero-crop-controls{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .hero-crop-controls label{
+      display:grid;
+      grid-template-columns:78px 1fr;
+      align-items:center;
+      gap:12px;
+      font-size:12px;
+      color:#a3a3a3;
+    }
+
+    .hero-crop-controls input[type="range"]{
+      width:100%;
+      accent-color:#e0b34a;
+    }
+
+    .hero-crop-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .hero-crop-spacer{ flex:1; }
+
+    .hero-crop-btn{
+      border:1px solid rgba(224,179,74,0.4);
+      background:transparent;
+      color:#e0b34a;
+      border-radius:7px;
+      padding:6px 12px;
+      font-family:Georgia, serif;
+      font-size:12px;
+      cursor:pointer;
+      transition:background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .hero-crop-btn:hover{ background:rgba(224,179,74,0.1); border-color:#e0b34a; }
+    .hero-crop-btn.ghost{ border-color:rgba(255,255,255,0.14); color:#a3a3a3; }
+    .hero-crop-btn.ghost:hover{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.25); }
+    .hero-crop-btn.primary{ background:rgba(224,179,74,0.16); border-color:#e0b34a; color:#f0c161; }
+    .hero-crop-btn.primary:hover{ background:rgba(224,179,74,0.26); }
+    .hero-crop-btn[disabled]{ opacity:0.5; cursor:default; }
+
+    .hero-crop-status{ font-size:11px; color:#a3a3a3; white-space:nowrap; }
+    .hero-crop-status.is-error{ color:#f0a0a0; }
+    .hero-crop-status.is-ok{ color:#9fd39f; }
+
+    .atlas-hero-image.is-admin{ cursor:pointer; }
+
     @media (max-width:900px){
       .atlas-hero{
         gap:24px;
@@ -546,7 +773,7 @@
       }
     }
 
-    /* === end Homepage V8 ==================================================== */
+    /* === end Homepage V8/V9 =============================================== */
 
   </style>
 </head>
@@ -584,14 +811,14 @@
 
             <div class="atlas-hero-right">
               <!-- Empty dark box = placeholder. An <img> is injected here
-                   from homepage_settings.hero_image_path. The pencil and
-                   status are admin-only (data-admin-control="view"); the
-                   file input is offscreen and triggered by the pencil. -->
+                   from homepage_settings.hero_image_path, positioned by the
+                   hero_image_x/_y/_zoom custom properties. The pencil is
+                   admin-only (data-admin-control="view") and, like clicking
+                   the image itself, opens the crop editor modal below. -->
               <div class="atlas-hero-image" id="hero-image">
                 <button type="button" class="hero-image-edit" id="hero-image-edit"
                         data-admin-control="view" style="display:none"
-                        aria-label="Change hero image" title="Change hero image">&#9998;</button>
-                <span class="hero-image-status" id="hero-image-status" hidden></span>
+                        aria-label="Adjust hero image" title="Adjust hero image">&#9998;</button>
               </div>
               <input type="file" id="hero-image-input"
                      accept="image/png,image/jpeg,image/webp" hidden>
@@ -651,6 +878,38 @@
           <div id="featured-artifact-slot"></div>
         </section>
 
+        <!-- Hero image crop editor. Admin-only, opened by the hero pencil
+             or clicking the image. The preview is a real .atlas-hero-image
+             frame driven by the same custom properties as the live hero,
+             so what you see is what gets published. -->
+        <div class="hero-crop-modal" id="hero-crop-modal" hidden>
+          <div class="hero-crop-backdrop" data-close></div>
+          <div class="hero-crop-dialog pa-panel" role="dialog" aria-modal="true" aria-label="Adjust hero image">
+            <div class="hero-crop-head">
+              <span>Hero image</span>
+              <button type="button" class="hero-crop-x" data-close aria-label="Close">&times;</button>
+            </div>
+
+            <div class="atlas-hero-image hero-crop-preview" id="hero-crop-preview"></div>
+            <p class="hero-crop-empty" id="hero-crop-empty" hidden>No hero image yet. Use “Replace image…” to add one, then position it here.</p>
+
+            <div class="hero-crop-controls" id="hero-crop-controls">
+              <label>Zoom <input type="range" id="hero-crop-zoom" min="1" max="3" step="0.01"></label>
+              <label>Horizontal <input type="range" id="hero-crop-x" min="0" max="100" step="1"></label>
+              <label>Vertical <input type="range" id="hero-crop-y" min="0" max="100" step="1"></label>
+            </div>
+
+            <div class="hero-crop-actions">
+              <button type="button" class="hero-crop-btn" id="hero-crop-replace">Replace image…</button>
+              <button type="button" class="hero-crop-btn" id="hero-crop-reset">Reset</button>
+              <span class="hero-crop-status" id="hero-crop-status" hidden></span>
+              <span class="hero-crop-spacer"></span>
+              <button type="button" class="hero-crop-btn ghost" id="hero-crop-cancel" data-close>Cancel</button>
+              <button type="button" class="hero-crop-btn primary" id="hero-crop-save">Save</button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </main>
@@ -696,6 +955,8 @@
       path: '/games/chess-forge',
       title: 'Chess Forge',
       description: 'Play. Learn. Improve. A new way to experience chess on the Atlas.',
+      canonicalDescription: 'Play. Learn. Improve. A new way to experience chess on the Atlas.',
+      descriptionIsOverride: false,
       cardImage: null
     };
 
@@ -705,7 +966,12 @@
         .replace(/"/g, '&quot;');
     }
 
-    function renderFeaturedArtifact(artifact, containerId){
+    // The card is a <div> with a stretched link on the title so the whole
+    // card still navigates, while the admin description editor can live
+    // inside it. Admin markup (pencil + editor) is only emitted when
+    // adminView is true — no data-admin-control needed since it's absent
+    // for everyone else and re-emitted on every re-render.
+    function renderFeaturedArtifact(artifact, containerId, adminView){
       const el = document.getElementById(containerId);
       if (!el || !artifact || !artifact.path) return;
 
@@ -718,16 +984,35 @@
         thumb = '';
       }
 
+      const desc = artifact.description || '';
+      const editPencil = adminView
+        ? `<button type="button" class="featured-desc-edit" aria-label="Edit homepage description" title="Edit homepage description">&#9998;</button>`
+        : '';
+      const editor = adminView
+        ? `<div class="featured-desc-editor" hidden>
+            <textarea class="featured-desc-input" rows="3" maxlength="600"></textarea>
+            <div class="featured-desc-editor-row">
+              <button type="button" class="featured-desc-btn primary" data-act="save">Save</button>
+              <button type="button" class="featured-desc-btn ghost" data-act="cancel">Cancel</button>
+              <span class="featured-desc-status" hidden></span>
+            </div>
+          </div>`
+        : '';
+
       el.innerHTML = `
-        <a class="featured-card pa-panel" href="${esc(artifact.path)}">
+        <div class="featured-card pa-panel">
           <div class="featured-card-thumb">${thumb}</div>
           <div class="featured-card-body">
             <span class="featured-card-eyebrow">Featured Artifact</span>
-            <h3 class="featured-card-title">${esc(artifact.title)}</h3>
-            <p class="featured-card-desc">${esc(artifact.description)}</p>
-            <span class="featured-card-cta">Explore &#8594;</span>
+            <h3 class="featured-card-title"><a class="featured-card-link" href="${esc(artifact.path)}">${esc(artifact.title)}</a></h3>
+            <div class="featured-desc-row">
+              <p class="featured-card-desc">${esc(desc)}</p>
+              ${editPencil}
+            </div>
+            ${editor}
+            <span class="featured-card-cta" aria-hidden="true">Explore &#8594;</span>
           </div>
-        </a>`;
+        </div>`;
     }
 
     try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
@@ -767,7 +1052,7 @@
         var view = await pv.currentAtlasView();
         var resolved = ph
           ? await ph.getResolved()
-          : { published: false, heroImageUrl: null, featured: null };
+          : { published: false, heroImageUrl: null, heroZoom: 1, heroX: 50, heroY: 50, featured: null };
         var showConfigurable = (view === 'admin') || resolved.published;
 
         if (classicEl) classicEl.hidden = showConfigurable;
@@ -776,17 +1061,31 @@
 
         if (!showConfigurable) return;
 
-        applyHeroImage(resolved.heroImageUrl);
-        renderFeaturedArtifact(resolved.featured || FEATURED_DEFAULT, 'featured-artifact-slot');
+        var adminView = view === 'admin';
+        applyHeroImage(resolved.heroImageUrl, {
+          zoom: resolved.heroZoom, x: resolved.heroX, y: resolved.heroY
+        });
+        renderFeatured(resolved.featured || FEATURED_DEFAULT, adminView, ph);
 
         // Editing is only reachable for an admin in Admin View
         // (applyNavVisibility hid the controls otherwise); every write is
         // still RLS-gated server-side regardless.
-        if (view === 'admin' && ph) wireHomepageAdmin(ph);
+        if (adminView && ph) wireHomepageAdmin(ph);
       });
   });
 
-  function applyHeroImage(url) {
+  function applyCropVars(box, crop) {
+    if (!box) return;
+    var c = crop || {};
+    var z = (typeof c.zoom === 'number' && isFinite(c.zoom)) ? c.zoom : 1;
+    var x = (typeof c.x === 'number' && isFinite(c.x)) ? c.x : 50;
+    var y = (typeof c.y === 'number' && isFinite(c.y)) ? c.y : 50;
+    box.style.setProperty('--hero-zoom', String(z));
+    box.style.setProperty('--hero-x', x + '%');
+    box.style.setProperty('--hero-y', y + '%');
+  }
+
+  function applyHeroImage(url, crop) {
     var box = document.getElementById('hero-image');
     if (!box) return;
     var img = document.getElementById('hero-image-img');
@@ -802,6 +1101,12 @@
     } else if (img) {
       img.remove();
     }
+    applyCropVars(box, crop);
+  }
+
+  function renderFeatured(artifact, adminView, ph) {
+    renderFeaturedArtifact(artifact || FEATURED_DEFAULT, 'featured-artifact-slot', adminView);
+    if (adminView && ph) wireFeaturedDescEditor(ph);
   }
 
   function setStatus(el, msg, kind) {
@@ -816,32 +1121,9 @@
   }
 
   function wireHomepageAdmin(ph) {
-    // ── Hero image ──
-    var editBtn = document.getElementById('hero-image-edit');
-    var input = document.getElementById('hero-image-input');
-    var heroStatus = document.getElementById('hero-image-status');
-    if (editBtn && input && !editBtn.dataset.wired) {
-      editBtn.dataset.wired = '1';
-      editBtn.addEventListener('click', function () { input.click(); });
-      input.addEventListener('change', async function () {
-        var file = input.files && input.files[0];
-        input.value = '';
-        if (!file) return;
-        editBtn.disabled = true;
-        setStatus(heroStatus, 'Uploading…');
-        var res = await ph.setHeroImage(file);
-        editBtn.disabled = false;
-        if (res && res.error) {
-          setStatus(heroStatus, (res.error && res.error.message) || 'Upload failed', 'error');
-          return;
-        }
-        var r = await ph.getResolved();
-        applyHeroImage(r.heroImageUrl);
-        setStatus(heroStatus, 'Saved', 'ok');
-      });
-    }
+    wireCropModal(ph);
 
-    // ── Featured artifact ──
+    // ── Featured artifact picker ──
     var changeBtn = document.getElementById('featured-change-btn');
     var picker = document.getElementById('featured-picker');
     var select = document.getElementById('featured-select');
@@ -849,19 +1131,24 @@
     if (changeBtn && picker && select && !changeBtn.dataset.wired) {
       changeBtn.dataset.wired = '1';
 
+      // Every current Game and Tool, straight from the indexer's output
+      // (window.atlasEntries). No names hardcoded — a game added to the
+      // catalog and re-indexed shows up here automatically. featured_path
+      // resolution isn't limited to these two groups.
       var E = window.atlasEntries || {};
-      // Games + Tools are the meaningful artifacts today; featured_path is
-      // not architecturally limited to them (homepage-config.js resolves
-      // any entry) — extend this list when more become featureable.
-      var pool = [].concat(E.games || [], E.tools || []).slice()
-        .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
-      select.innerHTML = pool.map(function (e) {
-        return '<option value="' + esc(e.path) + '">' + esc(e.name) + '</option>';
-      }).join('');
+      function optionsHtml(list) {
+        return (list || []).slice()
+          .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); })
+          .map(function (e) { return '<option value="' + esc(e.path) + '">' + esc(e.name) + '</option>'; })
+          .join('');
+      }
+      var gamesHtml = optionsHtml(E.games);
+      var toolsHtml = optionsHtml(E.tools);
+      select.innerHTML =
+        (gamesHtml ? '<optgroup label="Games">' + gamesHtml + '</optgroup>' : '') +
+        (toolsHtml ? '<optgroup label="Tools">' + toolsHtml + '</optgroup>' : '');
 
       ph.getResolved().then(function (r) {
-        // Match the dropdown to what's actually featured — the saved
-        // featured_path, or the default the card falls back to.
         var current = (r && r.featuredPath) || FEATURED_DEFAULT.path;
         if ([].some.call(select.options, function (o) { return o.value === current; })) {
           select.value = current;
@@ -873,15 +1160,184 @@
       select.addEventListener('change', async function () {
         select.disabled = true;
         setStatus(pickStatus, 'Saving…');
-        var res = await ph.setFeaturedArtifact(select.value);
+        var res = await ph.setFeaturedArtifact(select.value); // also clears featured_description
         select.disabled = false;
         if (res && res.error) {
           setStatus(pickStatus, (res.error && res.error.message) || 'Save failed', 'error');
           return;
         }
         var r = await ph.getResolved();
-        renderFeaturedArtifact(r.featured || FEATURED_DEFAULT, 'featured-artifact-slot');
+        renderFeatured(r.featured || FEATURED_DEFAULT, true, ph);
         setStatus(pickStatus, 'Saved', 'ok');
+      });
+    }
+  }
+
+  // ── Featured Today description — homepage-only editorial copy ──
+  // Re-runs after every renderFeaturedArtifact() (the markup is rebuilt).
+  function wireFeaturedDescEditor(ph) {
+    var slot = document.getElementById('featured-artifact-slot');
+    if (!slot) return;
+    var pencil = slot.querySelector('.featured-desc-edit');
+    var editor = slot.querySelector('.featured-desc-editor');
+    var descP = slot.querySelector('.featured-card-desc');
+    if (!pencil || !editor || !descP || pencil.dataset.wired) return;
+    pencil.dataset.wired = '1';
+
+    var input = editor.querySelector('.featured-desc-input');
+    var status = editor.querySelector('.featured-desc-status');
+    var saveBtn = editor.querySelector('[data-act="save"]');
+    var cancelBtn = editor.querySelector('[data-act="cancel"]');
+
+    function open() {
+      input.value = descP.textContent || '';
+      descP.hidden = true;
+      pencil.hidden = true;
+      editor.hidden = false;
+      setStatus(status, '');
+      input.focus();
+    }
+    function close() {
+      editor.hidden = true;
+      descP.hidden = false;
+      pencil.hidden = false;
+    }
+
+    pencil.addEventListener('click', open);
+    cancelBtn.addEventListener('click', close);
+    saveBtn.addEventListener('click', async function () {
+      saveBtn.disabled = true;
+      setStatus(status, 'Saving…');
+      var res = await ph.setFeaturedDescription(input.value); // blank ⇒ NULL ⇒ canonical
+      saveBtn.disabled = false;
+      if (res && res.error) {
+        setStatus(status, (res.error && res.error.message) || 'Save failed', 'error');
+        return;
+      }
+      var r = await ph.getResolved();
+      descP.textContent = (r.featured && r.featured.description) || '';
+      setStatus(status, 'Saved', 'ok');
+      setTimeout(close, 800);
+    });
+  }
+
+  // ── Hero image crop editor modal ──
+  function wireCropModal(ph) {
+    var modal = document.getElementById('hero-crop-modal');
+    if (!modal || modal.dataset.wired) return;
+    modal.dataset.wired = '1';
+
+    var preview = document.getElementById('hero-crop-preview');
+    var emptyMsg = document.getElementById('hero-crop-empty');
+    var controls = document.getElementById('hero-crop-controls');
+    var zoomEl = document.getElementById('hero-crop-zoom');
+    var xEl = document.getElementById('hero-crop-x');
+    var yEl = document.getElementById('hero-crop-y');
+    var replaceBtn = document.getElementById('hero-crop-replace');
+    var resetBtn = document.getElementById('hero-crop-reset');
+    var saveBtn = document.getElementById('hero-crop-save');
+    var statusEl = document.getElementById('hero-crop-status');
+    var fileInput = document.getElementById('hero-image-input');
+    var heroBox = document.getElementById('hero-image');
+    var openPencil = document.getElementById('hero-image-edit');
+
+    var defaults = ph.cropDefaults ? ph.cropDefaults() : { zoom: 1, x: 50, y: 50 };
+    var current = { url: null, zoom: 1, x: 50, y: 50 }; // last-saved
+
+    function syncPreview() {
+      applyCropVars(preview, {
+        zoom: parseFloat(zoomEl.value),
+        x: parseFloat(xEl.value),
+        y: parseFloat(yEl.value)
+      });
+    }
+    function setSliders(c) {
+      zoomEl.value = c.zoom; xEl.value = c.x; yEl.value = c.y;
+      syncPreview();
+    }
+    function renderPreviewImg(url) {
+      var old = preview.querySelector('img');
+      if (old) old.remove();
+      var has = !!url;
+      if (has) {
+        var img = document.createElement('img');
+        img.className = 'atlas-hero-image-img';
+        img.alt = '';
+        img.src = url;
+        preview.insertBefore(img, preview.firstChild);
+      }
+      preview.hidden = !has;
+      emptyMsg.hidden = has;
+      controls.hidden = !has;
+      saveBtn.disabled = !has;
+      resetBtn.disabled = !has;
+    }
+    async function openModal() {
+      var r = await ph.getResolved();
+      current = { url: r.heroImageUrl || null, zoom: r.heroZoom, x: r.heroX, y: r.heroY };
+      renderPreviewImg(current.url);
+      setSliders(current);
+      setStatus(statusEl, '');
+      modal.hidden = false;
+    }
+    function closeModal() { modal.hidden = true; }
+
+    [zoomEl, xEl, yEl].forEach(function (el) { el.addEventListener('input', syncPreview); });
+    resetBtn.addEventListener('click', function () { setSliders(defaults); });
+    modal.querySelectorAll('[data-close]').forEach(function (el) {
+      el.addEventListener('click', closeModal);
+    });
+
+    replaceBtn.addEventListener('click', function () { fileInput.click(); });
+    fileInput.addEventListener('change', async function () {
+      var file = fileInput.files && fileInput.files[0];
+      fileInput.value = '';
+      if (!file) return;
+      replaceBtn.disabled = true;
+      setStatus(statusEl, 'Uploading…');
+      var res = await ph.setHeroImage(file); // resets crop server-side
+      replaceBtn.disabled = false;
+      if (res && res.error) {
+        setStatus(statusEl, (res.error && res.error.message) || 'Upload failed', 'error');
+        return;
+      }
+      var r = await ph.getResolved();
+      current = { url: r.heroImageUrl || null, zoom: r.heroZoom, x: r.heroX, y: r.heroY };
+      renderPreviewImg(current.url);
+      setSliders(current);
+      applyHeroImage(current.url, current); // reflect on the live hero now
+      setStatus(statusEl, 'Image replaced — position it, then Save', 'ok');
+    });
+
+    saveBtn.addEventListener('click', async function () {
+      var crop = {
+        zoom: parseFloat(zoomEl.value),
+        x: parseFloat(xEl.value),
+        y: parseFloat(yEl.value)
+      };
+      saveBtn.disabled = true;
+      setStatus(statusEl, 'Saving…');
+      var res = await ph.setHeroCrop(crop);
+      saveBtn.disabled = false;
+      if (res && res.error) {
+        setStatus(statusEl, (res.error && res.error.message) || 'Save failed', 'error');
+        return;
+      }
+      applyHeroImage(current.url, crop);
+      setStatus(statusEl, 'Saved', 'ok');
+      setTimeout(closeModal, 700);
+    });
+
+    // Open triggers: the pencil, or clicking the image itself.
+    if (openPencil && !openPencil.dataset.wired) {
+      openPencil.dataset.wired = '1';
+      openPencil.addEventListener('click', function (e) { e.stopPropagation(); openModal(); });
+    }
+    if (heroBox) {
+      heroBox.classList.add('is-admin');
+      heroBox.addEventListener('click', function (e) {
+        if (e.target.closest('.hero-image-edit')) return;
+        openModal();
       });
     }
   }
