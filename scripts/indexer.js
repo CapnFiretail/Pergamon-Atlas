@@ -360,6 +360,7 @@ for (const [type, sector] of Object.entries(SECTORS)) {
     };
     if (existing.archived)    { meta.archived = true; meta.archive_date = existing.archive_date; }
     if (existing.description) meta.description = existing.description;
+    if (existing.card_image)  meta.card_image  = existing.card_image;
     if (existing.tags)        meta.tags        = existing.tags;
 
     let updated = injectOrUpdateMeta(html, meta);
@@ -404,7 +405,10 @@ for (const page of PAGES) {
     coords,
     address
   };
-  if (existing.archived) { meta.archived = true; meta.archive_date = existing.archive_date; }
+  if (existing.archived)    { meta.archived = true; meta.archive_date = existing.archive_date; }
+  if (existing.description) meta.description = existing.description;
+  if (existing.card_image)  meta.card_image  = existing.card_image;
+  if (existing.tags)        meta.tags        = existing.tags;
 
   let updated = injectOrUpdateMeta(html, meta);
   updated = stripOldScripts(updated);
@@ -450,6 +454,7 @@ function formatEntry(e) {
   if (e.visibility)  s += `, visibility: "${e.visibility}"`;
   if (e.archived)    s += `, archived: true, archive_date: "${e.archive_date || ''}"`;
   if (e.description) s += `, description: "${e.description}"`;
+  if (e.card_image)  s += `, card_image: "${e.card_image}"`;
   if (e.tags)        s += `, tags: ${JSON.stringify(e.tags)}`;
   s += ' }';
   return s;

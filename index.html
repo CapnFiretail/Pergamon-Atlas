@@ -32,6 +32,14 @@
   <link rel="stylesheet" href="/operation/styles/footer.css">
 
   <style>
+    /* The bootstrap script toggles homepage blocks and the featured picker
+       with el.hidden. Several of them carry a component `display` rule
+       (.public-hero / .featured-picker are flex) that would otherwise beat
+       the [hidden] UA style, so make [hidden] win outright — scoped to
+       this page's own <style>, nothing else on the page uses the
+       attribute. */
+    [hidden]{ display:none !important; }
+
     .public-hero{
       display:flex;
       flex-direction:column;
@@ -55,26 +63,30 @@
       color:#666;
     }
 
-    /* === Homepage V7 — Admin View dark hero: Quick Access + Featured Today =
-       First Pergamon Atlas page to use a dark visual language. This
-       iteration removed the homepage hero search field (the global header
-       search is unchanged) and put a compact Quick Access card row in its
-       place, and slimmed the hero image to a thin editorial banner so the
-       hero reads as a short horizontal band. Scoped
-       exclusively to this page: body.pa-admin-dark is added by this page's
-       own script (see the DOMContentLoaded handler near the bottom) only
-       after PergamonVisibility resolves view === 'admin' — the selector
-       below only ever matches when that class is present, so no shared
-       stylesheet changes and no other Atlas page is affected. Default
-       (class absent) keeps today's light .main-content, so guests/users
-       and the moment before JS resolves both fail safely to light.
+    /* === Homepage V8 — configurable dark homepage + publishing ============
+       The dark hero (Quick Access + Featured Today) is the "configurable
+       homepage". index.html ships it alongside the classic .public-hero;
+       the bootstrap script near the bottom shows one or the other:
+         - Admin View: always the configurable homepage (the editing
+           surface).
+         - Everyone else: the configurable homepage ONLY once
+           homepage_settings.published is true (see homepage-config.js);
+           otherwise the classic .public-hero.
+       body.pa-admin-dark follows that same decision, so this is still the
+       only page that is ever dark — for admins always, and for the public
+       once published. Default HTML state (#configurable-homepage hidden,
+       .public-hero shown) means any JS failure falls safely back to the
+       classic light homepage.
+       The hero image and the Featured Today card are data-driven from
+       homepage_settings + entries.js; nothing about them is hardcoded
+       here. Admin-only edit controls carry data-admin-control="view" (the
+       same marker the footer publish panel uses).
        Colors reuse the dark-mode tokens already established for the
        Tools/Games catalog cards' Admin Appearance (see
-       #tc-list[data-theme="dark"] in tools/index.html) rather than a new
-       palette: ivory #f5efe2, muted #a3a3a3, gold accent #e0b34a. This is
-       a fixed design for the admin homepage, independent of that
-       Light/Dark Appearance *preference* (Settings), which stays scoped
-       to the catalog cards it already governs. ========================= */
+       #tc-list[data-theme="dark"] in tools/index.html): ivory #f5efe2,
+       muted #a3a3a3, gold accent #e0b34a. Independent of the Light/Dark
+       Appearance *preference* (Settings), which stays scoped to the
+       catalog cards it already governs. ================================= */
 
     body.pa-admin-dark .main-content{
       background:#121110;
@@ -208,15 +220,15 @@
       display:flex;
     }
 
-    /* Reserved space only — replace this div's content with a real
-       <img src="..." alt="..."> (or set a background-image on it) once
-       real hero art is ready. No icon/label/gradient by design; it exists
-       purely to hold the layout's proportions until then.
-       Deliberately a wide, thin editorial banner: a low aspect-ratio plus
-       a max-height cap and align-self:center mean the image sizes from the
-       column width but stops well short of the text height, so the hero
-       stays a short horizontal band rather than a tall illustration. */
+    /* Wide, thin editorial banner. Empty by default (the dark box is the
+       placeholder); an <img class="atlas-hero-image-img"> is injected by
+       the bootstrap script when homepage_settings.hero_image_path is set.
+       A low aspect-ratio plus a max-height cap and align-self:center mean
+       the image sizes from the column width but stops well short of the
+       text height, so the hero stays a short horizontal band. */
     .atlas-hero-image{
+      position:relative;
+      overflow:hidden;
       flex:1;
       aspect-ratio:3.2 / 1;
       max-height:132px;
@@ -224,6 +236,59 @@
       background:#1c1c1a;
       border-radius:8px;
     }
+
+    .atlas-hero-image-img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* Admin-only (data-admin-control="view"): a subtle pencil in the
+       image corner. Muted until the hero is hovered / it's focused. */
+    .hero-image-edit{
+      position:absolute;
+      right:8px;
+      bottom:8px;
+      z-index:2;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:30px;
+      height:30px;
+      border:1px solid rgba(224,179,74,0.5);
+      border-radius:7px;
+      background:rgba(18,17,16,0.78);
+      color:#e0b34a;
+      font-size:14px;
+      line-height:1;
+      cursor:pointer;
+      opacity:0.55;
+      transition:opacity 0.15s ease, background 0.15s ease;
+    }
+
+    .atlas-hero-right:hover .hero-image-edit,
+    .hero-image-edit:focus-visible{
+      opacity:1;
+      background:rgba(18,17,16,0.92);
+    }
+
+    .hero-image-status{
+      position:absolute;
+      left:8px;
+      bottom:8px;
+      z-index:2;
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:6px;
+      background:rgba(18,17,16,0.88);
+      color:#a3a3a3;
+    }
+
+    .hero-image-status.is-error{ color:#f0a0a0; }
+    .hero-image-status.is-ok{ color:#9fd39f; }
 
     /* Section eyebrow + trailing rule. */
     .section-label{
@@ -245,6 +310,79 @@
       background:rgba(224,179,74,0.25);
     }
 
+    /* Row that carries the section label (with its trailing rule) plus the
+       admin-only "Change Featured" button at the far right — mock:
+       FEATURED TODAY ───────────────  Change Featured */
+    .featured-today-header{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin:0 0 16px;
+    }
+
+    .featured-today-header .section-label{
+      flex:1;
+      margin:0;
+    }
+
+    .featured-change-btn{
+      flex:0 0 auto;
+      border:1px solid rgba(224,179,74,0.4);
+      background:transparent;
+      color:#e0b34a;
+      border-radius:999px;
+      padding:5px 13px;
+      font-family:Georgia, serif;
+      font-size:10.5px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      cursor:pointer;
+      transition:background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .featured-change-btn:hover{
+      background:rgba(224,179,74,0.1);
+      border-color:#e0b34a;
+    }
+
+    /* Admin-only inline picker, revealed by "Change Featured". A plain
+       <select> of eligible Atlas artifacts — picking one writes
+       homepage_settings.featured_path and the card re-resolves from
+       canonical entry metadata. */
+    .featured-picker{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 14px;
+      padding:12px 14px;
+      border:1px solid rgba(224,179,74,0.18);
+      border-radius:8px;
+      background:#161310;
+    }
+
+    .featured-picker select{
+      flex:1;
+      min-width:0;
+      background:#100e0b;
+      color:#f0ece2;
+      border:1px solid rgba(224,179,74,0.22);
+      border-radius:6px;
+      padding:8px 10px;
+      font-family:Georgia, serif;
+      font-size:13px;
+    }
+
+    .featured-picker-status{
+      flex:0 0 auto;
+      font-size:11px;
+      color:#a3a3a3;
+      white-space:nowrap;
+    }
+
+    .featured-picker-status.is-error{ color:#f0a0a0; }
+    .featured-picker-status.is-ok{ color:#9fd39f; }
+
     .featured-today-section{
       margin-bottom:24px;
     }
@@ -258,16 +396,13 @@
       color:inherit;
     }
 
-    /* Chess Forge thumbnail. Same box as before, but now filled with the
-       exact checkerboard component the Games catalog already uses to
-       represent Chess Forge (see .cat-ch/.cat-ch-sq in games/index.html)
-       instead of a plain placeholder — reusing the real existing asset
-       rather than sourcing/generating one. Copied here (not shared via a
-       stylesheet) since this codebase already scopes these small catalog
-       components per-page, same as .section-label above. Oversized and
-       centered/clipped to fill the box the way object-fit: cover would
-       for a real image, so it still works at any breakpoint's thumbnail
-       aspect ratio (see the ≤600px override below). */
+    /* Featured Today thumbnail box. Filled by renderFeaturedArtifact():
+       an <img> when the featured artifact has a card_image in its
+       atlas-meta; otherwise a per-path fallback (the Games-catalog
+       checkerboard for Chess Forge — see FEATURED_FALLBACK_THUMBS); or,
+       failing both, the empty dark box. Oversized/clipped children fill
+       the box the way object-fit: cover would, so any breakpoint's
+       thumbnail aspect ratio works (see the ≤600px override below). */
     .featured-card-thumb{
       position:relative;
       overflow:hidden;
@@ -275,6 +410,15 @@
       aspect-ratio:4 / 3;
       background:#1c1c1a;
       border-radius:6px;
+    }
+
+    .featured-card-thumb .featured-card-thumb-img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
     }
 
     .featured-card-thumb .cat-ch{
@@ -402,7 +546,7 @@
       }
     }
 
-    /* === end Homepage V7 ==================================================== */
+    /* === end Homepage V8 ==================================================== */
 
   </style>
 </head>
@@ -416,12 +560,19 @@
 
     <main class="main-content">
 
-      <section class="public-hero" data-visibility="public">
+      <!-- Classic homepage. Shown to the public until the configurable
+           homepage is published; the permanent safe fallback. Visibility
+           is managed by the bootstrap script below (not data-visibility),
+           so it can key off homepage_settings.published, not just VIEW. -->
+      <section class="public-hero" id="classic-homepage">
         <p class="public-hero-name">Pergamon Atlas</p>
         <p class="public-hero-tagline">The Internet's Living Library</p>
       </section>
 
-      <div data-visibility="admin" style="display:none">
+      <!-- Configurable homepage. Hidden by default (fail-safe). The
+           bootstrap script reveals it in Admin View, or for everyone once
+           homepage_settings.published is true. -->
+      <div id="configurable-homepage" hidden>
 
         <section class="atlas-hero pa-panel">
           <div class="atlas-hero-top">
@@ -432,10 +583,18 @@
             </div>
 
             <div class="atlas-hero-right">
-              <!-- Reserved space for real hero art. Replace this div's
-                   content with <img src="..." alt="..."> (or set a
-                   background-image on it) — no other markup changes needed. -->
-              <div class="atlas-hero-image"></div>
+              <!-- Empty dark box = placeholder. An <img> is injected here
+                   from homepage_settings.hero_image_path. The pencil and
+                   status are admin-only (data-admin-control="view"); the
+                   file input is offscreen and triggered by the pencil. -->
+              <div class="atlas-hero-image" id="hero-image">
+                <button type="button" class="hero-image-edit" id="hero-image-edit"
+                        data-admin-control="view" style="display:none"
+                        aria-label="Change hero image" title="Change hero image">&#9998;</button>
+                <span class="hero-image-status" id="hero-image-status" hidden></span>
+              </div>
+              <input type="file" id="hero-image-input"
+                     accept="image/png,image/jpeg,image/webp" hidden>
             </div>
           </div>
 
@@ -478,7 +637,17 @@
         </section>
 
         <section class="featured-today-section">
-          <div class="section-label">Featured Today</div>
+          <div class="featured-today-header">
+            <div class="section-label">Featured Today</div>
+            <button type="button" class="featured-change-btn" id="featured-change-btn"
+                    data-admin-control="view" style="display:none">Change Featured</button>
+          </div>
+
+          <div class="featured-picker" id="featured-picker" data-admin-control="view" hidden>
+            <select id="featured-select" aria-label="Featured artifact"></select>
+            <span class="featured-picker-status" id="featured-picker-status"></span>
+          </div>
+
           <div id="featured-artifact-slot"></div>
         </section>
 
@@ -492,18 +661,21 @@
 
 
 
+
   
   
   <script>
-    // Featured Today — V1 renders a single placeholder entry from a plain
-    // object. Later this becomes a pick from real Atlas artifacts
-    // (entries.js) and can rotate on a schedule without this render
-    // function itself needing to change.
-    // Builds the same 8x8 checkerboard markup the Games catalog already
-    // uses to represent Chess Forge (see .cat-ch in games/index.html) —
-    // reusing that existing component rather than sourcing/generating an
-    // image. Swap this out (or make it artifact-driven) once a real
-    // artifact thumbnail image exists.
+    // Featured Today renderer. The artifact object is resolved from
+    // homepage_settings.featured_path against canonical entry metadata
+    // (see homepage-config.js) — this function only draws it.
+    //
+    // Thumbnail: artifact.cardImage (the entry's card_image from
+    // atlas-meta) → <img>; else a per-path fallback in
+    // FEATURED_FALLBACK_THUMBS; else the empty dark box.
+
+    // 8x8 checkerboard, the same component the Games catalog uses for
+    // Chess Forge (see .cat-ch in games/index.html). A stopgap until Chess
+    // Forge has a real card_image — not a general fallback.
     function chessboardSquares(){
       let html = '';
       for (let r = 0; r < 8; r++){
@@ -514,56 +686,205 @@
       return html;
     }
 
+    const FEATURED_FALLBACK_THUMBS = {
+      '/games/chess-forge': () => `<div class="cat-ch">${chessboardSquares()}</div>`
+    };
+
+    // Used only if homepage_settings has no featured_path yet, or it
+    // doesn't resolve to a known entry.
+    const FEATURED_DEFAULT = {
+      path: '/games/chess-forge',
+      title: 'Chess Forge',
+      description: 'Play. Learn. Improve. A new way to experience chess on the Atlas.',
+      cardImage: null
+    };
+
+    function esc(s){
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
     function renderFeaturedArtifact(artifact, containerId){
       const el = document.getElementById(containerId);
-      if (!el || !artifact) return;
+      if (!el || !artifact || !artifact.path) return;
+
+      let thumb;
+      if (artifact.cardImage) {
+        thumb = `<img class="featured-card-thumb-img" src="${esc(artifact.cardImage)}" alt="">`;
+      } else if (FEATURED_FALLBACK_THUMBS[artifact.path]) {
+        thumb = FEATURED_FALLBACK_THUMBS[artifact.path]();
+      } else {
+        thumb = '';
+      }
 
       el.innerHTML = `
-        <a class="featured-card pa-panel" href="${artifact.path}">
-          <div class="featured-card-thumb">
-            <div class="cat-ch">${chessboardSquares()}</div>
-          </div>
+        <a class="featured-card pa-panel" href="${esc(artifact.path)}">
+          <div class="featured-card-thumb">${thumb}</div>
           <div class="featured-card-body">
             <span class="featured-card-eyebrow">Featured Artifact</span>
-            <h3 class="featured-card-title">${artifact.title}</h3>
-            <p class="featured-card-desc">${artifact.description}</p>
+            <h3 class="featured-card-title">${esc(artifact.title)}</h3>
+            <p class="featured-card-desc">${esc(artifact.description)}</p>
             <span class="featured-card-cta">Explore &#8594;</span>
           </div>
         </a>`;
     }
 
-    const FEATURED_ARTIFACT = {
-      title: 'Chess Forge',
-      description: 'Play. Learn. Improve. A new way to experience chess on the Atlas.',
-      path: '/chess-forge/'
-    };
-
-    renderFeaturedArtifact(FEATURED_ARTIFACT, 'featured-artifact-slot');
-
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   </script>
 <script>loadSnippets('');</script>
 
+<!-- Homepage-only. Deliberately NOT in the indexer's ATLAS_SCRIPTS block —
+     no other Atlas page loads homepage customization code. Defensive about
+     load order (polls for its deps), so its position relative to the block
+     above does not matter. -->
+<script src="/operation/scripts/auth/homepage-config.js"></script>
 <script>
-  // Switches between the minimal public homepage and the full
-  // developmental homepage based on the resolved Public/Admin view. The
-  // sidebar/header/footer placeholders already get this via atlas.js;
-  // this page's own body content needs the same call since it isn't
-  // inside one of those placeholders.
+  // Homepage bootstrap. Decides which homepage renders and wires the
+  // Admin View editing controls.
   //
-  // applyNavVisibility() resolves to the current view ('admin'/'public');
-  // toggling body.pa-admin-dark on it is what scopes this page's dark
-  // homepage styling (see the "Homepage V2" block above) to an actual
-  // resolved admin session in Admin View — never guests/users, and never
-  // before this resolves, so it fails safely to today's light look.
+  //   showConfigurable = (view === 'admin') || homepage_settings.published
+  //
+  // Admins always see (and edit) the configurable homepage. Everyone else
+  // sees it only once it's published; otherwise the classic .public-hero.
+  // body.pa-admin-dark follows showConfigurable, so '/' is the only page
+  // that ever goes dark. Any failure below leaves the fail-safe default
+  // (classic shown, configurable hidden) in place.
   document.addEventListener('DOMContentLoaded', function () {
-    waitForPergamonVisibility().then(function (pv) {
-      if (!pv) return;
-      pv.applyNavVisibility(document).then(function (view) {
-        document.body.classList.toggle('pa-admin-dark', view === 'admin');
+    var classicEl = document.getElementById('classic-homepage');
+    var configurableEl = document.getElementById('configurable-homepage');
+
+    Promise.all([waitForPergamonVisibility(), waitForPergamonHomepage()])
+      .then(async function (deps) {
+        var pv = deps[0], ph = deps[1];
+        if (!pv) return;
+
+        // Reveal/hide role+view-gated shell controls (the pencil, the
+        // "Change Featured" button) — same marker the footer publish
+        // panel uses.
+        await pv.applyNavVisibility(document);
+
+        var view = await pv.currentAtlasView();
+        var resolved = ph
+          ? await ph.getResolved()
+          : { published: false, heroImageUrl: null, featured: null };
+        var showConfigurable = (view === 'admin') || resolved.published;
+
+        if (classicEl) classicEl.hidden = showConfigurable;
+        if (configurableEl) configurableEl.hidden = !showConfigurable;
+        document.body.classList.toggle('pa-admin-dark', showConfigurable);
+
+        if (!showConfigurable) return;
+
+        applyHeroImage(resolved.heroImageUrl);
+        renderFeaturedArtifact(resolved.featured || FEATURED_DEFAULT, 'featured-artifact-slot');
+
+        // Editing is only reachable for an admin in Admin View
+        // (applyNavVisibility hid the controls otherwise); every write is
+        // still RLS-gated server-side regardless.
+        if (view === 'admin' && ph) wireHomepageAdmin(ph);
       });
-    });
   });
+
+  function applyHeroImage(url) {
+    var box = document.getElementById('hero-image');
+    if (!box) return;
+    var img = document.getElementById('hero-image-img');
+    if (url) {
+      if (!img) {
+        img = document.createElement('img');
+        img.id = 'hero-image-img';
+        img.className = 'atlas-hero-image-img';
+        img.alt = '';
+        box.insertBefore(img, box.firstChild);
+      }
+      img.src = url;
+    } else if (img) {
+      img.remove();
+    }
+  }
+
+  function setStatus(el, msg, kind) {
+    if (!el) return;
+    el.textContent = msg || '';
+    el.classList.toggle('is-error', kind === 'error');
+    el.classList.toggle('is-ok', kind === 'ok');
+    el.hidden = !msg;
+    if (msg && kind === 'ok') {
+      setTimeout(function () { if (el.textContent === msg) el.hidden = true; }, 2500);
+    }
+  }
+
+  function wireHomepageAdmin(ph) {
+    // ── Hero image ──
+    var editBtn = document.getElementById('hero-image-edit');
+    var input = document.getElementById('hero-image-input');
+    var heroStatus = document.getElementById('hero-image-status');
+    if (editBtn && input && !editBtn.dataset.wired) {
+      editBtn.dataset.wired = '1';
+      editBtn.addEventListener('click', function () { input.click(); });
+      input.addEventListener('change', async function () {
+        var file = input.files && input.files[0];
+        input.value = '';
+        if (!file) return;
+        editBtn.disabled = true;
+        setStatus(heroStatus, 'Uploading…');
+        var res = await ph.setHeroImage(file);
+        editBtn.disabled = false;
+        if (res && res.error) {
+          setStatus(heroStatus, (res.error && res.error.message) || 'Upload failed', 'error');
+          return;
+        }
+        var r = await ph.getResolved();
+        applyHeroImage(r.heroImageUrl);
+        setStatus(heroStatus, 'Saved', 'ok');
+      });
+    }
+
+    // ── Featured artifact ──
+    var changeBtn = document.getElementById('featured-change-btn');
+    var picker = document.getElementById('featured-picker');
+    var select = document.getElementById('featured-select');
+    var pickStatus = document.getElementById('featured-picker-status');
+    if (changeBtn && picker && select && !changeBtn.dataset.wired) {
+      changeBtn.dataset.wired = '1';
+
+      var E = window.atlasEntries || {};
+      // Games + Tools are the meaningful artifacts today; featured_path is
+      // not architecturally limited to them (homepage-config.js resolves
+      // any entry) — extend this list when more become featureable.
+      var pool = [].concat(E.games || [], E.tools || []).slice()
+        .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+      select.innerHTML = pool.map(function (e) {
+        return '<option value="' + esc(e.path) + '">' + esc(e.name) + '</option>';
+      }).join('');
+
+      ph.getResolved().then(function (r) {
+        // Match the dropdown to what's actually featured — the saved
+        // featured_path, or the default the card falls back to.
+        var current = (r && r.featuredPath) || FEATURED_DEFAULT.path;
+        if ([].some.call(select.options, function (o) { return o.value === current; })) {
+          select.value = current;
+        }
+      });
+
+      changeBtn.addEventListener('click', function () { picker.hidden = !picker.hidden; });
+
+      select.addEventListener('change', async function () {
+        select.disabled = true;
+        setStatus(pickStatus, 'Saving…');
+        var res = await ph.setFeaturedArtifact(select.value);
+        select.disabled = false;
+        if (res && res.error) {
+          setStatus(pickStatus, (res.error && res.error.message) || 'Save failed', 'error');
+          return;
+        }
+        var r = await ph.getResolved();
+        renderFeaturedArtifact(r.featured || FEATURED_DEFAULT, 'featured-artifact-slot');
+        setStatus(pickStatus, 'Saved', 'ok');
+      });
+    }
+  }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/operation/scripts/auth/supabase-config.js"></script>
