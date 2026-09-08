@@ -55,8 +55,12 @@
       color:#666;
     }
 
-    /* === Homepage V3 — Admin View dark editorial hero + Featured Today ====
-       First Pergamon Atlas page to use a dark visual language. Scoped
+    /* === Homepage V7 — Admin View dark hero: Quick Access + Featured Today =
+       First Pergamon Atlas page to use a dark visual language. This
+       iteration removed the homepage hero search field (the global header
+       search is unchanged) and put a compact Quick Access card row in its
+       place, and slimmed the hero image to a thin editorial banner so the
+       hero reads as a short horizontal band. Scoped
        exclusively to this page: body.pa-admin-dark is added by this page's
        own script (see the DOMContentLoaded handler near the bottom) only
        after PergamonVisibility resolves view === 'admin' — the selector
@@ -89,10 +93,19 @@
 
     .atlas-hero{
       display:flex;
+      flex-direction:column;
+      gap:26px;
+      padding:28px 40px;
+      margin-bottom:28px;
+    }
+
+    /* Top band: identity text on the left, thin banner image on the right.
+       Its height is driven by the text block — the image is capped and
+       centered so it never forces the hero taller (see .atlas-hero-image). */
+    .atlas-hero-top{
+      display:flex;
       align-items:center;
       gap:48px;
-      padding:32px 44px;
-      margin-bottom:28px;
     }
 
     .atlas-hero-left{
@@ -118,53 +131,79 @@
     }
 
     .atlas-hero-subtitle{
-      margin:0 0 20px 0;
+      margin:0;
       font-size:clamp(19px,1.8vw,22px);
       color:#a3a3a3;
     }
 
-    .atlas-hero-search{
-      position:relative;
+    /* Quick Access — a compact row of navigation cards that replaces the
+       old homepage hero search field (search still lives in the global
+       header). Sits inside the hero panel, below the identity band, so it
+       reads as part of the hero composition rather than a separate
+       section. Each card: gold sidebar-style icon · title + one-line
+       description · a chevron that nudges right on hover. Reuses .pa-panel
+       for the surface and the sidebar's existing inline SVG icons — no new
+       icon library. */
+    .quick-access{
+      display:flex;
+      gap:14px;
+    }
+
+    .qa-card{
+      flex:1 1 0;
+      min-width:0;
       display:flex;
       align-items:center;
+      gap:14px;
+      padding:15px 18px;
+      text-decoration:none;
+      transition:border-color 0.2s ease, background-color 0.2s ease;
     }
 
-    .atlas-hero-search-icon{
-      position:absolute;
-      left:22px;
-      top:50%;
-      transform:translateY(-50%);
+    .qa-card:hover{
+      border-color:rgba(224,179,74,0.55);
+      background:#1a1611;
+    }
+
+    .qa-card-icon{
+      flex:0 0 auto;
+      display:flex;
+      color:#e0b34a;
+    }
+
+    .qa-card-body{
+      flex:1;
+      min-width:0;
+    }
+
+    .qa-card-title{
+      display:block;
+      font-size:15px;
+      color:#f5efe2;
+      margin-bottom:2px;
+    }
+
+    .qa-card-desc{
+      display:block;
+      font-size:12.5px;
+      line-height:1.4;
+      color:#a3a3a3;
+    }
+
+    .qa-card-chevron{
+      flex:0 0 auto;
       display:flex;
       color:#8f877a;
-      pointer-events:none;
+      transition:color 0.2s ease, transform 0.2s ease;
     }
 
-    .atlas-hero-search input{
-      width:100%;
-      box-sizing:border-box;
-      background:#100e0b;
-      color:#f0ece2;
-      border:1px solid rgba(224,179,74,0.22);
-      outline:none;
-      border-radius:8px;
-      padding:21px 22px 21px 54px;
-      font-size:clamp(16px,1.2vw,18px);
-      font-family:Georgia, serif;
-      transition:border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    }
-
-    .atlas-hero-search input::placeholder{
-      color:#8f877a;
-    }
-
-    .atlas-hero-search input:focus{
-      background:#161310;
-      border-color:rgba(224,179,74,0.6);
-      box-shadow:0 0 0 3px rgba(224,179,74,0.12);
+    .qa-card:hover .qa-card-chevron{
+      color:#e0b34a;
+      transform:translateX(2px);
     }
 
     .atlas-hero-right{
-      flex:1 1 260px;
+      flex:1 1 300px;
       min-width:0;
       display:flex;
     }
@@ -172,10 +211,16 @@
     /* Reserved space only — replace this div's content with a real
        <img src="..." alt="..."> (or set a background-image on it) once
        real hero art is ready. No icon/label/gradient by design; it exists
-       purely to hold the layout's proportions until then. */
+       purely to hold the layout's proportions until then.
+       Deliberately a wide, thin editorial banner: a low aspect-ratio plus
+       a max-height cap and align-self:center mean the image sizes from the
+       column width but stops well short of the text height, so the hero
+       stays a short horizontal band rather than a tall illustration. */
     .atlas-hero-image{
       flex:1;
-      aspect-ratio:2.2 / 1;
+      aspect-ratio:3.2 / 1;
+      max-height:132px;
+      align-self:center;
       background:#1c1c1a;
       border-radius:8px;
     }
@@ -301,20 +346,22 @@
 
     @media (max-width:900px){
       .atlas-hero{
-        flex-direction:column;
-        align-items:stretch;
         gap:24px;
-        padding:28px 24px;
+        padding:24px 20px;
       }
 
-      /* .atlas-hero-left/-right's flex-basis values mean WIDTH in the
-         desktop row layout above — once the hero stacks into a column
-         here, those same flex-basis values are reinterpreted as a HEIGHT
-         (column mode's main axis): .atlas-hero-left gets stretched well
-         past its actual text height (a dead gap before the image), and
-         .atlas-hero-right fights .atlas-hero-image's aspect-ratio into
-         overflowing the viewport. Reset both to size from actual content
-         instead. */
+      /* Collapse the identity band to a single column. .atlas-hero-left/
+         -right's flex-basis values mean WIDTH in the desktop row above —
+         stacked, those same values would be read as a HEIGHT (column
+         mode's main axis): the text block stretches past its content (a
+         dead gap before the image) and the image fights its aspect-ratio.
+         Reset both to size from actual content instead. */
+      .atlas-hero-top{
+        flex-direction:column;
+        align-items:stretch;
+        gap:22px;
+      }
+
       .atlas-hero-left,
       .atlas-hero-right{
         flex:none;
@@ -322,6 +369,22 @@
 
       .atlas-hero-image{
         width:100%;
+        max-height:180px;
+      }
+
+      /* Cards wrap to a 2-up grid, then a single column on narrow phones. */
+      .quick-access{
+        flex-wrap:wrap;
+      }
+
+      .qa-card{
+        flex:1 1 calc(50% - 7px);
+      }
+    }
+
+    @media (max-width:560px){
+      .qa-card{
+        flex-basis:100%;
       }
     }
 
@@ -339,7 +402,7 @@
       }
     }
 
-    /* === end Homepage V3 ==================================================== */
+    /* === end Homepage V7 ==================================================== */
 
   </style>
 </head>
@@ -361,25 +424,57 @@
       <div data-visibility="admin" style="display:none">
 
         <section class="atlas-hero pa-panel">
-          <div class="atlas-hero-left">
-            <span class="atlas-hero-eyebrow">Pergamon Atlas</span>
-            <h1 class="atlas-hero-title">Pergamon Atlas</h1>
-            <p class="atlas-hero-subtitle">Explore games and tools.</p>
+          <div class="atlas-hero-top">
+            <div class="atlas-hero-left">
+              <span class="atlas-hero-eyebrow">Pergamon Atlas</span>
+              <h1 class="atlas-hero-title">Pergamon Atlas</h1>
+              <p class="atlas-hero-subtitle">Explore games and tools.</p>
+            </div>
 
-            <form class="atlas-hero-search" action="/search" method="get">
-              <span class="atlas-hero-search-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <div class="atlas-hero-right">
+              <!-- Reserved space for real hero art. Replace this div's
+                   content with <img src="..." alt="..."> (or set a
+                   background-image on it) — no other markup changes needed. -->
+              <div class="atlas-hero-image"></div>
+            </div>
+          </div>
+
+          <!-- Quick Access — replaces the old homepage hero search. The
+               global header search is untouched; this row is navigation,
+               not search. Icons are copied verbatim from the sidebar
+               snippet (operation/snippets/sidebar.html): gamepad = Games,
+               wrench = Tools, 2x2 grid = Catalogs. -->
+          <nav class="quick-access" aria-label="Quick access">
+            <a class="qa-card pa-panel" href="/games">
+              <span class="qa-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01"/></svg></span>
+              <span class="qa-card-body">
+                <span class="qa-card-title">Games</span>
+                <span class="qa-card-desc">Play and explore.</span>
               </span>
-              <input type="text" name="q" placeholder="Search the Atlas or enter an address…" autocomplete="off">
-            </form>
-          </div>
+              <span class="qa-card-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </a>
 
-          <div class="atlas-hero-right">
-            <!-- Reserved space for real hero art. Replace this div's
-                 content with <img src="..." alt="..."> (or set a
-                 background-image on it) — no other markup changes needed. -->
-            <div class="atlas-hero-image"></div>
-          </div>
+            <a class="qa-card pa-panel" href="/tools">
+              <span class="qa-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
+              <span class="qa-card-body">
+                <span class="qa-card-title">Tools</span>
+                <span class="qa-card-desc">Useful tools and utilities.</span>
+              </span>
+              <span class="qa-card-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </a>
+
+            <!-- Catalogs has no standalone destination yet — href is an
+                 intentional placeholder. Point it at the real Catalogs
+                 page once that exists. -->
+            <a class="qa-card pa-panel" href="#">
+              <span class="qa-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+              <span class="qa-card-body">
+                <span class="qa-card-title">Catalogs</span>
+                <span class="qa-card-desc">Explore the Atlas.</span>
+              </span>
+              <span class="qa-card-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </a>
+          </nav>
         </section>
 
         <section class="featured-today-section">
