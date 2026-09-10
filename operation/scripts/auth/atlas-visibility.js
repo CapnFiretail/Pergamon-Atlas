@@ -264,9 +264,10 @@
     }
 
     var key = normalizePath(path);
+    var wantDelete = (desiredVisibility === staticVisibility);
     var result;
     try {
-      result = (desiredVisibility === staticVisibility)
+      result = wantDelete
         ? await auth.deleteVisibilityOverride(key)
         : await auth.setVisibilityOverride(key, desiredVisibility);
     } catch (err) {
@@ -274,16 +275,45 @@
       return { error: { message: err && err.message ? err.message : 'Unknown error' } };
     }
 
-    if (!result.error) {
-      // Invalidate and eagerly refresh so any surface reading overrides
-      // right after this resolves sees the change immediately, without
-      // needing a page reload.
-      overridesPromise = null;
-      await fetchOverrides();
-    } else {
+    // A rejected write (RLS 403, network) surfaces as result.error — bail
+    // WITHOUT invalidating the cache, so the previous effective visibility
+    // stands and the button can be restored.
+    if (result && result.error) {
       console.error('Pergamon Visibility: publish mutation rejected', result.error);
+      return result;
     }
-    return result;
+
+    // Confirm the write actually took. An RLS-blocked UPDATE returns HTTP
+    // 200 with an empty representation and NO error — that must not read
+    // as success. For an upsert the DB must echo a row carrying the
+    // requested visibility.
+    if (!wantDelete) {
+      var rows = (result && result.data) || [];
+      var echoed = rows.some(function (r) {
+        return normalizePath(r.path) === key && r.visibility === desiredVisibility;
+      });
+      if (!echoed) {
+        console.error('Pergamon Visibility: override upsert echoed no matching row — not persisted', result);
+        return { error: { message: 'Not saved — permission denied or the change did not persist.' } };
+      }
+    }
+
+    // Refresh the cache from the server, then verify the effective
+    // visibility for this path now equals what was requested. This also
+    // catches a silently-blocked delete (row still present afterwards).
+    overridesPromise = null;
+    var overrides = await fetchOverrides();
+    var effectiveNow = Object.prototype.hasOwnProperty.call(overrides, key)
+      ? overrides[key]
+      : staticVisibility;
+    if (effectiveNow !== desiredVisibility) {
+      console.error('Pergamon Visibility: post-write verification failed', {
+        key: key, desired: desiredVisibility, effectiveNow: effectiveNow
+      });
+      return { error: { message: 'Change did not persist. Please retry.' } };
+    }
+
+    return { data: { path: key, visibility: desiredVisibility } };
   }
 
   function publishPage(path, staticVisibility) {

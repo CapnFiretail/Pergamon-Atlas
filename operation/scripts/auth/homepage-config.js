@@ -65,27 +65,40 @@
     return s || '/';
   }
 
-  // One fetch per page load (cached). Falls back to null (→ classic
-  // homepage, no custom content) on any failure or when the RLS policy
-  // hides the row from a guest on an unpublished homepage.
+  // One fetch per page load (cached). Resolves { data, error }:
+  //
+  //   { data: <row>, error: null }  — settings loaded.
+  //   { data: null,  error: null }  — query SUCCEEDED but there is no
+  //       accessible row: a guest on an unpublished homepage (RLS hides
+  //       it) or the singleton row is missing. "Nothing to show", NOT a
+  //       failure — the caller renders the classic homepage.
+  //   { data: null,  error: <e> }   — an actual Supabase/query failure.
+  //       The caller still falls back to the classic homepage for the
+  //       public (no technical error shown to visitors), but this is
+  //       logged loudly for admins and surfaced in the footer publish
+  //       panel so a broken published homepage is not mistaken for an
+  //       unpublished one.
   function fetchSettings() {
     if (settingsPromise) return settingsPromise;
     settingsPromise = (async function () {
       try {
         var auth = await waitForDep(function () { return window.PergamonAuth; });
         if (!auth || !auth.getHomepageSettings) {
-          console.warn('PergamonHomepage: PergamonAuth.getHomepageSettings unavailable — classic homepage only');
-          return null;
+          console.error('PergamonHomepage: PergamonAuth.getHomepageSettings unavailable (script load problem).');
+          return { data: null, error: { message: 'auth unavailable' } };
         }
         var res = await auth.getHomepageSettings();
         if (res && res.error) {
-          console.warn('PergamonHomepage: settings fetch failed — classic homepage only', res.error);
-          return null;
+          console.error(
+            'PergamonHomepage: could not load homepage_settings from Supabase. ' +
+            'A published homepage will fall back to the classic hero for visitors ' +
+            'until this is resolved — check the schema/migration and RLS. Details:', res.error);
+          return { data: null, error: res.error };
         }
-        return (res && res.data) || null;
+        return { data: (res && res.data) || null, error: null };
       } catch (err) {
-        console.error('PergamonHomepage: settings fetch threw — classic homepage only', err);
-        return null;
+        console.error('PergamonHomepage: settings fetch threw', err);
+        return { data: null, error: err || { message: 'settings fetch threw' } };
       }
     })();
     return settingsPromise;
@@ -93,9 +106,55 @@
 
   function invalidate() { settingsPromise = null; }
 
+  // updateHomepageSettings() now returns { data, error } where data is the
+  // written row echoed back (or [] / null when nothing was written). A
+  // genuine persist echoes exactly one row; an RLS-blocked or no-op write
+  // echoes nothing and MUST NOT count as success.
+  function confirmRow(res) {
+    if (!res || res.error) return null;
+    var d = res.data;
+    if (Array.isArray(d)) return d.length === 1 ? d[0] : null;
+    return d || null;
+  }
+
+  // Write a patch, then verify it actually persisted before reporting
+  // success. checkFn(row) asserts the echoed row matches what was asked
+  // for. On any failure the settings cache is left untouched (so the
+  // previous state stands) and an { error } is returned for the UI.
+  async function writeAndConfirm(patch, checkFn) {
+    var auth = await waitForDep(function () { return window.PergamonAuth; });
+    if (!auth || !auth.updateHomepageSettings) {
+      return { error: { message: 'Not ready — try again in a moment.' } };
+    }
+    var res = await auth.updateHomepageSettings(patch);
+    if (res && res.error) {
+      console.error('PergamonHomepage: write rejected by Supabase', res.error, patch);
+      return { error: res.error };
+    }
+    var row = confirmRow(res);
+    if (!row) {
+      console.error('PergamonHomepage: write echoed no row — not persisted (RLS / no-op)', patch);
+      return { error: { message: 'Not saved — permission denied or the change did not persist.' } };
+    }
+    if (checkFn && !checkFn(row)) {
+      console.error('PergamonHomepage: write persisted but row does not match the request', { patch: patch, row: row });
+      return { error: { message: 'The change did not persist correctly. Please retry.' } };
+    }
+    invalidate();
+    return { data: row };
+  }
+
   async function isPublished() {
-    var s = await fetchSettings();
-    return !!(s && s.published);
+    var r = await fetchSettings();
+    return !!(r.data && r.data.published);
+  }
+
+  // { published, loadError } — lets the footer publish panel show
+  // "status unavailable" instead of a false "Classic homepage (public)"
+  // when the settings read itself failed.
+  async function getPublishState() {
+    var r = await fetchSettings();
+    return { published: !!(r.data && r.data.published), loadError: !!r.error };
   }
 
   // ── Hero crop state ──────────────────────────────────────────────────────
@@ -145,11 +204,13 @@
   // null when unset — callers fall back to the built-in placeholder / a
   // default.
   async function getResolved() {
-    var s = await fetchSettings();
+    var r = await fetchSettings();
+    var s = r.data;
     var auth = window.PergamonAuth;
     var heroPath = s && s.hero_image_path;
     var crop = normCrop(s);
     return {
+      loadError: !!r.error,
       published: !!(s && s.published),
       heroImagePath: heroPath || null,
       heroImageUrl: (heroPath && auth && auth.homepageAssetPublicUrl)
@@ -178,85 +239,87 @@
     var auth = await waitForDep(function () { return window.PergamonAuth; });
     if (!auth) return { error: { message: 'Not ready — try again in a moment.' } };
 
-    var prev = await fetchSettings();
+    var prev = (await fetchSettings()).data;
     var objectPath = 'hero/' + Date.now() + '.' + OK_TYPES[file.type];
 
     var up = await auth.uploadHomepageAsset(objectPath, file);
     if (up && up.error) return { error: up.error };
 
     // A replacement image needs its own framing — reset the crop to
-    // centred / no zoom in the same write.
-    var upd = await auth.updateHomepageSettings({
+    // centred / no zoom in the same write. writeAndConfirm verifies the
+    // row actually holds the new path before we call it saved.
+    var r = await writeAndConfirm({
       hero_image_path: objectPath,
       hero_image_zoom: CROP_DEFAULTS.zoom,
       hero_image_x: CROP_DEFAULTS.x,
       hero_image_y: CROP_DEFAULTS.y
-    });
-    if (upd && upd.error) {
+    }, function (row) { return row.hero_image_path === objectPath; });
+
+    if (r.error) {
       // Roll back the orphaned upload; ignore failure (RLS/UX, not data).
       try { await auth.removeHomepageAsset(objectPath); } catch (e) {}
-      return { error: upd.error };
+      return r;
     }
 
     if (prev && prev.hero_image_path && prev.hero_image_path !== objectPath) {
       try { await auth.removeHomepageAsset(prev.hero_image_path); } catch (e) {}
     }
-    invalidate();
     return { data: { hero_image_path: objectPath } };
   }
 
   // Presentation-only crop state. Values are clamped here and again by the
-  // column CHECK constraints server-side.
+  // column CHECK constraints server-side, then the persisted row is
+  // verified to hold exactly those values.
   async function setHeroCrop(crop) {
-    var auth = await waitForDep(function () { return window.PergamonAuth; });
-    if (!auth) return { error: { message: 'Not ready — try again in a moment.' } };
-    var upd = await auth.updateHomepageSettings({
-      hero_image_zoom: clamp(crop && crop.zoom, 1, 3, CROP_DEFAULTS.zoom),
-      hero_image_x: clamp(crop && crop.x, 0, 100, CROP_DEFAULTS.x),
-      hero_image_y: clamp(crop && crop.y, 0, 100, CROP_DEFAULTS.y)
-    });
-    if (upd && upd.error) return { error: upd.error };
-    invalidate();
-    return { data: normCrop({
-      hero_image_zoom: crop && crop.zoom,
-      hero_image_x: crop && crop.x,
-      hero_image_y: crop && crop.y
-    }) };
+    var z = clamp(crop && crop.zoom, 1, 3, CROP_DEFAULTS.zoom);
+    var x = clamp(crop && crop.x, 0, 100, CROP_DEFAULTS.x);
+    var y = clamp(crop && crop.y, 0, 100, CROP_DEFAULTS.y);
+    var r = await writeAndConfirm(
+      { hero_image_zoom: z, hero_image_x: x, hero_image_y: y },
+      function (row) {
+        return Number(row.hero_image_zoom) === z
+          && Number(row.hero_image_x) === x
+          && Number(row.hero_image_y) === y;
+      }
+    );
+    return r.error ? r : { data: { zoom: z, x: x, y: y } };
   }
 
   // ── CONTENT: featured artifact ───────────────────────────────────────────
   async function setFeaturedArtifact(pathRef) {
-    var auth = await waitForDep(function () { return window.PergamonAuth; });
-    if (!auth) return { error: { message: 'Not ready — try again in a moment.' } };
     var key = pathRef ? normPath(pathRef) : null;
     // Switching artifacts drops any homepage-specific description so the
     // new artifact starts from its own canonical copy (V1 behaviour).
-    var upd = await auth.updateHomepageSettings({ featured_path: key, featured_description: null });
-    if (upd && upd.error) return { error: upd.error };
-    invalidate();
-    return { data: { featured_path: key } };
+    var r = await writeAndConfirm(
+      { featured_path: key, featured_description: null },
+      function (row) {
+        return (row.featured_path || null) === key && (row.featured_description || null) === null;
+      }
+    );
+    return r.error ? r : { data: { featured_path: key } };
   }
 
   // Homepage-only editorial copy for the Featured Today card. Empty / blank
   // input clears the override (NULL) → the card falls back to the
   // artifact's canonical description. Canonical metadata is never touched.
   async function setFeaturedDescription(text) {
-    var auth = await waitForDep(function () { return window.PergamonAuth; });
-    if (!auth) return { error: { message: 'Not ready — try again in a moment.' } };
     var value = (typeof text === 'string') ? text.trim() : '';
-    var upd = await auth.updateHomepageSettings({ featured_description: value || null });
-    if (upd && upd.error) return { error: upd.error };
-    invalidate();
-    return { data: { featured_description: value || null } };
+    var want = value || null;
+    var r = await writeAndConfirm(
+      { featured_description: want },
+      function (row) { return (row.featured_description || null) === want; }
+    );
+    return r.error ? r : { data: { featured_description: want } };
   }
 
   // ── PUBLISH ──────────────────────────────────────────────────────────────
+  // The UI only transitions to "published"/"unpublished" after the row is
+  // confirmed to actually hold the requested value.
   async function setPublished(next) {
-    var auth = await waitForDep(function () { return window.PergamonAuth; });
-    if (!auth) return { error: { message: 'Not ready — try again in a moment.' } };
-    var upd = await auth.updateHomepageSettings({ published: !!next });
-    if (!(upd && upd.error)) invalidate();
-    return upd || { error: { message: 'Unknown error' } };
+    return writeAndConfirm(
+      { published: !!next },
+      function (row) { return !!row.published === !!next; }
+    );
   }
   function publish() { return setPublished(true); }
   function unpublish() { return setPublished(false); }
@@ -265,6 +328,7 @@
     ready: fetchSettings,
     invalidate: invalidate,
     isPublished: isPublished,
+    getPublishState: getPublishState,
     getResolved: getResolved,
     resolveFeatured: resolveFeatured,
     cropDefaults: function () { return { zoom: CROP_DEFAULTS.zoom, x: CROP_DEFAULTS.x, y: CROP_DEFAULTS.y }; },

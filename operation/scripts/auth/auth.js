@@ -93,12 +93,20 @@
     return client().from('atlas_visibility_overrides').select('path, visibility');
   }
 
+  // .select() so the caller can CONFIRM the row was actually written. An
+  // RLS-blocked UPDATE (row exists, caller not admin) returns HTTP 200
+  // with an empty representation and NO error — atlas-visibility.js's
+  // setEffectiveVisibility() must treat "no row echoed" as failure, not a
+  // successful publish.
   async function setVisibilityOverride(path, visibility) {
-    return client().from('atlas_visibility_overrides').upsert({ path, visibility });
+    return client().from('atlas_visibility_overrides').upsert({ path, visibility }).select();
   }
 
+  // .select() returns the rows that were actually deleted. Combined with
+  // setEffectiveVisibility()'s post-write refetch verification, a
+  // RLS-blocked delete (returns []) is caught rather than assumed done.
   async function deleteVisibilityOverride(path) {
-    return client().from('atlas_visibility_overrides').delete().eq('path', path);
+    return client().from('atlas_visibility_overrides').delete().eq('path', path).select();
   }
 
   // Homepage customization v1 — homepage_settings + the 'homepage' Storage
@@ -110,16 +118,32 @@
   // The SELECT RLS policy returns the row to anon only while
   // published = true, so getHomepageSettings() resolves { data: null } for
   // a guest on an unpublished homepage — that is expected, not an error.
+  //
+  // select('*') is deliberate: an explicit column list caused a
+  // regression once (a column added by a later migration that had not yet
+  // been deployed made PostgREST 400 the entire query, silently reverting
+  // the published homepage to the classic hero for every visitor).
+  // Security is unaffected — RLS on homepage_settings is row-level (the
+  // whole row is gated on published = true OR admin) and there are no
+  // column-level SELECT grants, so '*' does not widen what a client may
+  // read. It does return id (always true) and updated_by (an admin auth
+  // uuid) to anon while published; that uuid is not resolvable by anon
+  // (profiles RLS blocks it). If that must be hidden, add a column-level
+  // `revoke select (updated_by) ... from anon` in a later migration.
   async function getHomepageSettings() {
     return client()
       .from('homepage_settings')
-      .select('hero_image_path, hero_image_zoom, hero_image_x, hero_image_y, featured_path, featured_description, published, published_at, updated_at')
+      .select('*')
       .eq('id', true)
       .maybeSingle();
   }
 
+  // .select() so callers can CONFIRM persistence. `id = true` is the
+  // singleton PK, so a real write echoes exactly one row; an RLS-blocked
+  // or no-op UPDATE echoes [] with no error and MUST NOT be treated as a
+  // successful publish (see homepage-config.js writeAndConfirm()).
   async function updateHomepageSettings(patch) {
-    return client().from('homepage_settings').update(patch).eq('id', true);
+    return client().from('homepage_settings').update(patch).eq('id', true).select();
   }
 
   // String-building only — does not hit RLS. Returns the CDN URL for an
