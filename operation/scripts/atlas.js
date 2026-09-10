@@ -177,7 +177,20 @@ function loadSnippets(pageName) {
 
         async function refreshStatus() {
           if (isHomepage) {
-            const published = await ph.isPublished();
+            const st = await ph.getPublishState();
+            // A failed settings read must not masquerade as "unpublished" —
+            // the homepage may well be published in the DB but unreadable.
+            if (st.loadError) {
+              if (statusEl) statusEl.textContent = 'Status unavailable — homepage settings did not load';
+              if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Publish to Public';
+                delete btn.dataset.desired;
+                btn.title = 'Cannot change publication: homepage settings are not loading (see console / Supabase).';
+              }
+              return;
+            }
+            const published = st.published;
             if (statusEl) {
               statusEl.textContent = published
                 ? 'New homepage (public)'
