@@ -868,6 +868,232 @@
     }
     /* === end TEST block ================================================== */
 
+    /* ====================================================================
+       TEST — Featured Today trio: 2 Featured Tools + 1 Featured Game in
+       one enclosure. Reversible: FEATURED_TRIO flag in the render script.
+       When the flag is off none of these rules apply (the .ft-enclosed
+       class is only added by the bootstrap when FEATURED_TRIO is true) and
+       the single Featured card renders exactly as before.
+       Tool cards reuse the DARK Tools-catalog card language (values from
+       #tc-list[data-theme="dark"] .tc-* in tools/index.html, arranged
+       horizontally per the concept). The Game card reuses the existing
+       Featured card classes (.featured-card-title / -desc / -cta) and the
+       .featured-catalog-art artwork system, stacked for the right column.
+       tools/index.html and games/index.html are only read, never modified.
+       ==================================================================== */
+    .featured-today-section.ft-enclosed{
+      border:1px solid rgba(224,179,74,0.18);
+      background:#161310;
+      border-radius:10px;
+      padding:20px 22px;
+    }
+    .featured-today-section.ft-enclosed .featured-today-header{ margin-bottom:16px; }
+
+    .ft-trio{
+      display:grid;
+      grid-template-columns:1.55fr 1fr;   /* ≈ 60 / 40 */
+      gap:16px;
+      align-items:stretch;
+    }
+
+    .ft-trio-tools{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      min-width:0;
+    }
+
+    .ft-tool,
+    .ft-game{ position:relative; }
+
+    /* Whole card navigates via a stretched link on the title; the desc
+       editor sits above it (z-index) so its controls stay clickable. */
+    .ft-card-link::after{ content:""; position:absolute; inset:0; z-index:1; }
+    .ft-desc-row,
+    .ft-desc-editor{ position:relative; z-index:2; }
+
+    /* ── Featured Tool card — dark Tools-catalog card, laid out horizontally ── */
+    .ft-tool{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:18px 20px;
+      border-radius:14px;
+      text-decoration:none;
+      background:linear-gradient(160deg, #201c16 0%, #14110c 100%);
+      border:1.5px solid rgba(224,179,74,0.4);
+      transition:border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .ft-tool:hover{ border-color:#e0b34a; box-shadow:0 12px 32px rgba(0,0,0,0.55); }
+
+    .ft-tool-icon{
+      width:52px;
+      height:52px;
+      flex-shrink:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#171310;
+      border-radius:13px;
+      font-size:24px;
+      line-height:1;
+      color:#e0b34a;
+    }
+
+    .ft-tool-body{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .ft-eyebrow{
+      display:block;
+      font-size:10.5px;
+      font-weight:700;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:#e0b34a;
+      margin-bottom:5px;
+    }
+    .ft-eyebrow .ft-adminonly{
+      color:#d8a0a0;
+      font-weight:400;
+      letter-spacing:0.03em;
+      text-transform:none;
+    }
+
+    .ft-tool-name{
+      margin:0 0 5px;
+      font-family:Georgia, serif;
+      font-size:19px;
+      font-weight:700;
+      color:#f5efe2;
+      line-height:1.2;
+    }
+    .ft-tool-name a{ color:inherit; text-decoration:none; }
+
+    .ft-desc-row{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+    }
+    .ft-desc{
+      margin:0;
+      font-size:13px;
+      line-height:1.55;
+      color:#a3a3a3;
+    }
+    .ft-desc.ft-desc-empty{ font-style:italic; color:#6f6a60; }
+    .ft-desc-edit{
+      flex:0 0 auto;
+      margin-top:1px;
+      background:none;
+      border:0;
+      color:#8f877a;
+      font-size:13px;
+      line-height:1;
+      cursor:pointer;
+      opacity:0.6;
+      transition:opacity 0.15s ease, color 0.15s ease;
+    }
+    .ft-tool:hover .ft-desc-edit,
+    .ft-game:hover .ft-desc-edit,
+    .ft-desc-edit:focus-visible{ opacity:1; color:#e0b34a; }
+
+    .ft-desc-editor{ margin:8px 0 2px; }
+    .ft-desc-input{
+      width:100%;
+      box-sizing:border-box;
+      background:#100e0b;
+      color:#f0ece2;
+      border:1px solid rgba(224,179,74,0.22);
+      border-radius:6px;
+      padding:8px 10px;
+      font-family:Georgia, serif;
+      font-size:13px;
+      line-height:1.5;
+      resize:vertical;
+    }
+    .ft-desc-editor-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:8px;
+    }
+
+    .ft-action{
+      margin-top:12px;
+      font-family:Georgia, serif;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:0.03em;
+      color:#e0b34a;
+    }
+
+    /* ── Featured Game card — the existing Featured card, stacked ── */
+    .ft-game{
+      display:flex;
+      flex-direction:column;
+      padding:20px;
+      /* .pa-panel supplies the dark surface + gold border + radius */
+    }
+    .ft-game-art{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px 0 14px;
+    }
+    /* Artwork keeps its catalog pixel size; the container just gives it a
+       little less surround here than in the games catalog. */
+    .ft-game-art .featured-catalog-art{ flex:0 0 auto; width:190px; height:190px; max-width:none; }
+    .ft-game-body{
+      display:flex;
+      flex-direction:column;
+      flex:1;
+    }
+    .ft-game .featured-card-title{ margin:0 0 6px; }
+    .ft-game .featured-card-title a{ color:inherit; text-decoration:none; }
+    .ft-game .featured-card-desc{ margin:0; max-width:none; font-size:14px; }
+    .ft-game .featured-card-cta{ margin-top:14px; align-self:flex-start; }
+
+    /* Trio config panel — reuses the .featured-picker chrome/colours. */
+    .featured-trio-picker{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin:0 0 16px;
+      padding:14px 16px;
+      border:1px solid rgba(224,179,74,0.18);
+      border-radius:8px;
+      background:#161310;
+    }
+    .featured-trio-picker .ftp-row{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      align-items:center;
+      gap:12px;
+      font-size:12px;
+      color:#a3a3a3;
+    }
+    .featured-trio-picker select{
+      min-width:0;
+      background:#100e0b;
+      color:#f0ece2;
+      border:1px solid rgba(224,179,74,0.22);
+      border-radius:6px;
+      padding:8px 10px;
+      font-family:Georgia, serif;
+      font-size:13px;
+    }
+
+    @media (max-width:820px){
+      .ft-trio{ grid-template-columns:1fr; }
+      .ft-game-art .featured-catalog-art{ margin:0 auto; }
+    }
+    /* === end TEST — Featured Today trio ================================= */
+
     /* === end Homepage V8/V9 =============================================== */
 
   </style>
@@ -958,16 +1184,27 @@
           </nav>
         </section>
 
-        <section class="featured-today-section">
+        <section class="featured-today-section" id="featured-today-section">
           <div class="featured-today-header">
             <div class="section-label">Featured Today</div>
             <button type="button" class="featured-change-btn" id="featured-change-btn"
                     data-admin-control="view" style="display:none">Change Featured</button>
           </div>
 
+          <!-- Pre-trio single-artifact picker. Only wired/shown when the
+               FEATURED_TRIO flag is off. -->
           <div class="featured-picker" id="featured-picker" data-admin-control="view" hidden>
             <select id="featured-select" aria-label="Featured artifact"></select>
             <span class="featured-picker-status" id="featured-picker-status"></span>
+          </div>
+
+          <!-- Trio config panel — one "Change Featured" button opens all
+               three selectors. Only wired/shown when FEATURED_TRIO is on. -->
+          <div class="featured-trio-picker" id="featured-trio-picker" data-admin-control="view" hidden>
+            <label class="ftp-row">Featured Tool 1 <select id="ftp-tool1" aria-label="Featured Tool 1"></select></label>
+            <label class="ftp-row">Featured Tool 2 <select id="ftp-tool2" aria-label="Featured Tool 2"></select></label>
+            <label class="ftp-row">Featured Game <select id="ftp-game" aria-label="Featured Game"></select></label>
+            <span class="featured-picker-status" id="ftp-status" hidden></span>
           </div>
 
           <div id="featured-artifact-slot"></div>
@@ -1087,6 +1324,43 @@
       cardImage: null
     };
 
+    /* ── TEST: Featured Today trio (2 Tools + 1 Game in one enclosure) ───
+       Flip to false to fully restore the single Featured card above (which
+       is left entirely intact). See the matching CSS "TEST — Featured
+       Today trio" block. Nothing below runs when this is false. */
+    const FEATURED_TRIO = true;
+
+    // Tools have no image files and no description in entries.js — their
+    // icon (an emoji) and canonical description live in the CATALOG array
+    // inside /tools/index.html. Read it live once, same idea as
+    // loadCatalogArt(). On any failure this resolves {} and the tool
+    // cards fall back to name-only. tools/index.html is only read.
+    let TOOL_CATALOG = {};
+    let toolCatalogPromise = null;
+    function loadToolCatalog(){
+      if (toolCatalogPromise) return toolCatalogPromise;
+      toolCatalogPromise = fetch('/tools/index.html')
+        .then(r => r.ok ? r.text() : Promise.reject(r.status))
+        .then(html => {
+          const map = {};
+          // rows: ['/tools/slug', 'emoji', 'description'],
+          const re = /\[\s*'(\/tools\/[a-z0-9-]+)'\s*,\s*'([^']*)'\s*,\s*'((?:[^'\\]|\\')*)'\s*\]/g;
+          let m;
+          while ((m = re.exec(html))) {
+            map[m[1]] = { icon: m[2], desc: m[3].replace(/\\'/g, "'") };
+          }
+          return map;
+        })
+        .catch(e => { console.warn('Featured trio: tool catalog fetch failed', e); return {}; });
+      return toolCatalogPromise;
+    }
+
+    function ftNorm(p){ return String(p == null ? '' : p).replace(/\/+$/, ''); }
+    function ftPretty(p){
+      const s = ftNorm(p).split('/').filter(Boolean).pop() || '';
+      return s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     function esc(s){
       return String(s == null ? '' : s)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -1201,7 +1475,14 @@
         applyHeroImage(resolved.heroImageUrl, {
           zoom: resolved.heroZoom, x: resolved.heroX, y: resolved.heroY
         });
-        await renderFeatured(resolved.featured || FEATURED_DEFAULT, adminView, ph);
+
+        if (FEATURED_TRIO) {
+          var sec = document.getElementById('featured-today-section');
+          if (sec) sec.classList.add('ft-enclosed');
+          await renderFeaturedTrio(resolved, adminView, ph);
+        } else {
+          await renderFeatured(resolved.featured || FEATURED_DEFAULT, adminView, ph);
+        }
 
         // Editing is only reachable for an admin in Admin View
         // (applyNavVisibility hid the controls otherwise); every write is
@@ -1251,6 +1532,228 @@
     if (adminView && ph) wireFeaturedDescEditor(ph);
   }
 
+  /* ── TEST: Featured Today trio render ─────────────────────────────────
+     Resolves the three homepage_settings selections (paths + description
+     overrides) against the Tools/Games catalogs + entries.js + effective
+     visibility, then draws one enclosure. Effective visibility is what
+     decides whether a card renders for the public — an artifact that is
+     not effectively public is simply omitted in Public / Public Preview
+     (in Admin View it's shown with an "admin-only" note). */
+  async function ftResolveTool(sel, toolCat) {
+    var path = ftNorm(sel.path);
+    var entry = (window.PergamonHomepage && PergamonHomepage.lookupEntry) ? PergamonHomepage.lookupEntry(path) : null;
+    var pv = window.PergamonVisibility;
+    var visible = pv ? await pv.isVisibleInCurrentView(entry)
+                     : !!(entry && !entry.archived && entry.visibility === 'public');
+    var eff = (pv && entry) ? await pv.getEffectiveVisibility(path, entry.visibility)
+                            : (entry ? entry.visibility : 'public');
+    var meta = toolCat[path] || null;
+    var override = (typeof sel.descriptionOverride === 'string') ? sel.descriptionOverride.trim() : '';
+    return {
+      slot: sel.slot,
+      path: path,
+      name: (entry && entry.name) || ftPretty(path),
+      icon: meta ? meta.icon : '',
+      description: override || (meta ? meta.desc : '') || '',
+      visible: visible,
+      adminOnly: eff !== 'public'
+    };
+  }
+
+  async function ftResolveGame(sel, gameArt) {
+    var path = ftNorm(sel.path);
+    var entry = (window.PergamonHomepage && PergamonHomepage.lookupEntry) ? PergamonHomepage.lookupEntry(path) : null;
+    var pv = window.PergamonVisibility;
+    var visible = pv ? await pv.isVisibleInCurrentView(entry)
+                     : !!(entry && !entry.archived && entry.visibility === 'public');
+    var eff = (pv && entry) ? await pv.getEffectiveVisibility(path, entry.visibility)
+                            : (entry ? entry.visibility : 'public');
+    var override = (typeof sel.descriptionOverride === 'string') ? sel.descriptionOverride.trim() : '';
+    var canonical = (entry && entry.description) || '';
+    if (!canonical && path === FEATURED_DEFAULT.path) canonical = FEATURED_DEFAULT.description;
+    return {
+      path: path,
+      name: (entry && entry.name) || ftPretty(path),
+      artHtml: gameArt[path] || null,
+      description: override || canonical || '',
+      visible: visible,
+      adminOnly: eff !== 'public'
+    };
+  }
+
+  function ftEyebrow(text, adminOnly, adminView) {
+    var hint = (adminView && adminOnly) ? ' <span class="ft-adminonly">· admin-only</span>' : '';
+    return '<span class="ft-eyebrow">' + text + hint + '</span>';
+  }
+
+  function ftDescBlock(slotKey, text, adminView, pClass) {
+    var empty = !text;
+    // Public view + no editorial copy → render nothing (no lonely gap).
+    if (empty && !adminView) return '';
+    var cls = (pClass || 'ft-desc') + (empty ? ' ft-desc-empty' : '');
+    var body = empty ? 'Add a homepage description' : esc(text);
+    var pencil = adminView
+      ? '<button type="button" class="ft-desc-edit" data-slot="' + slotKey + '" aria-label="Edit homepage description" title="Edit homepage description">&#9998;</button>'
+      : '';
+    var editor = adminView
+      ? '<div class="ft-desc-editor" data-slot="' + slotKey + '" hidden>'
+        + '<textarea class="ft-desc-input" rows="3" maxlength="600"></textarea>'
+        + '<div class="ft-desc-editor-row">'
+        +   '<button type="button" class="featured-desc-btn primary" data-act="save">Save</button>'
+        +   '<button type="button" class="featured-desc-btn ghost" data-act="cancel">Cancel</button>'
+        +   '<span class="featured-desc-status" hidden></span>'
+        + '</div></div>'
+      : '';
+    return '<div class="ft-desc-row"><p class="' + cls + '" data-slot="' + slotKey + '">' + body + '</p>' + pencil + '</div>' + editor;
+  }
+
+  function ftToolCard(c, adminView) {
+    var slotKey = 'tool' + c.slot;
+    return '<div class="ft-tool">'
+      + '<div class="ft-tool-icon">' + esc(c.icon || '🔧') + '</div>'
+      + '<div class="ft-tool-body">'
+      +   ftEyebrow('Featured Tool', c.adminOnly, adminView)
+      +   '<h3 class="ft-tool-name"><a class="ft-card-link" href="' + esc(c.path) + '/">' + esc(c.name) + '</a></h3>'
+      +   ftDescBlock(slotKey, c.description, adminView, 'ft-desc')
+      +   '<span class="ft-action" aria-hidden="true">Explore &#8594;</span>'
+      + '</div></div>';
+  }
+
+  function ftGameCard(c, adminView) {
+    var art;
+    if (c.artHtml) {
+      art = '<div class="featured-catalog-art"><div class="feat-preview-frame">' + c.artHtml + '</div></div>';
+    } else if (FEATURED_FALLBACK_THUMBS[c.path]) {
+      art = '<div class="featured-card-thumb">' + FEATURED_FALLBACK_THUMBS[c.path]() + '</div>';
+    } else {
+      art = '<div class="featured-card-thumb"></div>';
+    }
+    return '<div class="ft-game pa-panel">'
+      + '<div class="ft-game-art">' + art + '</div>'
+      + '<div class="ft-game-body">'
+      +   ftEyebrow('Featured Game', c.adminOnly, adminView)
+      +   '<h3 class="featured-card-title"><a class="ft-card-link" href="' + esc(c.path) + '/">' + esc(c.name) + '</a></h3>'
+      +   ftDescBlock('game', c.description, adminView, 'featured-card-desc ft-desc')
+      +   '<span class="featured-card-cta" aria-hidden="true">Explore &#8594;</span>'
+      + '</div></div>';
+  }
+
+  async function renderFeaturedTrio(resolved, adminView, ph) {
+    var slotEl = document.getElementById('featured-artifact-slot');
+    if (!slotEl) return;
+
+    var toolCat = await loadToolCatalog();
+    var gameArt = USE_CATALOG_ART ? await loadCatalogArt().catch(function () { return {}; }) : {};
+
+    var t1 = await ftResolveTool(resolved.featuredTools[0], toolCat);
+    var t2 = await ftResolveTool(resolved.featuredTools[1], toolCat);
+    var g  = await ftResolveGame(resolved.featuredGame, gameArt);
+
+    function keep(c) { return adminView || c.visible; }
+    var tools = [t1, t2].filter(keep);
+    var showGame = keep(g);
+
+    var html = '<div class="ft-trio">'
+      + '<div class="ft-trio-tools">' + tools.map(function (c) { return ftToolCard(c, adminView); }).join('') + '</div>'
+      + (showGame ? ftGameCard(g, adminView) : '')
+      + '</div>';
+    slotEl.innerHTML = (tools.length || showGame) ? html : '';
+
+    if (adminView && ph) ftWireDescEditors(ph);
+  }
+
+  function ftWireDescEditors(ph) {
+    var slotEl = document.getElementById('featured-artifact-slot');
+    if (!slotEl) return;
+    [].forEach.call(slotEl.querySelectorAll('.ft-desc-edit'), function (pencil) {
+      if (pencil.dataset.wired) return;
+      pencil.dataset.wired = '1';
+      var slotKey = pencil.dataset.slot;
+      var row = pencil.closest('.ft-desc-row');
+      var descP = row && row.querySelector('p[data-slot="' + slotKey + '"]');
+      var editor = slotEl.querySelector('.ft-desc-editor[data-slot="' + slotKey + '"]');
+      if (!descP || !editor) return;
+      var input = editor.querySelector('.ft-desc-input');
+      var status = editor.querySelector('.featured-desc-status');
+      var saveBtn = editor.querySelector('[data-act="save"]');
+      var cancelBtn = editor.querySelector('[data-act="cancel"]');
+
+      function open() {
+        input.value = descP.classList.contains('ft-desc-empty') ? '' : (descP.textContent || '');
+        descP.hidden = true; pencil.hidden = true; editor.hidden = false;
+        setStatus(status, ''); input.focus();
+      }
+      function close() { editor.hidden = true; descP.hidden = false; pencil.hidden = false; }
+
+      pencil.addEventListener('click', open);
+      cancelBtn.addEventListener('click', close);
+      saveBtn.addEventListener('click', async function () {
+        saveBtn.disabled = true;
+        setStatus(status, 'Saving…');
+        var res = await ph.setFeaturedSlotDescription(slotKey, input.value);
+        saveBtn.disabled = false;
+        if (res && res.error) {
+          setStatus(status, (res.error && res.error.message) || 'Save failed', 'error');
+          return;
+        }
+        setStatus(status, 'Saved', 'ok');
+        var r = await ph.getResolved();
+        setTimeout(function () { renderFeaturedTrio(r, true, ph); }, 650);
+      });
+    });
+  }
+
+  function ftWireTrioPicker(ph) {
+    var changeBtn = document.getElementById('featured-change-btn');
+    var picker = document.getElementById('featured-trio-picker');
+    var t1 = document.getElementById('ftp-tool1');
+    var t2 = document.getElementById('ftp-tool2');
+    var gm = document.getElementById('ftp-game');
+    var status = document.getElementById('ftp-status');
+    if (!changeBtn || !picker || !t1 || !t2 || !gm || changeBtn.dataset.wiredTrio) return;
+    changeBtn.dataset.wiredTrio = '1';
+
+    var E = window.atlasEntries || {};
+    function opts(list) {
+      return (list || []).slice()
+        .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); })
+        .map(function (e) { return '<option value="' + esc(e.path) + '">' + esc(e.name) + '</option>'; })
+        .join('');
+    }
+    var toolOpts = opts(E.tools);
+    t1.innerHTML = toolOpts;
+    t2.innerHTML = toolOpts;
+    gm.innerHTML = opts(E.games);
+
+    function setSel(el, val) {
+      if ([].some.call(el.options, function (o) { return o.value === val; })) el.value = val;
+    }
+    ph.getResolved().then(function (r) {
+      setSel(t1, ftNorm(r.featuredTools[0].path));
+      setSel(t2, ftNorm(r.featuredTools[1].path));
+      setSel(gm, ftNorm(r.featuredGame.path));
+    });
+
+    changeBtn.addEventListener('click', function () { picker.hidden = !picker.hidden; });
+
+    async function pick(el, fn) {
+      el.disabled = true;
+      setStatus(status, 'Saving…');
+      var res = await fn(el.value);
+      el.disabled = false;
+      if (res && res.error) {
+        setStatus(status, (res.error && res.error.message) || 'Save failed', 'error');
+        return;
+      }
+      var r = await ph.getResolved();
+      await renderFeaturedTrio(r, true, ph);
+      setStatus(status, 'Saved', 'ok');
+    }
+    t1.addEventListener('change', function () { pick(t1, function (v) { return ph.setFeaturedTool(1, v); }); });
+    t2.addEventListener('change', function () { pick(t2, function (v) { return ph.setFeaturedTool(2, v); }); });
+    gm.addEventListener('change', function () { pick(gm, function (v) { return ph.setFeaturedGame(v); }); });
+  }
+
   function setStatus(el, msg, kind) {
     if (!el) return;
     el.textContent = msg || '';
@@ -1265,7 +1768,9 @@
   function wireHomepageAdmin(ph) {
     wireCropModal(ph);
 
-    // ── Featured artifact picker ──
+    if (FEATURED_TRIO) { ftWireTrioPicker(ph); return; }
+
+    // ── Featured artifact picker (pre-trio) ──
     var changeBtn = document.getElementById('featured-change-btn');
     var picker = document.getElementById('featured-picker');
     var select = document.getElementById('featured-select');
