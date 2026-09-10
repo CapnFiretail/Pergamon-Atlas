@@ -174,6 +174,22 @@
     };
   }
 
+  // Look up ANY Atlas artifact by path in entries.js (tools + games +
+  // pages, NOT archived). Returns the raw entry ({ path, name, visibility,
+  // description?, card_image?, … }) or null. The single source of truth
+  // for name + static visibility; catalog artwork / a Tool's canonical
+  // description live in the catalog pages and are resolved there.
+  function lookupEntry(path) {
+    if (!path) return null;
+    var E = window.atlasEntries || {};
+    var pool = [].concat(E.tools || [], E.games || [], E.pages || []);
+    var key = normPath(path);
+    for (var i = 0; i < pool.length; i++) {
+      if (normPath(pool[i].path) === key) return pool[i];
+    }
+    return null;
+  }
+
   // Resolve a featured-artifact path against canonical entry metadata.
   // Searches tools + games + pages (NOT archived). featured_path is not
   // architecturally limited to any catalog — any eligible entry resolves.
@@ -181,13 +197,7 @@
   // it wins over the artifact's canonical description.
   function resolveFeatured(featuredPath, descOverride) {
     if (!featuredPath) return null;
-    var E = window.atlasEntries || {};
-    var pool = [].concat(E.tools || [], E.games || [], E.pages || []);
-    var key = normPath(featuredPath);
-    var entry = null;
-    for (var i = 0; i < pool.length; i++) {
-      if (normPath(pool[i].path) === key) { entry = pool[i]; break; }
-    }
+    var entry = lookupEntry(featuredPath);
     if (!entry) return null;
     var override = (typeof descOverride === 'string') ? descOverride.trim() : '';
     return {
@@ -200,6 +210,15 @@
     };
   }
 
+  // ── Featured Today trio (experiment) ─────────────────────────────────────
+  // The homepage decides whether to render the single card or the trio (a
+  // one-line flag there). This layer just exposes both shapes.
+  var FEATURED_DEFAULTS = {
+    tool1: '/tools/gpa-calculator',
+    tool2: '/tools/scientific-calculator',
+    game: '/games/chess-forge'
+  };
+
   // Everything a renderer needs, resolved. heroImageUrl / featured are
   // null when unset — callers fall back to the built-in placeholder / a
   // default.
@@ -209,6 +228,12 @@
     var auth = window.PergamonAuth;
     var heroPath = s && s.hero_image_path;
     var crop = normCrop(s);
+
+    // Game slot falls back to the pre-trio featured_path (0006 migrates it,
+    // this covers a not-yet-migrated row too), then the built-in default.
+    var gamePath = (s && s.featured_game_path) || (s && s.featured_path) || FEATURED_DEFAULTS.game;
+    var gameDescOverride = (s && s.featured_game_description) || null;
+
     return {
       loadError: !!r.error,
       published: !!(s && s.published),
@@ -219,9 +244,21 @@
       heroZoom: crop.zoom,
       heroX: crop.x,
       heroY: crop.y,
+
+      // Pre-trio single-card shape (unchanged) — the fallback render path.
       featuredPath: (s && s.featured_path) || null,
       featuredDescription: (s && s.featured_description) || null,
-      featured: resolveFeatured(s && s.featured_path, s && s.featured_description)
+      featured: resolveFeatured(s && s.featured_path, s && s.featured_description),
+
+      // Trio shape: three { slot, path, descriptionOverride }. Names,
+      // artwork, canonical descriptions and effective visibility are
+      // resolved on the homepage (it fetches the catalogs); this only
+      // holds what is genuinely homepage-specific.
+      featuredTools: [
+        { slot: 1, path: (s && s.featured_tool_1_path) || FEATURED_DEFAULTS.tool1, descriptionOverride: (s && s.featured_tool_1_description) || null },
+        { slot: 2, path: (s && s.featured_tool_2_path) || FEATURED_DEFAULTS.tool2, descriptionOverride: (s && s.featured_tool_2_description) || null }
+      ],
+      featuredGame: { path: gamePath, descriptionOverride: gameDescOverride }
     };
   }
 
@@ -312,6 +349,53 @@
     return r.error ? r : { data: { featured_description: want } };
   }
 
+  // ── CONTENT: Featured Today trio ─────────────────────────────────────────
+  // Each write goes through writeAndConfirm — an RLS-blocked / no-op write
+  // is reported as a failure, never a false success. Changing a slot's
+  // artifact clears that slot's description override (same rule as the
+  // single-card path).
+  async function setFeaturedTool(slot, pathRef) {
+    var n = (Number(slot) === 2) ? 2 : 1;
+    var key = pathRef ? normPath(pathRef) : null;
+    var pCol = 'featured_tool_' + n + '_path';
+    var dCol = 'featured_tool_' + n + '_description';
+    var patch = {}; patch[pCol] = key; patch[dCol] = null;
+    var r = await writeAndConfirm(patch, function (row) {
+      return (row[pCol] || null) === key && (row[dCol] || null) === null;
+    });
+    return r.error ? r : { data: { slot: n, path: key } };
+  }
+
+  async function setFeaturedGame(pathRef) {
+    var key = pathRef ? normPath(pathRef) : null;
+    var r = await writeAndConfirm(
+      { featured_game_path: key, featured_game_description: null },
+      function (row) {
+        return (row.featured_game_path || null) === key && (row.featured_game_description || null) === null;
+      }
+    );
+    return r.error ? r : { data: { path: key } };
+  }
+
+  var SLOT_DESC_COL = {
+    tool1: 'featured_tool_1_description',
+    tool2: 'featured_tool_2_description',
+    game:  'featured_game_description'
+  };
+
+  // Homepage-only editorial copy for one trio slot. Blank clears it (NULL)
+  // → the card falls back to the artifact's catalog/canonical description.
+  // Canonical metadata is never touched.
+  async function setFeaturedSlotDescription(slot, text) {
+    var col = SLOT_DESC_COL[slot];
+    if (!col) return { error: { message: 'Unknown featured slot: ' + slot } };
+    var value = (typeof text === 'string') ? text.trim() : '';
+    var want = value || null;
+    var patch = {}; patch[col] = want;
+    var r = await writeAndConfirm(patch, function (row) { return (row[col] || null) === want; });
+    return r.error ? r : { data: { slot: slot, description: want } };
+  }
+
   // ── PUBLISH ──────────────────────────────────────────────────────────────
   // The UI only transitions to "published"/"unpublished" after the row is
   // confirmed to actually hold the requested value.
@@ -331,11 +415,16 @@
     getPublishState: getPublishState,
     getResolved: getResolved,
     resolveFeatured: resolveFeatured,
+    lookupEntry: lookupEntry,
+    featuredDefaults: function () { return { tool1: FEATURED_DEFAULTS.tool1, tool2: FEATURED_DEFAULTS.tool2, game: FEATURED_DEFAULTS.game }; },
     cropDefaults: function () { return { zoom: CROP_DEFAULTS.zoom, x: CROP_DEFAULTS.x, y: CROP_DEFAULTS.y }; },
     setHeroImage: setHeroImage,
     setHeroCrop: setHeroCrop,
     setFeaturedArtifact: setFeaturedArtifact,
     setFeaturedDescription: setFeaturedDescription,
+    setFeaturedTool: setFeaturedTool,
+    setFeaturedGame: setFeaturedGame,
+    setFeaturedSlotDescription: setFeaturedSlotDescription,
     publish: publish,
     unpublish: unpublish
   };
