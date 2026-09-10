@@ -773,6 +773,101 @@
       }
     }
 
+    /* ====================================================================
+       TEST — Featured Card art at Games-catalog size
+       --------------------------------------------------------------------
+       Reversible experiment (see USE_CATALOG_ART in the render script).
+       When on, the Featured Card's image slot shows the SAME CSS
+       mini-graphic the Games catalog card uses for that game, at the SAME
+       intrinsic pixel size, centred in a larger dark area — instead of the
+       old .featured-card-thumb (which is kept intact as the fallback).
+
+       The Games catalog has NO image files: each card renders a fixed-size
+       CSS/HTML mini-graphic inside a 230x230 .feat-preview-frame on a #111
+       square (.feat-graphic). The rules below are COPIED VERBATIM from
+       games/index.html (the values, not eyeballed) and namespaced under
+       .featured-catalog-art so nothing here can affect the catalog or the
+       old .featured-card-thumb path. Delete this whole block + the
+       USE_CATALOG_ART branch to revert. games/index.html is untouched.
+       ==================================================================== */
+    .featured-catalog-art{
+      flex:0 0 240px;
+      max-width:240px;
+      aspect-ratio:1;
+      background:#111;                 /* == catalog .feat-graphic */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border-radius:6px;               /* == old .featured-card-thumb */
+    }
+
+    /* verbatim from games/index.html .feat-preview-frame */
+    .featured-catalog-art .feat-preview-frame{ width:230px; height:230px; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+    /* verbatim from games/index.html — game mini-graphics */
+    .featured-catalog-art .cat-ttt { display: grid; grid-template-columns: repeat(3, 40px); gap: 6px; background: #111; border-radius: 10px; padding: 8px; border: 2px solid #2a2a2a; }
+    .featured-catalog-art .cat-ttt-cell { width: 40px; height: 40px; background: #f4f4f4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #111; }
+    .featured-catalog-art .cat-ttt-cell.dim { color: #ccc; }
+
+    .featured-catalog-art .cat-cf { display: grid; grid-template-columns: repeat(7, 22px); gap: 4px; background: #1f6fab; border-radius: 8px; padding: 6px; }
+    .featured-catalog-art .cat-cf-disc { width: 22px; height: 22px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+    .featured-catalog-art .cat-cf-disc.r { background: #e63946; }
+    .featured-catalog-art .cat-cf-disc.y { background: #f4d03f; }
+
+    .featured-catalog-art .cat-ch { display: inline-grid; grid-template-columns: repeat(8, 20px); gap: 0; border: 2px solid #1a1a1a; border-radius: 3px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+    .featured-catalog-art .cat-ch-sq { width: 20px; height: 20px; }
+    .featured-catalog-art .cat-ch-sq.light { background: #f0d9b5; }
+    .featured-catalog-art .cat-ch-sq.dark  { background: #b58863; }
+
+    .featured-catalog-art .cat-bt { display: grid; grid-template-columns: repeat(10, 14px); gap: 2px; background: #13578a; border-radius: 8px; padding: 5px; }
+    .featured-catalog-art .cat-bt-cell { width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.05); }
+    .featured-catalog-art .cat-bt-cell.ship { background: #6b7280; }
+    .featured-catalog-art .cat-bt-cell.hit  { background: #dc2626; }
+    .featured-catalog-art .cat-bt-cell.miss { background: #5aa0cc; }
+
+    .featured-catalog-art .cat-bj2 { display: grid; grid-template-columns: repeat(3, 38px); gap: 5px; background: #1a1a1a; border-radius: 8px; padding: 4px; transform: scale(1.4); }
+    .featured-catalog-art .cat-bj2-card { width: 38px; height: 56px; border-radius: 4px; border: 1px solid #ccc; background: white; box-shadow: 0 2px 5px rgba(0,0,0,.3); display: flex; flex-direction: column; justify-content: space-between; padding: 2px 3px; font-family: Georgia, serif; font-size: 10px; font-weight: 700; line-height: 1.2; box-sizing: border-box; }
+    .featured-catalog-art .cat-bj2-card.fd { background: #1a3a6b; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 8px); border-color: #1a3a6b; }
+    .featured-catalog-art .cat-bj2-card.r { color: #c0392b; }
+    .featured-catalog-art .cat-bj2-card.b { color: #111; }
+    .featured-catalog-art .cat-bj2-bot { transform: rotate(180deg); }
+
+    .featured-catalog-art .cat-sn { display: grid; grid-template-columns: repeat(12, 15px); gap: 2px; background: #111; border-radius: 8px; padding: 6px; border: 2px solid #2a2a2a; transform: scale(0.9); }
+    .featured-catalog-art .cat-sn-cell { width: 15px; height: 15px; border-radius: 3px; background: #1e1e1e; }
+    .featured-catalog-art .cat-sn-cell.body { background: #8a611c; }
+    .featured-catalog-art .cat-sn-cell.head { background: #f0d39b; }
+    .featured-catalog-art .cat-sn-cell.food { background: #e74c3c; border-radius: 50%; }
+
+    .featured-catalog-art .cat-bk2 { display: inline-flex; flex-direction: column; background: #111; border: 2px solid #2a2a2a; border-radius: 8px; padding: 5px; transform: scale(1.5); }
+    .featured-catalog-art .cat-bk2-bricks { display: grid; grid-template-columns: repeat(5, 20px); gap: 3px; }
+    .featured-catalog-art .cat-bk2-brick { height: 9px; border-radius: 2px; }
+    .featured-catalog-art .cat-bk2-brick.r0 { background: #e74c3c; }
+    .featured-catalog-art .cat-bk2-brick.r1 { background: #e67e22; }
+    .featured-catalog-art .cat-bk2-brick.r2 { background: #f1c40f; }
+    .featured-catalog-art .cat-bk2-brick.r3 { background: #2ecc71; }
+    .featured-catalog-art .cat-bk2-brick.r4 { background: #3498db; }
+    .featured-catalog-art .cat-bk2-brick.r5 { background: #9b59b6; }
+    .featured-catalog-art .cat-bk2-brick.dead { background: transparent; }
+    .featured-catalog-art .cat-bk2-field { position: relative; width: 112px; height: 40px; margin-top: 5px; }
+    .featured-catalog-art .cat-bk2-ball { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: white; box-shadow: 0 0 4px rgba(255,255,255,0.5); }
+    .featured-catalog-art .cat-bk2-paddle { position: absolute; height: 6px; border-radius: 3px; background: #f0d39b; bottom: 0; }
+
+    .featured-catalog-art .cat-pong { position: relative; width: 130px; height: 110px; background: #111; border: 2px solid #2a2a2a; border-radius: 6px; overflow: hidden; box-sizing: border-box; transform: scale(1.5); }
+    .featured-catalog-art .cat-pong-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.25) 0 6px, transparent 6px 12px); }
+    .featured-catalog-art .cat-pong-paddle { position: absolute; width: 6px; height: 28px; background: #f0d39b; border-radius: 3px; }
+    .featured-catalog-art .cat-pong-left  { left: 8px; top: 30px; }
+    .featured-catalog-art .cat-pong-right { right: 8px; top: 52px; }
+    .featured-catalog-art .cat-pong-ball { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; left: 62px; top: 48px; box-shadow: 0 0 6px rgba(255,255,255,0.6); }
+    .featured-catalog-art .cat-pong-score { position: absolute; top: 6px; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.4); }
+    .featured-catalog-art .cat-pong-score.left  { left: 38px; }
+    .featured-catalog-art .cat-pong-score.right { right: 38px; }
+
+    @media (max-width:600px){
+      .featured-catalog-art{ flex:none; width:100%; max-width:240px; margin:0 auto; }
+    }
+    /* === end TEST block ================================================== */
+
     /* === end Homepage V8/V9 =============================================== */
 
   </style>
@@ -949,6 +1044,38 @@
       '/games/chess-forge': () => `<div class="cat-ch">${chessboardSquares()}</div>`
     };
 
+    /* ── TEST: reuse Games-catalog art at catalog size ──────────────────
+       Flip to false to fully restore the previous .featured-card-thumb
+       behaviour (which is left intact below as the fallback). See the
+       matching CSS "TEST" block above.
+
+       There are no image files in the Games catalog — each card renders a
+       fixed-size CSS mini-graphic inside a .feat-preview-frame. Rather
+       than copy that markup here (a second source), we read it live from
+       /games/index.html once and cache path → .feat-preview-frame HTML.
+       On any fetch/parse failure CATALOG_ART stays {} and the old thumb
+       path is used. games/index.html is only read, never modified. */
+    const USE_CATALOG_ART = true;
+    let CATALOG_ART = {};
+    let catalogArtPromise = null;
+    function loadCatalogArt(){
+      if (catalogArtPromise) return catalogArtPromise;
+      catalogArtPromise = fetch('/games/index.html')
+        .then(r => r.ok ? r.text() : Promise.reject(r.status))
+        .then(html => {
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          const map = {};
+          doc.querySelectorAll('.featured-grid .feat-card').forEach(card => {
+            const href = (card.getAttribute('href') || '').replace(/\/+$/, '');
+            const frame = card.querySelector('.feat-preview-frame');
+            if (href && frame) map[href] = frame.innerHTML;
+          });
+          return map;
+        })
+        .catch(e => { console.warn('Featured art: catalog fetch failed, using fallback thumb', e); return {}; });
+      return catalogArtPromise;
+    }
+
     // Used only if homepage_settings has no featured_path yet, or it
     // doesn't resolve to a known entry.
     const FEATURED_DEFAULT = {
@@ -975,13 +1102,22 @@
       const el = document.getElementById(containerId);
       if (!el || !artifact || !artifact.path) return;
 
-      let thumb;
-      if (artifact.cardImage) {
-        thumb = `<img class="featured-card-thumb-img" src="${esc(artifact.cardImage)}" alt="">`;
-      } else if (FEATURED_FALLBACK_THUMBS[artifact.path]) {
-        thumb = FEATURED_FALLBACK_THUMBS[artifact.path]();
+      // TEST path: Games-catalog art at catalog size (see USE_CATALOG_ART).
+      // Falls through to the original .featured-card-thumb below when the
+      // flag is off or no catalog art exists for this path.
+      let artHtml;
+      if (USE_CATALOG_ART && CATALOG_ART[artifact.path]) {
+        artHtml = `<div class="featured-catalog-art"><div class="feat-preview-frame">${CATALOG_ART[artifact.path]}</div></div>`;
       } else {
-        thumb = '';
+        let thumb;
+        if (artifact.cardImage) {
+          thumb = `<img class="featured-card-thumb-img" src="${esc(artifact.cardImage)}" alt="">`;
+        } else if (FEATURED_FALLBACK_THUMBS[artifact.path]) {
+          thumb = FEATURED_FALLBACK_THUMBS[artifact.path]();
+        } else {
+          thumb = '';
+        }
+        artHtml = `<div class="featured-card-thumb">${thumb}</div>`;
       }
 
       const desc = artifact.description || '';
@@ -1001,7 +1137,7 @@
 
       el.innerHTML = `
         <div class="featured-card pa-panel">
-          <div class="featured-card-thumb">${thumb}</div>
+          ${artHtml}
           <div class="featured-card-body">
             <span class="featured-card-eyebrow">Featured Artifact</span>
             <h3 class="featured-card-title"><a class="featured-card-link" href="${esc(artifact.path)}">${esc(artifact.title)}</a></h3>
@@ -1065,7 +1201,7 @@
         applyHeroImage(resolved.heroImageUrl, {
           zoom: resolved.heroZoom, x: resolved.heroX, y: resolved.heroY
         });
-        renderFeatured(resolved.featured || FEATURED_DEFAULT, adminView, ph);
+        await renderFeatured(resolved.featured || FEATURED_DEFAULT, adminView, ph);
 
         // Editing is only reachable for an admin in Admin View
         // (applyNavVisibility hid the controls otherwise); every write is
@@ -1104,7 +1240,13 @@
     applyCropVars(box, crop);
   }
 
-  function renderFeatured(artifact, adminView, ph) {
+  async function renderFeatured(artifact, adminView, ph) {
+    // TEST: pull catalog art once (cached). No-op / {} when USE_CATALOG_ART
+    // is off or the fetch fails — renderFeaturedArtifact then uses the
+    // original thumb path.
+    if (USE_CATALOG_ART && !Object.keys(CATALOG_ART).length) {
+      try { CATALOG_ART = await loadCatalogArt(); } catch (e) { CATALOG_ART = {}; }
+    }
     renderFeaturedArtifact(artifact || FEATURED_DEFAULT, 'featured-artifact-slot', adminView);
     if (adminView && ph) wireFeaturedDescEditor(ph);
   }
@@ -1167,7 +1309,7 @@
           return;
         }
         var r = await ph.getResolved();
-        renderFeatured(r.featured || FEATURED_DEFAULT, true, ph);
+        await renderFeatured(r.featured || FEATURED_DEFAULT, true, ph);
         setStatus(pickStatus, 'Saved', 'ok');
       });
     }
