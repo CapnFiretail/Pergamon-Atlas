@@ -7,13 +7,6 @@
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
   <script src="/scripts/nav.js" defer></script>
-  <script>
-    // Header searches arrive as /search/?q=... — hand them straight to Google.
-    (function () {
-      var q = new URLSearchParams(window.location.search).get('q');
-      if (q && q.trim()) window.location.replace('https://www.google.com/search?q=' + encodeURIComponent(q.trim()));
-    })();
-  </script>
   <style>
     :root {
       --sp-bg: #ffffff;
@@ -22,8 +15,6 @@
       --sp-box: #ffffff;
       --sp-border: #dfe1e5;
       --sp-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-      --sp-tile: #f1f3f4;
-      --sp-tile-hover: #e8eaed;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -33,8 +24,6 @@
         --sp-box: #303134;
         --sp-border: #5f6368;
         --sp-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-        --sp-tile: #303134;
-        --sp-tile-hover: #3c4043;
       }
     }
     body { margin: 0; background: var(--sp-bg); }
@@ -67,26 +56,39 @@
     .sp-form svg { flex: 0 0 20px; width: 20px; height: 20px; fill: none; stroke: var(--sp-muted); stroke-width: 2; stroke-linecap: round; }
     .sp-form input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; color: var(--sp-text); font: 16px Arial, Helvetica, sans-serif; outline: none; }
     .sp-form input::placeholder { color: var(--sp-muted); }
-    .sp-shortcuts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; max-width: 584px; }
-    .sp-shortcuts a {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      width: 104px;
-      box-sizing: border-box;
-      padding: 16px 4px 12px;
-      border-radius: 8px;
-      color: var(--sp-text);
-      font-size: 13px;
-      text-decoration: none;
+
+    /* Results + viewer: search bar docks at the top, content fills the body. */
+    .sp-main[data-view="results"], .sp-main[data-view="viewer"] { align-items: stretch; padding: 16px; }
+    .sp-main[data-view="results"] .sp-brand, .sp-main[data-view="viewer"] .sp-brand { display: none; }
+    .sp-main[data-view="results"] .sp-form, .sp-main[data-view="viewer"] .sp-form { max-width: 720px; height: 44px; }
+    .sp-results { width: 100%; max-width: 720px; margin-top: 8px; }
+    .sp-main:not([data-view="results"]) .sp-results { display: none; }
+
+    .sp-viewer { display: none; flex: 1; flex-direction: column; margin-top: 12px; min-height: 0; }
+    .sp-main[data-view="viewer"] .sp-viewer { display: flex; }
+    .sp-toolbar { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: var(--sp-box); border: 1px solid var(--sp-border); border-radius: 12px 12px 0 0; }
+    .sp-toolbar button, .sp-toolbar a {
+      display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+      height: 32px; padding: 0 12px; border: 0; border-radius: 16px;
+      background: transparent; color: var(--sp-text); font: 14px Arial, Helvetica, sans-serif; text-decoration: none; cursor: pointer;
     }
-    .sp-shortcuts a:hover { background: var(--sp-tile-hover); }
-    .sp-shortcuts a:focus-visible { outline: 2px solid var(--pa-gold-bright); }
-    .sp-tile-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--sp-tile); }
-    .sp-tile-icon svg { width: 22px; height: 22px; fill: none; stroke: var(--pa-gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    @media (max-width: 800px) { .sp-main { padding-bottom: 110px; } }
-    @media (max-width: 650px) { .sp-brand img { height: 52px; } .sp-shortcuts a { width: 80px; } }
+    .sp-toolbar button:hover, .sp-toolbar a:hover { background: var(--sp-border); }
+    .sp-toolbar [hidden] { display: none; }
+    .sp-toolbar :focus-visible { outline: 2px solid var(--pa-gold-bright); }
+    .sp-address { flex: 1; min-width: 0; overflow: hidden; color: var(--sp-muted); font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+    .sp-frame-wrap { position: relative; flex: 1; min-height: 70vh; border: 1px solid var(--sp-border); border-top: 0; border-radius: 0 0 12px 12px; overflow: hidden; background: #fff; }
+    .sp-frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .sp-notice { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; background: var(--sp-bg); color: var(--sp-text); text-align: center; }
+    .sp-notice[hidden] { display: none; }
+    .sp-notice p { margin: 0; max-width: 420px; color: var(--sp-muted); line-height: 1.5; }
+    .sp-notice strong { font-size: 18px; }
+    .sp-notice a { padding: 10px 20px; border-radius: 20px; background: var(--pa-gold); color: #111; font-weight: 700; text-decoration: none; }
+
+    @media (max-width: 800px) { .sp-main { padding-bottom: 110px; } .sp-main[data-view="viewer"] { padding-bottom: 88px; } }
+    @media (max-width: 650px) {
+      .sp-brand img { height: 52px; }
+      .sp-toolbar .sp-label { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -154,7 +156,7 @@
       </nav>
     </aside>
 
-    <main class="pa-main sp-main">
+    <main class="pa-main sp-main" data-view="start">
       <div class="sp-brand">
         <img src="/images/logo.png" alt="" width="245" height="240">
         <span>PergamonAtlas</span>
@@ -165,24 +167,175 @@
         <input type="text" id="sp-input" placeholder="Search Google or type a URL" aria-label="Search Google or type a URL" autocomplete="off" autofocus>
       </form>
 
-      <nav class="sp-shortcuts" aria-label="Shortcuts">
-        <a href="/games/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01"/></svg></span>Games</a>
-        <a href="/tools/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Tools</a>
-        <a href="/atlas/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg></span>Atlas</a>
-        <a href="/help/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>Help</a>
-      </nav>
+      <div class="sp-results" id="sp-results"></div>
+
+      <section class="sp-viewer" aria-label="Page viewer">
+        <div class="sp-toolbar">
+          <button type="button" id="sp-back" aria-label="Back to results">&larr;<span class="sp-label"> Results</span></button>
+          <span class="sp-address" id="sp-address"></span>
+          <a id="sp-newtab" href="#" target="_blank" rel="noopener noreferrer" aria-label="Open in new tab"><span class="sp-label">Open in new tab </span>&#8599;</a>
+        </div>
+        <div class="sp-frame-wrap">
+          <iframe id="sp-frame" title="Page viewer" referrerpolicy="no-referrer"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
+          <div class="sp-notice" id="sp-notice" hidden>
+            <strong id="sp-notice-title">Loading…</strong>
+            <p id="sp-notice-text"></p>
+            <a id="sp-notice-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Open in new tab &#8599;</a>
+          </div>
+        </div>
+      </section>
     </main>
     <script>
-      // Like Chrome's omnibox: something that looks like an address opens it, anything else searches Google.
-      document.getElementById('sp-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var text = document.getElementById('sp-input').value.trim();
-        if (!text) return;
-        var looksLikeUrl = /^https?:\/\/\S+$/i.test(text) || /^[^\s\/]+\.[a-z]{2,}(?::\d+)?(\/\S*)?$/i.test(text);
-        window.location.href = looksLikeUrl
-          ? (/^https?:\/\//i.test(text) ? text : 'https://' + text)
-          : 'https://www.google.com/search?q=' + encodeURIComponent(text);
-      });
+      (function () {
+        // Google Programmable Search Engine ID (programmablesearchengine.google.com → your engine → "Search engine ID").
+        // While empty, text searches open Google in this tab instead of showing results here.
+        var CSE_ID = '';
+
+        var main = document.querySelector('.sp-main');
+        var input = document.getElementById('sp-input');
+        var notice = document.getElementById('sp-notice');
+        var noticeTitle = document.getElementById('sp-notice-title');
+        var noticeText = document.getElementById('sp-notice-text');
+        var noticeLink = document.getElementById('sp-notice-link');
+        var lastQuery = '';
+        var cse = null;
+        var navigatedHere = false;
+
+        // Swap in a fresh iframe rather than changing src, so frame loads don't add
+        // entries to the browser's back history (Back should leave the viewer).
+        function setFrame(url) {
+          var old = document.getElementById('sp-frame');
+          var fresh = old.cloneNode(false);
+          if (url) fresh.src = url; else fresh.removeAttribute('src');
+          old.replaceWith(fresh);
+        }
+
+        function looksLikeUrl(text) {
+          return /^https?:\/\/\S+$/i.test(text) || /^[^\s\/]+\.[a-z]{2,}(?::\d+)?(\/\S*)?$/i.test(text);
+        }
+        function toUrl(text) { return /^https?:\/\//i.test(text) ? text : 'https://' + text; }
+
+        // ── Results (Google Programmable Search) ──────────────────────────
+        function loadCse() {
+          if (cse) return cse;
+          cse = new Promise(function (resolve, reject) {
+            window.__gcse = {
+              parsetags: 'explicit',
+              callback: function () {
+                google.search.cse.element.render({ div: 'sp-results', tag: 'searchresults-only', gname: 'sp' });
+                resolve(google.search.cse.element.getElement('sp'));
+              }
+            };
+            var s = document.createElement('script');
+            s.src = 'https://cse.google.com/cse.js?cx=' + encodeURIComponent(CSE_ID);
+            s.async = true;
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+          return cse;
+        }
+
+        function showResults(q) {
+          lastQuery = q;
+          input.value = q;
+          main.dataset.view = 'results';
+          setFrame(null);
+          loadCse().then(function (el) { el.execute(q); });
+        }
+
+        // Result links open in the viewer; modified clicks keep their normal behaviour.
+        document.getElementById('sp-results').addEventListener('click', function (e) {
+          if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          var a = e.target.closest('a[href]');
+          if (!a) return;
+          var href = a.getAttribute('data-ctorig') || a.href;
+          try {
+            var u = new URL(href);
+            if (/(^|\.)google\.[a-z.]+$/.test(u.hostname) && u.pathname === '/url') href = u.searchParams.get('q') || href;
+          } catch (err) { return; }
+          if (!/^https?:\/\//i.test(href)) return;
+          e.preventDefault();
+          e.stopPropagation();
+          go({ url: href });
+        }, true);
+
+        // ── Viewer ────────────────────────────────────────────────────────
+        function setNotice(title, text, url) {
+          noticeTitle.textContent = title;
+          noticeText.textContent = text || '';
+          noticeLink.hidden = !url;
+          if (url) noticeLink.href = url;
+          notice.hidden = false;
+        }
+
+        function showViewer(url) {
+          main.dataset.view = 'viewer';
+          input.value = url;
+          document.getElementById('sp-address').textContent = url;
+          document.getElementById('sp-newtab').href = url;
+          document.getElementById('sp-back').hidden = !lastQuery;
+          setFrame(null);
+          setNotice('Loading…', '', null);
+
+          fetch('/api/frameable?url=' + encodeURIComponent(url))
+            .then(function (r) { return r.json(); })
+            .then(function (info) {
+              if (main.dataset.view !== 'viewer' || document.getElementById('sp-address').textContent !== url) return;
+              if (info.frameable) {
+                notice.hidden = true;
+                setFrame(info.url || url);
+              } else {
+                setNotice("This site can't be shown inside the Atlas",
+                  'It only allows itself to be opened directly. You can still open it in a new tab.', url);
+              }
+            })
+            .catch(function () {
+              setNotice("Couldn't check this page", 'Try opening it in a new tab.', url);
+            });
+        }
+
+        // ── Navigation state lives in the URL (?q= results, ?url= viewer) ──
+        function render() {
+          var params = new URLSearchParams(window.location.search);
+          var url = params.get('url');
+          var q = (params.get('q') || '').trim();
+          if (url) {
+            if (params.get('from')) lastQuery = params.get('from');
+            showViewer(url);
+          } else if (q && CSE_ID) {
+            showResults(q);
+          } else if (q) {
+            window.location.replace('https://www.google.com/search?q=' + encodeURIComponent(q));
+          } else {
+            main.dataset.view = 'start';
+            setFrame(null);
+          }
+        }
+
+        function go(state) {
+          var params = new URLSearchParams();
+          if (state.url) { params.set('url', state.url); if (lastQuery) params.set('from', lastQuery); }
+          else if (state.q) params.set('q', state.q);
+          history.pushState(null, '', '/search/?' + params.toString());
+          navigatedHere = true;
+          render();
+        }
+
+        document.getElementById('sp-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var text = input.value.trim();
+          if (!text) return;
+          if (looksLikeUrl(text)) go({ url: toUrl(text) });
+          else go({ q: text });
+        });
+        // Landed straight on a viewer link: there is no results entry to go back to, so make one.
+        document.getElementById('sp-back').addEventListener('click', function () {
+          if (navigatedHere) history.back(); else go({ q: lastQuery });
+        });
+        window.addEventListener('popstate', render);
+        render();
+      })();
     </script>
   </div>
 </div>
