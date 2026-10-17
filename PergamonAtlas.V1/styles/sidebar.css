@@ -1,0 +1,117 @@
+/* Page layout + sidebar. Colours come from the --pa-* variables in header.css. */
+.pa-page { min-height: 100vh; display: flex; flex-direction: column; }
+.pa-layout { flex: 1; display: flex; align-items: stretch; }
+.pa-main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  box-sizing: border-box;
+  background: #e9e9e9;
+  color: #111;
+  font-family: var(--pa-font);
+}
+
+.pa-sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 250px;
+  padding: 48px 0 22px;
+  box-sizing: border-box;
+  background: #0a0a0a;
+  border-right: 1px solid #1a1a1a;
+  font-family: var(--pa-font);
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+.pa-sidebar nav { display: flex; flex-direction: column; }
+.pa-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 26px;
+  color: #e5e5e5;
+  font-size: 22px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.pa-sidebar a:hover { background: #141414; color: var(--pa-gold-bright); }
+.pa-sidebar a.active { background: #16120a; color: var(--pa-gold-bright); box-shadow: inset 3px 0 0 var(--pa-gold); }
+.pa-sidebar a:focus-visible, .pa-sidebar-toggle:focus-visible { outline: 2px solid var(--pa-gold-bright); outline-offset: -2px; }
+
+/* Icons only show when collapsed (desktop) or in the phone tab bar. */
+.pa-nav-icon { display: none; line-height: 0; color: #a8a8a8; }
+.pa-nav-icon svg { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.pa-sidebar a.active .pa-nav-icon, .pa-sidebar a:hover .pa-nav-icon { color: var(--pa-gold-bright); }
+
+.pa-sidebar-toggle {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 5px;
+  color: #888;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.pa-sidebar-toggle:hover { background: #2a2a2a; color: var(--pa-gold-bright); }
+
+.pa-sidebar.collapsed { width: 54px; }
+.pa-sidebar.collapsed a { justify-content: center; gap: 0; padding: 16px 0; }
+.pa-sidebar.collapsed .pa-nav-label { display: none; }
+.pa-sidebar.collapsed .pa-nav-icon { display: block; }
+.pa-sidebar.collapsed .pa-sidebar-toggle { right: auto; left: 50%; transform: translateX(-50%); }
+
+@media (max-width: 900px) {
+  .pa-sidebar { width: 210px; }
+  .pa-sidebar a { font-size: 20px; padding: 15px 22px; }
+}
+
+/* Phone: sidebar becomes a fixed bottom tab bar (Help/Suggestions stay desktop-only). */
+@media (max-width: 800px) {
+  .pa-layout { display: block; }
+  .pa-main { padding: 20px 16px 100px; }
+  .pa-sidebar-toggle, .pa-nav-desktop { display: none !important; }
+  .pa-sidebar, .pa-sidebar.collapsed {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+    width: 100%;
+    height: 72px;
+    padding: 0;
+    border-right: 0;
+    border-top: 1px solid var(--pa-gold);
+  }
+  .pa-sidebar nav { flex: 1; flex-direction: row; align-items: stretch; }
+  .pa-sidebar a, .pa-sidebar.collapsed a {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+  .pa-sidebar a.active { box-shadow: inset 0 3px 0 var(--pa-gold); }
+  .pa-sidebar a:hover { background: transparent; color: #e5e5e5; }
+  .pa-sidebar a.active:hover { background: #16120a; color: var(--pa-gold-bright); }
+  .pa-nav-icon, .pa-sidebar.collapsed .pa-nav-icon { display: block; }
+  .pa-nav-label, .pa-sidebar.collapsed .pa-nav-label { display: block; line-height: 1; }
+}
