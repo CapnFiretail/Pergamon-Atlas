@@ -7,10 +7,86 @@
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
   <script src="/scripts/nav.js" defer></script>
+  <script>
+    // Header searches arrive as /search/?q=... — hand them straight to Google.
+    (function () {
+      var q = new URLSearchParams(window.location.search).get('q');
+      if (q && q.trim()) window.location.replace('https://www.google.com/search?q=' + encodeURIComponent(q.trim()));
+    })();
+  </script>
   <style>
-    body { margin: 0; background: #e9e9e9; }
-    .pa-main h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 40px); }
-    .pa-main p { margin: 0; font-size: 18px; color: #333; }
+    :root {
+      --sp-bg: #ffffff;
+      --sp-text: #202124;
+      --sp-muted: #5f6368;
+      --sp-box: #ffffff;
+      --sp-border: #dfe1e5;
+      --sp-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+      --sp-tile: #f1f3f4;
+      --sp-tile-hover: #e8eaed;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --sp-bg: #202124;
+        --sp-text: #e8eaed;
+        --sp-muted: #9aa0a6;
+        --sp-box: #303134;
+        --sp-border: #5f6368;
+        --sp-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+        --sp-tile: #303134;
+        --sp-tile-hover: #3c4043;
+      }
+    }
+    body { margin: 0; background: var(--sp-bg); }
+    .sp-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(48px, 12vh, 140px) 16px 80px;
+      background: var(--sp-bg);
+      color: var(--sp-text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .sp-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+    .sp-brand img { height: 72px; width: auto; }
+    .sp-brand span { font-family: var(--pa-font); font-size: clamp(34px, 6vw, 56px); font-weight: 700; letter-spacing: -1px; }
+    .sp-form {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 584px;
+      height: 48px;
+      padding: 0 16px;
+      box-sizing: border-box;
+      background: var(--sp-box);
+      border: 1px solid var(--sp-border);
+      border-radius: 24px;
+    }
+    .sp-form:hover, .sp-form:focus-within { border-color: transparent; box-shadow: var(--sp-shadow); }
+    .sp-form svg { flex: 0 0 20px; width: 20px; height: 20px; fill: none; stroke: var(--sp-muted); stroke-width: 2; stroke-linecap: round; }
+    .sp-form input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; color: var(--sp-text); font: 16px Arial, Helvetica, sans-serif; outline: none; }
+    .sp-form input::placeholder { color: var(--sp-muted); }
+    .sp-shortcuts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; max-width: 584px; }
+    .sp-shortcuts a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 104px;
+      box-sizing: border-box;
+      padding: 16px 4px 12px;
+      border-radius: 8px;
+      color: var(--sp-text);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .sp-shortcuts a:hover { background: var(--sp-tile-hover); }
+    .sp-shortcuts a:focus-visible { outline: 2px solid var(--pa-gold-bright); }
+    .sp-tile-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--sp-tile); }
+    .sp-tile-icon svg { width: 22px; height: 22px; fill: none; stroke: var(--pa-gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    @media (max-width: 800px) { .sp-main { padding-bottom: 110px; } }
+    @media (max-width: 650px) { .sp-brand img { height: 52px; } .sp-shortcuts a { width: 80px; } }
   </style>
 </head>
 <body>
@@ -78,10 +154,36 @@
       </nav>
     </aside>
 
-    <main class="pa-main">
-      <h1>Search</h1>
-      <p>Coming soon.</p>
+    <main class="pa-main sp-main">
+      <div class="sp-brand">
+        <img src="/images/logo.png" alt="" width="245" height="240">
+        <span>PergamonAtlas</span>
+      </div>
+
+      <form class="sp-form" role="search" id="sp-form">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+        <input type="text" id="sp-input" placeholder="Search Google or type a URL" aria-label="Search Google or type a URL" autocomplete="off" autofocus>
+      </form>
+
+      <nav class="sp-shortcuts" aria-label="Shortcuts">
+        <a href="/games/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01"/></svg></span>Games</a>
+        <a href="/tools/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Tools</a>
+        <a href="/atlas/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg></span>Atlas</a>
+        <a href="/help/"><span class="sp-tile-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>Help</a>
+      </nav>
     </main>
+    <script>
+      // Like Chrome's omnibox: something that looks like an address opens it, anything else searches Google.
+      document.getElementById('sp-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var text = document.getElementById('sp-input').value.trim();
+        if (!text) return;
+        var looksLikeUrl = /^https?:\/\/\S+$/i.test(text) || /^[^\s\/]+\.[a-z]{2,}(?::\d+)?(\/\S*)?$/i.test(text);
+        window.location.href = looksLikeUrl
+          ? (/^https?:\/\//i.test(text) ? text : 'https://' + text)
+          : 'https://www.google.com/search?q=' + encodeURIComponent(text);
+      });
+    </script>
   </div>
 </div>
 </body>

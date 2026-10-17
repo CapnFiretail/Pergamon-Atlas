@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
   <script type="application/json" id="atlas-meta">
 {
   "name": "Chess Forge",
@@ -19,10 +19,14 @@
   "description": "Play. Learn. Improve. A new way to experience chess on the Atlas."
 }
 </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612"
+    crossorigin="anonymous"></script>
+
   <title>Pergamon Atlas | Chess Forge</title>
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="/styles/legacy-frame.css">
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
@@ -31,831 +35,558 @@
   <link rel="stylesheet" href="/operation/styles/footer.css">
 
   <style>
-    .ph-shell { max-width: 100%; margin: 0 auto; }
+    .ph-shell {
+      max-width: 100%;
+      margin: 0 auto;
+    }
 
-    /* ── Hero ── */
-    .ch-hero {
-      --hg: #bf7d08; --hb: #e2ad35;
+    .ttt-hero {
+      --hero-gold: #bf7d08;
+      --hero-gold-bright: #e2ad35;
+
+      /* Safe responsive grid */
       display: grid;
       position: relative;
       box-sizing: border-box;
-      width: 100%; max-width: 100%; overflow: hidden;
-      grid-template-columns: minmax(0,190px) minmax(0,68px) minmax(0,1fr) minmax(0,300px);
-      align-items: center; min-height: 210px; padding: 20px 36px;
-      background:
-        radial-gradient(circle at 18% 50%, rgba(184,136,26,.06), transparent 29%),
-        radial-gradient(circle at 54% 48%, rgba(255,255,255,.032), transparent 31%),
-        linear-gradient(135deg,#111 0%,#151515 45%,#0d0d0d 100%);
-      border: 1.5px solid rgba(191,125,8,.95); border-radius: 20px;
-      box-shadow: inset 0 0 0 1px rgba(184,136,26,.16), inset 0 0 0 8px rgba(0,0,0,.16),
-                  inset 0 0 40px rgba(255,255,255,.028), 0 8px 22px rgba(0,0,0,.56);
-    }
-    .ch-hero::after {
-      content:""; position:absolute; z-index:0; inset:7px;
-      border:1px solid rgba(191,125,8,.62); border-radius:14px;
-      background: linear-gradient(90deg,rgba(255,255,255,.035),transparent 12%,transparent 88%,rgba(255,255,255,.035)),
-                  repeating-linear-gradient(105deg,rgba(255,255,255,.016) 0 1px,transparent 1px 5px);
-      pointer-events:none;
-    }
-    .ch-hero .game-hero-corner { display:none; }
-    .ch-hero > * { position:relative; z-index:2; min-width:0; }
-    .ch-hero .game-hero-emblem { place-self:center; width:182px; height:182px; background:transparent; border:0; border-radius:0; box-shadow:none; overflow:visible; margin:0; }
-    .ch-hero .game-hero-emblem img { width:100%; height:100%; object-fit:contain; display:block; filter:drop-shadow(0 0 8px rgba(184,136,26,.18)); }
-    .ch-hero .game-hero-sep { align-self:stretch; width:100%; font-size:22px; color:var(--hb); }
-    .ch-hero .game-hero-sep::before,.ch-hero .game-hero-sep::after { background:rgba(191,125,8,.86); }
-    .ch-hero .game-hero-sep::before { top:24px; height:calc(50% - 36px); }
-    .ch-hero .game-hero-sep::after  { bottom:24px; height:calc(50% - 36px); }
-    .ch-hero .game-hero-title { overflow:hidden; min-width:0; padding:0 24px 4px; container-type:inline-size; }
-    .ch-hero .game-hero-title h2 { margin:0 0 18px; font-size:clamp(32px,9cqi,68px); color:#f7f7f7; text-shadow:0 2px 0 rgba(0,0,0,.65),0 0 14px rgba(255,255,255,.18); overflow:hidden; }
-    .ch-hero .game-hero-sub { gap:18px; color:var(--hb); font-size:15px; font-weight:700; letter-spacing:.15em; }
-    .ch-hero .game-hero-sub-line { flex:1; max-width:100px; background:rgba(191,125,8,.95); position:relative; }
-    .ch-hero .game-hero-sub-line::before,.ch-hero .game-hero-sub-line::after { content:""; position:absolute; top:50%; width:5px; height:5px; background:var(--hb); border-radius:50%; transform:translateY(-50%); }
-    .ch-hero .game-hero-sub-line::before { left:0; } .ch-hero .game-hero-sub-line::after { right:0; }
-    .ch-artifact { align-self:center; width:100%; min-height:82px; border:1px solid rgba(191,125,8,.95); border-radius:8px; color:#f7f7f7; text-decoration:none; display:grid; grid-template-columns:40px 1fr; align-items:center; column-gap:12px; padding:10px 20px; position:relative; background:rgba(8,8,8,.26); box-shadow:inset 0 0 16px rgba(184,136,26,.04); }
-    .ch-artifact::before,.ch-artifact::after,.ch-artifact-inner::before,.ch-artifact-inner::after { content:""; position:absolute; width:14px; height:14px; border-color:#bf7d08; border-style:solid; pointer-events:none; }
-    .ch-artifact::before       { top:4px;    left:4px;   border-width:1px 0 0 1px; }
-    .ch-artifact::after        { top:4px;    right:4px;  border-width:1px 1px 0 0; }
-    .ch-artifact-inner::before { bottom:4px; left:4px;   border-width:0 0 1px 1px; }
-    .ch-artifact-inner::after  { bottom:4px; right:4px;  border-width:0 1px 1px 0; }
-    .ch-artifact-icon { width:34px; height:34px; color:#e2ad35; }
-    .ch-artifact-inner { position:absolute; inset:0; pointer-events:none; }
-    .ch-artifact-text { min-width:0; overflow:hidden; }
-    .ch-artifact-label { color:#e2ad35; display:block; font-size:13px; font-weight:700; line-height:1.1; margin-bottom:5px; text-transform:uppercase; white-space:nowrap; }
-    .ch-artifact-code { color:#f7f7f7; display:block; font-size:20px; line-height:1; text-shadow:0 1px 0 rgba(0,0,0,.65); white-space:nowrap; overflow-wrap:anywhere; }
-    .ch-artifact:hover { background:rgba(184,136,26,.08); }
-    @media(max-width:1300px){ .ch-hero{grid-template-columns:minmax(0,152px) minmax(0,52px) minmax(0,1fr) minmax(0,240px);min-height:186px;padding:18px 28px} .ch-hero .game-hero-emblem{width:148px;height:148px} .ch-artifact{min-height:68px;grid-template-columns:32px 1fr} .ch-artifact-code{font-size:17px} }
-    @media(max-width:1200px){ .ch-hero{grid-template-columns:minmax(0,134px) minmax(0,42px) minmax(0,1fr);grid-template-rows:auto auto;min-height:0;height:auto;padding:16px 20px;border-radius:16px} .ch-hero::after{inset:5px;border-radius:11px} .ch-hero .game-hero-emblem{width:114px;height:114px;grid-column:1;grid-row:1;place-self:center} .ch-hero .game-hero-sep{grid-column:2;grid-row:1;font-size:16px} .ch-hero .game-hero-title{grid-column:3;grid-row:1;padding:6px 0 8px;text-align:center} .ch-hero .game-hero-title h2{font-size:clamp(22px,9cqi,46px);margin-bottom:10px} .ch-artifact{grid-column:1/4;grid-row:2;width:100%;margin-top:12px;grid-template-columns:36px 1fr;padding:10px 18px} }
-    @media(max-width:560px){ .ch-hero{grid-template-columns:minmax(0,76px) minmax(0,1fr);padding:14px 16px;border-radius:14px} .ch-hero .game-hero-emblem{width:76px;height:76px;grid-column:1;grid-row:1} .ch-hero .game-hero-sep{display:none} .ch-hero .game-hero-title{grid-column:2;grid-row:1;padding:0 0 8px;text-align:center} .ch-hero .game-hero-title h2{font-size:clamp(16px,9cqi,30px);margin-bottom:8px} .ch-artifact{grid-column:1/3;grid-row:2;width:100%;margin-top:12px;grid-template-columns:30px 1fr;padding:9px 14px} }
-    @media(max-width:390px){ .ch-hero{grid-template-columns:minmax(0,60px) minmax(0,1fr);padding:12px} .ch-hero .game-hero-emblem{width:60px;height:60px} .ch-artifact{grid-template-columns:26px minmax(0,1fr);padding:9px 12px} }
-
-    /* ── Game layout ── */
-    :root { --sq: 58px; }
-
-    .ch-arena {
-      display: grid;
-      grid-template-columns: 175px auto 190px;
-      gap: 12px;
-      align-items: start;
-      margin: 24px 0;
-    }
-
-    /* ── Sidebar shared ── */
-    .ch-panel {
-      background: #0c0c0c;
-      border: 1px solid rgba(255,255,255,0.055);
-      border-radius: 10px;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      box-sizing: border-box;
-    }
-
-    .ch-sect-lbl {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #3a3a3a;
-      margin-bottom: 10px;
-    }
-
-    /* ── Mode buttons ── */
-    .ch-mode-row { display: flex; gap: 5px; }
-    .ch-mode-btn {
-      flex: 1; padding: 7px 4px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 5px;
-      color: #444; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.05em; font-family: inherit;
-      cursor: pointer; transition: all .13s; text-align: center;
-    }
-    .ch-mode-btn:hover:not(.on) { background: rgba(255,255,255,0.04); color: #777; }
-    .ch-mode-btn.on { background: rgba(191,125,8,0.13); border-color: rgba(191,125,8,0.5); color: #e2ad35; }
-
-    /* ── Time control rows ── */
-    .ch-tc-list { display: flex; flex-direction: column; gap: 6px; }
-    .ch-tc-row {
-      display: flex; align-items: center; gap: 9px;
-      padding: 5px 4px; cursor: pointer; border-radius: 5px;
-      transition: background .12s;
-    }
-    .ch-tc-row:hover { background: rgba(255,255,255,0.03); }
-    .ch-tc-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      border: 1.5px solid #2e2e2e; flex-shrink: 0;
-      transition: all .13s;
-    }
-    .ch-tc-row.on .ch-tc-dot { background: #e2ad35; border-color: #e2ad35; }
-    .ch-tc-name { font-size: 11px; font-weight: 700; color: #444; flex: 1; letter-spacing: 0.05em; transition: color .13s; }
-    .ch-tc-row.on .ch-tc-name { color: #ccc; }
-    .ch-tc-sub { font-size: 10px; color: #2e2e2e; transition: color .13s; }
-    .ch-tc-row.on .ch-tc-sub { color: #666; }
-
-    /* ── Start / New Game btn ── */
-    .ch-start-btn {
-      width: 100%; padding: 11px;
-      background: rgba(191,125,8,0.12);
-      border: 1px solid rgba(191,125,8,0.45);
-      border-radius: 7px;
-      color: #e2ad35; font-size: 11px; font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      cursor: pointer; font-family: inherit; transition: background .14s;
-      margin-top: auto;
-    }
-    .ch-start-btn:hover { background: rgba(191,125,8,0.22); }
-
-    /* ── Left game-info (shown during play) ── */
-    .ch-turn-val { font-size: 14px; font-family: Georgia, serif; color: #999; margin-top: 3px; }
-    .ch-alert-box { padding: 7px 10px; background: rgba(180,30,30,0.1); border: 1px solid rgba(180,60,60,0.3); border-radius: 6px; font-size: 12px; color: #ff7070; font-family: Georgia, serif; display: none; }
-    .ch-alert-box.on { display: block; }
-    .ch-thinking { font-size: 10px; color: #444; font-style: italic; display: none; }
-    .ch-thinking.on { display: block; }
-
-    /* ── Board center ── */
-    .ch-center { display: flex; flex-direction: column; gap: 0; }
-    .ch-board-outer { display: flex; flex-direction: column; }
-    .ch-board-row { display: flex; gap: 4px; }
-    .ch-ranks { display: flex; flex-direction: column; justify-content: space-around; width: 14px; flex-shrink: 0; }
-    .ch-ranks span { height: var(--sq); display: flex; align-items: center; justify-content: center; font-size: 10px; color: #333; user-select: none; }
-    .ch-files { display: flex; padding-left: 18px; margin-top: 3px; }
-    .ch-files span { width: var(--sq); text-align: center; font-size: 10px; color: #333; user-select: none; }
-
-    #gameBoard {
-      display: grid;
-      grid-template-columns: repeat(8, var(--sq));
-      grid-template-rows: repeat(8, var(--sq));
-      position: relative;
-      box-shadow: 0 6px 32px rgba(0,0,0,0.8);
-    }
-    .sq { width: var(--sq); height: var(--sq); position: relative; display: flex; align-items: center; justify-content: center; }
-    .sq.l { background: #f0d9b5; }
-    .sq.d { background: #b58863; }
-    .sq.selected   { background: #f6f669 !important; }
-    .sq.lastmove.l { background: #cdd26a; }
-    .sq.lastmove.d { background: #aaa23a; }
-    .sq.incheck    { background: rgba(210,35,35,0.62) !important; }
-    .sq.clickable  { cursor: pointer; }
-    .sq.hint::after   { content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:34%; height:34%; background:rgba(0,0,0,0.18); border-radius:50%; pointer-events:none; z-index:1; }
-    .sq.capture::before { content:""; position:absolute; inset:0; border-radius:50%; box-shadow:inset 0 0 0 4px rgba(0,0,0,0.22); pointer-events:none; z-index:1; }
-    .sq img { width:90%; height:90%; display:block; pointer-events:none; user-select:none; position:relative; z-index:2; }
-
-    /* ── Player bar ── */
-    .ch-player-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0c0c0c;
-      border: 1px solid rgba(255,255,255,0.055);
-      border-top: 1px solid rgba(255,255,255,0.03);
-      border-radius: 0 0 8px 8px;
-      padding: 10px 14px;
-      width: calc(18px + 8 * var(--sq));
-      box-sizing: border-box;
-    }
-    .ch-pb-player { display: flex; align-items: center; gap: 10px; }
-    .ch-pb-piece { font-size: 18px; line-height: 1; opacity: 0.45; }
-    .ch-pb-name {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
-      text-transform: uppercase; color: #3a3a3a; display: block;
-      transition: color .2s;
-    }
-    .ch-pb-player.active-turn .ch-pb-name { color: #aaa; }
-    .ch-pb-adv { font-size: 10px; color: #666; font-weight: 700; margin-left: 2px; }
-    .ch-pb-clock {
-      font-size: 20px; font-family: Georgia, serif;
-      color: #2a2a2a; min-width: 52px; text-align: center;
-      letter-spacing: 0.02em; transition: color .2s;
-    }
-    .ch-pb-clock.active { color: #e2ad35; }
-    .ch-pb-clock.low    { color: #ff4f4f !important; }
-    .ch-pb-clock.running { color: #888; }
-
-    /* ── Promo overlay ── */
-    #promoOverlay { display:none; position:absolute; inset:0; z-index:50; background:rgba(0,0,0,0.82); flex-direction:column; align-items:center; justify-content:center; gap:12px; }
-    #promoOverlay.active { display:flex; }
-    .ch-promo-label { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:#e2ad35; margin:0; }
-    .ch-promo-pieces { display:flex; gap:8px; }
-    .ch-promo-sq { width:calc(var(--sq)*1.1); height:calc(var(--sq)*1.1); display:flex; align-items:center; justify-content:center; background:#181818; border:1.5px solid rgba(191,125,8,0.4); border-radius:7px; cursor:pointer; transition:background .12s; }
-    .ch-promo-sq:hover { background:rgba(191,125,8,0.16); border-color:#e2ad35; }
-    .ch-promo-sq img { width:80%; height:80%; }
-
-    /* ── Right sidebar ── */
-    .ch-log-wrap { flex: 1; overflow-y: auto; max-height: 220px; scrollbar-width: thin; scrollbar-color: rgba(191,125,8,0.15) transparent; }
-    #moveLogTable { width:100%; border-collapse:collapse; }
-    #moveLogTable td { font-size:11px; color:#555; padding:2px 3px; }
-    #moveLogTable td:first-child { color:#282828; width:20px; text-align:right; font-size:10px; padding-right:5px; }
-    #moveLogTable tr:last-child td { color:#bbb; }
-
-    .ch-cap-block { display:flex; flex-direction:column; gap:5px; }
-    .ch-cap-row-w,.ch-cap-row-b { display:flex; flex-wrap:wrap; gap:1px; min-height:18px; align-items:center; }
-    .ch-cap-row-w img,.ch-cap-row-b img { width:16px; height:16px; opacity:0.7; }
-    .ch-cap-adv { font-size:10px; color:#666; font-weight:700; margin-left:3px; }
-
-    .ch-right-btns { display:flex; gap:7px; margin-top:auto; }
-    .ch-icon-btn {
-      flex:1; padding:8px 6px;
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.07);
-      border-radius:6px; color:#3a3a3a;
-      font-size:13px; cursor:pointer;
-      transition:all .13s; font-family:inherit; text-align:center;
-    }
-    .ch-icon-btn:hover { background:rgba(255,255,255,0.04); color:#777; border-color:rgba(255,255,255,0.14); }
-    .ch-icon-btn.ch-resign:hover { background:rgba(180,30,30,0.1); color:#ff7070; border-color:rgba(180,60,60,0.3); }
-
-    /* ── Modal ── */
-    .ch-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:300; align-items:center; justify-content:center; }
-    .ch-modal-bg.open { display:flex; }
-    .ch-modal {
-      background: #0b0b0b;
-      border: 1px solid rgba(191,125,8,0.35);
-      border-radius: 14px;
-      padding: 40px 48px 34px;
-      text-align: center;
-      max-width: 350px; width: 90%;
-      box-shadow: 0 0 0 1px rgba(191,125,8,0.08), 0 28px 80px rgba(0,0,0,0.95);
-    }
-    .ch-modal-eyebrow { font-size:8px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#333; margin:0 0 14px; }
-    .ch-modal-result { font-size:30px; font-family:Georgia,serif; color:#f0f0f0; margin:0 0 7px; letter-spacing:.02em; }
-    .ch-modal-reason { font-size:10px; color:#444; margin:0 0 26px; letter-spacing:.1em; text-transform:uppercase; }
-    .ch-modal-div { width:36px; height:1px; background:rgba(191,125,8,0.28); margin:0 auto 26px; }
-    .ch-modal-btns { display:flex; gap:9px; }
-    .ch-modal-btn { flex:1; padding:11px 14px; border-radius:7px; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; font-family:inherit; transition:all .14s; }
-    .ch-modal-btn.primary { background:rgba(191,125,8,0.13); border:1px solid rgba(191,125,8,0.45); color:#e2ad35; }
-    .ch-modal-btn.primary:hover { background:rgba(191,125,8,0.22); }
-    .ch-modal-btn.secondary { background:transparent; border:1px solid rgba(255,255,255,0.09); color:#444; }
-    .ch-modal-btn.secondary:hover { color:#777; border-color:rgba(255,255,255,0.18); }
-
-    /* Mockup-inspired forge table */
-    :root {
-      --sq: clamp(42px, 4.9vw, 61px);
-      --ch-gold: #c58a18;
-      --ch-gold-soft: #e0b04b;
-      --ch-panel: #0c0c0b;
-      --ch-line: rgba(197, 138, 24, 0.34);
-      --ch-text: #ede5d5;
-      --ch-muted: #9a8f7d;
-    }
-
-    .ch-arena {
-      grid-template-columns: minmax(210px, 234px) minmax(0, calc((8 * var(--sq)) + 56px)) minmax(248px, 276px);
-      gap: 20px;
-      align-items: stretch;
-      margin: 26px auto;
-      max-width: 1120px;
-      color: var(--ch-text);
-    }
-
-    .ch-panel,
-    .ch-board-stage,
-    .ch-side-card {
-      background:
-        radial-gradient(circle at 50% 0, rgba(255,255,255,0.035), transparent 42%),
-        linear-gradient(145deg, rgba(18,18,16,0.98), rgba(5,5,5,0.98));
-      border: 1px solid var(--ch-line);
-      box-shadow: inset 0 0 28px rgba(255,255,255,0.025), 0 16px 42px rgba(0,0,0,0.42);
-    }
-
-    .ch-panel {
-      min-height: 618px;
-      border-radius: 8px;
-      padding: 18px 16px;
-      gap: 20px;
-    }
-
-    #setupSection,
-    #gameInfoSection,
-    .ch-panel-section {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    #setupSection,
-    #gameInfoSection {
-      gap: 22px;
-    }
-
-    .ch-sect-lbl {
-      color: var(--ch-gold-soft);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: Georgia, serif;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      margin: 0;
-    }
-
-    .ch-sect-lbl::before {
-      content: attr(data-icon);
-      color: var(--ch-gold);
-      font-size: 18px;
-      line-height: 1;
-      letter-spacing: 0;
-      width: 20px;
-      text-align: center;
-    }
-
-    .ch-mode-row,
-    .ch-tc-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .ch-mode-btn,
-    .ch-tc-row,
-    .ch-start-btn,
-    .ch-history-btn,
-    .ch-icon-btn {
-      background: rgba(3,3,3,0.52);
-      border: 1px solid rgba(197,138,24,0.18);
-      border-radius: 6px;
-      color: var(--ch-muted);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-    }
-
-    .ch-mode-btn {
-      min-height: 45px;
-      padding: 0 14px;
-      text-align: left;
-      font-family: Georgia, serif;
-      font-size: 15px;
-      font-weight: 400;
-      letter-spacing: 0;
-      text-transform: none;
-    }
-
-    .ch-mode-btn.on,
-    .ch-tc-row.on {
-      background: rgba(197,138,24,0.08);
-      border-color: rgba(197,138,24,0.72);
-      color: var(--ch-gold-soft);
-    }
-
-    .ch-mode-btn.on::after,
-    .ch-tc-row.on::after {
-      content: "";
-      width: 5px;
-      height: 5px;
-      margin-left: auto;
-      border-radius: 50%;
-      background: var(--ch-gold-soft);
-      box-shadow: 0 0 8px rgba(224,176,75,0.55);
-    }
-
-    .ch-mode-btn,
-    .ch-tc-row {
-      display: flex;
-      align-items: center;
-    }
-
-    .ch-tc-row {
-      min-height: 44px;
-      padding: 0 13px;
-      gap: 0;
-    }
-
-    .ch-tc-dot { display: none; }
-    .ch-tc-name {
-      color: inherit;
-      font-family: Georgia, serif;
-      font-size: 15px;
-      font-weight: 400;
-      letter-spacing: 0;
-    }
-    .ch-tc-sub {
-      color: var(--ch-muted);
-      font-size: 13px;
-      margin-left: auto;
-    }
-
-    .ch-start-btn {
-      min-height: 56px;
-      margin-top: auto;
-      padding: 0 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--ch-gold-soft);
-      font-family: Georgia, serif;
-      font-size: 14px;
-      letter-spacing: 0.08em;
-    }
-
-    .ch-start-btn::after {
-      content: "›";
-      font-size: 26px;
-      line-height: 1;
-      font-weight: 400;
-    }
-
-    .ch-board-stage {
-      border-radius: 8px;
-      padding: 8px 8px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .ch-center {
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .ch-board-outer {
-      display: grid;
-      grid-template-columns: 18px minmax(0, calc(8 * var(--sq))) 18px;
-      grid-template-rows: 18px minmax(0, calc(8 * var(--sq))) 18px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .ch-files {
-      display: grid;
-      grid-template-columns: repeat(8, var(--sq));
-      padding: 0;
-      margin: 0;
-      grid-column: 2;
-      height: 18px;
-    }
-
-    .ch-files.top { grid-row: 1; }
-    .ch-files.bottom { grid-row: 3; }
-
-    .ch-ranks {
-      width: 18px;
-      height: calc(8 * var(--sq));
-      justify-content: stretch;
-      grid-row: 2;
-    }
-
-    .ch-ranks.left { grid-column: 1; }
-    .ch-ranks.right { grid-column: 3; }
-
-    .ch-board-wrap {
-      grid-column: 2;
-      grid-row: 2;
-      position: relative;
-    }
-
-    .ch-board-row { display: contents; }
-
-    .ch-ranks span,
-    .ch-files span {
-      color: var(--ch-gold-soft);
-      font-family: Georgia, serif;
-      font-size: 14px;
-    }
-
-    .ch-ranks span { height: var(--sq); }
-
-    #gameBoard {
-      border: 1px solid rgba(197,138,24,0.34);
-      box-shadow: 0 10px 34px rgba(0,0,0,0.7);
-    }
-
-    .sq.l { background: #cdbb9e; }
-    .sq.d { background: #252421; }
-
-    .sq img {
-      width: 84%;
-      height: 84%;
-      filter: drop-shadow(0 2px 1px rgba(0,0,0,0.72));
-    }
-
-    .ch-player-bar {
       width: 100%;
-      border: 1px solid rgba(197,138,24,0.2);
-      border-radius: 7px;
-      background: rgba(3,3,3,0.42);
-      padding: 9px 10px;
-      gap: 10px;
-    }
-
-    .ch-pb-player {
-      flex: 1;
-      min-width: 0;
-      border-radius: 7px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
-      padding: 10px 12px;
-    }
-
-    .ch-pb-piece {
-      width: 30px;
-      height: 30px;
-      display: inline-flex;
+      max-width: 100%;
+      overflow: hidden;
+      grid-template-columns: minmax(0, 190px) minmax(0, 68px) minmax(0, 1fr) minmax(0, 300px);
       align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      border: 1px solid rgba(197,138,24,0.18);
-      background: #e8ddca;
-      color: #111;
-      font-size: 0;
-      opacity: 1;
+      min-height: 210px;
+      padding: 20px 36px;
+
+      
+      background:
+        radial-gradient(circle at 18% 50%, rgba(184, 136, 26, 0.06), transparent 29%),
+        radial-gradient(circle at 54% 48%, rgba(255, 255, 255, 0.032), transparent 31%),
+        linear-gradient(135deg, #111 0%, #151515 45%, #0d0d0d 100%);
+      border: 1.5px solid rgba(191, 125, 8, 0.95);
+      border-radius: 20px;
+      box-shadow:
+        inset 0 0 0 1px rgba(184, 136, 26, 0.16),
+        inset 0 0 0 8px rgba(0, 0, 0, 0.16),
+        inset 0 0 40px rgba(255, 255, 255, 0.028),
+        0 8px 22px rgba(0, 0, 0, 0.56);
     }
 
-    #pbB .ch-pb-piece {
-      background: #020202;
-      border-color: rgba(197,138,24,0.34);
-    }
-
-    .ch-pb-name {
-      color: var(--ch-text);
-      font-family: Georgia, serif;
-      font-size: 13px;
-      letter-spacing: 0.08em;
-    }
-
-    .ch-pb-sub {
-      display: block;
-      color: var(--ch-muted);
-      font-family: Georgia, serif;
-      font-size: 13px;
-      letter-spacing: 0;
-      margin-top: 2px;
-      text-transform: none;
-    }
-
-    .ch-player-clock {
-      color: var(--ch-text);
-      font-family: Georgia, serif;
-      font-size: 17px;
-      min-width: 54px;
-      text-align: right;
-    }
-
-    .ch-vs {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      color: var(--ch-gold-soft);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      position: relative;
-    }
-
-    .ch-vs::before {
+    .ttt-hero::after {
       content: "";
       position: absolute;
-      inset: 4px;
-      border: 1px solid rgba(197,138,24,0.55);
-      transform: rotate(45deg);
-    }
-
-    .ch-cap-row-w[id^="capBy"],
-    .ch-cap-row-b[id^="capBy"],
-    .ch-pb-adv {
-      display: none;
-    }
-
-    .ch-right-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 618px;
-    }
-
-    .ch-side-card {
-      border-radius: 7px;
-      padding: 16px 14px 12px;
-    }
-
-    .ch-side-card.history {
-      flex: 1;
-      min-height: 292px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .ch-log-wrap {
-      max-height: none;
-      min-height: 210px;
-      flex: 1;
-      border: 1px solid rgba(255,255,255,0.035);
+      z-index: 0;
+      inset: 7px;
+      border: 1px solid rgba(191, 125, 8, 0.62);
+      border-radius: 14px;
       background:
-        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-        rgba(0,0,0,0.22);
-      background-size: 100% 36px;
-      padding: 8px;
+        linear-gradient(90deg, rgba(255,255,255,0.035), transparent 12%, transparent 88%, rgba(255,255,255,0.035)),
+        repeating-linear-gradient(105deg, rgba(255,255,255,0.016) 0 1px, transparent 1px 5px);
+      pointer-events: none;
     }
 
-    #moveLogTable td {
-      color: var(--ch-muted);
-      font-family: Georgia, serif;
-      font-size: 13px;
-      padding: 4px 5px;
+    .ttt-hero .game-hero-corner { display: none; }
+
+    /* min-width: 0 on every direct child so columns can truly shrink */
+    .ttt-hero > * {
+      position: relative;
+      z-index: 2;
+      min-width: 0;
     }
 
-    #moveLogTable td:first-child {
-      color: var(--ch-text);
-      font-size: 13px;
+    /* Emblem — place-self: center gives equal left/right spacing inside the column */
+    .ttt-hero .game-hero-emblem {
+      place-self: center;
+      width: 182px;
+      height: 182px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
+      margin: 0;
     }
 
-    #moveLogTable tr:last-child td { color: var(--ch-gold-soft); }
-
-    .ch-history-controls {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+    .ttt-hero .game-hero-emblem img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(184, 136, 26, 0.18));
     }
 
-    .ch-history-btn,
-    .ch-icon-btn {
-      min-height: 31px;
-      color: var(--ch-gold-soft);
-      font-size: 16px;
-      cursor: pointer;
+    /* Sep fills its column height */
+    .ttt-hero .game-hero-sep {
+      align-self: stretch;
+      width: 100%;
+      font-size: 22px;
+      color: var(--hero-gold-bright);
     }
 
-    .ch-history-btn:disabled {
-      opacity: 0.42;
-      cursor: default;
+    .ttt-hero .game-hero-sep::before,
+    .ttt-hero .game-hero-sep::after {
+      background: rgba(191, 125, 8, 0.86);
     }
 
-    .ch-cap-block {
-      gap: 12px;
-      padding-top: 2px;
+    .ttt-hero .game-hero-sep::before { top: 24px; height: calc(50% - 36px); }
+    .ttt-hero .game-hero-sep::after  { bottom: 24px; height: calc(50% - 36px); }
+
+    /* Title — overflow: hidden prevents any bleed into adjacent columns */
+    .ttt-hero .game-hero-title {
+      overflow: hidden;
+      min-width: 0;
+      padding: 0 24px 4px;
+      container-type: inline-size;
     }
 
-    .ch-cap-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 28px;
+    .ttt-hero .game-hero-title h2 {
+      margin: 0 0 18px;
+      font-size: clamp(32px, 9cqi, 68px);
+      color: #f7f7f7;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 14px rgba(255,255,255,0.18);
+      overflow: hidden;
     }
 
-    .ch-cap-token {
-      width: 22px;
-      height: 22px;
+    .ttt-hero .game-hero-sub {
+      gap: 18px;
+      color: var(--hero-gold-bright);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+    }
+
+    .ttt-hero .game-hero-sub-line {
+      flex: 1;
+      max-width: 100px;
+      background: rgba(191, 125, 8, 0.95);
+      position: relative;
+    }
+
+    .ttt-hero .game-hero-sub-line::before,
+    .ttt-hero .game-hero-sub-line::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 5px;
+      height: 5px;
+      background: var(--hero-gold-bright);
       border-radius: 50%;
-      flex: 0 0 auto;
-      border: 1px solid rgba(197,138,24,0.2);
-      background: #e8ddca;
+      transform: translateY(-50%);
     }
 
-    .ch-cap-token.black { background: #020202; border-color: rgba(197,138,24,0.34); }
+    .ttt-hero .game-hero-sub-line::before { left: 0; }
+    .ttt-hero .game-hero-sub-line::after  { right: 0; }
 
-    .ch-cap-row-w,
-    .ch-cap-row-b { gap: 5px; }
-
-    .ch-cap-row-w img,
-    .ch-cap-row-b img {
-      width: 22px;
-      height: 22px;
-      opacity: 0.84;
-      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.7));
-    }
-
-    .ch-tools-card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .ch-right-btns {
+    /* Artifact — fills its column, never overflows */
+    .ttt-artifact {
+      align-self: center;
+      width: 100%;
+      min-height: 82px;
+      border: 1px solid rgba(191, 125, 8, 0.95);
+      border-radius: 8px;
+      color: #f7f7f7;
+      text-decoration: none;
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 9px;
-      margin-top: 0;
+      grid-template-columns: 40px 1fr;
+      align-items: center;
+      column-gap: 12px;
+      padding: 10px 20px;
+      position: relative;
+      background: rgba(8, 8, 8, 0.26);
+      box-shadow: inset 0 0 16px rgba(184, 136, 26, 0.04);
     }
 
-    .ch-icon-btn {
-      min-height: 53px;
+    .ttt-artifact::before,
+    .ttt-artifact::after,
+    .ttt-artifact-inner::before,
+    .ttt-artifact-inner::after {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: var(--hero-gold);
+      border-style: solid;
+      pointer-events: none;
+    }
+
+    .ttt-artifact::before       { top: 4px;    left: 4px;   border-width: 1px 0 0 1px; }
+    .ttt-artifact::after        { top: 4px;    right: 4px;  border-width: 1px 1px 0 0; }
+    .ttt-artifact-inner::before { bottom: 4px; left: 4px;   border-width: 0 0 1px 1px; }
+    .ttt-artifact-inner::after  { bottom: 4px; right: 4px;  border-width: 0 1px 1px 0; }
+
+    .ttt-artifact-icon {
+      width: 34px;
+      height: 34px;
+      color: var(--hero-gold-bright);
+    }
+
+    .ttt-artifact-inner {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .ttt-artifact-text {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .ttt-artifact-label {
+      color: var(--hero-gold-bright);
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .ttt-artifact-code {
+      color: #f7f7f7;
+      display: block;
+      font-size: 20px;
+      line-height: 1;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.65), 0 0 10px rgba(255,255,255,0.12);
+      white-space: nowrap;
+      overflow-wrap: anywhere;
+    }
+
+    .ttt-artifact:hover {
+      background: rgba(184, 136, 26, 0.08);
+      box-shadow: inset 0 0 20px rgba(184, 136, 26, 0.08), 0 0 16px rgba(184, 136, 26, 0.13);
+    }
+
+    .ph-card {
+      background: white;
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 36px 32px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .ph-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 10px;
+      margin: 0 auto 28px;
+      width: fit-content;
+      background: #111;
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .ph-cell {
+      width: 80px;
+      height: 80px;
+      background: #f4f4f4;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
       font-family: Georgia, serif;
-      font-size: 13px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: 36px;
+      font-weight: 700;
+      color: #111;
     }
 
-    .ch-icon-btn .tool-symbol {
-      font-size: 18px;
-      letter-spacing: 0;
-    }
+    .ph-cell.dim { color: #ccc; }
 
-    .ch-turn-val {
-      color: var(--ch-text);
-      font-size: 18px;
-    }
-
-    @media(max-width:1180px){
-      .ch-arena {
-        grid-template-columns: minmax(190px, 220px) minmax(0, calc((8 * var(--sq)) + 56px));
-      }
-      .ch-right-stack {
-        grid-column: 1 / -1;
-        min-height: 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-    }
-
-    @media(max-width:760px){
-      .ch-arena {
-        grid-template-columns: 1fr;
-        max-width: calc((8 * var(--sq)) + 36px);
-      }
-      .ch-panel,
-      .ch-board-stage,
-      .ch-right-stack {
-        width: 100%;
-        min-height: 0;
-      }
-      .ch-right-stack {
-        display: flex;
-      }
-      .ch-player-bar {
-        flex-wrap: wrap;
-      }
-      .ch-vs {
-        order: 3;
-        margin: 0 auto;
-      }
-    }
-
-    /* ── Responsive ── */
-    @media(max-width:920px){
-      .ch-arena { grid-template-columns:1fr; justify-items:center; }
-      .ch-panel { width:calc(18px + 8 * var(--sq)); flex-direction:row; flex-wrap:wrap; gap:12px; }
-      .ch-panel > * { flex:1; min-width:130px; }
-      .ch-start-btn,.ch-right-btns { flex:0 0 100%; }
-      .ch-log-wrap { max-height:100px; }
-    }
-    @media(max-width:520px){ :root{--sq:42px} .ch-pb-clock{font-size:16px;min-width:40px} }
-    @media(max-width:390px){ :root{--sq:36px} }
-    .ch-clock-row-hidden,
-    .ch-center > div[style*="justify-content:space-between"] { display: none !important; }
-
-    .ch-player-clock.ch-pb-clock {
-      color: var(--ch-text);
+    .ph-label {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+      margin: 0 0 10px;
       font-family: Georgia, serif;
-      font-size: 17px;
-      min-width: 54px;
-      text-align: right;
-      letter-spacing: 0.02em;
     }
 
-    .ch-player-clock.ch-pb-clock.active { color: var(--ch-gold-soft); }
-    .ch-player-clock.ch-pb-clock.low { color: #ff7063 !important; }
-
-    #pbB {
-      flex-direction: row !important;
+    .ph-sub {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.7;
+      margin: 0 0 24px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    #pbB > span { order: 3; }
-    #pbB > div:not(.ch-player-clock) {
-      order: 1;
-      text-align: left !important;
-    }
-    #pbB .ch-player-clock { order: 2; margin-left: auto; }
+    @media (max-width: 600px) {
+      .ph-card { padding: 28px 20px; }
 
-    @media(max-width:920px){
-      .ch-arena {
-        grid-template-columns: 1fr;
-        justify-items: stretch;
-        max-width: calc((8 * var(--sq)) + 42px);
+      .ph-grid { grid-template-columns: repeat(3, 64px); }
+
+      .ph-cell {
+        width: 64px;
+        height: 64px;
+        font-size: 28px;
       }
-      .ch-panel {
-        width: 100%;
-        flex-direction: column;
-        flex-wrap: nowrap;
+    }
+
+    /* ── ≤1300px: compact 4-column ─────────────────────────── */
+    @media (max-width: 1300px) {
+      .ttt-hero {
+        grid-template-columns: minmax(0, 152px) minmax(0, 52px) minmax(0, 1fr) minmax(0, 240px);
+        min-height: 186px;
+        padding: 18px 28px;
       }
-      .ch-panel > * { min-width: 0; }
-      .ch-right-stack {
-        width: 100%;
-        display: flex;
+
+      .ttt-hero .game-hero-emblem {
+        width: 148px;
+        height: 148px;
+      }
+
+      .ttt-hero .game-hero-sep { font-size: 18px; }
+      .ttt-hero .game-hero-sep::before { top: 20px; height: calc(50% - 30px); }
+      .ttt-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 30px); }
+
+      .ttt-hero .game-hero-title { padding: 0 16px 2px; }
+
+      .ttt-hero .game-hero-title h2 {
+        font-size: clamp(24px, 9cqi, 48px);
+        margin-bottom: 14px;
+      }
+
+      .ttt-hero .game-hero-sub { font-size: 12px; gap: 12px; }
+      .ttt-hero .game-hero-sub-line { max-width: 72px; }
+
+      .ttt-artifact { min-height: 68px; grid-template-columns: 32px 1fr; column-gap: 10px; }
+      .ttt-artifact-icon { width: 26px; height: 26px; }
+      .ttt-artifact-label { font-size: 11px; }
+      .ttt-artifact-code { font-size: 17px; }
+    }
+
+    /* ── ≤1200px: artifact moves below before the row gets crowded ── */
+    @media (max-width: 1200px) {
+      .ttt-hero {
+        grid-template-columns: minmax(0, 134px) minmax(0, 42px) minmax(0, 1fr);
+        grid-template-rows: auto auto;
         min-height: 0;
+        height: auto;
+        padding: 16px 20px;
+        align-items: center;
+        border-radius: 16px;
       }
-      .ch-log-wrap { max-height: none; }
+
+      .ttt-hero::after { inset: 5px; border-radius: 11px; }
+
+      .ttt-hero .game-hero-emblem {
+        width: 114px;
+        height: 114px;
+        grid-column: 1;
+        grid-row: 1;
+        place-self: center;
+      }
+
+      .ttt-hero .game-hero-sep {
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 16px;
+      }
+
+      .ttt-hero .game-hero-sep::before { top: 20px; height: calc(50% - 28px); }
+      .ttt-hero .game-hero-sep::after  { bottom: 20px; height: calc(50% - 28px); }
+
+      .ttt-hero .game-hero-title {
+        grid-column: 3;
+        grid-row: 1;
+        padding: 6px 0 8px;
+        text-align: center;
+      }
+
+      .ttt-hero .game-hero-title h2 {
+        font-size: clamp(22px, 9cqi, 46px);
+        margin-bottom: 10px;
+      }
+
+      .ttt-hero .game-hero-sub { font-size: 11px; gap: 10px; }
+      .ttt-hero .game-hero-sub-line { max-width: 56px; }
+
+      .ttt-artifact {
+        grid-column: 1 / 4;
+        grid-row: 2;
+        width: 100%;
+        min-height: 66px;
+        margin-top: 12px;
+        grid-template-columns: 36px 1fr;
+        column-gap: 10px;
+        padding: 10px 18px;
+      }
+
+      .ttt-artifact-icon { width: 30px; height: 30px; }
+      .ttt-artifact-label { font-size: 12px; margin-bottom: 5px; }
+      .ttt-artifact-code { font-size: 19px; }
     }
 
-    @media(max-width:520px){
-      :root { --sq: 34px; }
-      .ch-board-stage { padding: 6px; }
-      .ch-player-bar { gap: 6px; margin-top: 72px; padding: 8px; }
-      .ch-pb-player { padding: 9px 8px; }
-      .ch-vs { width: 30px; height: 30px; }
+    /* ── ≤560px: 2-column stack ─────────────────────────────── */
+    @media (max-width: 560px) {
+      .ttt-hero {
+        grid-template-columns: minmax(0, 76px) minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        padding: 14px 16px;
+        border-radius: 14px;
+      }
+
+      .ttt-hero .game-hero-emblem {
+        width: 76px;
+        height: 76px;
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .ttt-hero .game-hero-sep { display: none; }
+
+      .ttt-hero .game-hero-title {
+        grid-column: 2;
+        grid-row: 1;
+        padding: 0 0 8px;
+        text-align: center;
+      }
+
+      .ttt-hero .game-hero-title h2 {
+        font-size: clamp(16px, 9cqi, 30px);
+        margin-bottom: 8px;
+      }
+
+      .ttt-hero .game-hero-sub {
+        font-size: 9px;
+        gap: 8px;
+      }
+
+      .ttt-hero .game-hero-sub-line { max-width: 36px; }
+
+      .ttt-artifact {
+        grid-column: 1 / 3;
+        grid-row: 2;
+        width: 100%;
+        margin-top: 12px;
+        min-height: 58px;
+        grid-template-columns: 30px 1fr;
+        column-gap: 10px;
+        padding: 9px 14px;
+      }
+
+      .ttt-artifact-icon { width: 26px; height: 26px; }
+      .ttt-artifact-label { font-size: 10px; }
+      .ttt-artifact-code {
+        font-size: clamp(13px, 4vw, 17px);
+        line-height: 1.15;
+        white-space: normal;
+      }
     }
 
-    @media(max-width:390px){
-      :root { --sq: 31px; }
+    @media (max-width: 390px) {
+      .ttt-hero {
+        grid-template-columns: minmax(0, 60px) minmax(0, 1fr);
+        padding: 12px;
+      }
+
+      .ttt-hero .game-hero-emblem {
+        width: 60px;
+        height: 60px;
+      }
+
+      .ttt-hero .game-hero-title h2 {
+        font-size: 21px;
+      }
+
+      .ttt-hero .game-hero-sub {
+        font-size: 8px;
+        gap: 6px;
+      }
+
+      .ttt-hero .game-hero-sub-line {
+        max-width: 22px;
+      }
+
+      .ttt-artifact {
+        grid-template-columns: 26px minmax(0, 1fr);
+        padding: 9px 12px;
+      }
     }
+
+    /* ── Catalog art (from games/index.html) ── */
+    .ph-art { width: fit-content; margin: 0 auto 28px; background: #111; border-radius: 14px; padding: 10px; }
+    .feat-preview-frame { width: 230px; height: 230px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    /* ── TTT mini ── */
+    .cat-ttt { display: grid; grid-template-columns: repeat(3, 40px); gap: 6px; background: #111; border-radius: 10px; padding: 8px; border: 2px solid #2a2a2a; }
+    .cat-ttt-cell { width: 40px; height: 40px; background: #f4f4f4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: #111; }
+    .cat-ttt-cell.dim { color: #ccc; }
+
+    /* ── Connect Four mini ── */
+    .cat-cf { display: grid; grid-template-columns: repeat(7, 22px); gap: 4px; background: #1f6fab; border-radius: 8px; padding: 6px; }
+    .cat-cf-disc { width: 22px; height: 22px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+    .cat-cf-disc.r { background: #e63946; }
+    .cat-cf-disc.y { background: #f4d03f; }
+
+    /* ── Chess mini ── */
+    .cat-ch { display: inline-grid; grid-template-columns: repeat(8, 20px); gap: 0; border: 2px solid #1a1a1a; border-radius: 3px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+    .cat-ch-sq { width: 20px; height: 20px; }
+    .cat-ch-sq.light { background: #f0d9b5; }
+    .cat-ch-sq.dark  { background: #b58863; }
+
+    /* ── Battleship mini ── */
+    .cat-bt { display: grid; grid-template-columns: repeat(10, 14px); gap: 2px; background: #13578a; border-radius: 8px; padding: 5px; }
+    .cat-bt-cell { width: 14px; height: 14px; border-radius: 2px; background: rgba(255,255,255,0.05); }
+    .cat-bt-cell.ship { background: #6b7280; }
+    .cat-bt-cell.hit  { background: #dc2626; }
+    .cat-bt-cell.miss { background: #5aa0cc; }
+
+    /* ── Blackjack mini (3×2 card grid) ── */
+    .cat-bj2 { display: grid; grid-template-columns: repeat(3, 38px); gap: 5px; background: #1a1a1a; border-radius: 8px; padding: 4px; transform: scale(1.4); }
+    .cat-bj2-card { width: 38px; height: 56px; border-radius: 4px; border: 1px solid #ccc; background: white; box-shadow: 0 2px 5px rgba(0,0,0,.3); display: flex; flex-direction: column; justify-content: space-between; padding: 2px 3px; font-family: Georgia, serif; font-size: 10px; font-weight: 700; line-height: 1.2; box-sizing: border-box; }
+    .cat-bj2-card.fd { background: #1a3a6b; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 8px); border-color: #1a3a6b; }
+    .cat-bj2-card.r { color: #c0392b; }
+    .cat-bj2-card.b { color: #111; }
+    .cat-bj2-bot { transform: rotate(180deg); }
+
+    /* ── Snake mini ── */
+    .cat-sn { display: grid; grid-template-columns: repeat(12, 15px); gap: 2px; background: #111; border-radius: 8px; padding: 6px; border: 2px solid #2a2a2a; transform: scale(0.9); }
+    .cat-sn-cell { width: 15px; height: 15px; border-radius: 3px; background: #1e1e1e; }
+    .cat-sn-cell.body { background: #8a611c; }
+    .cat-sn-cell.head { background: #f0d39b; }
+    .cat-sn-cell.food { background: #e74c3c; border-radius: 50%; }
+
+    /* ── Breakout mini (5×6 brick grid) ── */
+    .cat-bk2 { display: inline-flex; flex-direction: column; background: #111; border: 2px solid #2a2a2a; border-radius: 8px; padding: 5px; transform: scale(1.5); }
+    .cat-bk2-bricks { display: grid; grid-template-columns: repeat(5, 20px); gap: 3px; }
+    .cat-bk2-brick { height: 9px; border-radius: 2px; }
+    .cat-bk2-brick.r0 { background: #e74c3c; }
+    .cat-bk2-brick.r1 { background: #e67e22; }
+    .cat-bk2-brick.r2 { background: #f1c40f; }
+    .cat-bk2-brick.r3 { background: #2ecc71; }
+    .cat-bk2-brick.r4 { background: #3498db; }
+    .cat-bk2-brick.r5 { background: #9b59b6; }
+    .cat-bk2-brick.dead { background: transparent; }
+    .cat-bk2-field { position: relative; width: 112px; height: 40px; margin-top: 5px; }
+    .cat-bk2-ball { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: white; box-shadow: 0 0 4px rgba(255,255,255,0.5); }
+    .cat-bk2-paddle { position: absolute; height: 6px; border-radius: 3px; background: #f0d39b; bottom: 0; }
+
+    /* ── Pong mini ── */
+    .cat-pong { position: relative; width: 130px; height: 110px; background: #111; border: 2px solid #2a2a2a; border-radius: 6px; overflow: hidden; box-sizing: border-box; transform: scale(1.5); }
+    .cat-pong-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.25) 0 6px, transparent 6px 12px); }
+    .cat-pong-paddle { position: absolute; width: 6px; height: 28px; background: #f0d39b; border-radius: 3px; }
+    .cat-pong-left  { left: 8px; top: 30px; }
+    .cat-pong-right { right: 8px; top: 52px; }
+    .cat-pong-ball { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; left: 62px; top: 48px; box-shadow: 0 0 6px rgba(255,255,255,0.6); }
+    .cat-pong-score { position: absolute; top: 6px; font-family: Georgia, serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.4); }
+    .cat-pong-score.left  { left: 38px; }
+    .cat-pong-score.right { right: 38px; }
+
+    /* ── All Games grid ── */
+    .games-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .game-card { background: white; border: 2px solid #000; border-radius: 14px; padding: 18px 16px; text-decoration: none; color: inherit; box-shadow: 0 4px 14px rgba(0,0,0,.08); transition: transform .18s, box-shadow .18s, border-color .18s; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+    .game-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.12); border-color: #8a611c; }
+    .game-icon { font-size: 34px; line-height: 1; }
+    .game-card h3 { margin: 0; font-size: 17px; color: #111; font-weight: 700; }
+
+    @media(max-width:1050px) { .games-grid { grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:700px)  { .games-grid { grid-template-columns: repeat(2,1fr); } .featured-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:400px)  { .games-grid { grid-template-columns: 1fr; } .featured-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
+
 <body>
 
-<div class="pa-page">
+  <div class="pa-page">
   <header class="pa-header">
     <a class="pa-brand" href="/" aria-label="PergamonAtlas home">
       <img class="pa-logo" src="/images/logo.png" alt="" width="245" height="240">
@@ -918,542 +649,63 @@
         </a>
       </nav>
     </aside>
-  <main class="main-content">
-    <div class="ph-shell">
 
-      <!-- Hero -->
-      <div class="game-hero ch-hero">
-        <span class="game-hero-corner tl"></span><span class="game-hero-corner tr"></span>
-        <span class="game-hero-corner bl"></span><span class="game-hero-corner br"></span>
-        <div class="game-hero-emblem"><img src="/operation/images/game-icon-transparent.png" alt=""></div>
-        <div class="game-hero-sep">&#10022;</div>
-        <div class="game-hero-title">
-          <h2>Chess Forge</h2>
-          <div class="game-hero-sub">
-            <span class="game-hero-sub-line"></span>
-            <span>Pergamon Games</span>
-            <span class="game-hero-sub-line"></span>
+    <main class="main-content">
+      <div class="ph-shell">
+
+        <div class="game-hero ttt-hero">
+          <span class="game-hero-corner tl"></span>
+          <span class="game-hero-corner tr"></span>
+          <span class="game-hero-corner bl"></span>
+          <span class="game-hero-corner br"></span>
+
+          <div class="game-hero-emblem">
+            <img src="/operation/images/game-icon-transparent.png" alt="">
           </div>
+
+          <div class="game-hero-sep">&#10022;</div>
+
+          <div class="game-hero-title">
+            <h2>Chess Forge</h2>
+            <div class="game-hero-sub">
+              <span class="game-hero-sub-line"></span>
+              <span>Pergamon Games</span>
+              <span class="game-hero-sub-line"></span>
+            </div>
+          </div>
+
         </div>
+
+        <div class="ph-card">
+          <div class="ph-art"><div class="feat-preview-frame">
+            <div class="cat-ch">
+                <!-- Row 0 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 1 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+                <!-- Row 2 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 3 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+                <!-- Row 4 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 5 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+                <!-- Row 6 --><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div>
+                <!-- Row 7 --><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div><div class="cat-ch-sq light"></div><div class="cat-ch-sq dark"></div>
+              </div>
+          </div></div>
+
+          <p class="ph-label">Coming Soon</p>
+          <p class="ph-sub">
+            This game is being rebuilt. Check back later, or play the original version in the archives.
+          </p>
+        </div>
+
       </div>
+    </main>
+  </div>
 
-      <!-- Arena -->
-      <div class="ch-arena">
-
-        <!-- LEFT PANEL -->
-        <div class="ch-panel" id="leftPanel">
-
-          <!-- Setup section -->
-          <div id="setupSection">
-            <div class="ch-panel-section">
-              <div class="ch-sect-lbl" data-icon="♞">Game Mode</div>
-              <div class="ch-mode-row">
-                <button class="ch-mode-btn on" id="tgLocal">Local</button>
-                <button class="ch-mode-btn"    id="tgComputer">Computer</button>
-              </div>
-            </div>
-
-            <div class="ch-panel-section" id="colorSect" style="display:none">
-              <div class="ch-sect-lbl" data-icon="♙">Play As</div>
-              <div class="ch-mode-row">
-                <button class="ch-mode-btn on" id="tgWhite">White</button>
-                <button class="ch-mode-btn"    id="tgBlack">Black</button>
-                <button class="ch-mode-btn"    id="tgRandom">Rand</button>
-              </div>
-            </div>
-
-            <div class="ch-panel-section" id="diffSect" style="display:none">
-              <div class="ch-sect-lbl" data-icon="♜">Difficulty</div>
-              <div class="ch-mode-row">
-                <button class="ch-mode-btn"    id="tgEasy">Easy</button>
-                <button class="ch-mode-btn on" id="tgMed">Med</button>
-                <button class="ch-mode-btn"    id="tgHard">Hard</button>
-              </div>
-            </div>
-
-            <div class="ch-panel-section">
-              <div class="ch-sect-lbl" data-icon="◴">Time Control</div>
-              <div class="ch-tc-list">
-                <div class="ch-tc-row"    id="tcBullet"><span class="ch-tc-dot"></span><span class="ch-tc-name">Bullet</span><span class="ch-tc-sub">1 min</span></div>
-                <div class="ch-tc-row on" id="tcBlitz" ><span class="ch-tc-dot"></span><span class="ch-tc-name">Blitz</span> <span class="ch-tc-sub">5 min</span></div>
-                <div class="ch-tc-row"    id="tcRapid" ><span class="ch-tc-dot"></span><span class="ch-tc-name">Rapid</span> <span class="ch-tc-sub">10 min</span></div>
-                <div class="ch-tc-row"    id="tcNone"  ><span class="ch-tc-dot"></span><span class="ch-tc-name">None</span>  <span class="ch-tc-sub">—</span></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Game-info section (hidden until game starts) -->
-          <div id="gameInfoSection" style="display:none">
-            <div>
-              <div class="ch-sect-lbl" data-icon="♔">Turn</div>
-              <div class="ch-turn-val" id="turnVal">—</div>
-            </div>
-            <div class="ch-alert-box" id="alertBox">Check!</div>
-            <div class="ch-thinking"  id="thinkingMsg">Computer is thinking…</div>
-          </div>
-
-          <button class="ch-start-btn" id="btnAction">Start Game</button>
-        </div>
-
-        <!-- CENTER: board + player bar -->
-        <div class="ch-board-stage">
-        <div class="ch-center">
-          <div class="ch-board-outer">
-            <div id="chFilesTop" class="ch-files top"></div>
-            <div class="ch-board-row">
-              <div id="chRanks" class="ch-ranks left"></div>
-              <div id="chRanksRight" class="ch-ranks right"></div>
-              <div class="ch-board-wrap">
-                <div id="gameBoard"></div>
-                <div id="promoOverlay">
-                  <p class="ch-promo-label">Promote to:</p>
-                  <div id="promoPieces" class="ch-promo-pieces"></div>
-                </div>
-              </div>
-            </div>
-            <div id="chFiles" class="ch-files bottom"></div>
-          </div>
-
-          <!-- Player bar -->
-          <div class="ch-player-bar">
-            <div class="ch-pb-player" id="pbW">
-              <span class="ch-pb-piece">♙</span>
-              <div>
-                <span class="ch-pb-name" id="nameW">WHITE</span>
-                <span class="ch-pb-sub">Player</span>
-                <div style="display:flex;align-items:center;gap:2px;margin-top:2px">
-                  <div class="ch-cap-row-w" id="capByWhite" style="min-height:0"></div>
-                  <span class="ch-pb-adv" id="advW"></span>
-                </div>
-              </div>
-              <div class="ch-player-clock ch-pb-clock" id="clockW">—</div>
-            </div>
-            <div class="ch-vs">VS</div>
-            <div class="ch-pb-player" id="pbB" style="flex-direction:row-reverse">
-              <span class="ch-pb-piece">♟</span>
-              <div style="text-align:right">
-                <span class="ch-pb-name" id="nameB">BLACK</span>
-                <span class="ch-pb-sub">Player</span>
-                <div style="display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:2px">
-                  <span class="ch-pb-adv" id="advB"></span>
-                  <div class="ch-cap-row-b" id="capByBlack" style="min-height:0"></div>
-                </div>
-              </div>
-              <div class="ch-player-clock ch-pb-clock" id="clockB">—</div>
-            </div>
-          </div>
-
-          <!-- Clocks row -->
-          <div style="display:flex;justify-content:space-between;padding:6px 14px 0;width:calc(18px + 8 * var(--sq));box-sizing:border-box;">
-            <div class="ch-pb-clock" id="clockWOld">—</div>
-            <div class="ch-pb-clock" id="clockBOld" style="text-align:right">—</div>
-          </div>
-        </div>
-        </div>
-
-        <!-- RIGHT PANEL -->
-        <div class="ch-right-stack" id="rightPanel">
-          <div class="ch-side-card history">
-            <div class="ch-sect-lbl" data-icon="♘">Move History</div>
-            <div class="ch-log-wrap">
-              <table id="moveLogTable"><tbody></tbody></table>
-            </div>
-            <div class="ch-history-controls" aria-label="Move history controls">
-              <button class="ch-history-btn" type="button" title="First move">|‹</button>
-              <button class="ch-history-btn" type="button" title="Previous move">‹</button>
-              <button class="ch-history-btn" type="button" title="Next move" disabled>›</button>
-              <button class="ch-history-btn" type="button" title="Last move">›|</button>
-            </div>
-          </div>
-
-          <div class="ch-side-card">
-            <div class="ch-sect-lbl" data-icon="⚔">Captured Pieces</div>
-            <div class="ch-cap-block">
-              <div class="ch-cap-line">
-                <span class="ch-cap-token black"></span>
-                <div class="ch-cap-row-w" id="capW"></div>
-              </div>
-              <div class="ch-cap-line">
-                <span class="ch-cap-token"></span>
-                <div class="ch-cap-row-b" id="capB"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="ch-side-card ch-tools-card">
-            <div class="ch-sect-lbl" data-icon="⚒">Tools</div>
-            <div class="ch-right-btns">
-              <button class="ch-icon-btn" id="btnFlip" title="Flip Board"><span class="tool-symbol">&#8644;</span> Flip Board</button>
-              <button class="ch-icon-btn ch-resign" id="btnResign" title="Resign"><span class="tool-symbol">&#9873;</span> Resign</button>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- .ch-arena -->
-    </div><!-- .ph-shell -->
-  </main>
-</div>
-
-<div id="footer-placeholder"></div>
+  <div id="footer-placeholder"></div>
 </div>
 <script src="/operation/scripts/atlas.js"></script>
 
 
-
-<!-- Game over modal -->
-<div class="ch-modal-bg" id="gameOverModal">
-  <div class="ch-modal">
-    <p class="ch-modal-eyebrow">Game Over</p>
-    <p class="ch-modal-result" id="modalResult">—</p>
-    <p class="ch-modal-reason" id="modalReason">—</p>
-    <div class="ch-modal-div"></div>
-    <div class="ch-modal-btns">
-      <button class="ch-modal-btn primary"   id="btnRematch">Rematch</button>
-      <button class="ch-modal-btn secondary" id="btnNewModal">New Game</button>
-    </div>
-  </div>
-</div>
 <script>loadSnippets('Games');</script>
-
-<script>
-(function(){
-  const CDN='https://lichess1.org/assets/piece/cburnett/';
-
-  const INIT=[
-    ['bR','bN','bB','bQ','bK','bB','bN','bR'],
-    ['bP','bP','bP','bP','bP','bP','bP','bP'],
-    [null,null,null,null,null,null,null,null],
-    [null,null,null,null,null,null,null,null],
-    [null,null,null,null,null,null,null,null],
-    [null,null,null,null,null,null,null,null],
-    ['wP','wP','wP','wP','wP','wP','wP','wP'],
-    ['wR','wN','wB','wQ','wK','wB','wN','wR'],
-  ];
-
-  function cloneBoard(b){return b.map(r=>[...r]);}
-  function opp(c){return c==='w'?'b':'w';}
-  function onBoard(r,c){return r>=0&&r<8&&c>=0&&c<8;}
-  function col(p){return p?p[0]:null;}
-
-  function pseudoMoves(board,r,c,ep,cast){
-    const p=board[r][c];if(!p)return[];
-    const clr=p[0],type=p[1],en=opp(clr),res=[];
-    function add(tr,tc,x){res.push(Object.assign({from:[r,c],to:[tr,tc]},x));}
-    function ray(dr,dc){let tr=r+dr,tc=c+dc;while(onBoard(tr,tc)){if(board[tr][tc]){if(col(board[tr][tc])===en)add(tr,tc);break;}add(tr,tc);tr+=dr;tc+=dc;}}
-    if(type==='P'){
-      const d=clr==='w'?-1:1,sr=clr==='w'?6:1,pr=clr==='w'?0:7;
-      if(onBoard(r+d,c)&&!board[r+d][c]){if(r+d===pr)['Q','R','B','N'].forEach(prom=>add(r+d,c,{prom}));else{add(r+d,c);if(r===sr&&!board[r+2*d][c])add(r+2*d,c,{dp:true});}}
-      for(const dc of[-1,1]){const tr=r+d,tc=c+dc;if(!onBoard(tr,tc))continue;if(col(board[tr][tc])===en){if(tr===pr)['Q','R','B','N'].forEach(prom=>add(tr,tc,{prom}));else add(tr,tc);}if(ep&&ep[0]===tr&&ep[1]===tc)add(tr,tc,{ep:true});}
-    }else if(type==='N'){[[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([dr,dc])=>{const tr=r+dr,tc=c+dc;if(onBoard(tr,tc)&&col(board[tr][tc])!==clr)add(tr,tc);});}
-    else if(type==='B'){[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dr,dc])=>ray(dr,dc));}
-    else if(type==='R'){[[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc])=>ray(dr,dc));}
-    else if(type==='Q'){[[-1,-1],[-1,1],[1,-1],[1,1],[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc])=>ray(dr,dc));}
-    else if(type==='K'){
-      [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]].forEach(([dr,dc])=>{const tr=r+dr,tc=c+dc;if(onBoard(tr,tc)&&col(board[tr][tc])!==clr)add(tr,tc);});
-      const kr=clr==='w'?7:0;
-      if(r===kr&&c===4){if(cast[clr+'K']&&!board[kr][5]&&!board[kr][6])add(kr,6,{castle:'K'});if(cast[clr+'Q']&&!board[kr][3]&&!board[kr][2]&&!board[kr][1])add(kr,2,{castle:'Q'});}
-    }
-    return res;
-  }
-
-  function inCheck(board,clr){
-    let kr=-1,kc=-1;
-    outer:for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(board[r][c]===clr+'K'){kr=r;kc=c;break outer;}
-    if(kr===-1)return false;
-    const d={wK:false,wQ:false,bK:false,bQ:false};
-    for(let r=0;r<8;r++)for(let c=0;c<8;c++){if(!board[r][c]||col(board[r][c])!==opp(clr))continue;if(pseudoMoves(board,r,c,null,d).some(m=>m.to[0]===kr&&m.to[1]===kc))return true;}
-    return false;
-  }
-
-  function applyMove(st,mv){
-    const b=cloneBoard(st.board);
-    const[fr,fc]=mv.from,[tr,tc]=mv.to,pc=b[fr][fc];
-    b[tr][tc]=mv.prom?st.turn+mv.prom:pc;b[fr][fc]=null;
-    if(mv.ep)b[st.turn==='w'?tr+1:tr-1][tc]=null;
-    if(mv.castle){const rfc=mv.castle==='K'?7:0,rtc=mv.castle==='K'?5:3;b[tr][rtc]=b[tr][rfc];b[tr][rfc]=null;}
-    const cast=Object.assign({},st.castling);
-    if(pc==='wK')cast.wK=cast.wQ=false;if(pc==='bK')cast.bK=cast.bQ=false;
-    if(pc==='wR'){if(fr===7&&fc===7)cast.wK=false;if(fr===7&&fc===0)cast.wQ=false;}
-    if(pc==='bR'){if(fr===0&&fc===7)cast.bK=false;if(fr===0&&fc===0)cast.bQ=false;}
-    if(tr===7&&tc===7)cast.wK=false;if(tr===7&&tc===0)cast.wQ=false;
-    if(tr===0&&tc===7)cast.bK=false;if(tr===0&&tc===0)cast.bQ=false;
-    return{board:b,turn:opp(st.turn),castling:cast,enPassant:mv.dp?[st.turn==='w'?fr-1:fr+1,fc]:null};
-  }
-
-  function legalMoves(st,r,c){
-    const pc=st.board[r][c];if(!pc||pc[0]!==st.turn)return[];
-    return pseudoMoves(st.board,r,c,st.enPassant,st.castling).filter(mv=>{
-      if(mv.castle){if(inCheck(st.board,st.turn))return false;const b2=cloneBoard(st.board),p2=mv.castle==='K'?5:3;b2[r][p2]=b2[r][4];b2[r][4]=null;if(inCheck(b2,st.turn))return false;}
-      return!inCheck(applyMove(st,mv).board,st.turn);
-    });
-  }
-  function allLegalMoves(st){const m=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(st.board[r][c]&&st.board[r][c][0]===st.turn)m.push(...legalMoves(st,r,c));return m;}
-
-  const VAL={P:100,N:320,B:330,R:500,Q:900,K:0};
-  const PST={
-    P:[[0,0,0,0,0,0,0,0],[50,50,50,50,50,50,50,50],[10,10,20,30,30,20,10,10],[5,5,10,25,25,10,5,5],[0,0,0,20,20,0,0,0],[5,-5,-10,0,0,-10,-5,5],[5,10,10,-20,-20,10,10,5],[0,0,0,0,0,0,0,0]],
-    N:[[-50,-40,-30,-30,-30,-30,-40,-50],[-40,-20,0,0,0,0,-20,-40],[-30,0,10,15,15,10,0,-30],[-30,5,15,20,20,15,5,-30],[-30,0,15,20,20,15,0,-30],[-30,5,10,15,15,10,5,-30],[-40,-20,0,5,5,0,-20,-40],[-50,-40,-30,-30,-30,-30,-40,-50]],
-    B:[[-20,-10,-10,-10,-10,-10,-10,-20],[-10,0,0,0,0,0,0,-10],[-10,0,5,10,10,5,0,-10],[-10,5,5,10,10,5,5,-10],[-10,0,10,10,10,10,0,-10],[-10,10,10,10,10,10,10,-10],[-10,5,0,0,0,0,5,-10],[-20,-10,-10,-10,-10,-10,-10,-20]],
-    R:[[0,0,0,0,0,0,0,0],[5,10,10,10,10,10,10,5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[-5,0,0,0,0,0,0,-5],[0,0,0,5,5,0,0,0]],
-    Q:[[-20,-10,-10,-5,-5,-10,-10,-20],[-10,0,0,0,0,0,0,-10],[-10,0,5,5,5,5,0,-10],[-5,0,5,5,5,5,0,-5],[0,0,5,5,5,5,0,-5],[-10,5,5,5,5,5,0,-10],[-10,0,5,0,0,0,0,-10],[-20,-10,-10,-5,-5,-10,-10,-20]],
-    K:[[-30,-40,-40,-50,-50,-40,-40,-30],[-30,-40,-40,-50,-50,-40,-40,-30],[-30,-40,-40,-50,-50,-40,-40,-30],[-30,-40,-40,-50,-50,-40,-40,-30],[-20,-30,-30,-40,-40,-30,-30,-20],[-10,-20,-20,-20,-20,-20,-20,-10],[20,20,0,0,0,0,20,20],[20,30,10,0,0,10,30,20]]
-  };
-
-  function evalBoard(board){let s=0;for(let r=0;r<8;r++)for(let c=0;c<8;c++){const p=board[r][c];if(!p)continue;const row=p[0]==='w'?r:7-r;s+=p[0]==='w'?VAL[p[1]]+PST[p[1]][row][c]:-(VAL[p[1]]+PST[p[1]][row][c]);}return s;}
-  function minimax(st,depth,alpha,beta,isMax){
-    const moves=allLegalMoves(st);
-    if(!moves.length)return inCheck(st.board,st.turn)?(isMax?-90000:90000):0;
-    if(!depth)return evalBoard(st.board);
-    if(isMax){let v=-Infinity;for(const m of moves){v=Math.max(v,minimax(applyMove(st,m),depth-1,alpha,beta,false));alpha=Math.max(alpha,v);if(beta<=alpha)break;}return v;}
-    else{let v=Infinity;for(const m of moves){v=Math.min(v,minimax(applyMove(st,m),depth-1,alpha,beta,true));beta=Math.min(beta,v);if(beta<=alpha)break;}return v;}
-  }
-  function bestMove(st,depth){
-    const moves=allLegalMoves(st);if(!moves.length)return null;
-    for(let i=moves.length-1;i>0;i--){const j=Math.random()*i|0;[moves[i],moves[j]]=[moves[j],moves[i]];}
-    let best=null,bv=st.turn==='w'?-Infinity:Infinity;const isMax=st.turn==='w';
-    for(const m of moves){const v=minimax(applyMove(st,m),depth-1,-Infinity,Infinity,!isMax);if(isMax?v>bv:v<bv){bv=v;best=m;}}
-    return best;
-  }
-
-  function toSAN(st,mv){
-    if(mv.castle)return mv.castle==='K'?'O-O':'O-O-O';
-    const[fr,fc]=mv.from,[tr,tc]=mv.to,pc=st.board[fr][fc],type=pc[1];
-    const isCapture=!!(st.board[tr][tc]||mv.ep);
-    const fch=c=>'abcdefgh'[c],rch=r=>String(8-r),toSq=fch(tc)+rch(tr);
-    let san='';
-    if(type==='P'){san=isCapture?fch(fc)+'x'+toSq:toSq;if(mv.prom)san+='='+mv.prom;}
-    else{
-      const ambig=[];
-      for(let r=0;r<8;r++)for(let c=0;c<8;c++){if(r===fr&&c===fc)continue;if(st.board[r][c]!==pc)continue;if(legalMoves(st,r,c).some(m=>m.to[0]===tr&&m.to[1]===tc))ambig.push([r,c]);}
-      san=type;
-      if(ambig.length){const sf=ambig.some(([,c])=>c===fc),sr=ambig.some(([r])=>r===fr);if(!sf)san+=fch(fc);else if(!sr)san+=rch(fr);else san+=fch(fc)+rch(fr);}
-      if(isCapture)san+='x';san+=toSq;
-    }
-    const nst=applyMove(st,mv);if(inCheck(nst.board,nst.turn))san+=allLegalMoves(nst).length===0?'#':'+';
-    return san;
-  }
-
-  // ── State ──
-  let setupMode='local',setupColor='w',setupDiff=2,setupTime=300,setupInc=0;
-  let state=null,mode=null,playerColor='w',difficulty=2,flipped=false;
-  let selSq=null,validMs=[],lastMv=null,over=false,promoActive=false;
-  let clocks={w:0,b:0},clockInc=0,clockInterval=null,clockStart=null,clockStartVal=null,clockActiveColor=null;
-  let captured={w:[],b:[]},moveHistory=[],gameStarted=false;
-
-  // ── Clocks ──
-  function fmtClock(s){if(s===null||s<0)return'0:00';const v=Math.ceil(s),m=Math.floor(v/60),ss=v%60;return m+':'+String(ss).padStart(2,'0');}
-
-  function startClockFor(color){
-    stopClock();if(setupTime===0)return;
-    clockActiveColor=color;clockStart=performance.now();clockStartVal=clocks[color];
-    clockInterval=setInterval(()=>{
-      if(over||!gameStarted){stopClock();return;}
-      const elapsed=(performance.now()-clockStart)/1000;
-      clocks[clockActiveColor]=Math.max(0,clockStartVal-elapsed);
-      renderClocks();
-      if(clocks[clockActiveColor]<=0){stopClock();endGame((opp(clockActiveColor)==='w'?'White':'Black')+' Wins','on time');}
-    },100);
-  }
-  function stopClock(){if(clockInterval){clearInterval(clockInterval);clockInterval=null;}}
-
-  function renderClocks(){
-    const wEl=document.getElementById('clockW'),bEl=document.getElementById('clockB');
-    if(!wEl||!bEl)return;
-    if(setupTime===0||!gameStarted){wEl.textContent='—';bEl.textContent='—';wEl.className='ch-player-clock ch-pb-clock';bEl.className='ch-player-clock ch-pb-clock';return;}
-    wEl.textContent=fmtClock(clocks.w);bEl.textContent=fmtClock(clocks.b);
-    const wActive=state.turn==='w'&&!over,bActive=state.turn==='b'&&!over;
-    wEl.className='ch-player-clock ch-pb-clock running'+(wActive?' active':'')+(clocks.w<20&&!over?' low':'');
-    bEl.className='ch-player-clock ch-pb-clock running'+(bActive?' active':'')+(clocks.b<20&&!over?' low':'');
-  }
-
-  // ── Player bar ──
-  function renderPlayerBar(){
-    const pbW=document.getElementById('pbW'),pbB=document.getElementById('pbB');
-    const nW=document.getElementById('nameW'),nB=document.getElementById('nameB');
-    if(!pbW||!pbB)return;
-    if(mode==='computer'){nW.textContent=playerColor==='w'?'YOU':'CPU';nB.textContent=playerColor==='b'?'YOU':'CPU';}
-    else{nW.textContent='WHITE';nB.textContent='BLACK';}
-    pbW.classList.toggle('active-turn',gameStarted&&!over&&state.turn==='w');
-    pbB.classList.toggle('active-turn',gameStarted&&!over&&state.turn==='b');
-  }
-
-  // ── Captured ──
-  function renderCaptured(){
-    paintCap('capByWhite',captured.w,captured.b);
-    paintCap('capByBlack',captured.b,captured.w);
-    paintCap('capW',captured.w,captured.b);
-    paintCap('capB',captured.b,captured.w);
-  }
-  function paintCap(elId,mine,theirs){
-    const el=document.getElementById(elId);if(!el)return;el.innerHTML='';
-    [...mine].sort((a,b)=>VAL[b[1]]-VAL[a[1]]).forEach(pc=>{const img=document.createElement('img');img.src=CDN+pc+'.svg';img.alt=pc;img.draggable=false;el.appendChild(img);});
-    const adv=mine.reduce((s,p)=>s+VAL[p[1]],0)-theirs.reduce((s,p)=>s+VAL[p[1]],0);
-    if(adv>0){const sp=document.createElement('span');sp.className='ch-cap-adv';sp.textContent='+'+adv;el.appendChild(sp);}
-  }
-  function renderAdvBadges(){
-    const wv=captured.w.reduce((s,p)=>s+VAL[p[1]],0),bv=captured.b.reduce((s,p)=>s+VAL[p[1]],0);
-    const aW=document.getElementById('advW'),aB=document.getElementById('advB');
-    if(aW)aW.textContent=wv>bv?'+'+(wv-bv):'';
-    if(aB)aB.textContent=bv>wv?'+'+(bv-wv):'';
-  }
-
-  // ── Move log ──
-  function renderLog(){
-    const tbody=document.querySelector('#moveLogTable tbody');if(!tbody)return;tbody.innerHTML='';
-    for(let i=0;i<moveHistory.length;i+=2){
-      const tr=document.createElement('tr');
-      const n=document.createElement('td');n.textContent=(i/2+1)+'.';
-      const w=document.createElement('td');w.textContent=moveHistory[i]||'';
-      const b=document.createElement('td');b.textContent=moveHistory[i+1]||'';
-      tr.append(n,w,b);tbody.appendChild(tr);
-    }
-    const wrap=document.querySelector('.ch-log-wrap');if(wrap)wrap.scrollTop=wrap.scrollHeight;
-  }
-
-  // ── Panel ──
-  function renderPanel(){
-    if(!gameStarted)return;
-    const tv=document.getElementById('turnVal'),ab=document.getElementById('alertBox');
-    if(over){if(tv)tv.textContent='Game over';if(ab)ab.classList.remove('on');return;}
-    if(tv){if(mode==='computer')tv.textContent=state.turn===playerColor?'Your turn':'Computer';else tv.textContent=(state.turn==='w'?'White':'Black')+"'s turn";}
-    if(ab)ab.classList.toggle('on',inCheck(state.board,state.turn));
-  }
-
-  // ── Board render ──
-  function renderBoard(){
-    const el=document.getElementById('gameBoard');if(!el)return;
-    el.innerHTML='';document.getElementById('promoOverlay').classList.remove('active');
-    let checkSq=null;
-    if(gameStarted&&inCheck(state.board,state.turn))for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(state.board[r][c]===state.turn+'K')checkSq=[r,c];
-    for(let ri=0;ri<8;ri++)for(let ci=0;ci<8;ci++){
-      const r=flipped?7-ri:ri,c=flipped?7-ci:ci;
-      const sq=document.createElement('div');sq.className='sq '+((r+c)%2===0?'l':'d');
-      if(gameStarted){
-        if(selSq&&selSq[0]===r&&selSq[1]===c)sq.classList.add('selected');
-        if(lastMv&&((lastMv.from[0]===r&&lastMv.from[1]===c)||(lastMv.to[0]===r&&lastMv.to[1]===c)))sq.classList.add('lastmove');
-        if(!promoActive&&validMs.some(m=>m.to[0]===r&&m.to[1]===c))sq.classList.add(state.board[r][c]?'capture':'hint');
-        if(checkSq&&checkSq[0]===r&&checkSq[1]===c)sq.classList.add('incheck');
-        sq.classList.add('clickable');sq.addEventListener('click',()=>onSqClick(r,c));
-      }
-      const pc=state.board[r][c];if(pc){const img=document.createElement('img');img.src=CDN+pc+'.svg';img.alt=pc;img.draggable=false;sq.appendChild(img);}
-      el.appendChild(sq);
-    }
-    renderCoords();
-  }
-  function renderCoords(){
-    const files='abcdefgh',ranks='87654321';
-    const fEl=document.getElementById('chFiles'),fTop=document.getElementById('chFilesTop'),rEl=document.getElementById('chRanks'),rRight=document.getElementById('chRanksRight');
-    if(!fEl||!rEl)return;fEl.innerHTML='';rEl.innerHTML='';
-    if(fTop)fTop.innerHTML='';
-    if(rRight)rRight.innerHTML='';
-    for(let i=0;i<8;i++){
-      const fileTxt=flipped?files[7-i]:files[i],rankTxt=flipped?ranks[7-i]:ranks[i];
-      const fs=document.createElement('span');fs.textContent=fileTxt.toUpperCase();fEl.appendChild(fs);
-      if(fTop){const fst=document.createElement('span');fst.textContent=fileTxt.toUpperCase();fTop.appendChild(fst);}
-      const rs=document.createElement('span');rs.textContent=rankTxt;rEl.appendChild(rs);
-      if(rRight){const rr=document.createElement('span');rr.textContent=rankTxt;rRight.appendChild(rr);}
-    }
-  }
-  function render(){renderBoard();renderPlayerBar();renderClocks();renderCaptured();renderAdvBadges();renderPanel();renderLog();}
-
-  // ── Input ──
-  function onSqClick(r,c){
-    if(!gameStarted||over||promoActive)return;
-    if(mode==='computer'&&state.turn!==playerColor)return;
-    if(selSq){
-      const here=validMs.filter(m=>m.to[0]===r&&m.to[1]===c);
-      if(here.length){if(here[0].prom!==undefined){showPromo(here.filter(m=>m.prom),state.turn);return;}doMove(here[0]);return;}
-    }
-    if(state.board[r][c]&&state.board[r][c][0]===state.turn){selSq=[r,c];validMs=legalMoves(state,r,c);renderBoard();}
-    else if(selSq){selSq=null;validMs=[];renderBoard();}
-  }
-
-  function showPromo(moves,clr){
-    promoActive=true;const overlay=document.getElementById('promoOverlay'),pieces=document.getElementById('promoPieces');pieces.innerHTML='';
-    ['Q','R','B','N'].forEach(type=>{
-      const btn=document.createElement('div');btn.className='ch-promo-sq';
-      const img=document.createElement('img');img.src=CDN+clr+type+'.svg';img.alt=type;img.draggable=false;btn.appendChild(img);
-      btn.addEventListener('click',()=>{const mv=moves.find(m=>m.prom===type);promoActive=false;selSq=null;validMs=[];doMove(mv);});
-      pieces.appendChild(btn);
-    });
-    overlay.classList.add('active');
-  }
-
-  function doMove(mv){
-    const mover=state.turn,san=toSAN(state,mv);
-    const[tr,tc]=mv.to;
-    if(state.board[tr][tc])captured[mover].push(state.board[tr][tc]);
-    if(mv.ep)captured[mover].push(opp(mover)+'P');
-    state=applyMove(state,mv);lastMv=mv;selSq=null;validMs=[];moveHistory.push(san);
-    if(clockInc>0&&setupTime>0)clocks[mover]+=clockInc;
-    if(mode==='local')flipped=state.turn==='b';
-    const moves=allLegalMoves(state);
-    if(!moves.length){render();if(inCheck(state.board,state.turn))endGame((opp(state.turn)==='w'?'White':'Black')+' Wins','by checkmate');else endGame('Draw','stalemate');return;}
-    render();startClockFor(state.turn);
-    if(mode==='computer'&&state.turn!==playerColor&&!over){document.getElementById('thinkingMsg').classList.add('on');setTimeout(doComputerMove,50);}
-  }
-
-  function doComputerMove(){document.getElementById('thinkingMsg').classList.remove('on');const mv=bestMove(state,difficulty);if(mv)doMove(mv);}
-
-  function endGame(result,reason){
-    over=true;gameStarted=false;stopClock();renderPlayerBar();renderClocks();
-    document.getElementById('modalResult').textContent=result;
-    document.getElementById('modalReason').textContent=reason;
-    document.getElementById('gameOverModal').classList.add('open');
-  }
-
-  function startGame(){
-    playerColor=setupMode==='computer'?(setupColor==='random'?(Math.random()<.5?'w':'b'):setupColor):'w';
-    mode=setupMode;difficulty=setupDiff;clockInc=setupInc;
-    flipped=mode==='computer'&&playerColor==='b';
-    state={board:INIT.map(r=>[...r]),turn:'w',castling:{wK:true,wQ:true,bK:true,bQ:true},enPassant:null};
-    selSq=null;validMs=[];lastMv=null;over=false;promoActive=false;
-    captured={w:[],b:[]};moveHistory=[];gameStarted=true;clocks={w:setupTime,b:setupTime};
-    document.getElementById('setupSection').style.display='none';
-    document.getElementById('gameInfoSection').style.display='';
-    document.getElementById('btnAction').textContent='New Game';
-    document.getElementById('gameOverModal').classList.remove('open');
-    document.getElementById('thinkingMsg').classList.remove('on');
-    render();startClockFor('w');
-    if(mode==='computer'&&state.turn!==playerColor){document.getElementById('thinkingMsg').classList.add('on');setTimeout(doComputerMove,300);}
-  }
-
-  function goToSetup(){
-    stopClock();over=true;gameStarted=false;
-    document.getElementById('gameOverModal').classList.remove('open');
-    document.getElementById('gameInfoSection').style.display='none';
-    document.getElementById('setupSection').style.display='';
-    document.getElementById('btnAction').textContent='Start Game';
-    state={board:INIT.map(r=>[...r]),turn:'w',castling:{wK:true,wQ:true,bK:true,bQ:true},enPassant:null};
-    flipped=false;lastMv=null;selSq=null;validMs=[];captured={w:[],b:[]};moveHistory=[];
-    renderBoard();renderPlayerBar();renderClocks();renderCaptured();renderAdvBadges();renderLog();
-  }
-
-  // ── Toggle wiring ──
-  function wireGroup(ids,cb){ids.forEach((id,i)=>{const el=document.getElementById(id);if(el)el.addEventListener('click',()=>{ids.forEach(j=>{const e=document.getElementById(j);if(e)e.classList.remove('on');});el.classList.add('on');cb(i);});});}
-
-  wireGroup(['tgLocal','tgComputer'],i=>{setupMode=i===0?'local':'computer';const show=i===1;['colorSect','diffSect'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=show?'':'none';});});
-  wireGroup(['tgWhite','tgBlack','tgRandom'],i=>{setupColor=['w','b','random'][i];});
-  wireGroup(['tgEasy','tgMed','tgHard'],i=>{setupDiff=[1,2,3][i];});
-
-  [['tcBullet',60,0],['tcBlitz',300,0],['tcRapid',600,0],['tcNone',0,0]].forEach(([id,t,inc])=>{
-    const el=document.getElementById(id);if(el)el.addEventListener('click',()=>{
-      ['tcBullet','tcBlitz','tcRapid','tcNone'].forEach(x=>{const e=document.getElementById(x);if(e)e.classList.remove('on');});
-      el.classList.add('on');setupTime=t;setupInc=inc;
-    });
-  });
-
-  document.getElementById('btnAction').addEventListener('click',()=>{if(!gameStarted)startGame();else goToSetup();});
-  document.getElementById('btnFlip').addEventListener('click',()=>{flipped=!flipped;render();});
-  document.getElementById('btnResign').addEventListener('click',()=>{if(!gameStarted||over)return;const rc=mode==='computer'?playerColor:state.turn;endGame((opp(rc)==='w'?'White':'Black')+' Wins','by resignation');});
-  document.getElementById('btnRematch').addEventListener('click',startGame);
-  document.getElementById('btnNewModal').addEventListener('click',goToSetup);
-
-  // Initial board display
-  state={board:INIT.map(r=>[...r]),turn:'w',castling:{wK:true,wQ:true,bK:true,bQ:true},enPassant:null};
-  renderBoard();
-})();
-</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/operation/scripts/auth/supabase-config.js"></script>
 <script src="/operation/scripts/auth/supabase.js"></script>
