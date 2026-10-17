@@ -1,0 +1,96 @@
+/* Site header. All selectors are scoped to pa-* to avoid collisions. */
+:root {
+  --pa-gold: #c99613;
+  --pa-gold-bright: #efbf3a;
+  --pa-background: #030809;
+  --pa-text: #f7f6f3;
+  --pa-font: Georgia, "Times New Roman", serif;
+}
+.pa-header, .pa-header * { box-sizing: border-box; }
+.pa-header {
+  width: 100%;
+  min-height: 172px;
+  padding: 24px 28px 24px 32px;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  background: radial-gradient(ellipse at 38% 100%, #0a1010 0, transparent 60%), var(--pa-background);
+  color: var(--pa-text);
+  font-family: var(--pa-font);
+}
+.pa-header a { color: inherit; text-decoration: none; }
+.pa-brand { display: flex; align-items: center; gap: 22px; flex-shrink: 0; }
+/* Logo is a transparent PNG (~1.63:1); height drives size, width follows. */
+.pa-logo { width: auto; height: 120px; display: block; }
+.pa-brand-name { font-size: clamp(30px, 2.7vw, 58px); font-weight: 700; letter-spacing: -1.8px; white-space: nowrap; }
+.pa-capsule {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2vw, 42px);
+  min-width: 0;
+  flex: 1;
+  border: 1.5px solid var(--pa-gold);
+  border-radius: 999px;
+  padding: 20px;
+}
+.pa-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: 1.2; }
+.pa-nav a {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 72px; padding: 12px clamp(14px, 1.7vw, 36px);
+  border: 1.5px solid transparent; border-radius: 999px;
+  font-size: clamp(20px, 1.45vw, 30px); font-weight: 700;
+}
+.pa-nav a[aria-current="page"] {
+  color: var(--pa-gold-bright); border-color: var(--pa-gold-bright);
+  background: radial-gradient(ellipse at center, #3c2c08 0%, #181506 75%);
+}
+.pa-nav a:hover { color: var(--pa-gold-bright); }
+.pa-search {
+  display: flex; align-items: center; gap: 22px; flex: 1; min-width: 160px;
+  height: 74px; padding: 0 24px; border: 1.5px solid #828584; border-radius: 999px;
+}
+.pa-search button { display: grid; place-items: center; flex: 0 0 32px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.pa-search svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.pa-search input { width: 100%; min-width: 0; border: 0; background: transparent; color: var(--pa-text); font: 26px Arial, sans-serif; }
+.pa-search input::placeholder { color: #929493; opacity: 1; }
+.pa-search input:focus { outline: none; }
+.pa-search:focus-within { outline: 2px solid var(--pa-gold-bright); outline-offset: 4px; }
+.pa-actions { display: flex; align-items: center; gap: 28px; padding: 0 12px 0 28px; border-left: 1.5px solid var(--pa-gold); }
+.pa-icon-link { display: grid; place-items: center; width: 52px; height: 62px; }
+.pa-icon-link svg { width: 48px; height: 48px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pa-profile, .pa-profile svg { width: 68px; height: 68px; }
+.pa-person { fill: currentColor; stroke: none; }
+.pa-header a:focus-visible, .pa-header button:focus-visible { outline: 2px solid var(--pa-gold-bright); outline-offset: 5px; }
+@media (max-width: 1600px) {
+  .pa-header { gap: 24px; padding: 18px 24px; min-height: 136px; }
+  .pa-brand { gap: 14px; }
+  .pa-logo { height: 88px; }
+  .pa-capsule { padding: 14px; gap: 20px; }
+  .pa-nav { gap: 4px; }
+  .pa-nav a { min-height: 58px; padding: 10px 18px; }
+  .pa-search { height: 60px; gap: 14px; padding: 0 18px; }
+  .pa-search input { font-size: 21px; }
+  .pa-actions { gap: 16px; padding-left: 20px; padding-right: 4px; }
+  .pa-profile, .pa-profile svg { width: 54px; height: 54px; }
+}
+@media (max-width: 1180px) {
+  .pa-header { flex-wrap: wrap; gap: 16px; }
+  .pa-brand-name { font-size: 38px; }
+  .pa-logo { height: 76px; }
+  .pa-capsule { flex-basis: 100%; }
+}
+@media (max-width: 650px) {
+  .pa-header { padding: 16px; }
+  .pa-brand { gap: 10px; }
+  .pa-brand-name { font-size: clamp(26px, 7.6vw, 38px); letter-spacing: -1px; }
+  .pa-logo { height: 56px; }
+  .pa-capsule { flex-wrap: wrap; border-radius: 28px; gap: 16px; padding: 12px; }
+  .pa-nav { flex-basis: 100%; gap: 0; }
+  .pa-nav a { font-size: 18px; min-height: 46px; padding: 8px 12px; }
+  .pa-search { min-width: 0; height: 48px; padding: 0 12px; gap: 10px; }
+  .pa-search input { font-size: 16px; }
+  .pa-search svg { width: 24px; height: 24px; }
+  .pa-search button { flex-basis: 24px; }
+  .pa-actions { gap: 8px; padding: 0 0 0 12px; }
+  .pa-icon-link, .pa-icon-link svg { width: 40px; height: 44px; }
+}
