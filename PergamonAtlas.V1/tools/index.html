@@ -387,14 +387,7 @@
     }
 
     /* ── Catalog definition ────────────────────────────────── */
-    var CATALOG = [
-      ['/tools/gpa-calculator',    '📘', 'Calculate grade point average across courses and credit hours.'],
-      ['/tools/scientific-calculator', '🔬', 'Perform advanced mathematical operations and trigonometric functions.'],
-      ['/tools/password-generator','🔑', 'Generate cryptographically strong passwords with custom length and rules.'],
-      ['/tools/color-picker',      '💠', 'Pick, convert, and copy colors across hex, RGB, and HSL formats.'],
-      ['/tools/random-number',     '🎲', 'Generate random integers or decimals within any specified range.'],
-      ['/tools/decision-spinner',  '🎡', 'Spin a probability wheel to resolve decisions and dilemmas by chance.'],
-    ];
+    var CATALOG = [];
 
     /* ── Build atlas address lookup ────────────────────────── */
     var atlasTools = (window.atlasEntries && window.atlasEntries.tools) || [];
@@ -469,17 +462,9 @@
         '<a href="' + path + '/" class="tc-card">' +
           '<div class="tc-top">' +
             '<div class="tc-icon-tile">' + icon + '</div>' +
-            '<button class="tc-seal" title="Open in Atlas Decoder"' +
-              ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/archives/atlas-decoder-archive-i/\'">' +
-              SEAL +
-            '</button>' +
           '</div>' +
           '<h3 class="tc-name">' + esc(name) + '</h3>' +
           '<p class="tc-desc">' + esc(desc) + '</p>' +
-          '<div class="tc-meta-row">' +
-            '<span class="tc-code">' + esc(artCode) + '</span>' +
-            '<span class="tc-addr">' + esc(fullAddr) + '</span>' +
-          '</div>' +
           '<div class="tc-divider"></div>' +
           '<div class="tc-foot">' +
             '<span class="tc-indexed">Indexed ' + esc(dated) + '</span>' +
@@ -502,6 +487,5 @@
 <script src="/operation/scripts/auth/atlas-visibility.js"></script>
 <script src="/data/pergamon-address.js"></script>
 <script src="/data/entries.js"></script>
-<script src="/data/atlas-reference.js"></script>
 </body>
 </html>

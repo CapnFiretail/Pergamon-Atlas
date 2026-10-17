@@ -585,3 +585,12 @@ body{
 .game-icon{
   margin-bottom:12px;
 }
+
+/* ── V1 phone catalog hero: emblem left, title centred, no subtitle ─────── */
+@media (max-width: 560px) {
+  .game-hero.catalog-hero { grid-template-columns: 76px minmax(0, 1fr) 76px; grid-template-rows: auto; }
+  .catalog-hero .game-hero-sep, .catalog-hero .game-hero-sub { display: none; }
+  .catalog-hero .game-hero-emblem { grid-column: 1; grid-row: 1; }
+  .catalog-hero .game-hero-title { grid-column: 2; grid-row: 1; padding: 0; text-align: center; }
+  .catalog-hero .game-hero-title h2 { margin: 0; }
+}

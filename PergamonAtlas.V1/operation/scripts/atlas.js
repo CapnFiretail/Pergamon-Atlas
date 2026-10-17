@@ -85,7 +85,6 @@ function loadSnippets(pageName) {
         else if (href === '/tools' && path.startsWith('/tools')) link.classList.add('active');
         else if (href === '/games' && path.startsWith('/games')) link.classList.add('active');
         else if (href === '/atlas-explorer/' && path.startsWith('/atlas-explorer')) link.classList.add('active');
-        else if (href === '/atlas-navigation/' && path.startsWith('/atlas-navigation')) link.classList.add('active');
         else if (href === '/lexicon/' && path.startsWith('/lexicon')) link.classList.add('active');
         else if (href === '/archives' && path.startsWith('/archives')) link.classList.add('active');
         else if (href === '/settings/' && path.startsWith('/settings')) link.classList.add('active');
