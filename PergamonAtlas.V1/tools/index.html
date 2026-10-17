@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="application/json" id="atlas-meta">
+{
+  "name": "Tools",
+  "date": "2026-09-02",
+  "time": "21:29:10",
+  "chamber": "PG",
+  "seed": 751231259,
+  "code_seed": 1788398950,
+  "visibility": "public",
+  "coords": {
+    "x": 16044106,
+    "y": 10073206,
+    "z": -7917741
+  },
+  "address": "5DASQ-PK835-28NU5"
+}
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4717716734064612" crossorigin="anonymous"></script>
+  <title>Pergamon Atlas | Tools</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/styles/legacy-frame.css">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <script src="/scripts/nav.js" defer></script>
+  <link rel="stylesheet" href="/operation/styles/main.css">
+  <link rel="stylesheet" href="/operation/styles/footer.css">
+  <style>
+
+    .main-content { background-color: #e8e2d5; }
+
+    /* ── Chapter breaks ──────────────────────────────────────── */
+
+    .tc-chapter {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 38px 0 11px;
+    }
+    .tc-chapter:first-child { margin-top: 0; }
+    .tc-chapter::before,
+    .tc-chapter::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(120,80,10,0.2);
+    }
+    .tc-chapter-label {
+      font-family: Georgia, serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(120,80,10,0.55);
+      white-space: nowrap;
+    }
+
+    /* ── List container ──────────────────────────────────────── */
+
+    #tc-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin-bottom: 60px;
+    }
+    .tc-chapter { grid-column: 1 / -1; }
+
+    /* ── Card ────────────────────────────────────────────────── */
+    /* One component, themed via [data-theme] on the #tc-list ancestor —
+       see the reference image (tool-card.png): a warm-ivory/gold "Light"
+       card and a charcoal/gold "Dark" card, same structure, same class
+       names. Light is the default/base styling (no ancestor selector
+       needed) so Public Pergamon — which never sets data-theme="dark" —
+       always renders it even before JS resolves appearance; Dark is an
+       override layered on top. Kept noticeably wider than tall (the
+       reference itself is closer to square) to fit this catalog's
+       existing 2-column grid. */
+
+    .tc-card {
+      display: flex;
+      flex-direction: column;
+      background: #fdfbf5;
+      border: 1.5px solid rgba(138,97,28,0.4);
+      border-radius: 18px;
+      text-decoration: none;
+      color: inherit;
+      padding: 22px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.04);
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s, background 0.18s;
+    }
+
+    .tc-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06), 0 14px 28px rgba(0,0,0,0.07);
+      border-color: #8a611c;
+    }
+
+    /* ── Top row: icon tile + seal ───────────────────────────── */
+
+    .tc-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .tc-icon-tile {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4ece0;
+      border-radius: 13px;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .tc-seal {
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: 1px solid rgba(138,97,28,0.35);
+      border-radius: 9px;
+      color: #8a611c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tc-seal svg { pointer-events: none; }
+    .tc-seal:hover {
+      background: rgba(138,97,28,0.1);
+      border-color: #8a611c;
+    }
+
+    /* ── Title / description ─────────────────────────────────── */
+
+    .tc-name {
+      margin: 0 0 8px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.2;
+    }
+
+    .tc-desc {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: #6b6b6b;
+      line-height: 1.6;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* ── Artifact Code / Atlas Address row ──────────────────── */
+
+    .tc-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+
+    .tc-code { color: #8a611c; font-weight: 700; }
+    .tc-addr { color: #9a9a9a; }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+
+    .tc-divider {
+      height: 1px;
+      background: rgba(0,0,0,0.08);
+      margin: 16px 0 14px;
+    }
+
+    /* ── Foot ────────────────────────────────────────────────── */
+
+    .tc-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .tc-indexed {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .tc-action {
+      font-family: Georgia, serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #8a611c;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Dark appearance (Admin View only — see PergamonVisibility.
+       currentAppearance()) ─────────────────────────────────────── */
+
+    #tc-list[data-theme="dark"] .tc-card {
+      background: linear-gradient(160deg, #201c16 0%, #14110c 100%);
+      border-color: rgba(224,179,74,0.55);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    #tc-list[data-theme="dark"] .tc-card:hover {
+      border-color: #e0b34a;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+    }
+    #tc-list[data-theme="dark"] .tc-icon-tile {
+      background: #171310;
+      color: #e0b34a;
+    }
+    #tc-list[data-theme="dark"] .tc-seal {
+      border-color: rgba(224,179,74,0.4);
+      color: #e0b34a;
+    }
+    #tc-list[data-theme="dark"] .tc-seal:hover {
+      background: rgba(224,179,74,0.12);
+      border-color: #e0b34a;
+    }
+    #tc-list[data-theme="dark"] .tc-name { color: #f5efe2; }
+    #tc-list[data-theme="dark"] .tc-desc { color: #a3a3a3; }
+    #tc-list[data-theme="dark"] .tc-addr { color: #8a8a8a; }
+    #tc-list[data-theme="dark"] .tc-code { color: #e0b34a; }
+    #tc-list[data-theme="dark"] .tc-divider { background: rgba(255,255,255,0.08); }
+    #tc-list[data-theme="dark"] .tc-indexed { color: #8a8a8a; }
+    #tc-list[data-theme="dark"] .tc-action {
+      color: #1a1512;
+      background: linear-gradient(135deg, #e0b34a, #c08a2a);
+      padding: 8px 16px;
+      border-radius: 999px;
+    }
+
+    /* ── Mobile ──────────────────────────────────────────────── */
+
+    @media (max-width: 900px) {
+      #tc-list { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .tc-card { padding: 18px 18px; }
+      .tc-icon-tile { width: 46px; height: 46px; font-size: 21px; }
+      .tc-name { font-size: 19px; }
+      .tc-action { font-size: 12px; }
+      .tc-chapter { margin: 28px 0 8px; }
+      .tc-chapter-label { font-size: 10px; }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="pa-page">
+  <header class="pa-header">
+    <a class="pa-brand" href="/" aria-label="PergamonAtlas home">
+      <img class="pa-logo" src="/images/logo.png" alt="" width="245" height="240">
+      <span class="pa-brand-name">PergamonAtlas</span>
+    </a>
+
+    <div class="pa-capsule">
+      <nav class="pa-nav" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/tools/" aria-current="page">Tools</a>
+        <a href="/games/">Games</a>
+        <a href="/atlas/">Atlas</a>
+      </nav>
+
+      <form class="pa-search" role="search" action="/search/" method="get">
+        <button type="submit" aria-label="Search">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="13.5" cy="13.5" r="10.5"/><path d="m21.5 21.5 8 8"/></svg>
+        </button>
+        <input type="search" name="q" placeholder="Search..." aria-label="Search PergamonAtlas">
+      </form>
+
+      <div class="pa-actions">
+        <a class="pa-icon-link" href="/notifications/" aria-label="Notifications">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 29c3-3 3-5 3-13a9 9 0 0 1 18 0c0 8 0 10 3 13z"/><path d="M17 33a3 3 0 0 0 6 0M18 6V5a2 2 0 0 1 4 0v1"/></svg>
+        </a>
+        <a class="pa-icon-link pa-profile" href="/account/" aria-label="Your account">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><circle class="pa-person" cx="24" cy="18" r="6"/><path class="pa-person" d="M14 36v-3a10 10 0 0 1 20 0v3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="pa-layout">
+    <aside class="pa-sidebar">
+      <button class="pa-sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-expanded="true">&lsaquo;</button>
+      <nav aria-label="Sidebar">
+        <a href="/">
+          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
+          <span class="pa-nav-label">Home</span>
+        </a>
+        <a href="/tools/" class="active" aria-current="page">
+          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
+          <span class="pa-nav-label">Tools</span>
+        </a>
+        <a href="/games/">
+          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01"/></svg></span>
+          <span class="pa-nav-label">Games</span>
+        </a>
+        <a href="/atlas/">
+          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg></span>
+          <span class="pa-nav-label">Atlas</span>
+        </a>
+        <a href="/help/" class="pa-nav-desktop">
+          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+          <span class="pa-nav-label">Help</span>
+        </a>
+        <a href="/suggestions/" class="pa-nav-desktop">
+          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 017 7c0 3-2 5-4 5H9c-2 0-4-2-4-5a7 7 0 017-7z"/></svg></span>
+          <span class="pa-nav-label">Suggestions</span>
+        </a>
+      </nav>
+    </aside>
+
+<main class="main-content">
+
+  <section class="game-hero catalog-hero">
+    <span class="game-hero-corner tl"></span>
+    <span class="game-hero-corner tr"></span>
+    <span class="game-hero-corner bl"></span>
+    <span class="game-hero-corner br"></span>
+    <div class="game-hero-emblem">
+      <img src="/operation/images/tool-icon.png" alt="">
+    </div>
+    <div class="game-hero-sep">&#10022;</div>
+    <div class="game-hero-title">
+      <h2>Tools</h2>
+      <div class="game-hero-sub">
+        <span class="game-hero-sub-line"></span>
+        <span>Pergamon Catalogs</span>
+        <span class="game-hero-sub-line"></span>
+      </div>
+    </div>
+    <div class="catalog-count">
+      <span class="catalog-count-inner"></span>
+      <span class="catalog-count-num">56</span>
+      <span class="catalog-count-label">Tools</span>
+    </div>
+  </section>
+
+  <div id="tc-list"></div>
+
+</main>
+</div>
+
+<div id="footer-placeholder"></div>
+</div>
+<script src="/operation/scripts/atlas.js"></script>
+
+
+<script>
+  loadSnippets('Tools');
+
+  // Deferred to DOMContentLoaded: the indexer clusters PergamonVisibility
+  // and entries.js in the late script block, after this tag, so this must
+  // not assume they're defined yet at the time this script tag runs.
+  document.addEventListener('DOMContentLoaded', async function () {
+
+    /* ── Archive seal SVG ──────────────────────────────────── */
+    var SEAL = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="6.5,0.5 12.5,3.7 12.5,9.3 6.5,12.5 0.5,9.3 0.5,3.7" stroke="currentColor" stroke-width="1.1" fill="none"/><circle cx="6.5" cy="6.5" r="1.8" fill="currentColor"/></svg>';
+
+    /* ── Chamber labels ────────────────────────────────────── */
+    var CHAMBERS = { TL: 'Tools Wing', GM: 'Games Wing', PG: 'Archive' };
+
+    /* ── Date formatter ────────────────────────────────────── */
+    var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function fmtDate(d) {
+      if (!d) return '';
+      var parts = d.split('-');
+      return MONTHS[parseInt(parts[1], 10) - 1] + ' ' + parseInt(parts[2], 10) + ', ' + parts[0];
+    }
+
+    /* ── Catalog definition ────────────────────────────────── */
+    var CATALOG = [
+      ['/tools/gpa-calculator',    '📘', 'Calculate grade point average across courses and credit hours.'],
+      ['/tools/scientific-calculator', '🔬', 'Perform advanced mathematical operations and trigonometric functions.'],
+      ['/tools/password-generator','🔑', 'Generate cryptographically strong passwords with custom length and rules.'],
+      ['/tools/color-picker',      '💠', 'Pick, convert, and copy colors across hex, RGB, and HSL formats.'],
+      ['/tools/random-number',     '🎲', 'Generate random integers or decimals within any specified range.'],
+      ['/tools/decision-spinner',  '🎡', 'Spin a probability wheel to resolve decisions and dilemmas by chance.'],
+    ];
+
+    /* ── Build atlas address lookup ────────────────────────── */
+    var atlasTools = (window.atlasEntries && window.atlasEntries.tools) || [];
+    var byPath = {};
+    atlasTools.forEach(function(t) { byPath[t.path] = t; });
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+
+    /* ── Visibility: the matching Atlas entry (entries.js) is the sole  ──
+       source of truth for whether a catalog item is publicly visible —
+       this CATALOG array intentionally carries no visibility of its own.
+       Resolved in parallel with Appearance below, so the grid is built
+       once, already themed correctly, with nothing to flash-correct.
+       Every function this calls (resolveState/fetchOverrides) already has
+       its own internal try/catch and never rejects — but this outer guard
+       is the backstop: VISIBILITY deciding whether cards exist must never
+       be able to also decide the catalog renders nothing on a genuine
+       failure. On any unexpected error, fall back to static visibility
+       (public-only, matching entries.js's own visibility field with no
+       override applied) rather than an empty catalog, and Light rather
+       than an unresolved theme — the same "fail toward showing less, but
+       still render" direction used elsewhere (footer Page Status, override
+       fetch itself). */
+    var visibleCatalog = CATALOG;
+    var theme = 'light';
+    if (window.PergamonVisibility) {
+      try {
+        var results = await Promise.all([
+          Promise.all(CATALOG.map(function (item) {
+            return window.PergamonVisibility.isVisibleInCurrentView(byPath[item[0]]);
+          })),
+          window.PergamonVisibility.currentAppearance()
+        ]);
+        var checks = results[0];
+        theme = results[1];
+        visibleCatalog = CATALOG.filter(function (_, i) { return checks[i]; });
+      } catch (err) {
+        console.error('Pergamon Tools: visibility/appearance resolution failed — falling back to static public visibility, Light', err);
+        visibleCatalog = CATALOG.filter(function (item) {
+          var e = byPath[item[0]];
+          return !!e && !e.archived && e.visibility === 'public';
+        });
+        theme = 'light';
+      }
+    }
+    var countEl = document.querySelector('.catalog-count-num');
+    if (countEl) countEl.textContent = String(visibleCatalog.length);
+
+    /* ── Render ────────────────────────────────────────────── */
+    var html = '';
+
+    visibleCatalog.forEach(function(item) {
+      var path  = item[0];
+      var icon  = item[1];
+      var desc  = item[2];
+      var entry = byPath[path] || {};
+
+      var fullAddr = entry.address ? 'ATLAS-' + entry.address : '';
+      var artCode  = (entry.code_seed && entry.seed)
+        ? (((entry.code_seed ^ entry.seed) >>> 0).toString(16).toUpperCase().padStart(8,'0') + '-' + (entry.address || '').split('-')[0])
+        : '';
+      var dated    = fmtDate(entry.date);
+      var name     = entry.name || path.split('/').pop().replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+
+      html +=
+        '<a href="' + path + '/" class="tc-card">' +
+          '<div class="tc-top">' +
+            '<div class="tc-icon-tile">' + icon + '</div>' +
+            '<button class="tc-seal" title="Open in Atlas Decoder"' +
+              ' onclick="event.preventDefault();event.stopPropagation();window.location.href=\'/archives/atlas-decoder-archive-i/\'">' +
+              SEAL +
+            '</button>' +
+          '</div>' +
+          '<h3 class="tc-name">' + esc(name) + '</h3>' +
+          '<p class="tc-desc">' + esc(desc) + '</p>' +
+          '<div class="tc-meta-row">' +
+            '<span class="tc-code">' + esc(artCode) + '</span>' +
+            '<span class="tc-addr">' + esc(fullAddr) + '</span>' +
+          '</div>' +
+          '<div class="tc-divider"></div>' +
+          '<div class="tc-foot">' +
+            '<span class="tc-indexed">Indexed ' + esc(dated) + '</span>' +
+            '<span class="tc-action">Open Artifact &#8594;</span>' +
+          '</div>' +
+        '</a>';
+    });
+
+    var listEl = document.getElementById('tc-list');
+    listEl.dataset.theme = theme;
+    listEl.innerHTML = html;
+
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/operation/scripts/auth/supabase.js"></script>
+<script src="/operation/scripts/auth/auth.js"></script>
+<script src="/operation/scripts/auth/permissions.js"></script>
+<script src="/operation/scripts/auth/atlas-visibility.js"></script>
+<script src="/data/pergamon-address.js"></script>
+<script src="/data/entries.js"></script>
+<script src="/data/atlas-reference.js"></script>
+</body>
+</html>

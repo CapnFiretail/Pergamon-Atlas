@@ -1,0 +1,37 @@
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3>Pergamon Atlas</h3>
+      <p>The Internet's Living Library</p>
+    </div>
+
+    <nav class="footer-links">
+      <a href="/">Home</a>
+      <a href="/tools">Tools</a>
+      <a href="/games">Games</a>
+      <a href="/lexicon/" data-visibility="admin" style="display:none">Lexicon</a>
+      <a href="/help">Help</a>
+      <a href="/suggestions">Suggestions</a>
+    </nav>
+  </div>
+
+  <!-- Page-level publish control. Requires ROLE=admin AND VIEW=admin — see
+       atlas-visibility.js. Publishing is a real trusted Supabase mutation
+       (atlas_visibility_overrides, RLS admin-only) — the button being
+       hidden/shown here is only ever a UX convenience, never the security
+       boundary. -->
+  <div class="footer-admin-panel" id="footer-admin-panel" data-admin-control="view" style="display:none">
+    <div class="footer-admin-panel-inner">
+      <div class="footer-admin-status">
+        <span class="footer-admin-label">Page Status</span>
+        <span class="footer-admin-value" id="footer-page-status">—</span>
+      </div>
+      <div class="footer-admin-action">
+        <span class="footer-publish-error" id="footer-publish-error" style="display:none"></span>
+        <button type="button" class="footer-publish-btn" id="footer-publish-btn">
+          Publish to Public
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
