@@ -1,0 +1,47 @@
+/* Homepage styling. Colours come from the --pa-* variables in header.css. */
+body { background: #030909; }
+.pa-header { border-bottom: 1px solid #453713; }
+.pa-main.home { background: #030909; color: var(--pa-text); font-family: Arial, sans-serif; }
+.home, .home * { box-sizing: border-box; }
+.home { max-width: 1500px; margin: 0 auto; padding: 30px 38px 40px; display: grid; grid-template-columns: 1.1fr 1fr; align-content: start; gap: 28px; }
+.home a { color: inherit; text-decoration: none; }
+.home a:focus-visible { outline: 2px solid var(--pa-gold-bright); outline-offset: 5px; }
+.home-welcome { min-width: 0; padding-right: 26px; border-right: 1px solid #68501d; }
+.eyebrow { margin: 20px 0 6px; color: var(--pa-gold-bright); font-size: 14px; letter-spacing: 5px; text-transform: uppercase; }
+.home h1 { margin: 0 0 58px; font: bold clamp(32px, 3.6vw, 56px)/1.1 var(--pa-font); letter-spacing: -1.5px; }
+.category-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.category-card, .stat, .feature-card { background: linear-gradient(125deg, #090e0e, #030909); border: 1px solid #63501e; border-radius: 9px; }
+.category-card { padding: 25px 8px 12px; min-height: 170px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.home-icon { width: 36px; height: 36px; color: var(--pa-gold-bright); flex-shrink: 0; }
+.category-card h2 { margin: 10px 0 8px; font: bold 17px var(--pa-font); }
+.category-card p { margin: 0 0 12px; font-size: 11px; line-height: 1.5; }
+.arrow { color: var(--pa-gold-bright); font-size: 25px; line-height: 1; }
+.category-card .arrow { margin-top: auto; }
+.home-features { min-width: 0; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.stat { display: flex; align-items: center; gap: 12px; min-height: 65px; padding: 12px 14px; border-color: #332c1c; }
+.stat .home-icon { width: 26px; height: 26px; }
+.stat > div { min-width: 0; }
+.stat strong { display: block; margin-bottom: 3px; font: bold 18px var(--pa-font); white-space: nowrap; }
+.stat span { display: block; color: #c7caca; font-size: 10px; }
+.section-title { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 22px 0 10px; }
+.section-title h2 { color: var(--pa-gold-bright); font: bold 20px var(--pa-font); margin: 0; }
+.section-title a { font: bold 12px var(--pa-font); color: var(--pa-gold-bright); }
+.featured-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.feature-card { display: flex; align-items: center; gap: 18px; min-height: 82px; padding: 16px 18px; }
+.feature-copy { flex: 1; min-width: 0; }
+.feature-card h3 { font: bold 15px var(--pa-font); margin: 0 0 5px; }
+.feature-card p { font-size: 11px; line-height: 1.45; margin: 0; color: #d5d8d8; }
+.feature-card .arrow { display: grid; place-items: center; width: 29px; height: 29px; flex-shrink: 0; border: 1px solid #8a6514; border-radius: 50%; font-size: 21px; }
+.featured-game h3 { font-size: 18px; }
+a.category-card:hover, a.feature-card:hover, a.stat:hover { border-color: var(--pa-gold-bright); background: #10140d; }
+.feature-card.is-unavailable { border-style: dashed; border-color: #3a3220; opacity: 0.7; }
+.home-tag { display: inline-block; margin-top: 8px; padding: 2px 8px; border: 1px solid var(--pa-gold); border-radius: 999px; color: var(--pa-gold-bright); font: bold 10px var(--pa-font); letter-spacing: 0.06em; text-transform: uppercase; }
+.category-card .home-tag { margin: 0 0 10px; }
+.home-tag.muted { border-color: #6b6b6b; color: #b5b5b5; }
+.home-empty { margin: 0; color: #c7caca; font-size: 13px; }
+.custom-image { object-fit: contain; }
+@media (min-width: 1600px) { .home { padding-top: 40px; gap: 36px; } .category-card { min-height: 200px; } }
+@media (max-width: 1050px) { .home { grid-template-columns: 1fr; max-width: 800px; padding: 24px; } .home-welcome { padding: 0 0 28px; border-right: 0; border-bottom: 1px solid #68501d; } .home h1 { margin-bottom: 30px; } }
+@media (max-width: 800px) { .pa-main.home { padding-bottom: 100px; } }
+@media (max-width: 550px) { .pa-main.home { padding: 20px 16px 100px; } .eyebrow { font-size: 11px; letter-spacing: 4px; } .home h1 { font-size: clamp(30px, 9vw, 44px); } .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stats { gap: 8px; } .stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; } .featured-tools { grid-template-columns: 1fr; } .category-card { min-height: 170px; } }

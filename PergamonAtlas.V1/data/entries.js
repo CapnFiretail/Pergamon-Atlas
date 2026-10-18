@@ -1,23 +1,17 @@
 window.atlasEntries = {
 
   tools: [
-    { path: "/tools/color-picker", name: "Color Picker", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 3614208741, code_seed: 1778368695, address: "BRQ22-Y7BEG-AP3Q2", coords: { x: -11343520, y: -14431287, z: 981202 }, visibility: "public" },
-    { path: "/tools/decision-spinner", name: "Decision Spinner", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 1095338156, code_seed: 1778368695, address: "R4CFX-8VQLH-NUBQT", coords: { x: -4695309, y: -5966326, z: 12654809 }, visibility: "public" },
-    { path: "/tools/gpa-calculator", name: "GPA Calculator", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 2634575661, code_seed: 1778368695, address: "VMRD3-D57KS-G9VF5", coords: { x: 7401023, y: 7387775, z: 6803891 }, visibility: "public" },
-    { path: "/tools/password-generator", name: "Password Generator", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 2014239385, code_seed: 1778368695, address: "389B5-FVD8U-VUEXC", coords: { x: 14298749, y: 1360029, z: -13561940 }, visibility: "public" },
-    { path: "/tools/random-number", name: "Random Number", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 2967955298, code_seed: 1778368695, address: "NTCFW-4GMJ8-XJ5J7", coords: { x: -7480588, y: -1154479, z: -10719211 }, visibility: "public" },
-    { path: "/tools/scientific-calculator", name: "Scientific Calculator", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 1071458015, code_seed: 1778368695, address: "CVQWV-ECAUK-5H6A6", coords: { x: -9639723, y: 806152, z: -4461290 }, visibility: "public" }
   ],
 
   games: [
-    { path: "/games/battleship", name: "Battleship", date: "2026-05-15", time: "13:01:22", chamber: "GM", seed: 951941000, code_seed: 1778368695, address: "SK5K2-BUDYX-539RL", coords: { x: 4308864, y: 5521820, z: -4923164 }, visibility: "public" },
-    { path: "/games/blackjack", name: "Blackjack", date: "2026-05-15", time: "15:42:59", chamber: "GM", seed: 3138158140, code_seed: 1778368695, address: "NT8DP-4NKXL-9PUGA", coords: { x: -7493077, y: -1349147, z: -76342 }, visibility: "public" },
-    { path: "/games/breakout", name: "Breakout", date: "2026-05-15", time: "16:32:06", chamber: "GM", seed: 3812616176, code_seed: 1778368695, address: "EELHC-Y52WY-K4Q3D", coords: { x: -16287066, y: -14635559, z: 9774635 }, visibility: "public" },
-    { path: "/games/chess-forge", name: "Chess Forge", date: "2026-05-15", time: "12:15:07", chamber: "GM", seed: 3473484087, code_seed: 1779725707, address: "7EG6D-T4XTJ-ZQQNL", coords: { x: 9914821, y: -11527833, z: -8444796 }, visibility: "public", description: "Play. Learn. Improve. A new way to experience chess on the Atlas." },
-    { path: "/games/connect-four", name: "Connect Four", date: "2026-05-15", time: "09:59:52", chamber: "GM", seed: 2573082004, code_seed: 1778368695, address: "9PFZV-57W9R-N8UN6", coords: { x: 11781301, y: -811870, z: 13063318 }, visibility: "public" },
-    { path: "/games/pong", name: "Pong", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3023794553, code_seed: 1778368695, address: "HWENM-VQPA2-UMHX7", coords: { x: -12631091, y: -8750249, z: -13794379 }, visibility: "public" },
-    { path: "/games/snake", name: "Snake", date: "2026-05-15", time: "16:11:02", chamber: "GM", seed: 765424020, code_seed: 1778368695, address: "MQ5Y2-ZHGKG-J42WL", coords: { x: -901984, y: -12659095, z: 8748932 }, visibility: "public" },
-    { path: "/games/tic-tac-toe", name: "Tic Tac Toe", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 825708783, code_seed: 1778368695, address: "BX8X3-YYGQS-MPULE", coords: { x: -10508033, y: -14264673, z: 12506190 }, visibility: "public" }
+    { path: "/games/battleship", name: "Battleship", date: "2026-05-15", time: "13:01:22", chamber: "GM", seed: 951941000, code_seed: 1778368695, address: "SK5K2-BUDYX-539RL", coords: { x: 4308864, y: 5521820, z: -4923164 }, visibility: "public", status: "coming-soon" },
+    { path: "/games/blackjack", name: "Blackjack", date: "2026-05-15", time: "15:42:59", chamber: "GM", seed: 3138158140, code_seed: 1778368695, address: "NT8DP-4NKXL-9PUGA", coords: { x: -7493077, y: -1349147, z: -76342 }, visibility: "public", status: "coming-soon" },
+    { path: "/games/breakout", name: "Breakout", date: "2026-05-15", time: "16:32:06", chamber: "GM", seed: 3812616176, code_seed: 1778368695, address: "EELHC-Y52WY-K4Q3D", coords: { x: -16287066, y: -14635559, z: 9774635 }, visibility: "public", status: "coming-soon" },
+    { path: "/games/chess-forge", name: "Chess Forge", date: "2026-05-15", time: "12:15:07", chamber: "GM", seed: 3473484087, code_seed: 1779725707, address: "7EG6D-T4XTJ-ZQQNL", coords: { x: 9914821, y: -11527833, z: -8444796 }, visibility: "public", description: "Play. Learn. Improve. A new way to experience chess on the Atlas.", status: "coming-soon" },
+    { path: "/games/connect-four", name: "Connect Four", date: "2026-05-15", time: "09:59:52", chamber: "GM", seed: 2573082004, code_seed: 1778368695, address: "9PFZV-57W9R-N8UN6", coords: { x: 11781301, y: -811870, z: 13063318 }, visibility: "public", status: "coming-soon" },
+    { path: "/games/pong", name: "Pong", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3023794553, code_seed: 1778368695, address: "HWENM-VQPA2-UMHX7", coords: { x: -12631091, y: -8750249, z: -13794379 }, visibility: "public", status: "coming-soon" },
+    { path: "/games/snake", name: "Snake", date: "2026-05-15", time: "16:11:02", chamber: "GM", seed: 765424020, code_seed: 1778368695, address: "MQ5Y2-ZHGKG-J42WL", coords: { x: -901984, y: -12659095, z: 8748932 }, visibility: "public", status: "coming-soon" },
+    { path: "/games/tic-tac-toe", name: "Tic Tac Toe", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 825708783, code_seed: 1778368695, address: "BX8X3-YYGQS-MPULE", coords: { x: -10508033, y: -14264673, z: 12506190 }, visibility: "public", status: "coming-soon" }
   ],
 
   pages: [
@@ -35,6 +29,12 @@ window.atlasEntries = {
   ],
 
   archived: [
+    { path: "/tools/color-picker", name: "Color Picker", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 3614208741, code_seed: 1778368695, address: "BRQ22-Y7BEG-AP3Q2", coords: { x: -11343520, y: -14431287, z: 981202 }, visibility: "public", archived: true, archive_date: "2026-10-17" },
+    { path: "/tools/decision-spinner", name: "Decision Spinner", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 1095338156, code_seed: 1778368695, address: "R4CFX-8VQLH-NUBQT", coords: { x: -4695309, y: -5966326, z: 12654809 }, visibility: "public", archived: true, archive_date: "2026-10-17" },
+    { path: "/tools/gpa-calculator", name: "GPA Calculator", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 2634575661, code_seed: 1778368695, address: "VMRD3-D57KS-G9VF5", coords: { x: 7401023, y: 7387775, z: 6803891 }, visibility: "public", archived: true, archive_date: "2026-10-17" },
+    { path: "/tools/password-generator", name: "Password Generator", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 2014239385, code_seed: 1778368695, address: "389B5-FVD8U-VUEXC", coords: { x: 14298749, y: 1360029, z: -13561940 }, visibility: "public", archived: true, archive_date: "2026-10-17" },
+    { path: "/tools/random-number", name: "Random Number", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 2967955298, code_seed: 1778368695, address: "NTCFW-4GMJ8-XJ5J7", coords: { x: -7480588, y: -1154479, z: -10719211 }, visibility: "public", archived: true, archive_date: "2026-10-17" },
+    { path: "/tools/scientific-calculator", name: "Scientific Calculator", date: "2026-04-18", time: "19:29:24", chamber: "TL", seed: 1071458015, code_seed: 1778368695, address: "CVQWV-ECAUK-5H6A6", coords: { x: -9639723, y: 806152, z: -4461290 }, visibility: "public", archived: true, archive_date: "2026-10-17" },
     { path: "/archives/chess-forge-prototype", name: "Chess Forge (Prototype)", date: "2026-05-09", time: "21:18:17", chamber: "PG", seed: 1751972086, code_seed: 1778375897, address: "XAQUZ-HB6VJ-MYJWG", coords: { x: 1402897, y: 4046119, z: 11747216 }, visibility: "public", archived: true, archive_date: "2026-04-17" },
     { path: "/archives/chess-forge-archive-i", name: "Chess Forge (Archive I)", date: "2026-04-18", time: "19:29:24", chamber: "GM", seed: 3303241631, code_seed: 1778368695, address: "GX7LL-XMMCZ-B6QC7", coords: { x: -13654258, y: -15146214, z: 1451349 }, visibility: "public", archived: true, archive_date: "2026-05-15" },
     { path: "/archives/atlas-runner-prototype", name: "Atlas Runner (Prototype)", date: "2026-05-09", time: "21:18:17", chamber: "PG", seed: 2240010767, code_seed: 1778375897, address: "D4FP3-59YKC-NWYDB", coords: { x: -8894465, y: -878995, z: 12731753 }, visibility: "public", archived: true, archive_date: "2026-04-17" },
