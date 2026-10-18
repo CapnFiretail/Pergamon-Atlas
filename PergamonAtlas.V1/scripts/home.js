@@ -107,7 +107,8 @@
     const a = element('a', 'stat');
     a.href = item.href;
     a.append(icon(item));
-    const copy = element('div');
+    // Value and label sit on one line: '0 Tools'.
+    const copy = element('div', 'stat-text');
     const value = element('strong', '', '…');
     const label = element('span', '', item.title);
     copy.append(value, label);
@@ -119,7 +120,7 @@
     const s = statEls[key];
     if (!s) return;
     s.value.textContent = value;
-    s.label.textContent = label || s.title;
+    s.label.textContent = label === undefined ? s.title : label;
     s.a.setAttribute('aria-label', `${s.title}: ${value}${label && label !== s.title ? ', ' + label : ''}`);
   }
 
@@ -138,12 +139,23 @@
   // Only whether a session exists is shown — no name, email or profile data.
   function fillAccount() {
     const auth = window.PergamonAuth;
-    if (!auth) { setStat('account', 'Sign in', 'Account'); return; }
-    const render = session => setStat('account', session ? 'Signed in' : 'Sign in', 'Account');
+    if (!auth) { setStat('account', 'Sign in', ''); return; }
+    const render = session => setStat('account', session ? 'Signed in' : 'Sign in', '');
     auth.getSession()
       .then(res => render(res && res.data && res.data.session))
       .catch(() => setStat('account', '—', 'Unavailable'));
-    try { auth.onAuthStateChange((_event, session) => render(session)); } catch (e) {}
+    try {
+      auth.onAuthStateChange((event, session) => {
+        // A password-reset link that Supabase sent to the Site URL (the
+        // homepage) instead of the reset page: finish it there.
+        if (event === 'PASSWORD_RECOVERY') {
+          try { sessionStorage.setItem('pa-password-recovery', '1'); } catch (e) {}
+          window.location.replace('/account/reset-password/');
+          return;
+        }
+        render(session);
+      });
+    } catch (e) {}
   }
 
   // ── Render ────────────────────────────────────────────────────────────
@@ -155,6 +167,13 @@
   const categories = element('div', 'category-grid');
   content.categories.forEach(item => categories.append(categoryCard(item)));
   welcome.append(categories);
+  let learn = null;
+  if (content.learn) {
+    learn = element('a', 'learn-card');
+    learn.href = content.learn.href;
+    learn.append(element('span', 'learn-label', content.learn.label), arrow());
+    welcome.append(learn);
+  }
 
   const features = element('div', 'home-features');
   const stats = element('div', 'stats');
@@ -170,6 +189,11 @@
   const game = content.game ? featureCard(content.game) : element('p', 'home-empty', 'No featured game yet.');
   game.classList.add('featured-game');
   features.append(section(content.gamesHeading, content.gamesLinkLabel, content.gamesHref, game, 'featured-game-heading'));
+
+  // The Learn button matches the Featured Game box's height.
+  if (learn && window.ResizeObserver) {
+    new ResizeObserver(() => { learn.style.minHeight = game.offsetHeight + 'px'; }).observe(game);
+  }
 
   root.append(welcome, features);
   fillCounts();

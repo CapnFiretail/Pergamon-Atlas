@@ -95,3 +95,6 @@
   .pa-actions { gap: 8px; padding: 0 0 0 12px; }
   .pa-icon-link, .pa-icon-link svg { width: 40px; height: 44px; }
 }
+@media (max-width: 360px) {
+  .pa-nav a { font-size: 16px; padding: 8px 8px; }
+}

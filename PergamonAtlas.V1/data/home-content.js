@@ -20,6 +20,9 @@ window.PergamonHomeContent = {
     { title: 'Account', href: '/account/', icon: 'account' }
   ],
 
+  // Wide button under the category cards.
+  learn: { label: 'Learn about the Pergamon Atlas', href: '/help/' },
+
   stats: [
     { key: 'tools', title: 'Tools', href: '/tools/', icon: 'tools' },
     { key: 'games', title: 'Games', href: '/games/', icon: 'games' },

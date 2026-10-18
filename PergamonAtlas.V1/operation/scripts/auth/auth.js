@@ -37,6 +37,21 @@
     return client().auth.signOut();
   }
 
+  // Password recovery. Supabase emails a one-time link that returns to
+  // redirectTo (which must be listed under Auth → URL Configuration →
+  // Redirect URLs, or Supabase falls back to the Site URL). It reports
+  // success whether or not the email has an account, so callers can't be
+  // used to probe for registered addresses.
+  async function sendPasswordReset(email, redirectTo) {
+    return client().auth.resetPasswordForEmail(email, { redirectTo });
+  }
+
+  // Sets a new password for the current session — on the reset page that
+  // is the short-lived recovery session created by the emailed link.
+  async function updatePassword(password) {
+    return client().auth.updateUser({ password });
+  }
+
   async function getSession() {
     return client().auth.getSession();
   }
@@ -172,6 +187,8 @@
     signUp,
     signIn,
     signOut,
+    sendPasswordReset,
+    updatePassword,
     getSession,
     onAuthStateChange,
     getProfile,
