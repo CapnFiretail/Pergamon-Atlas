@@ -39,7 +39,7 @@
     .sort((a, b) => b.iso.localeCompare(a.iso))
     .slice(0, content.limit || 5);
   if (!entries.length) {
-    container.append(el('p', 'updates-status', 'No updates have been published yet.'));
+    container.append(el('p', 'updates-status', 'No updates yet. New entries will appear here.'));
     return;
   }
 

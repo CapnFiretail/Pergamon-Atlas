@@ -58,7 +58,8 @@
     a.href = item.href;
     a.append(icon(item));
     const copy = element('div', 'feature-copy');
-    copy.append(element('h2', '', item.title), element('p', '', item.description));
+    copy.append(element('h2', '', item.title));
+    if (item.description) copy.append(element('p', '', item.description));
     if (item.status) copy.append(element('span', 'home-tag', item.status));
     a.append(copy, arrow());
     return a;
@@ -128,11 +129,10 @@
       setStat('games', '—', 'Unavailable');
       return;
     }
-    const tools = live(entries.tools);
-    const games = live(entries.games);
-    const playable = games.filter(g => g.status !== 'coming-soon').length;
-    setStat('tools', String(tools.length), tools.length ? 'Tools' : 'Tools · none yet');
-    setStat('games', String(games.length), games.length && !playable ? 'Games · coming soon' : 'Games');
+    // Only what can be used now counts; 'coming-soon' placeholders don't.
+    const available = list => live(list).filter(e => e.status !== 'coming-soon').length;
+    setStat('tools', String(available(entries.tools)), 'Tools');
+    setStat('games', String(available(entries.games)), 'Games');
   }
 
   // Only whether a session exists is shown — no name, email or profile data.

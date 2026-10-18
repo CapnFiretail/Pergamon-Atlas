@@ -157,6 +157,9 @@
           ` : ''}
         </article>
       `).join('');
+      if (!atlasUpdates.length) {
+        container.innerHTML = '<article class="update-card"><h3>No updates yet</h3><p>New entries will appear here.</p></article>';
+      }
     })();
   </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
