@@ -1,7 +1,7 @@
 /* Homepage styling. Colours come from the --pa-* variables in header.css. */
 body { background: #030909; }
 .pa-header { border-bottom: 1px solid #453713; }
-.pa-main.home { background: #030909; color: var(--pa-text); font-family: Arial, sans-serif; }
+.pa-main.home-page { padding: 0; background: #030909; color: var(--pa-text); font-family: Arial, sans-serif; }
 .home, .home * { box-sizing: border-box; }
 .home { max-width: 1500px; margin: 0 auto; padding: 30px 38px 40px; display: grid; grid-template-columns: 1.1fr 1fr; align-content: start; gap: 28px; }
 .home a { color: inherit; text-decoration: none; }
@@ -43,5 +43,5 @@ a.category-card:hover, a.feature-card:hover, a.stat:hover { border-color: var(--
 .custom-image { object-fit: contain; }
 @media (min-width: 1600px) { .home { padding-top: 40px; gap: 36px; } .category-card { min-height: 200px; } }
 @media (max-width: 1050px) { .home { grid-template-columns: 1fr; max-width: 800px; padding: 24px; } .home-welcome { padding: 0 0 28px; border-right: 0; border-bottom: 1px solid #68501d; } .home h1 { margin-bottom: 30px; } }
-@media (max-width: 800px) { .pa-main.home { padding-bottom: 100px; } }
-@media (max-width: 550px) { .pa-main.home { padding: 20px 16px 100px; } .eyebrow { font-size: 11px; letter-spacing: 4px; } .home h1 { font-size: clamp(30px, 9vw, 44px); } .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stats { gap: 8px; } .stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; } .featured-tools { grid-template-columns: 1fr; } .category-card { min-height: 170px; } }
+@media (max-width: 800px) { .pa-main.home-page { padding: 0 0 100px; } }
+@media (max-width: 550px) { .home { padding: 20px 16px; } .eyebrow { font-size: 11px; letter-spacing: 4px; } .home h1 { font-size: clamp(30px, 9vw, 44px); } .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stats { gap: 8px; } .stat { flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; } .featured-tools { grid-template-columns: 1fr; } .category-card { min-height: 170px; } }

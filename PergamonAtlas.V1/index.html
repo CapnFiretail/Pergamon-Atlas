@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/styles/header.css">
   <link rel="stylesheet" href="/styles/sidebar.css">
   <link rel="stylesheet" href="/styles/home.css">
+  <link rel="stylesheet" href="/styles/home-updates.css">
   <script src="/scripts/nav.js" defer></script>
   <style>
     body { margin: 0; }
@@ -78,7 +79,10 @@
       </nav>
     </aside>
 
-    <main id="home" class="pa-main home"></main>
+    <main class="pa-main home-page">
+      <div id="home" class="home"></div>
+      <section id="atlas-updates" class="atlas-updates" aria-labelledby="updates-title"></section>
+    </main>
   </div>
 </div>
 <script src="/data/entries.js"></script>
@@ -88,5 +92,7 @@
 <script src="/operation/scripts/auth/auth.js"></script>
 <script src="/data/home-content.js"></script>
 <script src="/scripts/home.js"></script>
+<script src="/data/update-logs/updates.js"></script>
+<script src="/scripts/home-updates.js"></script>
 </body>
 </html>

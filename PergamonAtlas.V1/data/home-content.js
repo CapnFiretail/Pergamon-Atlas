@@ -32,5 +32,17 @@ window.PergamonHomeContent = {
   ],
 
   gamesHeading: 'Featured Game', gamesLinkLabel: 'View All →', gamesHref: '/games/',
-  game: { path: '/games/chess-forge', title: 'Chess Forge', description: 'Classic strategy, reimagined.', icon: 'games' }
+  game: { path: '/games/chess-forge', title: 'Chess Forge', description: 'Classic strategy, reimagined.', icon: 'games' },
+
+  // Latest Updates section. Entries come from /data/update-logs/updates.js
+  // (the same records the /updates/ page shows); this only sets the wording
+  // and how many of the newest entries appear here.
+  updates: {
+    eyebrow: 'Atlas Update Logs',
+    title: 'Latest Updates',
+    description: 'See what’s new on PergamonAtlas.',
+    allLabel: 'View All Logs',
+    allHref: '/updates/',
+    limit: 5
+  }
 };
