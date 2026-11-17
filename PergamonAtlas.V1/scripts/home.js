@@ -4,7 +4,7 @@
 // Included as a plain script right after <div id="home">, so the page renders
 // while it is still parsing (no layout shift once the rest loads).
 //
-// Components: featureCard() for the featured game, banner() for the spotlight,
+// Components: featureCard() for the featured and spotlight games,
 // atlasNavigation() for the right-hand panel, carousel() + tile() for the
 // explore strip. Each returns an element and knows nothing about the page grid.
 (function () {
@@ -55,12 +55,16 @@
   const norm = path => String(path || '').replace(/\/+$/, '');
   const liveGame = path => entries.find(e => norm(e.path) === norm(path) && !e.archived && e.visibility === 'public' && e.status !== 'coming-soon') || null;
 
-  // ── Featured card ─────────────────────────────────────────────────────
-  // Full-bleed artwork, a left-hand shade, then the title lockup (ornament
-  // rules around a live heading) and the Play Now link. Everything but the
-  // image comes from CSS, so another game only needs new data.
-  function featureCard(item) {
-    const section = el('section', 'home-banner home-banner--featured home-feature');
+  // ── Featured / spotlight cards ────────────────────────────────────────
+  // Full-bleed artwork, a shade, then the title lockup (ornament rules
+  // around a live heading) and the Play Now link. Everything but the image
+  // comes from CSS, so another game only needs new data. The featured card
+  // stacks the button under the title; the spotlight puts it on the right.
+  function featureCard(item, variant) {
+    const spotlight = variant === 'spotlight';
+    const section = el('section', spotlight
+      ? 'home-banner home-banner--spotlight home-feature home-feature--spotlight'
+      : 'home-banner home-banner--featured home-feature');
     const headingId = uid('home-feature');
     section.setAttribute('aria-labelledby', headingId);
 
@@ -74,9 +78,21 @@
       img.alt = a.alt || '';
       if (!a.alt) img.setAttribute('aria-hidden', 'true');
       img.decoding = 'async';
-      img.setAttribute('fetchpriority', 'high');
+      img.setAttribute('fetchpriority', spotlight ? 'auto' : 'high');
       if (a.focus) section.style.setProperty('--feature-focus', a.focus);
       if (a.focusNarrow) section.style.setProperty('--feature-focus-narrow', a.focusNarrow);
+      // fit: 'height' sizes the art by the card's height (scale × height,
+      // scaleNarrow on phones) instead of covering it, centres it at x / xNarrow, and
+      // feathers its sides into the card colour (`base`). For artwork much
+      // narrower than the card, where "cover" would crop away the subject.
+      if (a.fit === 'height') {
+        section.dataset.artFit = 'height';
+        const set = (prop, v) => { if (v !== undefined) section.style.setProperty(prop, v); };
+        set('--feature-art-scale', a.scale !== undefined ? String(a.scale) : undefined);
+        set('--feature-art-scale-narrow', a.scaleNarrow !== undefined ? String(a.scaleNarrow) : undefined);
+        set('--feature-art-x', a.x); set('--feature-art-x-narrow', a.xNarrow); set('--feature-art-y', a.y);
+        set('--feature-base', a.base);
+      }
       section.append(img);
     }
     const shade = el('div', 'home-feature-shade');
@@ -99,31 +115,13 @@
     action.innerHTML = icon('playSolid', 'home-feature-play-icon');
     action.append(el('span', '', item.cta));
 
-    copy.append(lockup, action);
-    section.append(shade, copy);
-    return section;
-  }
-
-  // ── Banner (spotlight) ────────────────────────────────────────────────
-  function banner(item, variant) {
-    const section = el('section', `home-banner home-banner--${variant}`);
-    const headingId = uid('home-banner');
-    section.setAttribute('aria-labelledby', headingId);
-
-    const copy = el('div', 'home-banner-copy');
-    copy.append(el('p', 'home-eyebrow', item.label));
-    const h = el('h2', 'home-banner-title', item.title); h.id = headingId;
-    copy.append(h, el('p', 'home-banner-desc', item.description));
-
-    const action = el('a', 'home-button');
-    action.href = item.href;
-    action.setAttribute('aria-label', `${item.cta}: ${item.title}`);
-    action.innerHTML = icon('play', 'home-button-icon');
-    action.append(el('span', '', item.cta));
-
-    const actions = el('div', 'home-banner-action');
-    actions.append(action);
-    section.append(copy, art(item.art, 'home-banner-art'), actions);
+    if (spotlight) {
+      copy.append(lockup);
+      section.append(shade, copy, action);
+    } else {
+      copy.append(lockup, action);
+      section.append(shade, copy);
+    }
     return section;
   }
 
@@ -349,7 +347,7 @@
   const grid = el('div', 'home-feature-grid');
   const banners = el('div', 'home-banners');
   if (content.featured) banners.append(featureCard(content.featured));
-  if (content.spotlight) banners.append(banner(content.spotlight, 'spotlight'));
+  if (content.spotlight) banners.append(featureCard(content.spotlight, 'spotlight'));
   grid.append(banners);
   if (content.context) grid.append(atlasNavigation(content.context));
   else grid.classList.add('no-context');

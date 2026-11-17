@@ -4,8 +4,12 @@
 //   gives the image (src/srcset/width/height), an optional `focus` and
 //   `focusNarrow` (CSS object-position for wide and narrow cards) and `alt`
 //   (leave '' when the artwork is decorative). No art = a plain dark card.
-// - spotlight: the smaller banner below it. `href` should be a live game;
-//   `art` will later take an image path (null = placeholder).
+//   Or `fit: 'height'` for art much narrower than its card: the image is
+//   `scale` × the card height (`scaleNarrow` on phones), centred at `x`
+//   (`xNarrow` on phones; calc() allowed) with its point `y` at the card's
+//   middle, and its sides fade into `base`.
+// - spotlight: the 140px card below it, same fields as `featured`. Change
+//   the title, href and art to rotate the spotlight game; no CSS needed.
 // - context: the right-hand panel (Atlas Navigation). Each link may set
 //   `signedInLabel` to change its title for signed-in visitors. Set
 //   `context: null` to hide the panel.
@@ -30,12 +34,23 @@ window.PergamonHomeContent = {
   },
 
   spotlight: {
-    label: 'Spotlight',
     title: 'Connect Four',
-    description: 'A classic battle of strategy.',
     href: '/games/connect-four/',
     cta: 'Play Now',
-    art: null
+    art: {
+      src: '/images/featured/connect-four.webp',
+      srcset: '/images/featured/connect-four-1100.webp 1100w, /images/featured/connect-four.webp 2172w',
+      width: 2172,
+      height: 724,
+      fit: 'height',
+      scale: 1.3,
+      x: 'calc(50% - 60px)',
+      scaleNarrow: 1,
+      xNarrow: 'calc(100% - 139px)',
+      y: '50%',
+      base: '#030916',
+      alt: ''
+    }
   },
 
   context: {

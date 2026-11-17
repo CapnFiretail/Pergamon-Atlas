@@ -9,8 +9,8 @@
  * Breakpoints are container queries on the space each part actually has:
  *   upper  > 860px  70/30: banners (260 + 16 + 140) | context panel (416)
  *          ≤ 860px  one column; the context panel moves below the banners
- *          ≤ 640px  banners stack their copy and artwork
- *   banners ≤ 720px scaled titles; the spotlight drops its artwork
+ *          ≤ 640px  featured and spotlight cards stack their copy
+ *   banners (cqi)   card titles and padding scale with the column width
  *   lower  ≤ 900px  carousel tabs move to their own row
  *          ≤ 640px  compact carousel
  * The sidebar sits outside every container: a size container would capture
@@ -65,39 +65,6 @@
   border: 1px solid var(--color-border);
   border-radius: 14px;
 }
-.home-banner-copy { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-.home-eyebrow { margin: 0 0 8px; color: var(--color-accent-text); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-.home-banner-title { margin: 0 0 10px; font: 800 clamp(30px, 5.4cqi, 44px)/1.05 var(--font-display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
-.home-banner-desc { margin: 0 0 20px; max-width: 36ch; color: var(--color-text-secondary); font-size: 15px; line-height: 1.5; }
-
-.home-banner--spotlight { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; }
-.home-banner--spotlight .home-banner-copy { padding: 18px 28px; }
-.home-banner--spotlight .home-eyebrow { margin-bottom: 4px; }
-.home-banner--spotlight .home-banner-title { margin-bottom: 4px; font-size: clamp(22px, 3.5cqi, 28px); font-weight: 700; }
-.home-banner--spotlight .home-banner-desc { margin: 0; font-size: 14px; }
-.home-banner--spotlight .home-banner-art { margin: 10px 0; }
-.home-banner-action { display: flex; align-items: center; padding: 0 28px; }
-.home-banner-action .home-button { align-self: center; }
-
-.home-button {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 20px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  background: var(--color-accent-text);
-  color: var(--color-on-accent);
-  font: 700 15px/1 var(--font-ui);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.home-button:hover { background: var(--color-accent-hover); }
-.home-button-icon { width: 16px; height: 16px; fill: currentColor; }
-
 /* ── Featured card ─────────────────────────────────────────────────────── */
 /* Layers: artwork (object-fit cover, focal point from data) → left shade →
    copy. The card stays dark in every mode because the artwork is dark; only
@@ -132,6 +99,21 @@
   height: 100%;
   object-fit: cover;
   object-position: var(--feature-focus, 75% 25%);
+}
+/* Height-fitted art (data fit: 'height'): scaled to the card's height,
+   centred at --feature-art-x, edges feathered into --feature-base. */
+.home-feature[data-art-fit="height"] { background: var(--feature-base, #0A0806); }
+.home-feature[data-art-fit="height"] .home-feature-art {
+  inset: auto;
+  top: 50%;
+  left: var(--feature-art-x, 50%);
+  width: auto;
+  max-width: none;
+  height: calc(var(--feature-art-scale, 1) * 100%);
+  object-fit: fill;
+  transform: translate(-50%, calc(-1 * var(--feature-art-y, 50%)));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
 }
 .home-feature-shade {
   position: absolute;
@@ -214,6 +196,19 @@
 }
 .home-feature .home-feature-play:focus-visible { outline: 2px solid var(--feature-title); outline-offset: 3px; }
 .home-feature-play-icon { width: 18px; height: 18px; fill: currentColor; }
+
+/* Spotlight: the same card at 140px. Title group left, artwork through the
+   middle, Play Now on the right; the shade darkens both ends. */
+.home-feature--spotlight { justify-content: space-between; gap: 16px; padding-right: clamp(18px, 3cqi, 30px); }
+.home-feature--spotlight .home-feature-shade {
+  background: linear-gradient(90deg, rgba(3, 7, 16, 0.78) 0%, rgba(3, 7, 16, 0.5) 28%, rgba(3, 7, 16, 0.08) 46%, rgba(3, 7, 16, 0) 60%, rgba(3, 7, 16, 0.3) 82%, rgba(3, 7, 16, 0.55) 100%);
+}
+.home-feature--spotlight .home-feature-copy { max-width: 48%; padding: 0 0 0 clamp(20px, 4cqi, 40px); }
+.home-feature--spotlight .home-feature-lockup { gap: 5px; }
+.home-feature--spotlight .home-feature-title { font-size: clamp(26px, 3.6cqi, 32px); }
+.home-feature--spotlight .home-feature-rule i { width: 8px; height: 8px; }
+.home-feature--spotlight .home-feature-play { flex-shrink: 0; gap: 10px; height: 44px; padding: 0 26px 0 22px; font-size: 16px; }
+.home-feature--spotlight .home-feature-play-icon { width: 15px; height: 15px; }
 
 /* ── Atlas Navigation (right-hand panel) ───────────────────────────────── */
 .home-context {
@@ -367,13 +362,6 @@
   .home-context-item { flex: 0 0 auto; min-height: 60px; }
 }
 
-/* Narrow banner column (e.g. 70/30 kept at ~1024px with the sidebar collapsed):
-   the spotlight drops its artwork so copy and button keep their room. */
-@container banners (max-width: 720px) {
-  .home-banner--spotlight { grid-template-columns: minmax(0, 1fr) auto; }
-  .home-banner--spotlight .home-banner-art { display: none; }
-}
-
 /* The tabs need ~560px beside the title; below that they get their own row. */
 @container lower (max-width: 900px) {
   .home-carousel-head { flex-wrap: wrap; gap: 10px; }
@@ -382,7 +370,6 @@
 
 @container upper (max-width: 640px) {
   .home-banners { grid-template-rows: auto; }
-  .home-banner--spotlight { grid-template-columns: minmax(0, 1fr); }
   /* Featured card: taller, copy at the bottom, the knight above it. */
   .home-feature { align-items: flex-end; min-height: 320px; }
   .home-feature-art { object-position: var(--feature-focus-narrow, var(--feature-focus, 75% 25%)); }
@@ -390,9 +377,13 @@
   .home-feature-copy { max-width: 100%; gap: 18px; padding: 20px; }
   .home-feature-title { font-size: clamp(30px, 10cqi, 40px); }
   .home-feature .home-feature-play { height: 48px; }
-  .home-banner--spotlight .home-banner-art { display: none; }
-  .home-banner--spotlight .home-banner-copy { padding: 18px 20px 12px; }
-  .home-banner-action { padding: 0 20px 18px; }
+  /* Spotlight: title above the button, both left; the board shows on the right. */
+  .home-feature--spotlight { flex-direction: column; align-items: flex-start; justify-content: center; gap: 16px; min-height: 0; padding: 20px; }
+  .home-feature--spotlight .home-feature-shade { background: linear-gradient(90deg, rgba(3, 7, 16, 0.85) 0%, rgba(3, 7, 16, 0.6) 45%, rgba(3, 7, 16, 0.1) 80%, rgba(3, 7, 16, 0) 100%); }
+  .home-feature--spotlight .home-feature-copy { max-width: 100%; padding: 0; }
+  .home-feature--spotlight .home-feature-title { font-size: clamp(24px, 7.5cqi, 30px); }
+  .home-feature--spotlight .home-feature-play { height: 44px; }
+  .home-feature[data-art-fit="height"] .home-feature-art { left: var(--feature-art-x-narrow, var(--feature-art-x, 50%)); height: calc(var(--feature-art-scale-narrow, var(--feature-art-scale, 1)) * 100%); }
 }
 
 @container lower (max-width: 640px) {

@@ -61,16 +61,25 @@ A new page needs, in `<head>`: `theme.js`, the Google Fonts link,
 </div>
 ```
 
-### Featured game card
+### Featured and spotlight cards
 
-The homepage's large card is built by `featureCard()` in `scripts/home.js`
-from `featured` in `data/home-content.js`: title, `href`, `cta` and `art`
-(`src`, `srcset`, `width`, `height`, `focus`/`focusNarrow` as CSS
-`object-position`, and `alt`, empty when the art is decorative). The title,
-ornament rules and Play Now button are HTML/CSS and take the palette's
-accent; the card itself stays dark in every mode. To feature another game,
+The homepage's two game cards are built by `featureCard()` in
+`scripts/home.js` from `featured` (260px, button under the title) and
+`spotlight` (140px, button on the right) in `data/home-content.js`. Each
+takes a title, `href`, `cta` and `art`:
+
+- `src`, `srcset`, `width`, `height`, and `alt` (empty when decorative).
+- Default fit is "cover", cropped with `focus`/`focusNarrow` (CSS
+  `object-position`).
+- `fit: 'height'` suits art much narrower than its card: the image is
+  `scale` × the card height (`scaleNarrow` on phones), centred at `x`
+  (`xNarrow`; `calc()` allowed), with `y` placed at the card's middle, and
+  its sides fade into `base` (the card colour).
+
+The title, ornament rules and Play Now button are HTML/CSS and take the
+palette's accent; the cards stay dark in every mode. To change either game,
 add its artwork to `images/featured/` (keep the original in
-`artwork/source/`) and change the data; no CSS or HTML edits are needed.
+`artwork/source/`) and edit the data; no CSS or HTML edits are needed.
 
 Game pages and the Games catalog still draw their content area with the
 legacy `operation/styles/main.css`; only their header, sidebar and footer
