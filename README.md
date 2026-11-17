@@ -15,6 +15,8 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no build)
 ├── account/               Sign in / register / profile
 │   └── reset-password/    Password recovery landing page
 ├── settings/              Appearance settings (display mode, colour palette)
+├── achievements/          Placeholder (Coming Soon)
+├── leaderboards/          Placeholder (Coming Soon)
 ├── scripts/  styles/      V1 page scripts and styles (see Design system below)
 ├── data/                  entries.js (games catalog), home-content.js (homepage)
 ├── operation/             Shared legacy layer: Supabase auth, footer, main.css
@@ -36,7 +38,11 @@ vercel.json                Output directory + redirects for retired routes
   always get Obsidian & Gold; signed-in users may pick any palette.
 - `scripts/layout.js` + `styles/layout.css`: the header, sidebar and mobile
   drawer, rendered from one nav config. Edit `HEADER_LINKS` /
-  `SIDEBAR_SECTIONS` there to change navigation.
+  `SIDEBAR_SECTIONS` there to change navigation. On most pages the sidebar
+  is a fixed full-height rail. The homepage sets `data-layout="home"` on
+  `.pa-page`, and `scripts/home.js` mounts the same sidebar into its own
+  grid (`PergamonLayout.mountSidebar`) as a rounded rail beside the upper
+  section, so the carousel can run beneath it.
 
 A new page needs, in `<head>`: `theme.js`, the Google Fonts link,
 `theme.css`, `layout.css`; and in `<body>`:

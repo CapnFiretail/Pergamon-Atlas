@@ -1,0 +1,14 @@
+/* "Coming soon" placeholder pages (Achievements, Leaderboards).
+   Colours and fonts come from the tokens in /styles/theme.css. */
+.pa-placeholder { max-width: 640px; margin: 48px auto; padding: 32px; text-align: center; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 14px; }
+.pa-placeholder-icon { display: block; margin: 0 auto; width: 48px; height: 48px; fill: none; stroke: var(--color-accent-text); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.pa-placeholder .pa-placeholder-tag { display: inline-block; margin: 16px 0 10px; padding: 3px 10px; border: 1px solid var(--color-accent); border-radius: var(--radius-pill); color: var(--color-accent-text); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.pa-placeholder h1 { margin: 0 0 10px; font: 800 clamp(28px, 4vw, 38px)/1.15 var(--font-display); }
+.pa-placeholder p { margin: 0 auto 24px; max-width: 46ch; color: var(--color-text-secondary); font-size: 16px; line-height: 1.6; }
+.pa-placeholder-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.pa-placeholder-actions a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-primary); font-weight: 600; text-decoration: none; }
+.pa-placeholder-actions a:hover { border-color: var(--color-accent); }
+.pa-placeholder-actions a.is-primary { background: var(--color-accent-text); border-color: var(--color-accent-text); color: var(--color-on-accent); }
+.pa-placeholder-actions a.is-primary:hover { background: var(--color-accent-hover); }
+.pa-placeholder-actions a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+@media (max-width: 560px) { .pa-placeholder { margin: 16px 0; padding: 24px 18px; } }

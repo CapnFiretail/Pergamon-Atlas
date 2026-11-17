@@ -5,11 +5,21 @@
 // still parsing, so they are present on first paint with no layout shift.
 // To add a page to the navigation, edit HEADER_LINKS or SIDEBAR_SECTIONS.
 // Requires /scripts/theme.js in <head> (sets data-sidebar on <html>).
+//
+// Layout modes (data-layout on .pa-page):
+//   (none)  the sidebar is a fixed rail below the header, full height.
+//   home    the sidebar is not inserted here; the page mounts it inside its
+//           own grid with PergamonLayout.mountSidebar(parent, before)
+//           (see home.js).
+//           If the page never does, it falls back to the default position.
+// On tablet and phone widths the sidebar is the slide-out drawer in both modes.
 (function () {
   var ICONS = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     games: '<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M7 10v4M5 12h4M15.5 11h.01M18 13h.01"/>',
-    suggestions: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 1 3.6 10.8c-.6.5-1 1.2-1 2V16H9.4v-.2c0-.8-.4-1.5-1-2A6 6 0 0 1 12 3z"/>',
+    suggestions: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
+    achievements: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 21h7M10 17h4v4h-4z"/>',
+    leaderboards: '<path d="M4 20V11h4v9M10 20V5h4v15M16 20v-6h4v6M3 20h18"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
     settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
     account: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3.2"/><path d="M6.2 18.4a6.5 6.5 0 0 1 11.6 0"/>',
@@ -25,8 +35,8 @@
     { href: '/suggestions/', label: 'Suggestions' }
   ];
 
-  // Sidebar groups. Later sections (categories, benchmarks, daily
-  // challenges...) are added here as further { title, items } entries.
+  // Sidebar groups, separated by a divider. Later sections (categories,
+  // benchmarks, daily challenges...) are added here as further entries.
   var SIDEBAR_SECTIONS = [
     {
       title: null,
@@ -34,6 +44,13 @@
         { href: '/', label: 'Home', icon: 'home' },
         { href: '/games/', label: 'Games', icon: 'games' },
         { href: '/suggestions/', label: 'Suggestions', icon: 'suggestions' }
+      ]
+    },
+    {
+      title: null,
+      items: [
+        { href: '/achievements/', label: 'Achievements', icon: 'achievements' },
+        { href: '/leaderboards/', label: 'Leaderboards', icon: 'leaderboards' }
       ]
     }
   ];
@@ -66,7 +83,7 @@
       '</div>' +
     '</header>';
 
-  var sidebar =
+  var sidebarHtml =
     '<aside class="pa-sidebar" id="pa-sidebar" aria-label="Sidebar">' +
       '<div class="pa-drawer-head">' +
         '<span class="pa-drawer-title">Menu</span>' +
@@ -85,15 +102,27 @@
         }).join('') +
       '</nav>' +
       '<button class="pa-sidebar-toggle" type="button">' + icon('chevron') + '<span class="pa-nav-label">Collapse</span></button>' +
-    '</aside>' +
-    '<div class="pa-backdrop" aria-hidden="true"></div>';
+    '</aside>';
+
+  var holder = document.createElement('div');
+  holder.innerHTML = sidebarHtml;
+  var sidebar = holder.firstElementChild;
+  var backdrop = document.createElement('div');
+  backdrop.className = 'pa-backdrop';
+  backdrop.setAttribute('aria-hidden', 'true');
 
   var script = document.currentScript;
-  if (script) script.insertAdjacentHTML('beforebegin', header + sidebar);
-  else document.body.insertAdjacentHTML('afterbegin', header + sidebar);
+  var page = script && script.closest ? script.closest('.pa-page') : null;
+  var homeMode = !!page && page.getAttribute('data-layout') === 'home';
+
+  if (script) script.insertAdjacentHTML('beforebegin', header);
+  else document.body.insertAdjacentHTML('afterbegin', header);
+  var headerEl = document.querySelector('.pa-header');
+  headerEl.insertAdjacentElement('afterend', backdrop);
+  if (!homeMode) backdrop.insertAdjacentElement('afterend', sidebar);
 
   // ── Desktop collapse ──────────────────────────────────────────────────
-  var toggle = document.querySelector('.pa-sidebar-toggle');
+  var toggle = sidebar.querySelector('.pa-sidebar-toggle');
   var syncToggle = function () {
     var collapsed = root.getAttribute('data-sidebar') === 'collapsed';
     toggle.setAttribute('aria-expanded', String(!collapsed));
@@ -110,8 +139,7 @@
   new MutationObserver(syncToggle).observe(root, { attributes: true, attributeFilter: ['data-sidebar'] });
 
   // ── Mobile drawer ─────────────────────────────────────────────────────
-  var menuButton = document.querySelector('.pa-menu-button');
-  var drawer = document.getElementById('pa-sidebar');
+  var menuButton = headerEl.querySelector('.pa-menu-button');
   var setDrawer = function (open, restoreFocus) {
     if (open) root.setAttribute('data-drawer', 'open');
     else root.removeAttribute('data-drawer');
@@ -119,7 +147,7 @@
     if (open) {
       // Wait a frame: the drawer is visibility:hidden until the attribute applies.
       requestAnimationFrame(function () {
-        var first = drawer.querySelector('.pa-sidebar-nav a');
+        var first = sidebar.querySelector('.pa-sidebar-nav a');
         if (first) first.focus();
       });
     } else if (restoreFocus) {
@@ -127,8 +155,8 @@
     }
   };
   menuButton.addEventListener('click', function () { setDrawer(root.getAttribute('data-drawer') !== 'open'); });
-  document.querySelector('.pa-drawer-close').addEventListener('click', function () { setDrawer(false, true); });
-  document.querySelector('.pa-backdrop').addEventListener('click', function () { setDrawer(false, true); });
+  sidebar.querySelector('.pa-drawer-close').addEventListener('click', function () { setDrawer(false, true); });
+  backdrop.addEventListener('click', function () { setDrawer(false, true); });
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape' && root.getAttribute('data-drawer') === 'open') setDrawer(false, true);
   });
@@ -137,6 +165,19 @@
   var onBreakpoint = function () { if (!drawerQuery.matches) setDrawer(false); };
   if (drawerQuery.addEventListener) drawerQuery.addEventListener('change', onBreakpoint);
   else if (drawerQuery.addListener) drawerQuery.addListener(onBreakpoint);
+
+  // ── Home layout: the page places the sidebar in its own grid ──────────
+  window.PergamonLayout = {
+    sidebar: sidebar,
+    // Insert the sidebar into parent, before `before` (default: first child).
+    mountSidebar: function (parent, before) {
+      sidebar.classList.add('is-inline');
+      parent.insertBefore(sidebar, before || parent.firstChild);
+    }
+  };
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!sidebar.isConnected) backdrop.insertAdjacentElement('afterend', sidebar);
+  });
 
   // Enable transitions only after first paint, so restoring state never animates.
   requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.add('pa-ready'); }); });

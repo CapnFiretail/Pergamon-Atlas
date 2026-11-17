@@ -194,7 +194,9 @@
   }
 
   // ── Page ──────────────────────────────────────────────────────────────
+  // .home is the shell grid: sidebar | upper on row 1, lower across row 2.
   const title = el('h1', 'pa-visually-hidden', 'PergamonAtlas');
+  const upper = el('div', 'home-upper');
   const grid = el('div', 'home-feature-grid');
   const banners = el('div', 'home-banners');
   if (content.featured) banners.append(banner(content.featured, 'featured'));
@@ -203,8 +205,16 @@
   if (content.context) grid.append(contextPanel(content.context));
   else grid.classList.add('no-context');
 
-  root.append(title, grid);
-  if (content.explore) root.append(carousel(content.explore));
+  upper.append(grid);
+  root.append(title, upper);
+  if (content.explore) {
+    const lower = el('div', 'home-lower');
+    lower.append(carousel(content.explore));
+    root.append(lower);
+  }
+  // Take the shared sidebar into this grid (layout.js holds it back on pages
+  // with data-layout="home"). The page title stays first in reading order.
+  if (window.PergamonLayout) window.PergamonLayout.mountSidebar(root, upper);
 
   // A password-reset link that Supabase sent to the Site URL (the homepage)
   // instead of the reset page: finish it there. auth.js loads after this file.
