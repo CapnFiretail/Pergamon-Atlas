@@ -1,7 +1,8 @@
 // Pergamon Atlas — Supabase client singleton
 //
 // Requires, in this order, before this script on the page:
-//   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+//   <script src="/vendor/supabase-js/2.118.0/supabase.js" integrity="sha384-…"></script>
+//   (a pinned copy served by the site; see /vendor/supabase-js/README.md)
 //   <script src="/operation/scripts/auth/supabase-config.js"></script>
 //   <script src="/operation/scripts/auth/supabase.js"></script>
 

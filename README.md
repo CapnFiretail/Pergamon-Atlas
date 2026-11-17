@@ -22,10 +22,15 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no build)
 ├── data/                  entries.js (games catalog), home-content.js (homepage)
 ├── operation/             Shared legacy layer: Supabase auth, footer, main.css
 ├── images/                Logo; featured/ holds web copies of featured artwork
+├── vendor/                Pinned third-party scripts (supabase-js; see its README)
 └── ads.txt
 artwork/source/            Original artwork files (not deployed)
 supabase/migrations/       Database schema history (reference only; not deployed)
-supabase/proposed/         Reviewed-but-unapplied migrations
+supabase/proposed/         Reviewed-but-unapplied migrations (CMS: 0008–0010)
+supabase/functions/        Edge Functions (publish-media; not deployed yet)
+docs/cms/                  CMS architecture, staging setup, tests
+tests/cms/                 CMS tests (node --test; dev tooling only)
+tools/                     Build helpers (write-supabase-config.mjs; not wired yet)
 vercel.json                Output directory + redirects for retired routes
 ```
 

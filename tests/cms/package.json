@@ -1,0 +1,1 @@
+{ "name": "pergamon-cms-tests", "private": true, "type": "module", "description": "CMS database, Edge Function and config tests (dev tooling only; not part of the site).", "scripts": { "test": "node --test" }, "devDependencies": { "@electric-sql/pglite": "0.5.14" } }
