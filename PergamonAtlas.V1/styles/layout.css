@@ -1,0 +1,267 @@
+/* Shared chrome: header, sidebar, mobile drawer and the page frame.
+ * Markup comes from /scripts/layout.js; colours from /styles/theme.css. */
+
+:root { --pa-header-h: 88px; --pa-sidebar-w: 220px; }
+:root[data-sidebar="collapsed"] { --pa-sidebar-w: 64px; }
+
+/* ── Page frame ────────────────────────────────────────────────────────── */
+.pa-page { min-height: 100vh; display: flex; flex-direction: column; }
+.pa-layout { flex: 1; display: flex; align-items: stretch; margin-left: var(--pa-sidebar-w); }
+#footer-placeholder { margin-left: var(--pa-sidebar-w); }
+.pa-ready .pa-layout, .pa-ready #footer-placeholder { transition: margin-left 0.2s ease; }
+.pa-main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+  box-sizing: border-box;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+}
+
+.pa-icon { width: 22px; height: 22px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+.pa-header, .pa-header *, .pa-sidebar, .pa-sidebar * { box-sizing: border-box; }
+.pa-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--pa-header-h);
+  padding: 0 24px;
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+}
+.pa-header a { color: inherit; text-decoration: none; }
+.pa-brand { display: flex; align-items: center; gap: 14px; flex-shrink: 0; min-width: 0; }
+.pa-logo { display: block; width: auto; height: 58px; }
+.pa-brand-name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pa-capsule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 5px;
+  border: 1.5px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  min-width: 0;
+}
+.pa-nav { display: flex; align-items: center; gap: 2px; }
+.pa-nav a {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pa-actions { display: flex; align-items: center; gap: 2px; padding-left: 6px; border-left: 1px solid var(--color-border); }
+.pa-icon-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.pa-nav a:hover, a.pa-icon-button:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.pa-nav a[aria-current="page"], .pa-icon-button[aria-current="page"] { background: var(--color-accent-soft); color: var(--color-accent-text); }
+.pa-icon-button[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+.pa-menu-button {
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+/* ── Sidebar ───────────────────────────────────────────────────────────── */
+.pa-sidebar {
+  position: fixed;
+  top: var(--pa-header-h);
+  bottom: 0;
+  left: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  width: var(--pa-sidebar-w);
+  padding: 16px 0 12px;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  font-family: var(--font-ui);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.pa-ready .pa-sidebar { transition: width 0.2s ease, transform 0.25s ease, visibility 0.25s; }
+.pa-sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+.pa-sidebar-section { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+.pa-sidebar-heading { margin: 0 0 6px; padding: 0 12px; color: var(--color-text-secondary); font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.pa-sidebar a, .pa-sidebar-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: 600 15px/1 var(--font-ui);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.pa-sidebar .pa-icon { width: 20px; height: 20px; }
+.pa-sidebar a:hover, .pa-sidebar-toggle:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.pa-sidebar a.active { background: var(--color-accent-soft); color: var(--color-accent-text); box-shadow: inset 2px 0 0 var(--color-accent); }
+.pa-sidebar-toggle { margin: 8px 10px 0; width: calc(100% - 20px); cursor: pointer; }
+.pa-sidebar-toggle .pa-icon { transition: transform 0.2s ease; }
+
+/* Collapsed: icons only; labels stay available to screen readers. */
+:root[data-sidebar="collapsed"] .pa-sidebar a,
+:root[data-sidebar="collapsed"] .pa-sidebar-toggle { justify-content: center; gap: 0; padding: 0; }
+:root[data-sidebar="collapsed"] .pa-sidebar .pa-nav-label {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+:root[data-sidebar="collapsed"] .pa-sidebar-toggle .pa-icon { transform: rotate(180deg); }
+:root[data-sidebar="collapsed"] .pa-sidebar-heading { visibility: hidden; height: 0; margin: 0; }
+
+.pa-drawer-head, .pa-backdrop { display: none; }
+
+/* ── Tooltips (pointer hover / keyboard focus) ─────────────────────────── */
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  z-index: 300;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: 600 13px/1.2 var(--font-ui);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+.pa-actions [data-tip]::after { top: calc(100% + 8px); right: 0; }
+.pa-sidebar [data-tip]::after { left: calc(100% + 10px); top: 50%; transform: translateY(-50%); }
+.pa-actions [data-tip]:hover::after, .pa-actions [data-tip]:focus-visible::after,
+:root[data-sidebar="collapsed"] .pa-sidebar [data-tip]:hover::after,
+:root[data-sidebar="collapsed"] .pa-sidebar [data-tip]:focus-visible::after { opacity: 1; visibility: visible; }
+/* The collapsed sidebar clips overflow, so its tooltips sit inside the rail. */
+:root[data-sidebar="collapsed"] .pa-sidebar { overflow: visible; }
+
+/* ── Focus ─────────────────────────────────────────────────────────────── */
+.pa-header :focus-visible, .pa-sidebar :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.pa-sidebar :focus-visible { outline-offset: -2px; }
+
+/* ── Laptop ────────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .pa-header { gap: 12px; padding: 0 18px; }
+  .pa-brand-name { font-size: 23px; }
+  .pa-nav a { padding: 0 12px; }
+}
+
+/* ── Tablet & phone: header links move into the drawer ─────────────────── */
+@media (max-width: 900px) {
+  :root, :root[data-sidebar="collapsed"] { --pa-header-h: 64px; --pa-sidebar-w: 0px; }
+  .pa-header { gap: 10px; padding: 0 12px; }
+  .pa-menu-button { display: grid; flex-shrink: 0; }
+  .pa-brand { gap: 10px; }
+  .pa-logo { height: 40px; }
+  .pa-brand-name { font-size: 20px; }
+  .pa-nav { display: none; }
+  .pa-actions { padding-left: 0; border-left: 0; }
+  .pa-actions [data-tip]::after { display: none; }
+
+  .pa-sidebar, :root[data-sidebar="collapsed"] .pa-sidebar {
+    top: 0;
+    z-index: 200;
+    width: min(280px, 85vw);
+    padding-top: 0;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    visibility: hidden;
+  }
+  :root[data-drawer="open"] .pa-sidebar { transform: none; visibility: visible; }
+  /* Become visible at once on open (so focus can move in); hide only after sliding out. */
+  .pa-ready .pa-sidebar { transition: transform 0.25s ease, visibility 0s linear 0.25s; }
+  .pa-ready[data-drawer="open"] .pa-sidebar { transition: transform 0.25s ease, visibility 0s; }
+  :root[data-drawer="open"] { overflow: hidden; }
+
+  /* The drawer always shows labels, whatever the desktop collapse state. */
+  :root[data-sidebar="collapsed"] .pa-sidebar a { justify-content: flex-start; gap: 12px; padding: 0 12px; }
+  :root[data-sidebar="collapsed"] .pa-sidebar .pa-nav-label { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  :root[data-sidebar="collapsed"] .pa-sidebar-heading { visibility: visible; height: auto; margin: 0 0 6px; }
+  .pa-sidebar [data-tip]::after { display: none; }
+  .pa-sidebar-toggle { display: none; }
+
+  .pa-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--pa-header-h);
+    margin-bottom: 12px;
+    padding: 0 12px 0 22px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .pa-drawer-title { font: 800 18px/1 var(--font-display); color: var(--color-text-primary); }
+  .pa-drawer-close { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-text-primary); cursor: pointer; }
+  .pa-drawer-close:hover { background: var(--color-surface-hover); }
+
+  .pa-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s;
+  }
+  :root[data-drawer="open"] .pa-backdrop { opacity: 1; visibility: visible; }
+
+  .pa-main { padding: 24px 16px; }
+}
+
+@media (max-width: 420px) {
+  .pa-header { gap: 8px; }
+  .pa-icon-button { width: 36px; height: 36px; }
+  .pa-capsule { gap: 0; padding: 4px; }
+  .pa-brand-name { font-size: 17px; }
+}
+@media (max-width: 360px) {
+  .pa-brand-name { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-ready .pa-sidebar, .pa-ready .pa-layout, .pa-ready #footer-placeholder, .pa-backdrop, .pa-sidebar-toggle .pa-icon { transition: none; }
+}

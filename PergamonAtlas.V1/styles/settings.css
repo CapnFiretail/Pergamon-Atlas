@@ -1,0 +1,99 @@
+/* Settings page. Colours and fonts come from the tokens in /styles/theme.css. */
+.settings { max-width: 760px; margin: 0 auto; padding: 8px 0 40px; }
+.settings * { box-sizing: border-box; }
+.settings-title { margin: 0 0 6px; font: 800 clamp(28px, 4vw, 40px)/1.15 var(--font-display); }
+.settings-intro { margin: 0 0 28px; color: var(--color-text-secondary); font-size: 16px; }
+
+.settings-card {
+  margin: 0 0 20px;
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+.settings-heading { margin: 0 0 6px; font: 700 20px/1.3 var(--font-display); }
+.settings-note { margin: 0 0 16px; color: var(--color-text-secondary); font-size: 14px; }
+.settings-note:empty { display: none; }
+
+/* Display mode: a three-way segmented control built on native radios. */
+.mode-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 14px 0 12px;
+  padding: 5px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+}
+.mode-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+  font: 600 15px var(--font-ui);
+  cursor: pointer;
+}
+.mode-option input, .palette-option input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.mode-option .pa-icon { width: 18px; height: 18px; }
+.mode-option:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.mode-option:has(input:checked) { background: var(--color-accent-soft); color: var(--color-accent-text); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.mode-option:has(input:focus-visible), .palette-option:has(input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* Palettes */
+.palette-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.palette-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px 8px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+  font-family: var(--font-ui);
+}
+label.palette-option { cursor: pointer; }
+label.palette-option:hover { border-color: var(--color-text-secondary); }
+.palette-option:has(input:checked) { border-color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.palette-option.is-locked .palette-preview { opacity: 0.8; }
+.palette-name { font-weight: 700; font-size: 15px; }
+.palette-status { justify-self: end; padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); color: var(--color-text-secondary); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.palette-status.is-active { border-color: var(--color-accent); color: var(--color-accent-text); }
+
+/* Preview: a miniature card drawn in the palette's own colours. */
+.palette-preview {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+}
+.pp-card { flex: 1; display: grid; gap: 6px; padding: 10px; border-radius: 6px; background: var(--color-surface); border: 1px solid var(--color-border); }
+.pp-line { display: block; height: 6px; border-radius: 3px; background: var(--color-text-primary); }
+.pp-short { width: 60%; background: var(--color-text-secondary); }
+.pp-pill { display: block; width: 44%; height: 12px; border-radius: 6px; background: var(--color-accent); }
+.pp-swatches { display: grid; grid-template-columns: repeat(2, 14px); gap: 4px; }
+.pp-swatches i { display: block; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--color-border); }
+.pp-bg { background: var(--color-background); }
+.pp-surface { background: var(--color-surface); }
+.pp-accent { background: var(--color-accent); }
+.pp-text { background: var(--color-text-primary); }
+
+.settings-cta { display: inline-block; margin-top: 16px; color: var(--color-accent-text); font-weight: 600; font-size: 14px; text-underline-offset: 3px; }
+.settings-cta:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.settings-storage { margin: 0; color: var(--color-text-secondary); font-size: 13px; }
+
+@media (max-width: 560px) {
+  .settings-card { padding: 18px; }
+  .palette-grid { grid-template-columns: 1fr; }
+  .mode-option span { font-size: 14px; }
+}

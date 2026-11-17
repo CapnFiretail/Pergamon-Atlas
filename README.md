@@ -14,20 +14,46 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no build)
 ├── suggestions/           Suggestions (placeholder until the form ships)
 ├── account/               Sign in / register / profile
 │   └── reset-password/    Password recovery landing page
-├── scripts/  styles/      V1 page scripts and styles (nav.js wires the sidebar)
+├── settings/              Appearance settings (display mode, colour palette)
+├── scripts/  styles/      V1 page scripts and styles (see Design system below)
 ├── data/                  entries.js (games catalog), home-content.js (homepage)
 ├── operation/             Shared legacy layer: Supabase auth, footer, main.css
 ├── images/                Logo
 └── ads.txt
 supabase/migrations/       Database schema history (reference only; not deployed)
+supabase/proposed/         Reviewed-but-unapplied migrations
 vercel.json                Output directory + redirects for retired routes
 ```
 
-## Navigation
+## Design system
 
-Every page carries the same header (Home, Games, Suggestions, Account icon)
-and collapsible sidebar inline. On phones the sidebar becomes a bottom tab
-bar. `scripts/nav.js` highlights the current section.
+- `styles/theme.css`: semantic colour tokens (`--color-background`,
+  `--color-surface`, `--color-accent`, ...) for four palettes × dark/light,
+  plus the font stacks. Shared components use only these tokens.
+- `scripts/theme.js`: loaded synchronously in every `<head>`. Reads the saved
+  appearance (`localStorage["pa-appearance"]`) and sets `data-palette`,
+  `data-mode` and `data-sidebar` on `<html>` before first paint. Guests
+  always get Obsidian & Gold; signed-in users may pick any palette.
+- `scripts/layout.js` + `styles/layout.css`: the header, sidebar and mobile
+  drawer, rendered from one nav config. Edit `HEADER_LINKS` /
+  `SIDEBAR_SECTIONS` there to change navigation.
+
+A new page needs, in `<head>`: `theme.js`, the Google Fonts link,
+`theme.css`, `layout.css`; and in `<body>`:
+
+```html
+<div class="pa-page">
+  <script src="/scripts/layout.js"></script>
+  <div class="pa-layout">
+    <main class="pa-main">...</main>
+  </div>
+  <div id="footer-placeholder"></div>
+</div>
+```
+
+Game pages and the Games catalog still draw their content area with the
+legacy `operation/styles/main.css`; only their header, sidebar and footer
+follow the theme.
 
 ## Deploying
 

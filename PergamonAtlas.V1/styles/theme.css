@@ -1,0 +1,152 @@
+/* Pergamon Atlas design tokens.
+ *
+ * /scripts/theme.js sets two attributes on <html> before first paint:
+ *   data-palette  obsidian | sapphire | emerald | copper
+ *   data-mode     dark | light   (System is resolved to one of these)
+ * Each palette × mode below defines the six base colours; every other token
+ * is derived from them. Shared components use only the semantic tokens.
+ * Without JavaScript the :root defaults (Obsidian & Gold, dark) apply.
+ * [data-theme-preview] scopes a palette to one element (Settings previews);
+ * only the six base colours are available inside it.
+ */
+
+/* ── Palette A — Obsidian & Gold (default) ─────────────────────────────── */
+:root,
+:root[data-palette="obsidian"][data-mode="dark"],
+[data-theme-preview="obsidian"][data-mode="dark"] {
+  --color-background: #0B0D0F;
+  --color-surface: #171A1E;
+  --color-border: #292E34;
+  --color-accent: #D4A83F;
+  --color-text-primary: #F3F1EB;
+  --color-text-secondary: #9CA3AD;
+}
+:root[data-palette="obsidian"][data-mode="light"],
+[data-theme-preview="obsidian"][data-mode="light"] {
+  --color-background: #F7F6F2;
+  --color-surface: #FFFFFF;
+  --color-border: #DDDAD2;
+  --color-accent: #AD7C19;
+  --color-text-primary: #242629;
+  --color-text-secondary: #6B7078;
+}
+
+/* ── Palette B — Midnight & Sapphire ───────────────────────────────────── */
+:root[data-palette="sapphire"][data-mode="dark"],
+[data-theme-preview="sapphire"][data-mode="dark"] {
+  --color-background: #090E17;
+  --color-surface: #151E2C;
+  --color-border: #29374A;
+  --color-accent: #5D9CFF;
+  --color-text-primary: #F0F5FF;
+  --color-text-secondary: #9AA9BF;
+}
+:root[data-palette="sapphire"][data-mode="light"],
+[data-theme-preview="sapphire"][data-mode="light"] {
+  --color-background: #F4F7FC;
+  --color-surface: #FFFFFF;
+  --color-border: #D8E1EF;
+  --color-accent: #2867C8;
+  --color-text-primary: #18283C;
+  --color-text-secondary: #64748B;
+}
+
+/* ── Palette C — Graphite & Emerald ────────────────────────────────────── */
+:root[data-palette="emerald"][data-mode="dark"],
+[data-theme-preview="emerald"][data-mode="dark"] {
+  --color-background: #0D1111;
+  --color-surface: #18201F;
+  --color-border: #2B3835;
+  --color-accent: #47C99A;
+  --color-text-primary: #E9F2EF;
+  --color-text-secondary: #99AAA4;
+}
+:root[data-palette="emerald"][data-mode="light"],
+[data-theme-preview="emerald"][data-mode="light"] {
+  --color-background: #F3F7F5;
+  --color-surface: #FFFFFF;
+  --color-border: #D7E2DD;
+  --color-accent: #16845F;
+  --color-text-primary: #1C3029;
+  --color-text-secondary: #647B71;
+}
+
+/* ── Palette D — Onyx & Copper ─────────────────────────────────────────── */
+:root[data-palette="copper"][data-mode="dark"],
+[data-theme-preview="copper"][data-mode="dark"] {
+  --color-background: #100F0E;
+  --color-surface: #211D1A;
+  --color-border: #39312A;
+  --color-accent: #D18A55;
+  --color-text-primary: #F6EEE7;
+  --color-text-secondary: #B3A49A;
+}
+:root[data-palette="copper"][data-mode="light"],
+[data-theme-preview="copper"][data-mode="light"] {
+  --color-background: #FAF6F1;
+  --color-surface: #FFFFFF;
+  --color-border: #E7DAD0;
+  --color-accent: #A75B32;
+  --color-text-primary: #332820;
+  --color-text-secondary: #887468;
+}
+
+/* ── Derived tokens (all palettes) ─────────────────────────────────────── */
+:root {
+  --pa-color-scheme: dark;
+  --color-surface-hover: color-mix(in srgb, var(--color-surface), var(--color-text-primary) 6%);
+  --color-accent-hover: color-mix(in srgb, var(--color-accent), var(--color-text-primary) 16%);
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  /* Accent used as text or icon colour. Light-mode accents are darkened so
+     they stay at or above 4.5:1 on the soft accent background. */
+  --color-accent-text: var(--color-accent);
+  --color-on-accent: var(--color-background);
+  --color-focus: var(--color-accent);
+  --color-danger: #F08A7E;
+  --color-success: #8FD3A0;
+
+  /* Typography. Aptos Slab is only used when installed on the visitor's
+     device (no font files are served; web licensing is unverified). Roboto
+     Slab is the embedded fallback. */
+  --font-display: "Aptos Slab", "Roboto Slab", Rockwell, Georgia, serif;
+  --font-ui: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  /* Legacy aliases used by older page styles. */
+  --pa-gold: var(--color-accent);
+  --pa-gold-bright: var(--color-accent-text);
+  --pa-background: var(--color-background);
+  --pa-text: var(--color-text-primary);
+  --pa-font: var(--font-display);
+}
+:root[data-mode="light"] {
+  --pa-color-scheme: light;
+  --color-accent-text: color-mix(in srgb, var(--color-accent) 78%, #000);
+  --color-on-accent: #FFFFFF;
+  --color-danger: #B3261E;
+  --color-success: #1E7A3C;
+}
+
+/* color-scheme (native controls, scrollbars) is applied only to themed
+   regions, so legacy game panels keep the browser defaults they were built on. */
+.pa-header, .pa-sidebar, .pa-main, .site-footer { color-scheme: var(--pa-color-scheme); }
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+  font-weight: 400;
+  line-height: 1.5;
+}
+.pa-display { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; }
+.pa-numeric { font-variant-numeric: tabular-nums; font-weight: 700; }
+.pa-visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

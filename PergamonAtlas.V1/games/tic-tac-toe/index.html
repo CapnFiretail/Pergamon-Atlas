@@ -10,9 +10,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="/styles/legacy-frame.css">
-  <link rel="stylesheet" href="/styles/header.css">
-  <link rel="stylesheet" href="/styles/sidebar.css">
-  <script src="/scripts/nav.js" defer></script>
+  <script src="/scripts/theme.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto+Slab:wght@700;800&display=swap">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/layout.css">
   <link rel="stylesheet" href="/operation/styles/main.css">
   <link rel="stylesheet" href="/operation/styles/footer.css">
 
@@ -490,50 +493,8 @@
 <body>
 
   <div class="pa-page">
-  <header class="pa-header">
-    <a class="pa-brand" href="/" aria-label="PergamonAtlas home">
-      <img class="pa-logo" src="/images/logo.png" alt="" width="245" height="240">
-      <span class="pa-brand-name">PergamonAtlas</span>
-    </a>
-
-    <div class="pa-capsule">
-      <nav class="pa-nav" aria-label="Main navigation">
-        <!-- nav.js marks the current section with aria-current="page". -->
-        <a href="/">Home</a>
-        <a href="/games/">Games</a>
-        <a href="/suggestions/">Suggestions</a>
-      </nav>
-
-      <div class="pa-actions">
-        <a class="pa-icon-link pa-profile" href="/account/" aria-label="Your account">
-          <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/><circle class="pa-person" cx="24" cy="18" r="6"/><path class="pa-person" d="M14 36v-3a10 10 0 0 1 20 0v3z"/></svg>
-        </a>
-      </div>
-    </div>
-  </header>
-
+  <script src="/scripts/layout.js"></script>
   <div class="pa-layout">
-    <aside class="pa-sidebar">
-      <button class="pa-sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-expanded="true">&lsaquo;</button>
-      <nav aria-label="Sidebar">
-        <a href="/">
-          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg></span>
-          <span class="pa-nav-label">Home</span>
-        </a>
-        <a href="/games/">
-          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h.01M10 12h.01M14 12h.01"/></svg></span>
-          <span class="pa-nav-label">Games</span>
-        </a>
-        <a href="/suggestions/">
-          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 017 7c0 3-2 5-4 5H9c-2 0-4-2-4-5a7 7 0 017-7z"/></svg></span>
-          <span class="pa-nav-label">Suggestions</span>
-        </a>
-        <a href="/account/">
-          <span class="pa-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></span>
-          <span class="pa-nav-label">Account</span>
-        </a>
-      </nav>
-    </aside>
 
     <main class="main-content">
       <div class="ph-shell">

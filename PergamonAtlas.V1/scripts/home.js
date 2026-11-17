@@ -6,7 +6,7 @@
   if (!content || !root) return;
 
   const iconPaths = {
-    games: '<path d="M11 10h18c6 0 8 9 10 19 1 6-4 8-7 4l-5-6H13l-5 6c-3 4-8 2-7-4 2-10 4-19 10-19Z"/><path d="M11 15v10m-5-5h10m12-3h.1m5 5h.1" stroke="#080c09"/>',
+    games: '<path d="M11 10h18c6 0 8 9 10 19 1 6-4 8-7 4l-5-6H13l-5 6c-3 4-8 2-7-4 2-10 4-19 10-19Z"/><path d="M11 15v10m-5-5h10m12-3h.1m5 5h.1" style="stroke: var(--color-surface)"/>',
     suggestions: '<path d="M20 3a12 12 0 0 1 7 21.7V29H13v-4.3A12 12 0 0 1 20 3Z"/><path d="M14 33h12m-9 4h6" fill="none"/>',
     account: '<circle cx="20" cy="11" r="8"/><path d="M5 36v-5c0-14 30-14 30 0v5Z"/>'
   };
