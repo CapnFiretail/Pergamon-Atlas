@@ -279,7 +279,11 @@
 
 @container lower (max-width: 640px) {
   .home-carousel { padding: 14px 14px 16px; }
-  .home-carousel-title { font-size: 20px; }
+  .home-carousel-title { gap: 8px; font-size: 18px; }
+  .home-carousel-icon { width: 22px; height: 22px; }
+  .home-section-button { width: 36px; height: 36px; }
+  /* Tabs wrap rather than scroll, so every category stays visible. */
+  .home-tabs { flex-wrap: wrap; overflow: visible; }
   .home-carousel-body { gap: 8px; grid-template-columns: 36px minmax(0, 1fr) 36px; }
   .home-page-button { width: 36px; height: 36px; }
 }
