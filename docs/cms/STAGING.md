@@ -53,17 +53,42 @@ Then check **Storage**: buckets `site-media-drafts` (private) and
 
 ### 4. Edge Function
 
-With the Supabase CLI (`npm i -g supabase`, then `supabase login`):
+Use the Supabase CLI through `npx`, pinned (a global `npm i -g supabase`
+install is not supported). In Windows PowerShell call `npx.cmd`, because
+script execution policy blocks `npx.ps1`. Docker isn't needed: `--use-api`
+bundles the function on Supabase's side.
 
-```sh
-supabase functions deploy publish-media --project-ref <staging-ref>
-supabase secrets set --project-ref <staging-ref> \
-  PUBLISH_MEDIA_ALLOWED_ORIGINS="https://<preview alias>,http://localhost:4173"
-```
+1. Log in once, in a normal PowerShell window (the login asks you to type
+   a code):
+   ```powershell
+   npx.cmd supabase@2.122.1 login
+   ```
+   The token is stored under your user profile and can reach every project
+   in the account, so always pass `--project-ref`, and revoke it at
+   https://supabase.com/dashboard/account/tokens when you no longer need it.
+2. Set the allowed origins (comma-separated, no spaces):
+   ```powershell
+   npx.cmd supabase@2.122.1 secrets set --project-ref <staging-ref> PUBLISH_MEDIA_ALLOWED_ORIGINS=http://localhost:4173
+   ```
+   Add the preview alias when previews are connected (step 5).
+3. Deploy:
+   ```powershell
+   npx.cmd supabase@2.122.1 functions deploy publish-media --project-ref <staging-ref> --use-api --no-verify-jwt
+   ```
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are
 provided to functions by Supabase automatically; never set them anywhere
-else. Keep **Verify JWT** on (the default).
+else.
+
+**Why `--no-verify-jwt`.** That flag only turns off the gateway's built-in
+JWT check, which is designed for sessions signed with the legacy JWT secret.
+New projects (staging included: its `/auth/v1/.well-known/jwks.json`
+publishes an ES256 key) sign sessions with asymmetric keys, which that check
+may reject. The function itself still refuses every request without a valid
+session: `handler.ts` requires a bearer token, validates it with Supabase
+Auth (`auth.getUser`), and then reads `profiles.role` with the service key.
+Before deploying to production, check production's JWKS: if it still uses
+the legacy secret, the gateway check can stay on as an extra layer.
 
 ### 5. Vercel environment variables
 
