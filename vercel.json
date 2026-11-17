@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "buildCommand": "echo \"Serving PergamonAtlas.V1\"",
+  "buildCommand": "node tools/write-supabase-config.mjs",
   "installCommand": "",
   "outputDirectory": "PergamonAtlas.V1",
   "redirects": [
@@ -69,7 +69,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self' 'sha256-qbd3MWzW2h8kq04+H5MfQK/dMRG4BH2MU/jsVTRIxCE=' 'sha256-FY3u4AKFOaWn7nsdn2+ETjV24L7cKKFjaklyC2zEnnE=' 'sha256-1eWoIS8UuIV63qTegndQ3brx5Vj3lpxw90hfNzFhAv4=' 'sha256-To9IDD7Y9SzNzizi1HuiDwk/iYm/BAZr0d5FfmUDhEw=' 'sha256-XqbH/PytlHT3hPbSqX0/HGXNnxK77KzGLSiOFQIHBiY=' 'sha256-+ttYSsFmIScghDgKrLvk+Kgs7WWTiiLV+GWx4lb43fw='; style-src 'self' https://fonts.googleapis.com 'sha256-thUlb7qNF5nOBUhL97qUTrk5F7nIxqtPAf2191naxEE='; font-src https://fonts.gstatic.com; img-src 'self' data: https://rddijjezqrcjrnwskenb.supabase.co; connect-src 'self' https://rddijjezqrcjrnwskenb.supabase.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-qbd3MWzW2h8kq04+H5MfQK/dMRG4BH2MU/jsVTRIxCE=' 'sha256-FY3u4AKFOaWn7nsdn2+ETjV24L7cKKFjaklyC2zEnnE=' 'sha256-1eWoIS8UuIV63qTegndQ3brx5Vj3lpxw90hfNzFhAv4=' 'sha256-To9IDD7Y9SzNzizi1HuiDwk/iYm/BAZr0d5FfmUDhEw=' 'sha256-XqbH/PytlHT3hPbSqX0/HGXNnxK77KzGLSiOFQIHBiY=' 'sha256-+ttYSsFmIScghDgKrLvk+Kgs7WWTiiLV+GWx4lb43fw='; style-src 'self' https://fonts.googleapis.com 'sha256-thUlb7qNF5nOBUhL97qUTrk5F7nIxqtPAf2191naxEE='; font-src https://fonts.gstatic.com; img-src 'self' data: https://rddijjezqrcjrnwskenb.supabase.co https://rambkiswuigtjfgdxexk.supabase.co; connect-src 'self' https://rddijjezqrcjrnwskenb.supabase.co https://rambkiswuigtjfgdxexk.supabase.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     },
@@ -78,7 +78,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google https://*.doubleclick.net https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://rddijjezqrcjrnwskenb.supabase.co https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google https://*.doubleclick.net https://*.adtrafficquality.google; frame-src https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google https://*.doubleclick.net https://*.adtrafficquality.google https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google https://*.doubleclick.net https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://rddijjezqrcjrnwskenb.supabase.co https://rambkiswuigtjfgdxexk.supabase.co https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google https://*.doubleclick.net https://*.adtrafficquality.google; frame-src https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google https://*.doubleclick.net https://*.adtrafficquality.google https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     }

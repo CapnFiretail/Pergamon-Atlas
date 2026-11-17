@@ -11,8 +11,12 @@
     console.error('Pergamon Auth: supabase-js failed to load before supabase.js');
     return;
   }
-  if (!window.PERGAMON_SUPABASE_URL || window.PERGAMON_SUPABASE_URL === 'YOUR_SUPABASE_PROJECT_URL') {
-    console.warn('Pergamon Auth: supabase-config.js still has placeholder values. Auth will not work until configured.');
+  // An unconfigured build (e.g. a preview without its environment values;
+  // see tools/write-supabase-config.mjs) runs without accounts rather than
+  // failing: no client is created, so PergamonAuth calls reject cleanly.
+  if (!window.PERGAMON_SUPABASE_URL || !window.PERGAMON_SUPABASE_ANON_KEY) {
+    console.info('Pergamon Auth: Supabase is not configured for this deployment; sign-in is unavailable.');
+    return;
   }
 
   window.PergamonSupabaseClient = window.supabase.createClient(

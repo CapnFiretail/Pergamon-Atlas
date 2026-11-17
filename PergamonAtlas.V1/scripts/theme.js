@@ -12,7 +12,10 @@
 (function () {
   var STORAGE_KEY = 'pa-appearance';
   var SIDEBAR_KEY = 'paSidebarCollapsed';
-  var AUTH_KEY = 'sb-rddijjezqrcjrnwskenb-auth-token';
+  // supabase-js stores the session as sb-<project ref>-auth-token. Match any
+  // ref so the guess works on production and on staging previews alike
+  // (theme.js runs before the environment's Supabase config is loaded).
+  var AUTH_KEY_RE = /^sb-[a-z0-9]{20}-auth-token$/;
   var DEFAULT_PALETTE = 'obsidian';
   var DEFAULT_MODE = 'dark';
   var PALETTES = [
@@ -44,7 +47,13 @@
   }
 
   function hasStoredSession() {
-    try { return !!localStorage.getItem(AUTH_KEY); } catch (e) { return false; }
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (AUTH_KEY_RE.test(key) && localStorage.getItem(key)) return true;
+      }
+    } catch (e) {}
+    return false;
   }
 
   var prefs = readPrefs();
@@ -89,7 +98,7 @@
   // Keep other open tabs in step.
   window.addEventListener('storage', function (event) {
     if (event.key === STORAGE_KEY) { prefs = readPrefs(); apply(); }
-    else if (event.key === AUTH_KEY) { signedIn = hasStoredSession(); apply(); }
+    else if (event.key === null || AUTH_KEY_RE.test(event.key)) { signedIn = hasStoredSession(); apply(); }
     else if (event.key === SIDEBAR_KEY) applySidebar();
   });
 

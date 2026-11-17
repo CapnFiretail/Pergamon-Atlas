@@ -109,14 +109,22 @@ Supabase personal access token for the CLI works; revoke it afterwards.
 
 ## Steps I do after that (on the development branch, with your approval)
 
-1. Wire the config: `vercel.json` → `"buildCommand": "node tools/write-supabase-config.mjs"`.
+1. ✅ Wire the config: `vercel.json` → `"buildCommand": "node tools/write-supabase-config.mjs"`.
    The script refuses to build a preview that points at production, refuses
    secret keys, and fails a production build that lacks its values (so a
    misconfiguration leaves the current production deployment live).
-2. Make `supabase.js` tolerate an unconfigured build (auth disabled instead
-   of an error).
-3. Add the staging host to the report-only CSP for previews.
-4. Run the staging integration tests (see TESTING.md) against the preview.
+   The committed `supabase-config.js` is the local-development copy and
+   points at staging; every Vercel build overwrites it for its environment.
+2. ✅ Make `supabase.js` tolerate an unconfigured build (auth disabled instead
+   of an error), and make `theme.js` recognise any project's session key.
+3. ✅ Add the staging host to the report-only CSP.
+4. Add the preview alias to staging Auth redirect URLs and to
+   `PUBLISH_MEDIA_ALLOWED_ORIGINS`, then run the staging integration tests
+   (see TESTING.md) against the preview.
+
+Note for the eventual merge: once `main` has this build step, production
+builds need the Production-scope variables (set in step 5); without them the
+build fails and the previous production deployment stays live.
 
 ## Keeping production isolated
 

@@ -196,7 +196,7 @@ web-sized images.
 | supabase-js pinned to 2.118.0, served from `/vendor/supabase-js/`, SRI `sha384` on every page; tarball verified against npm's integrity | **done** on this branch |
 | Content-Security-Policy-Report-Only: strict policy on all non-game pages (`script-src 'self'` + hashes of the 6 inline `loadSnippets` calls; `style-src` + hash of the inline `<style>` on /suggestions/; Google Fonts; production Supabase only); permissive policy on game pages (AdSense needs `'unsafe-inline'`, Google ad hosts and a `www.google.com` frame). Scanned on all 17 pages: no violations | **done**, report-only |
 | `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` | **done** |
-| Explicit per-environment Supabase config (`tools/write-supabase-config.mjs`) | **prepared**, not wired (see STAGING.md) |
+| Explicit per-environment Supabase config (`tools/write-supabase-config.mjs` as the Vercel build command; previews → staging) | **done** on this branch (see STAGING.md) |
 | Legacy exposures (`homepage_settings.updated_by`, listable `homepage` bucket) and profiles grants | **proposed** in `0010_legacy_hardening.sql` (optional) |
 
 Inline hashes are of the text as the browser parses it: HTML parsing turns
