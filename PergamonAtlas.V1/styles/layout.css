@@ -142,6 +142,9 @@
   white-space: nowrap;
 }
 .pa-sidebar .pa-icon { width: 24px; height: 24px; }
+/* Destination icons fill more of their 48px squares; the toggle chevron stays 24px. */
+.pa-sidebar-nav .pa-icon { width: 28px; height: 28px; }
+.pa-sidebar a.active .pa-icon { stroke-width: 2; }
 .pa-sidebar a:hover, .pa-sidebar-toggle:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
 .pa-sidebar a.active {
   background: var(--color-accent-soft);
