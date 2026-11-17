@@ -90,6 +90,7 @@ label.palette-option:hover { border-color: var(--color-text-secondary); }
 
 .settings-cta { display: inline-block; margin-top: 16px; color: var(--color-accent-text); font-weight: 600; font-size: 14px; text-underline-offset: 3px; }
 .settings-cta:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.settings-cta[hidden] { display: none; }
 .settings-storage { margin: 0; color: var(--color-text-secondary); font-size: 13px; }
 
 @media (max-width: 560px) {
