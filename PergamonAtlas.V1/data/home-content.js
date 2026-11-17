@@ -1,55 +1,78 @@
 // Homepage content. /scripts/home.js renders it; nothing here affects layout.
 //
-// - featured: the cinematic card (title, Play Now, full-bleed artwork). `art`
-//   gives the image (src/srcset/width/height), an optional `focus` and
-//   `focusNarrow` (CSS object-position for wide and narrow cards) and `alt`
-//   (leave '' when the artwork is decorative). No art = a plain dark card.
-//   Or `fit: 'height'` for art much narrower than its card: the image is
-//   `scale` × the card height (`scaleNarrow` on phones), centred at `x`
-//   (`xNarrow` on phones; calc() allowed) with its point `y` at the card's
-//   middle, and its sides fade into `base`.
-// - spotlight: the 140px card below it, same fields as `featured`. Change
-//   the title, href and art to rotate the spotlight game; no CSS needed.
+// - document: the editable cards, in the CMS content format (schema v1, the
+//   same shape the CMS stores and publishes; see docs/cms/ARCHITECTURE.md).
+//   This copy is the static fallback; scripts/cms/content.js translates it
+//   for the renderer. Components:
+//     home.featured / home.spotlight  { title, cta, href, art?, style? }
+//     home.carousel                   { order: [card ids] }
+//     home.carousel.<id>              { title, category, href, art? }
+//   art = { source: { static: '/images/featured/…' } | { media: '<id>' },
+//           alt, fit: 'cover' (default) | 'height', focus / focusNarrow {x, y}
+//           (percent), scale / scaleNarrow, anchor / anchorNarrow
+//           { x (percent), offset (px), y (percent) }, base '#rrggbb' }.
+//   Positions are numbers; the translation layer builds the CSS.
+// - staticImages: size details for images under /images/featured/ that the
+//   document may reference (responsive variants, intrinsic size).
 // - context: the right-hand panel (Atlas Navigation). Each link may set
 //   `signedInLabel` to change its title for signed-in visitors. Set
 //   `context: null` to hide the panel.
 // - explore: the carousel's sections, switched with the top-right arrows.
-//   Game items are looked up by path in /data/entries.js (a path that isn't a
-//   live entry is skipped); `category` drives the tabs. A section with no
-//   items shows its `emptyMessage`.
+//   A section with `component` takes its cards from that document component;
+//   cards whose link isn't a live entry in /data/entries.js are skipped.
+//   `category` drives the tabs. A section with no items shows its `emptyMessage`.
 window.PergamonHomeContent = {
-  featured: {
-    title: 'Chess Forge',
-    href: '/games/chess-forge/',
-    cta: 'Play Now',
-    art: {
-      src: '/images/featured/chess-forge.webp',
-      srcset: '/images/featured/chess-forge-960.webp 960w, /images/featured/chess-forge.webp 1619w',
-      width: 1619,
-      height: 971,
-      focus: '78% 5%',
-      focusNarrow: '88% 12%',
-      alt: ''
+  document: {
+    schema: 1,
+    components: {
+      'home.featured': {
+        title: 'Chess Forge',
+        cta: 'Play Now',
+        href: '/games/chess-forge/',
+        art: {
+          source: { static: '/images/featured/chess-forge.webp' },
+          alt: '',
+          focus: { x: 78, y: 5 },
+          focusNarrow: { x: 88, y: 12 }
+        },
+        style: { rules: true }
+      },
+      'home.spotlight': {
+        title: 'Connect Four',
+        cta: 'Play Now',
+        href: '/games/connect-four/',
+        art: {
+          source: { static: '/images/featured/connect-four.webp' },
+          alt: '',
+          fit: 'height',
+          scale: 1.3,
+          scaleNarrow: 1,
+          anchor: { x: 50, offset: -60, y: 50 },
+          anchorNarrow: { x: 100, offset: -139, y: 50 },
+          base: '#030916'
+        },
+        style: { rules: true }
+      },
+      'home.carousel': { order: ['battleship', 'breakout', 'pong', 'blackjack', 'connect-four', 'snake'] },
+      'home.carousel.battleship': { title: 'Battleship', category: 'Strategy', href: '/games/battleship/' },
+      'home.carousel.breakout': { title: 'Breakout', category: 'Arcade', href: '/games/breakout/' },
+      'home.carousel.pong': { title: 'Pong', category: 'Arcade', href: '/games/pong/' },
+      'home.carousel.blackjack': { title: 'Blackjack', category: 'Card', href: '/games/blackjack/' },
+      'home.carousel.connect-four': { title: 'Connect Four', category: 'Strategy', href: '/games/connect-four/' },
+      'home.carousel.snake': { title: 'Snake', category: 'Arcade', href: '/games/snake/' }
     }
   },
 
-  spotlight: {
-    title: 'Connect Four',
-    href: '/games/connect-four/',
-    cta: 'Play Now',
-    art: {
-      src: '/images/featured/connect-four.webp',
+  staticImages: {
+    '/images/featured/chess-forge.webp': {
+      srcset: '/images/featured/chess-forge-960.webp 960w, /images/featured/chess-forge.webp 1619w',
+      width: 1619,
+      height: 971
+    },
+    '/images/featured/connect-four.webp': {
       srcset: '/images/featured/connect-four-1100.webp 1100w, /images/featured/connect-four.webp 2172w',
       width: 2172,
-      height: 724,
-      fit: 'height',
-      scale: 1.3,
-      x: 'calc(50% - 60px)',
-      scaleNarrow: 1,
-      xNarrow: 'calc(100% - 139px)',
-      y: '50%',
-      base: '#030916',
-      alt: ''
+      height: 724
     }
   },
 
@@ -71,14 +94,7 @@ window.PergamonHomeContent = {
         icon: 'games',
         categories: ['All Games', 'Strategy', 'Arcade', 'Classic', 'Card'],
         emptyCategory: 'No games in this category yet.',
-        items: [
-          { path: '/games/battleship', title: 'Battleship', category: 'Strategy', art: null },
-          { path: '/games/breakout', title: 'Breakout', category: 'Arcade', art: null },
-          { path: '/games/pong', title: 'Pong', category: 'Arcade', art: null },
-          { path: '/games/blackjack', title: 'Blackjack', category: 'Card', art: null },
-          { path: '/games/connect-four', title: 'Connect Four', category: 'Strategy', art: null },
-          { path: '/games/snake', title: 'Snake', category: 'Arcade', art: null }
-        ]
+        component: 'home.carousel'
       },
       {
         // Future section: no tools exist yet, so every category shows the

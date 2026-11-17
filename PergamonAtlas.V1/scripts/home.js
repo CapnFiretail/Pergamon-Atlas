@@ -1,16 +1,20 @@
-// Homepage renderer. Content lives in /data/home-content.js and game lookups
-// in /data/entries.js; this file only builds structure.
+// Homepage renderer. Card content is a CMS document (data/home-content.js is
+// the static copy), translated by scripts/cms/content.js; game lookups come
+// from /data/entries.js. This file only builds structure.
 //
 // Included as a plain script right after <div id="home">, so the page renders
 // while it is still parsing (no layout shift once the rest loads).
 //
 // Components: featureCard() for the featured and spotlight games,
 // atlasNavigation() for the right-hand panel, carousel() + tile() for the
-// explore strip. Each returns an element and knows nothing about the page grid.
+// explore strip. Each knows nothing about the page grid. Card components are
+// built once and then apply(model) in place, so they can be redrawn from a
+// new document (window.PergamonHome.render) without rebuilding the page.
 (function () {
   const content = window.PergamonHomeContent;
+  const cms = window.PergamonCMS && window.PergamonCMS.content;
   const root = document.getElementById('home');
-  if (!content || !root) return;
+  if (!content || !cms || !root) return;
 
   const ICONS = {
     play: '<path d="M8 5.5v13l11-6.5z"/>',
@@ -37,14 +41,29 @@
   let idCount = 0;
   const uid = prefix => `${prefix}-${++idCount}`;
 
-  // Neutral artwork slot. A later stage swaps in real art via `art`.
-  function art(src, className) {
+  // Artwork slot: the image (cover crop, focal point and zoom from the art
+  // model; separate phone values), or the neutral placeholder when empty.
+  function art(a, className) {
     const box = el('div', 'home-art ' + (className || ''));
-    box.setAttribute('aria-hidden', 'true');
-    if (src) {
-      const img = el('img'); img.src = src; img.alt = '';
+    if (a && a.src) {
+      const img = el('img');
+      img.src = a.src;
+      if (a.width) img.width = a.width;
+      if (a.height) img.height = a.height;
+      img.alt = a.alt || '';
+      img.decoding = 'async';
+      img.loading = 'lazy';
+      if (!a.alt) box.setAttribute('aria-hidden', 'true');
+      box.classList.add('has-art');
+      const set = (prop, v) => { if (v !== undefined) box.style.setProperty(prop, v); };
+      set('--art-focus', a.focus); set('--art-focus-narrow', a.focusNarrow);
+      if (a.zoom !== 1 || a.zoomNarrow !== 1) {
+        box.dataset.artZoom = '';
+        set('--art-zoom', String(a.zoom)); set('--art-zoom-narrow', String(a.zoomNarrow));
+      }
       box.append(img);
     } else {
+      box.setAttribute('aria-hidden', 'true');
       box.append(el('span', 'home-art-label', 'Artwork'));
     }
     return box;
@@ -60,7 +79,12 @@
   // around a live heading) and the Play Now link. Everything but the image
   // comes from CSS, so another game only needs new data. The featured card
   // stacks the button under the title; the spotlight puts it on the right.
-  function featureCard(item, variant) {
+  // Built once; apply(model) sets text, link and art in place.
+  const FEATURE_VARS = ['--feature-focus', '--feature-focus-narrow', '--feature-zoom', '--feature-zoom-narrow',
+    '--feature-art-scale', '--feature-art-scale-narrow', '--feature-art-x', '--feature-art-x-narrow',
+    '--feature-art-y', '--feature-art-y-narrow', '--feature-base'];
+
+  function featureCard(variant) {
     const spotlight = variant === 'spotlight';
     const section = el('section', spotlight
       ? 'home-banner home-banner--spotlight home-feature home-feature--spotlight'
@@ -68,36 +92,8 @@
     const headingId = uid('home-feature');
     section.setAttribute('aria-labelledby', headingId);
 
-    const a = item.art;
-    if (a && a.src) {
-      const img = el('img', 'home-feature-art');
-      img.src = a.src;
-      if (a.srcset) { img.srcset = a.srcset; img.sizes = '(max-width: 900px) 100vw, 60vw'; }
-      if (a.width) img.width = a.width;
-      if (a.height) img.height = a.height;
-      img.alt = a.alt || '';
-      if (!a.alt) img.setAttribute('aria-hidden', 'true');
-      img.decoding = 'async';
-      img.setAttribute('fetchpriority', spotlight ? 'auto' : 'high');
-      if (a.focus) section.style.setProperty('--feature-focus', a.focus);
-      if (a.focusNarrow) section.style.setProperty('--feature-focus-narrow', a.focusNarrow);
-      // fit: 'height' sizes the art by the card's height (scale × height,
-      // scaleNarrow on phones) instead of covering it, centres it at x / xNarrow, and
-      // feathers its sides into the card colour (`base`). For artwork much
-      // narrower than the card, where "cover" would crop away the subject.
-      if (a.fit === 'height') {
-        section.dataset.artFit = 'height';
-        const set = (prop, v) => { if (v !== undefined) section.style.setProperty(prop, v); };
-        set('--feature-art-scale', a.scale !== undefined ? String(a.scale) : undefined);
-        set('--feature-art-scale-narrow', a.scaleNarrow !== undefined ? String(a.scaleNarrow) : undefined);
-        set('--feature-art-x', a.x); set('--feature-art-x-narrow', a.xNarrow); set('--feature-art-y', a.y);
-        set('--feature-base', a.base);
-      }
-      section.append(img);
-    }
     const shade = el('div', 'home-feature-shade');
     shade.setAttribute('aria-hidden', 'true');
-
     const copy = el('div', 'home-feature-copy');
     const lockup = el('div', 'home-feature-lockup');
     const rule = modifier => {
@@ -106,15 +102,12 @@
       r.innerHTML = modifier === 'top' ? '<span></span><i></i><span></span>' : '<span></span>';
       return r;
     };
-    const h = el('h2', 'home-feature-title', item.title); h.id = headingId;
+    const h = el('h2', 'home-feature-title'); h.id = headingId;
     lockup.append(rule('top'), h, rule('bottom'));
-
     const action = el('a', 'home-feature-play');
-    action.href = item.href;
-    action.setAttribute('aria-label', `${item.cta}: ${item.title}`);
     action.innerHTML = icon('playSolid', 'home-feature-play-icon');
-    action.append(el('span', '', item.cta));
-
+    const label = el('span', '');
+    action.append(label);
     if (spotlight) {
       copy.append(lockup);
       section.append(shade, copy, action);
@@ -122,7 +115,58 @@
       copy.append(lockup, action);
       section.append(shade, copy);
     }
-    return section;
+
+    let img = null;
+    function applyArt(a) {
+      FEATURE_VARS.forEach(v => section.style.removeProperty(v));
+      delete section.dataset.artFit;
+      delete section.dataset.artZoom;
+      if (!a || !a.src) { if (img) { img.remove(); img = null; } return; }
+      if (!img) { img = el('img', 'home-feature-art'); section.prepend(img); }
+      if (img.getAttribute('src') !== a.src) {
+        if (a.srcset) { img.srcset = a.srcset; img.sizes = '(max-width: 900px) 100vw, 60vw'; }
+        else { img.removeAttribute('srcset'); img.removeAttribute('sizes'); }
+        if (a.width) img.width = a.width; else img.removeAttribute('width');
+        if (a.height) img.height = a.height; else img.removeAttribute('height');
+        img.src = a.src;
+      }
+      img.alt = a.alt || '';
+      if (a.alt) img.removeAttribute('aria-hidden'); else img.setAttribute('aria-hidden', 'true');
+      img.decoding = 'async';
+      img.setAttribute('fetchpriority', spotlight ? 'auto' : 'high');
+      const set = (prop, v) => { if (v !== undefined) section.style.setProperty(prop, v); };
+      if (a.fit === 'height') {
+        // fit: 'height' sizes the art by the card's height (scale × height,
+        // scaleNarrow on phones) instead of covering it, centres it at x / xNarrow, and
+        // feathers its sides into the card colour (`base`). For artwork much
+        // narrower than the card, where "cover" would crop away the subject.
+        section.dataset.artFit = 'height';
+        set('--feature-art-scale', a.scale !== undefined ? String(a.scale) : undefined);
+        set('--feature-art-scale-narrow', a.scaleNarrow !== undefined ? String(a.scaleNarrow) : undefined);
+        set('--feature-art-x', a.x); set('--feature-art-x-narrow', a.xNarrow);
+        set('--feature-art-y', a.y); set('--feature-art-y-narrow', a.yNarrow);
+        set('--feature-base', a.base);
+      } else {
+        set('--feature-focus', a.focus);
+        set('--feature-focus-narrow', a.focusNarrow);
+        // Cover zoom (scale past "cover", around the focal point).
+        if (a.zoom !== 1 || a.zoomNarrow !== 1) {
+          section.dataset.artZoom = '';
+          set('--feature-zoom', String(a.zoom)); set('--feature-zoom-narrow', String(a.zoomNarrow));
+        }
+      }
+    }
+
+    function apply(item) {
+      section.dataset.cmsId = item.id;
+      h.textContent = item.title;
+      action.href = item.href;
+      action.setAttribute('aria-label', `${item.cta}: ${item.title}`);
+      label.textContent = item.cta;
+      applyArt(item.art);
+    }
+
+    return { element: section, apply };
   }
 
   // ── Atlas Navigation (right-hand panel) ───────────────────────────────
@@ -170,6 +214,7 @@
   function tile(item, entry) {
     const card = el('a', 'home-tile');
     card.href = norm(entry.path) + '/';
+    if (item.id) card.dataset.cmsId = item.id;
     card.append(art(item.art, 'home-tile-art'));
     const meta = el('div', 'home-tile-meta');
     const text = el('div', 'home-tile-text');
@@ -192,15 +237,23 @@
   const CARD_MIN = 170;
   const CARD_GAP = 12;
 
-  function carousel(data) {
+  // Carousel items: { item, entry } for cards that link to a live game.
+  function liveItems(items) {
+    return (items || []).map(item => {
+      const target = item.href || item.path;
+      if (!target) return null;
+      const entry = liveGame(target);
+      if (!entry) { console.warn('Homepage: carousel item is not a live page:', target); return null; }
+      return { item, entry };
+    }).filter(Boolean);
+  }
+
+  // `cards` = tile models for sections that take their items from a document
+  // component (section.component); other sections use their own `items`.
+  function carousel(data, cards) {
     const sections = data.sections.map(sec => ({
       ...sec,
-      items: (sec.items || []).map(item => {
-        if (!item.path) return null;
-        const entry = liveGame(item.path);
-        if (!entry) { console.warn('Homepage: carousel item is not a live page:', item.path); return null; }
-        return { item, entry };
-      }).filter(Boolean)
+      items: liveItems(sec.component ? cards : sec.items)
     }));
 
     let sectionIndex = 0;                       // level 1
@@ -337,8 +390,21 @@
       }
     }
 
-    return { element: section, start };
+    // Replace the cards of document-driven sections, keeping the current
+    // section, category and (where it still exists) page.
+    function setItems(cards) {
+      let changed = false;
+      sections.forEach(sec => { if (sec.component) { sec.items = liveItems(cards); changed = true; } });
+      if (changed) renderPage();
+    }
+
+    return { element: section, start, setItems };
   }
+
+  // ── Document → model ──────────────────────────────────────────────────
+  const staticCtx = { staticImages: content.staticImages || {} };
+  const fallbackModel = cms.toModel(content.document, staticCtx);
+  let model = fallbackModel || { featured: null, spotlight: null, carousel: [] };
 
   // ── Page ──────────────────────────────────────────────────────────────
   // .home is the shell grid: sidebar | upper on row 1, lower across row 2.
@@ -346,8 +412,14 @@
   const upper = el('div', 'home-upper');
   const grid = el('div', 'home-feature-grid');
   const banners = el('div', 'home-banners');
-  if (content.featured) banners.append(featureCard(content.featured));
-  if (content.spotlight) banners.append(featureCard(content.spotlight, 'spotlight'));
+  const cards = {};                              // component id -> card component
+  [['featured', 'home.featured'], ['spotlight', 'home.spotlight']].forEach(([key, id]) => {
+    if (!model[key]) return;
+    const card = featureCard(key === 'spotlight' ? 'spotlight' : 'featured');
+    card.apply(model[key]);
+    cards[id] = card;
+    banners.append(card.element);
+  });
   grid.append(banners);
   if (content.context) grid.append(atlasNavigation(content.context));
   else grid.classList.add('no-context');
@@ -357,7 +429,7 @@
   let explore = null;
   if (content.explore) {
     const lower = el('div', 'home-lower');
-    explore = carousel(content.explore);
+    explore = carousel(content.explore, model.carousel);
     lower.append(explore.element);
     root.append(lower);
   }
@@ -366,6 +438,27 @@
   if (window.PergamonLayout) window.PergamonLayout.mountSidebar(root, upper);
   // Pages are sized from the carousel's measured width, so render once it is in place.
   if (explore) explore.start();
+
+  // ── Public API ────────────────────────────────────────────────────────
+  // render(doc, { media }) redraws the cards from another document in place
+  // (published content, or an admin's working copy). Returns false, and
+  // leaves the page as it is, if the document can't be read. Cards are
+  // addressed by component id; the featured/spotlight slots exist from the
+  // first render, so a document can change their content but not add slots.
+  window.PergamonHome = {
+    render(doc, extra) {
+      const next = cms.toModel(doc, Object.assign({}, staticCtx, extra || {}));
+      if (!next) return false;
+      model = next;
+      if (cards['home.featured'] && next.featured) cards['home.featured'].apply(next.featured);
+      if (cards['home.spotlight'] && next.spotlight) cards['home.spotlight'].apply(next.spotlight);
+      if (explore) explore.setItems(next.carousel);
+      return true;
+    },
+    model: () => model,
+    cardIds: () => Object.keys(cards).concat(model.carousel.map(c => c.id)),
+    element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`))
+  };
 
   // A password-reset link that Supabase sent to the Site URL (the homepage)
   // instead of the reset page: finish it there. auth.js loads after this file.

@@ -52,7 +52,9 @@
   border: 1px dashed var(--color-border);
   border-radius: 10px;
 }
-.home-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.home-art img { width: 100%; height: 100%; object-fit: cover; object-position: var(--art-focus, 50% 50%); display: block; }
+/* Zoom past "cover" around the focal point (only when the art sets a zoom). */
+.home-art[data-art-zoom] img { transform: scale(var(--art-zoom, 1)); transform-origin: var(--art-focus, 50% 50%); }
 .home-art-label { color: var(--color-text-secondary); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 
 /* ── Banners ───────────────────────────────────────────────────────────── */
@@ -99,6 +101,11 @@
   height: 100%;
   object-fit: cover;
   object-position: var(--feature-focus, 75% 25%);
+}
+/* Cover zoom (only when the art sets a zoom): scale around the focal point. */
+.home-feature[data-art-zoom] .home-feature-art {
+  transform: scale(var(--feature-zoom, 1));
+  transform-origin: var(--feature-focus, 75% 25%);
 }
 /* Height-fitted art (data fit: 'height'): scaled to the card's height,
    centred at --feature-art-x, edges feathered into --feature-base. */
@@ -383,10 +390,21 @@
   .home-feature--spotlight .home-feature-copy { max-width: 100%; padding: 0; }
   .home-feature--spotlight .home-feature-title { font-size: clamp(24px, 7.5cqi, 30px); }
   .home-feature--spotlight .home-feature-play { height: 44px; }
-  .home-feature[data-art-fit="height"] .home-feature-art { left: var(--feature-art-x-narrow, var(--feature-art-x, 50%)); height: calc(var(--feature-art-scale-narrow, var(--feature-art-scale, 1)) * 100%); }
+  .home-feature[data-art-fit="height"] .home-feature-art {
+    left: var(--feature-art-x-narrow, var(--feature-art-x, 50%));
+    height: calc(var(--feature-art-scale-narrow, var(--feature-art-scale, 1)) * 100%);
+    transform: translate(-50%, calc(-1 * var(--feature-art-y-narrow, var(--feature-art-y, 50%))));
+  }
+  .home-feature[data-art-zoom] .home-feature-art {
+    transform: scale(var(--feature-zoom-narrow, var(--feature-zoom, 1)));
+    transform-origin: var(--feature-focus-narrow, var(--feature-focus, 75% 25%));
+  }
 }
 
 @container lower (max-width: 640px) {
+  /* Carousel artwork: the phone crop, when the card has one. */
+  .home-art img { object-position: var(--art-focus-narrow, var(--art-focus, 50% 50%)); }
+  .home-art[data-art-zoom] img { transform: scale(var(--art-zoom-narrow, var(--art-zoom, 1))); transform-origin: var(--art-focus-narrow, var(--art-focus, 50% 50%)); }
   .home-carousel { padding: 14px 14px 16px; }
   .home-carousel-title { gap: 8px; font-size: 18px; }
   .home-carousel-icon { width: 22px; height: 22px; }

@@ -66,25 +66,35 @@ A new page needs, in `<head>`: `theme.js`, the Google Fonts link,
 </div>
 ```
 
-### Featured and spotlight cards
+### Homepage cards
 
-The homepage's two game cards are built by `featureCard()` in
-`scripts/home.js` from `featured` (260px, button under the title) and
-`spotlight` (140px, button on the right) in `data/home-content.js`. Each
-takes a title, `href`, `cta` and `art`:
+The featured card (260px, button under the title), the spotlight (140px,
+button on the right) and the carousel cards are described by one CMS
+content document (`document` in `data/home-content.js`, schema v1; the same
+format the CMS stores and publishes — see `docs/cms/ARCHITECTURE.md`).
+`scripts/cms/content.js` translates it into the renderer's model, and
+`scripts/home.js` draws it. Each card is addressed by a stable component id
+(`home.featured`, `home.spotlight`, `home.carousel.<id>`) and can be redrawn
+in place with `window.PergamonHome.render(document)`.
 
-- `src`, `srcset`, `width`, `height`, and `alt` (empty when decorative).
-- Default fit is "cover", cropped with `focus`/`focusNarrow` (CSS
-  `object-position`).
+Image settings (`art`) are numbers, never CSS:
+
+- `source`: `{ static: '/images/featured/…' }` or `{ media: '<id>' }`; size
+  details for static images live in `staticImages`. `alt` is empty when the
+  art is decorative.
+- Default fit is "cover": `focus` / `focusNarrow` (`{x, y}` percent) set the
+  crop and `scale` / `scaleNarrow` zoom around it.
 - `fit: 'height'` suits art much narrower than its card: the image is
-  `scale` × the card height (`scaleNarrow` on phones), centred at `x`
-  (`xNarrow`; `calc()` allowed), with `y` placed at the card's middle, and
+  `scale` × the card height (`scaleNarrow` on phones), positioned by
+  `anchor` / `anchorNarrow` (`{x` percent, `offset` px, `y` percent`}`), and
   its sides fade into `base` (the card colour).
+- Carousel cards take the same cover settings; without `art` they show the
+  "Artwork" placeholder.
 
 The title, ornament rules and Play Now button are HTML/CSS and take the
-palette's accent; the cards stay dark in every mode. To change either game,
-add its artwork to `images/featured/` (keep the original in
-`artwork/source/`) and edit the data; no CSS or HTML edits are needed.
+palette's accent; the cards stay dark in every mode. To change a game, add
+its artwork to `images/featured/` (keep the original in `artwork/source/`)
+and edit the document; no CSS or HTML edits are needed.
 
 Game pages and the Games catalog still draw their content area with the
 legacy `operation/styles/main.css`; only their header, sidebar and footer
