@@ -5,6 +5,9 @@
  * split on narrower screens:
  *   > 860px   70/30 grid: banners left (260 + 16 + 140), panel right (416)
  *   ≤ 860px   one column; the context panel moves below the banners
+ *   ≤ 900px   carousel tabs move to their own row
+ * A second container on .home-banners scales the banner titles and drops the
+ * spotlight artwork when the banner column is under 720px.
  *   ≤ 640px   banners stack their copy and artwork; heights follow content
  */
 
@@ -28,7 +31,7 @@
   gap: 16px;
 }
 .home-feature-grid.no-context { grid-template-columns: minmax(0, 1fr); }
-.home-banners { display: grid; grid-template-rows: 260px 140px; gap: 16px; min-width: 0; }
+.home-banners { container: banners / inline-size; display: grid; grid-template-rows: 260px 140px; gap: 16px; min-width: 0; }
 
 /* ── Artwork placeholder ───────────────────────────────────────────────── */
 .home-art {
@@ -54,7 +57,7 @@
 }
 .home-banner-copy { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .home-eyebrow { margin: 0 0 8px; color: var(--color-accent-text); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-.home-banner-title { margin: 0 0 10px; font: 800 44px/1.05 var(--font-display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.home-banner-title { margin: 0 0 10px; font: 800 clamp(30px, 5.4cqi, 44px)/1.05 var(--font-display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .home-banner-desc { margin: 0 0 20px; max-width: 36ch; color: var(--color-text-secondary); font-size: 15px; line-height: 1.5; }
 
 .home-banner--featured { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
@@ -64,7 +67,7 @@
 .home-banner--spotlight { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; }
 .home-banner--spotlight .home-banner-copy { padding: 18px 28px; }
 .home-banner--spotlight .home-eyebrow { margin-bottom: 4px; }
-.home-banner--spotlight .home-banner-title { margin-bottom: 4px; font-size: 28px; font-weight: 700; }
+.home-banner--spotlight .home-banner-title { margin-bottom: 4px; font-size: clamp(22px, 3.5cqi, 28px); font-weight: 700; }
 .home-banner--spotlight .home-banner-desc { margin: 0; font-size: 14px; }
 .home-banner--spotlight .home-banner-art { margin: 10px 0; }
 .home-banner-action { display: flex; align-items: center; padding: 0 28px; }
@@ -212,20 +215,29 @@
   .home-context-row { flex: 0 0 auto; }
 }
 
+/* Narrow banner column (e.g. 70/30 kept at ~1024px with the sidebar collapsed):
+   the spotlight drops its artwork so copy and button keep their room. */
+@container banners (max-width: 720px) {
+  .home-banner--spotlight { grid-template-columns: minmax(0, 1fr) auto; }
+  .home-banner--spotlight .home-banner-art { display: none; }
+}
+
+/* The tabs need ~560px beside the title; below that they get their own row. */
+@container home (max-width: 900px) {
+  .home-carousel-head { flex-wrap: wrap; gap: 10px; }
+  .home-tabs { order: 3; flex-basis: 100%; }
+}
+
 @container home (max-width: 640px) {
   .home-banners { grid-template-rows: auto; }
   .home-banner--featured, .home-banner--spotlight { grid-template-columns: minmax(0, 1fr); }
   .home-banner--featured .home-banner-art { order: -1; height: 140px; margin: 10px 10px 0; }
   .home-banner--featured .home-banner-copy { padding: 20px; }
-  .home-banner-title { font-size: 32px; }
   .home-banner--spotlight .home-banner-art { display: none; }
   .home-banner--spotlight .home-banner-copy { padding: 18px 20px 12px; }
-  .home-banner--spotlight .home-banner-title { font-size: 24px; }
   .home-banner-action { padding: 0 20px 18px; }
   .home-carousel { padding: 14px 14px 16px; }
-  .home-carousel-head { flex-wrap: wrap; gap: 10px; }
   .home-carousel-title { font-size: 20px; }
-  .home-tabs { order: 3; flex-basis: 100%; }
   .home-track-item { flex-basis: 160px; }
 }
 
