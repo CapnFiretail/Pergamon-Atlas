@@ -1,192 +1,223 @@
-// Homepage renderer. Content lives in /data/home-content.js; the games count
-// comes from /data/entries.js and the Account tile from the Supabase session (auth.js).
+// Homepage renderer. Content lives in /data/home-content.js and game lookups
+// in /data/entries.js; this file only builds structure.
+//
+// Included as a plain script right after <div id="home">, so the page renders
+// while it is still parsing (no layout shift once the rest loads).
+//
+// Components: banner() for the featured and spotlight banners,
+// contextPanel() for the right-hand panel, carousel() + tile() for the game
+// strip. Each returns an element and knows nothing about the page grid.
 (function () {
   const content = window.PergamonHomeContent;
   const root = document.getElementById('home');
   if (!content || !root) return;
 
-  const iconPaths = {
-    games: '<path d="M11 10h18c6 0 8 9 10 19 1 6-4 8-7 4l-5-6H13l-5 6c-3 4-8 2-7-4 2-10 4-19 10-19Z"/><path d="M11 15v10m-5-5h10m12-3h.1m5 5h.1" style="stroke: var(--color-surface)"/>',
-    suggestions: '<path d="M20 3a12 12 0 0 1 7 21.7V29H13v-4.3A12 12 0 0 1 20 3Z"/><path d="M14 33h12m-9 4h6" fill="none"/>',
-    account: '<circle cx="20" cy="11" r="8"/><path d="M5 36v-5c0-14 30-14 30 0v5Z"/>'
+  const ICONS = {
+    play: '<path d="M8 5.5v13l11-6.5z"/>',
+    prev: '<path d="m15 6-6 6 6 6"/>',
+    next: '<path d="m9 6 6 6-6 6"/>',
+    games: '<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M7 10v4M5 12h4M15.5 11h.01M18 13h.01"/>'
   };
+  const icon = (name, cls) => `<svg class="${cls || 'home-svg'}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
 
-  function icon(item) {
-    if (item.image) {
-      const img = document.createElement('img');
-      img.src = item.image; img.alt = ''; img.className = 'home-icon custom-image';
-      return img;
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  let idCount = 0;
+  const uid = prefix => `${prefix}-${++idCount}`;
+
+  // Neutral artwork slot. A later stage swaps in real art via `art`.
+  function art(src, className) {
+    const box = el('div', 'home-art ' + (className || ''));
+    box.setAttribute('aria-hidden', 'true');
+    if (src) {
+      const img = el('img'); img.src = src; img.alt = '';
+      box.append(img);
+    } else {
+      box.append(el('span', 'home-art-label', 'Artwork'));
     }
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 40 40'); svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('fill', 'currentColor'); svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2.5'); svg.setAttribute('stroke-linecap', 'round');
-    svg.setAttribute('stroke-linejoin', 'round'); svg.classList.add('home-icon');
-    svg.innerHTML = iconPaths[item.icon] || iconPaths.games;
-    return svg;
-  }
-
-  function element(tag, className, text) {
-    const el = document.createElement(tag);
-    if (className) el.className = className;
-    if (text !== undefined) el.textContent = text;
-    return el;
-  }
-
-  function arrow() {
-    const a = element('span', 'arrow', '→');
-    a.setAttribute('aria-hidden', 'true');
-    return a;
+    return box;
   }
 
   // ── Data ──────────────────────────────────────────────────────────────
-  const entries = window.atlasEntries || null;
+  const entries = (window.atlasEntries && window.atlasEntries.games) || [];
   const norm = path => String(path || '').replace(/\/+$/, '');
-  const live = list => (list || []).filter(e => !e.archived && e.visibility === 'public');
-  function findLive(path) {
-    if (!entries) return null;
-    return live(entries.games).find(e => norm(e.path) === norm(path)) || null;
-  }
+  const liveGame = path => entries.find(e => norm(e.path) === norm(path) && !e.archived && e.visibility === 'public' && e.status !== 'coming-soon') || null;
 
-  // ── Cards ─────────────────────────────────────────────────────────────
-  // Category cards link to their section; status adds a tag (e.g. "Coming soon").
-  function categoryCard(item) {
-    const a = element('a', 'category-card');
-    a.href = item.href;
-    a.append(icon(item));
-    const copy = element('div', 'feature-copy');
-    copy.append(element('h2', '', item.title));
-    if (item.description) copy.append(element('p', '', item.description));
-    if (item.status) copy.append(element('span', 'home-tag', item.status));
-    a.append(copy, arrow());
-    return a;
-  }
+  // ── Banner (featured / spotlight) ─────────────────────────────────────
+  function banner(item, variant) {
+    const section = el('section', `home-banner home-banner--${variant}`);
+    const headingId = uid('home-banner');
+    section.setAttribute('aria-labelledby', headingId);
 
-  // Featured items resolve against entries.js. Missing ones are surfaced as
-  // "Not available" (no link) rather than pointing at a page that isn't there.
-  function featureCard(item) {
-    const entry = findLive(item.path);
-    const title = item.title || (entry && entry.name) || item.path;
-    const card = element(entry ? 'a' : 'div', 'feature-card' + (entry ? '' : ' is-unavailable'));
-    if (entry) card.href = norm(entry.path) + '/';
-    card.append(icon(item));
-    const copy = element('div', 'feature-copy');
-    copy.append(element('h3', '', title), element('p', '', item.description || ''));
-    if (!entries) {
-      copy.append(element('span', 'home-tag muted', "Couldn't load"));
-    } else if (!entry) {
-      copy.append(element('span', 'home-tag muted', 'Not available'));
-      console.warn('Homepage: featured item is not a live page:', item.path);
-    } else if (entry.status === 'coming-soon') {
-      copy.append(element('span', 'home-tag', 'Coming soon'));
+    const copy = el('div', 'home-banner-copy');
+    copy.append(el('p', 'home-eyebrow', item.label));
+    const h = el('h2', 'home-banner-title', item.title); h.id = headingId;
+    copy.append(h, el('p', 'home-banner-desc', item.description));
+
+    const action = el('a', 'home-button');
+    action.href = item.href;
+    action.setAttribute('aria-label', `${item.cta}: ${item.title}`);
+    action.innerHTML = icon('play', 'home-button-icon');
+    action.append(el('span', '', item.cta));
+
+    if (variant === 'featured') {
+      copy.append(action);
+      section.append(copy, art(item.art, 'home-banner-art'));
+    } else {
+      const actions = el('div', 'home-banner-action');
+      actions.append(action);
+      section.append(copy, art(item.art, 'home-banner-art'), actions);
     }
-    card.append(copy);
-    if (entry) card.append(arrow());
+    return section;
+  }
+
+  // ── Contextual panel (purpose undecided: neutral placeholder) ─────────
+  function contextPanel(data) {
+    const panel = el('aside', 'home-context');
+    panel.dataset.slot = 'context';
+    const headingId = uid('home-context');
+    panel.setAttribute('aria-labelledby', headingId);
+    const h = el('h2', 'home-context-title', data.title); h.id = headingId;
+    const list = el('ul', 'home-context-list');
+    data.items.forEach(label => {
+      const li = el('li', 'home-context-row');
+      li.append(art(null, 'home-context-thumb'), el('span', 'home-context-label', label));
+      list.append(li);
+    });
+    panel.append(h, list);
+    if (data.action) {
+      // Placeholder only: not a control, so it isn't focusable or clickable.
+      panel.append(el('div', 'home-context-action', data.action));
+    }
+    return panel;
+  }
+
+  // ── Carousel tile ─────────────────────────────────────────────────────
+  function tile(game, entry) {
+    const card = el('a', 'home-tile');
+    card.href = norm(entry.path) + '/';
+    card.dataset.category = game.category;
+    card.append(art(game.art, 'home-tile-art'));
+    const meta = el('div', 'home-tile-meta');
+    const text = el('div', 'home-tile-text');
+    text.append(el('h3', 'home-tile-title', game.title || entry.name), el('span', 'home-tile-category', game.category));
+    meta.append(text);
+    meta.insertAdjacentHTML('beforeend', icon('play', 'home-tile-play'));
+    card.append(meta);
     return card;
   }
 
-  function section(heading, linkLabel, href, body, id) {
-    const s = element('section');
-    s.setAttribute('aria-labelledby', id);
-    const top = element('div', 'section-title');
-    const h = element('h2', '', heading); h.id = id;
-    const a = element('a', '', linkLabel); a.href = href;
-    a.setAttribute('aria-label', `${linkLabel.replace(/\s*→\s*$/, '')}: ${heading}`);
-    top.append(h, a);
-    s.append(top, body);
-    return s;
-  }
+  // ── Carousel ──────────────────────────────────────────────────────────
+  function carousel(data) {
+    const section = el('section', 'home-carousel');
+    const headingId = uid('home-carousel');
+    section.setAttribute('aria-labelledby', headingId);
 
-  // ── Stats ─────────────────────────────────────────────────────────────
-  // Each tile keeps a fixed size; the value/label text is filled in once known.
-  const statEls = {};
-  function statTile(item) {
-    const a = element('a', 'stat');
-    a.href = item.href;
-    a.append(icon(item));
-    // Value and label sit on one line: '0 Tools'.
-    const copy = element('div', 'stat-text');
-    const value = element('strong', '', '…');
-    const label = element('span', '', item.title);
-    copy.append(value, label);
-    a.append(copy);
-    statEls[item.key] = { a, value, label, title: item.title };
-    return a;
-  }
-  function setStat(key, value, label) {
-    const s = statEls[key];
-    if (!s) return;
-    s.value.textContent = value;
-    s.label.textContent = label === undefined ? s.title : label;
-    s.a.setAttribute('aria-label', `${s.title}: ${value}${label && label !== s.title ? ', ' + label : ''}`);
-  }
+    const head = el('div', 'home-carousel-head');
+    const h = el('h2', 'home-carousel-title'); h.id = headingId;
+    h.innerHTML = icon('games', 'home-carousel-icon');
+    h.append(el('span', '', data.title));
 
-  function fillCounts() {
-    if (!entries) {
-      setStat('games', '—', 'Unavailable');
-      return;
+    const tabs = el('div', 'home-tabs');
+    tabs.setAttribute('role', 'group');
+    tabs.setAttribute('aria-label', 'Filter games by category');
+    const tabButtons = data.categories.map((name, i) => {
+      const b = el('button', 'home-tab', name);
+      b.type = 'button';
+      b.dataset.category = i === 0 ? '' : name;
+      b.setAttribute('aria-pressed', String(i === 0));
+      tabs.append(b);
+      return b;
+    });
+
+    const nav = el('div', 'home-carousel-nav');
+    const prev = el('button', 'home-nav-button'); prev.type = 'button';
+    prev.setAttribute('aria-label', 'Scroll games left'); prev.innerHTML = icon('prev');
+    const next = el('button', 'home-nav-button'); next.type = 'button';
+    next.setAttribute('aria-label', 'Scroll games right'); next.innerHTML = icon('next');
+    nav.append(prev, next);
+    head.append(h, tabs, nav);
+
+    const track = el('div', 'home-track');
+    track.setAttribute('role', 'list');
+    track.setAttribute('aria-label', data.title);
+    const tiles = [];
+    data.games.forEach(game => {
+      const entry = liveGame(game.path);
+      if (!entry) { console.warn('Homepage: carousel game is not a live page:', game.path); return; }
+      const item = el('div', 'home-track-item');
+      item.setAttribute('role', 'listitem');
+      item.dataset.category = game.category;
+      item.append(tile(game, entry));
+      track.append(item);
+      tiles.push(item);
+    });
+    const empty = el('p', 'home-track-empty', 'No games in this category yet.');
+    empty.hidden = true;
+    track.append(empty);
+
+    section.append(head, track);
+
+    // Filtering: show only tiles whose category matches the pressed tab.
+    tabButtons.forEach(b => b.addEventListener('click', () => {
+      tabButtons.forEach(t => t.setAttribute('aria-pressed', String(t === b)));
+      let shown = 0;
+      tiles.forEach(item => {
+        const match = !b.dataset.category || item.dataset.category === b.dataset.category;
+        item.hidden = !match;
+        if (match) shown++;
+      });
+      empty.hidden = shown > 0;
+      track.scrollLeft = 0;
+      updateNav();
+    }));
+
+    // Scroll buttons step by most of a view; disabled at either end.
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const step = dir => track.scrollBy({ left: dir * Math.max(track.clientWidth * 0.8, 180), behavior: reduceMotion ? 'auto' : 'smooth' });
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    function updateNav() {
+      const max = track.scrollWidth - track.clientWidth;
+      prev.disabled = track.scrollLeft <= 1;
+      next.disabled = track.scrollLeft >= max - 1;
     }
-    // Only what can be played now counts; 'coming-soon' placeholders don't.
-    const available = list => live(list).filter(e => e.status !== 'coming-soon').length;
-    setStat('games', String(available(entries.games)), 'Games');
+    track.addEventListener('scroll', updateNav, { passive: true });
+    window.addEventListener('resize', updateNav);
+    requestAnimationFrame(updateNav);
+    return section;
   }
 
-  // Only whether a session exists is shown — no name, email or profile data.
-  function fillAccount() {
+  // ── Page ──────────────────────────────────────────────────────────────
+  const title = el('h1', 'pa-visually-hidden', 'PergamonAtlas');
+  const grid = el('div', 'home-feature-grid');
+  const banners = el('div', 'home-banners');
+  if (content.featured) banners.append(banner(content.featured, 'featured'));
+  if (content.spotlight) banners.append(banner(content.spotlight, 'spotlight'));
+  grid.append(banners);
+  if (content.context) grid.append(contextPanel(content.context));
+  else grid.classList.add('no-context');
+
+  root.append(title, grid);
+  if (content.explore) root.append(carousel(content.explore));
+
+  // A password-reset link that Supabase sent to the Site URL (the homepage)
+  // instead of the reset page: finish it there. auth.js loads after this file.
+  document.addEventListener('DOMContentLoaded', () => {
     const auth = window.PergamonAuth;
-    if (!auth) { setStat('account', 'Sign in', ''); return; }
-    const render = session => setStat('account', session ? 'Signed in' : 'Sign in', '');
-    auth.getSession()
-      .then(res => render(res && res.data && res.data.session))
-      .catch(() => setStat('account', '—', 'Unavailable'));
+    if (!auth) return;
     try {
-      auth.onAuthStateChange((event, session) => {
-        // A password-reset link that Supabase sent to the Site URL (the
-        // homepage) instead of the reset page: finish it there.
+      auth.onAuthStateChange(event => {
         if (event === 'PASSWORD_RECOVERY') {
           try { sessionStorage.setItem('pa-password-recovery', '1'); } catch (e) {}
           window.location.replace('/account/reset-password/');
-          return;
         }
-        render(session);
       });
     } catch (e) {}
-  }
-
-  // ── Render ────────────────────────────────────────────────────────────
-  const welcome = element('section', 'home-welcome');
-  welcome.setAttribute('aria-labelledby', 'home-title');
-  welcome.append(element('p', 'eyebrow', content.eyebrow));
-  const title = element('h1', '', content.title); title.id = 'home-title';
-  welcome.append(title);
-  const categories = element('div', 'category-grid');
-  content.categories.forEach(item => categories.append(categoryCard(item)));
-  welcome.append(categories);
-  let learn = null;
-  if (content.learn) {
-    learn = element('a', 'learn-card');
-    learn.href = content.learn.href;
-    learn.append(element('span', 'learn-label', content.learn.label), arrow());
-    welcome.append(learn);
-  }
-
-  const features = element('div', 'home-features');
-  const stats = element('div', 'stats');
-  stats.setAttribute('aria-live', 'polite');
-  content.stats.forEach(item => stats.append(statTile(item)));
-  features.append(stats);
-
-
-  const game = content.game ? featureCard(content.game) : element('p', 'home-empty', 'No featured game yet.');
-  game.classList.add('featured-game');
-  features.append(section(content.gamesHeading, content.gamesLinkLabel, content.gamesHref, game, 'featured-game-heading'));
-
-  // The Learn button matches the Featured Game box's height.
-  if (learn && window.ResizeObserver) {
-    new ResizeObserver(() => { learn.style.minHeight = game.offsetHeight + 'px'; }).observe(game);
-  }
-
-  root.append(welcome, features);
-  fillCounts();
-  fillAccount();
+  });
 })();

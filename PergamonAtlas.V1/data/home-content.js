@@ -1,30 +1,46 @@
-// Homepage content. Edit labels, descriptions, links, ordering and featured
-// items here; /scripts/home.js renders it.
+// Homepage content. /scripts/home.js renders it; nothing here affects layout.
 //
-// - Any item may set image: '/images/example.png' to replace its SVG icon.
-// - status: 'Coming soon' (or any short text) adds a tag to a category card.
-// - The featured game is looked up by path in /data/entries.js. A path that
-//   isn't a live entry is shown as "Not available" instead of a link, and a
-//   game marked status: "coming-soon" there gets a "Coming soon" tag.
-// - Category cards show a description only if one is set (description: '...').
-// - Stats are not typed in: Games counts the playable entries in
-//   /data/entries.js, and Account shows the visitor's sign-in state.
-// - learn: { label, href } adds a wide button under the category cards.
+// - featured / spotlight: the two banners in the left column. `href` should be
+//   a live game; `art` will later take an image path (null = placeholder).
+// - context: the right-hand panel. Its purpose isn't decided yet, so it holds
+//   neutral placeholder rows. Set `context: null` to hide the panel.
+// - explore: the carousel. Games are looked up by path in /data/entries.js;
+//   a path that isn't a live entry is skipped. `category` drives the tabs.
 window.PergamonHomeContent = {
-  eyebrow: 'Welcome to',
-  title: 'PergamonAtlas',
+  featured: {
+    label: 'Featured Game',
+    title: 'Chess Forge',
+    description: 'A modern chess experience for strategy and skill.',
+    href: '/games/chess-forge/',
+    cta: 'Play Now',
+    art: null
+  },
 
-  categories: [
-    { title: 'Games', href: '/games/', icon: 'games' },
-    { title: 'Suggestions', href: '/suggestions/', icon: 'suggestions' },
-    { title: 'Account', href: '/account/', icon: 'account' }
-  ],
+  spotlight: {
+    label: 'Spotlight',
+    title: 'Connect Four',
+    description: 'A classic battle of strategy.',
+    href: '/games/connect-four/',
+    cta: 'Play Now',
+    art: null
+  },
 
-  stats: [
-    { key: 'games', title: 'Games', href: '/games/', icon: 'games' },
-    { key: 'account', title: 'Account', href: '/account/', icon: 'account' }
-  ],
+  context: {
+    title: 'Context Panel',
+    items: ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
+    action: 'Action area'
+  },
 
-  gamesHeading: 'Featured Game', gamesLinkLabel: 'View All →', gamesHref: '/games/',
-  game: { path: '/games/chess-forge', title: 'Chess Forge', description: 'Classic strategy, reimagined.', icon: 'games' }
+  explore: {
+    title: 'Explore More Games',
+    categories: ['All Games', 'Strategy', 'Arcade', 'Classic', 'Card'],
+    games: [
+      { path: '/games/battleship', title: 'Battleship', category: 'Strategy', art: null },
+      { path: '/games/breakout', title: 'Breakout', category: 'Arcade', art: null },
+      { path: '/games/pong', title: 'Pong', category: 'Arcade', art: null },
+      { path: '/games/blackjack', title: 'Blackjack', category: 'Card', art: null },
+      { path: '/games/connect-four', title: 'Connect Four', category: 'Strategy', art: null },
+      { path: '/games/snake', title: 'Snake', category: 'Arcade', art: null }
+    ]
+  }
 };
