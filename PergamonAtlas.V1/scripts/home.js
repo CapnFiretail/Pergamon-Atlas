@@ -1,17 +1,14 @@
-// Homepage renderer. Content lives in /data/home-content.js; counts come from
-// /data/entries.js and the Account tile from the Supabase session (auth.js).
+// Homepage renderer. Content lives in /data/home-content.js; the games count
+// comes from /data/entries.js and the Account tile from the Supabase session (auth.js).
 (function () {
   const content = window.PergamonHomeContent;
   const root = document.getElementById('home');
   if (!content || !root) return;
 
   const iconPaths = {
-    tools: '<path d="m8 4 5 5-4 4-5-5a9 9 0 0 0 10 12L27 33a4 4 0 0 0 6-6L20 14A9 9 0 0 0 30 4l-6 6-5-5 6-6"/><path d="M11 23 3 31a3 3 0 0 0 5 5l8-8"/>',
     games: '<path d="M11 10h18c6 0 8 9 10 19 1 6-4 8-7 4l-5-6H13l-5 6c-3 4-8 2-7-4 2-10 4-19 10-19Z"/><path d="M11 15v10m-5-5h10m12-3h.1m5 5h.1" stroke="#080c09"/>',
-    atlas: '<path d="M3 6c7-3 12-2 17 2 5-4 10-5 17-2v26c-7-3-12-2-17 2-5-4-10-5-17-2Z"/><path d="M20 8v26" stroke="#080c09"/>',
-    account: '<circle cx="20" cy="11" r="8"/><path d="M5 36v-5c0-14 30-14 30 0v5Z"/>',
-    calculator: '<rect x="8" y="2" width="24" height="36" rx="3"/><path d="M13 8h14v6H13Z" fill="#080c09" stroke="none"/><path d="M14 21h1m10 0h1m-12 7h1m10 0h1m-12 6h1m10 0h1" stroke="#080c09" stroke-width="4"/>',
-    pulse: '<path d="M2 21h7l4-8 5 20 5-27 5 15h10" fill="none"/>'
+    suggestions: '<path d="M20 3a12 12 0 0 1 7 21.7V29H13v-4.3A12 12 0 0 1 20 3Z"/><path d="M14 33h12m-9 4h6" fill="none"/>',
+    account: '<circle cx="20" cy="11" r="8"/><path d="M5 36v-5c0-14 30-14 30 0v5Z"/>'
   };
 
   function icon(item) {
@@ -25,7 +22,7 @@
     svg.setAttribute('fill', 'currentColor'); svg.setAttribute('stroke', 'currentColor');
     svg.setAttribute('stroke-width', '2.5'); svg.setAttribute('stroke-linecap', 'round');
     svg.setAttribute('stroke-linejoin', 'round'); svg.classList.add('home-icon');
-    svg.innerHTML = iconPaths[item.icon] || iconPaths.atlas;
+    svg.innerHTML = iconPaths[item.icon] || iconPaths.games;
     return svg;
   }
 
@@ -48,7 +45,7 @@
   const live = list => (list || []).filter(e => !e.archived && e.visibility === 'public');
   function findLive(path) {
     if (!entries) return null;
-    return live([].concat(entries.tools || [], entries.games || [])).find(e => norm(e.path) === norm(path)) || null;
+    return live(entries.games).find(e => norm(e.path) === norm(path)) || null;
   }
 
   // ── Cards ─────────────────────────────────────────────────────────────
@@ -126,13 +123,11 @@
 
   function fillCounts() {
     if (!entries) {
-      setStat('tools', '—', 'Unavailable');
       setStat('games', '—', 'Unavailable');
       return;
     }
-    // Only what can be used now counts; 'coming-soon' placeholders don't.
+    // Only what can be played now counts; 'coming-soon' placeholders don't.
     const available = list => live(list).filter(e => e.status !== 'coming-soon').length;
-    setStat('tools', String(available(entries.tools)), 'Tools');
     setStat('games', String(available(entries.games)), 'Games');
   }
 
@@ -181,10 +176,6 @@
   content.stats.forEach(item => stats.append(statTile(item)));
   features.append(stats);
 
-  const tools = element('div', 'featured-tools');
-  if (content.tools.length) content.tools.forEach(item => tools.append(featureCard(item)));
-  else tools.append(element('p', 'home-empty', 'No featured tools yet.'));
-  features.append(section(content.toolsHeading, content.toolsLinkLabel, content.toolsHref, tools, 'featured-tools-heading'));
 
   const game = content.game ? featureCard(content.game) : element('p', 'home-empty', 'No featured game yet.');
   game.classList.add('featured-game');

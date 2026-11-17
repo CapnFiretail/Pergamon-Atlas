@@ -92,7 +92,7 @@
   .pa-search input { font-size: 16px; }
   .pa-search svg { width: 24px; height: 24px; }
   .pa-search button { flex-basis: 24px; }
-  .pa-actions { gap: 8px; padding: 0 0 0 12px; }
+  .pa-actions { gap: 8px; padding: 0 0 0 12px; margin-left: auto; }
   .pa-icon-link, .pa-icon-link svg { width: 40px; height: 44px; }
 }
 @media (max-width: 360px) {

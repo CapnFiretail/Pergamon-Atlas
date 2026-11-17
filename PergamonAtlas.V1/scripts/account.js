@@ -120,7 +120,6 @@
   function renderMember(session, profile) {
     document.getElementById('member-name').textContent = (profile && profile.display_name) || '—';
     document.getElementById('member-email').textContent = session.user.email || '—';
-    document.getElementById('member-address').textContent = profile && profile.atlas_address ? 'ATLAS-' + profile.atlas_address : '—';
     document.getElementById('member-access').textContent = window.PergamonPermissions ? window.PergamonPermissions.getAccessLevelLabel(profile) : '—';
     document.getElementById('member-since').textContent = formatDate(profile && profile.created_at);
     show('member');

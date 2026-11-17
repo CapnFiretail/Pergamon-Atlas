@@ -5,7 +5,7 @@
   var section = function (path) { return '/' + (path.split('/')[1] || ''); };
   var current = section(window.location.pathname);
 
-  document.querySelectorAll('.pa-nav a').forEach(function (link) {
+  document.querySelectorAll('.pa-nav a, .pa-profile').forEach(function (link) {
     if (section(link.getAttribute('href')) === current) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });

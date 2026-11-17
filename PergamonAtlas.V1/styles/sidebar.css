@@ -79,7 +79,7 @@
   .pa-sidebar a { font-size: 20px; padding: 15px 22px; }
 }
 
-/* Phone: sidebar becomes a fixed bottom tab bar (Help/Suggestions stay desktop-only). */
+/* Phone: sidebar becomes a fixed bottom tab bar (.pa-nav-desktop links stay desktop-only). */
 @media (max-width: 800px) {
   .pa-layout { display: block; }
   .pa-main { padding: 20px 16px 100px; }

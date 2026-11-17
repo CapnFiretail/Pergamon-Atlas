@@ -1,7 +1,0 @@
-window.frenchRegisterData = {
-
-  entries: [
-
-  ]
-
-};
