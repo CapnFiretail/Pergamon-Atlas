@@ -2,7 +2,7 @@
  * Markup comes from /scripts/layout.js; colours from /styles/theme.css. */
 
 :root { --pa-header-h: 88px; --pa-sidebar-w: 220px; }
-:root[data-sidebar="collapsed"] { --pa-sidebar-w: 64px; }
+:root[data-sidebar="collapsed"] { --pa-sidebar-w: 80px; }
 
 /* ── Page frame ────────────────────────────────────────────────────────── */
 .pa-page { min-height: 100vh; display: flex; flex-direction: column; }
@@ -131,7 +131,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 42px;
+  height: 46px;
   padding: 0 12px;
   border: 0;
   border-radius: 8px;
@@ -141,7 +141,7 @@
   text-decoration: none;
   white-space: nowrap;
 }
-.pa-sidebar .pa-icon { width: 20px; height: 20px; }
+.pa-sidebar .pa-icon { width: 24px; height: 24px; }
 .pa-sidebar a:hover, .pa-sidebar-toggle:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
 .pa-sidebar a.active {
   background: var(--color-accent-soft);
@@ -153,7 +153,7 @@
 
 /* Collapsed: icons only; labels stay available to screen readers. */
 :root[data-sidebar="collapsed"] .pa-sidebar a,
-:root[data-sidebar="collapsed"] .pa-sidebar-toggle { justify-content: center; gap: 0; padding: 0; }
+:root[data-sidebar="collapsed"] .pa-sidebar-toggle { justify-content: center; gap: 0; width: 48px; height: 48px; margin-left: auto; margin-right: auto; padding: 0; border-radius: 12px; }
 :root[data-sidebar="collapsed"] .pa-sidebar .pa-nav-label {
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
@@ -244,7 +244,7 @@
   :root[data-drawer="open"] { overflow: hidden; }
 
   /* The drawer always shows labels, whatever the desktop collapse state. */
-  :root[data-sidebar="collapsed"] .pa-sidebar a { justify-content: flex-start; gap: 12px; padding: 0 12px; }
+  :root[data-sidebar="collapsed"] .pa-sidebar a { justify-content: flex-start; gap: 12px; width: auto; height: 46px; margin: 0; padding: 0 12px; border-radius: 8px; }
   :root[data-sidebar="collapsed"] .pa-sidebar .pa-nav-label { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
   :root[data-sidebar="collapsed"] .pa-sidebar-heading { visibility: visible; height: auto; margin: 0 0 6px; }
   .pa-sidebar [data-tip]::after { display: none; }

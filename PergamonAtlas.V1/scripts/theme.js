@@ -69,9 +69,11 @@
     listeners.forEach(function (fn) { try { fn(s); } catch (e) {} });
   }
 
+  // Collapsed unless the visitor has explicitly expanded it ('0' is stored
+  // only by the expand toggle), so first visits start with the compact rail.
   function applySidebar() {
-    var collapsed = false;
-    try { collapsed = localStorage.getItem(SIDEBAR_KEY) === '1'; } catch (e) {}
+    var collapsed = true;
+    try { collapsed = localStorage.getItem(SIDEBAR_KEY) !== '0'; } catch (e) {}
     root.setAttribute('data-sidebar', collapsed ? 'collapsed' : 'expanded');
   }
 

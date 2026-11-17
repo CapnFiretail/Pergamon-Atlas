@@ -17,6 +17,7 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no build)
 ├── settings/              Appearance settings (display mode, colour palette)
 ├── achievements/          Placeholder (Coming Soon)
 ├── leaderboards/          Placeholder (Coming Soon)
+├── updates/               Update Log placeholder (Coming Soon)
 ├── scripts/  styles/      V1 page scripts and styles (see Design system below)
 ├── data/                  entries.js (games catalog), home-content.js (homepage)
 ├── operation/             Shared legacy layer: Supabase auth, footer, main.css
@@ -42,7 +43,9 @@ vercel.json                Output directory + redirects for retired routes
   is a fixed full-height rail. The homepage sets `data-layout="home"` on
   `.pa-page`, and `scripts/home.js` mounts the same sidebar into its own
   grid (`PergamonLayout.mountSidebar`) as a rounded rail beside the upper
-  section, so the carousel can run beneath it.
+  section, so the carousel can run beneath it. The sidebar starts collapsed
+  (80px) until a visitor expands it (220px); that choice is saved in
+  `localStorage["paSidebarCollapsed"]`.
 
 A new page needs, in `<head>`: `theme.js`, the Google Fonts link,
 `theme.css`, `layout.css`; and in `<body>`:

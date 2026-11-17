@@ -5,8 +5,8 @@
 // while it is still parsing (no layout shift once the rest loads).
 //
 // Components: banner() for the featured and spotlight banners,
-// contextPanel() for the right-hand panel, carousel() + tile() for the game
-// strip. Each returns an element and knows nothing about the page grid.
+// atlasNavigation() for the right-hand panel, carousel() + tile() for the
+// explore strip. Each returns an element and knows nothing about the page grid.
 (function () {
   const content = window.PergamonHomeContent;
   const root = document.getElementById('home');
@@ -16,7 +16,13 @@
     play: '<path d="M8 5.5v13l11-6.5z"/>',
     prev: '<path d="m15 6-6 6 6 6"/>',
     next: '<path d="m9 6 6 6-6 6"/>',
-    games: '<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M7 10v4M5 12h4M15.5 11h.01M18 13h.01"/>'
+    games: '<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M7 10v4M5 12h4M15.5 11h.01M18 13h.01"/>',
+    tools: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.1-2.1z"/>',
+    account: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+    updates: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+    suggestions: '<path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/>',
+    chevron: '<path d="m9 6 6 6-6 6"/>'
   };
   const icon = (name, cls) => `<svg class="${cls || 'home-svg'}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
 
@@ -76,36 +82,55 @@
     return section;
   }
 
-  // ── Contextual panel (purpose undecided: neutral placeholder) ─────────
-  function contextPanel(data) {
-    const panel = el('aside', 'home-context');
+  // ── Atlas Navigation (right-hand panel) ───────────────────────────────
+  // Whole-row links. The account row reads "Account" for signed-in visitors:
+  // first from theme.js's stored-session guess (so the first paint is right),
+  // then from the auth client once it reports (see the bottom of this file).
+  const accountRows = [];
+  function setAccountState(signedIn) {
+    accountRows.forEach(({ link, title, desc, data }) => {
+      const label = signedIn && data.signedInLabel ? data.signedInLabel : data.label;
+      title.textContent = label;
+      if (data.signedInDescription) desc.textContent = signedIn ? data.signedInDescription : data.description;
+    });
+  }
+
+  function atlasNavigation(data) {
+    const panel = el('nav', 'home-context home-atlas-nav');
     panel.dataset.slot = 'context';
     const headingId = uid('home-context');
     panel.setAttribute('aria-labelledby', headingId);
     const h = el('h2', 'home-context-title', data.title); h.id = headingId;
     const list = el('ul', 'home-context-list');
-    data.items.forEach(label => {
-      const li = el('li', 'home-context-row');
-      li.append(art(null, 'home-context-thumb'), el('span', 'home-context-label', label));
+    data.links.forEach(item => {
+      const li = el('li', 'home-context-item');
+      const link = el('a', 'home-context-row');
+      link.href = item.href;
+      link.insertAdjacentHTML('beforeend', `<span class="home-context-icon">${icon(item.icon, 'home-svg')}</span>`);
+      const text = el('span', 'home-context-text');
+      const title = el('span', 'home-context-label', item.label);
+      const desc = el('span', 'home-context-desc', item.description || '');
+      text.append(title, desc);
+      link.append(text);
+      link.insertAdjacentHTML('beforeend', icon('chevron', 'home-context-chevron'));
+      li.append(link);
       list.append(li);
+      if (item.signedInLabel) accountRows.push({ link, title, desc, data: item });
     });
     panel.append(h, list);
-    if (data.action) {
-      // Placeholder only: not a control, so it isn't focusable or clickable.
-      panel.append(el('div', 'home-context-action', data.action));
-    }
+    const theme = window.PergamonTheme;
+    setAccountState(!!(theme && theme.get().signedIn));
     return panel;
   }
 
   // ── Carousel tile ─────────────────────────────────────────────────────
-  function tile(game, entry) {
+  function tile(item, entry) {
     const card = el('a', 'home-tile');
     card.href = norm(entry.path) + '/';
-    card.dataset.category = game.category;
-    card.append(art(game.art, 'home-tile-art'));
+    card.append(art(item.art, 'home-tile-art'));
     const meta = el('div', 'home-tile-meta');
     const text = el('div', 'home-tile-text');
-    text.append(el('h3', 'home-tile-title', game.title || entry.name), el('span', 'home-tile-category', game.category));
+    text.append(el('h3', 'home-tile-title', item.title || entry.name), el('span', 'home-tile-category', item.category));
     meta.append(text);
     meta.insertAdjacentHTML('beforeend', icon('play', 'home-tile-play'));
     card.append(meta);
@@ -113,84 +138,163 @@
   }
 
   // ── Carousel ──────────────────────────────────────────────────────────
+  // Two independent navigation levels:
+  //   Level 1, sections: the top-right arrows switch Games ⇄ Tools
+  //            (state: sectionIndex; handler: switchSection).
+  //   Level 2, card pages: the arrows beside the cards step through pages of
+  //            the current category (state: view.page; handler: turnPage).
+  // Only the current page's cards are in the DOM. The page size is how many
+  // CARD_MIN-wide cards fit in the measured viewport (recomputed on resize);
+  // the cards then share the row, up to 200px each (see home.css).
+  const CARD_MIN = 170;
+  const CARD_GAP = 12;
+
   function carousel(data) {
+    const sections = data.sections.map(sec => ({
+      ...sec,
+      items: (sec.items || []).map(item => {
+        if (!item.path) return null;
+        const entry = liveGame(item.path);
+        if (!entry) { console.warn('Homepage: carousel item is not a live page:', item.path); return null; }
+        return { item, entry };
+      }).filter(Boolean)
+    }));
+
+    let sectionIndex = 0;                       // level 1
+    const view = { category: '', page: 0 };     // level 2
+    let perPage = 1;
+
     const section = el('section', 'home-carousel');
     const headingId = uid('home-carousel');
     section.setAttribute('aria-labelledby', headingId);
 
     const head = el('div', 'home-carousel-head');
     const h = el('h2', 'home-carousel-title'); h.id = headingId;
-    h.innerHTML = icon('games', 'home-carousel-icon');
-    h.append(el('span', '', data.title));
-
     const tabs = el('div', 'home-tabs');
     tabs.setAttribute('role', 'group');
-    tabs.setAttribute('aria-label', 'Filter games by category');
-    const tabButtons = data.categories.map((name, i) => {
-      const b = el('button', 'home-tab', name);
-      b.type = 'button';
-      b.dataset.category = i === 0 ? '' : name;
-      b.setAttribute('aria-pressed', String(i === 0));
-      tabs.append(b);
-      return b;
-    });
 
-    const nav = el('div', 'home-carousel-nav');
-    const prev = el('button', 'home-nav-button'); prev.type = 'button';
-    prev.setAttribute('aria-label', 'Scroll games left'); prev.innerHTML = icon('prev');
-    const next = el('button', 'home-nav-button'); next.type = 'button';
-    next.setAttribute('aria-label', 'Scroll games right'); next.innerHTML = icon('next');
-    nav.append(prev, next);
-    head.append(h, tabs, nav);
+    const sectionNav = el('div', 'home-section-nav');
+    const prevSection = el('button', 'home-section-button'); prevSection.type = 'button';
+    prevSection.setAttribute('aria-label', 'Previous section'); prevSection.innerHTML = icon('prev');
+    const nextSection = el('button', 'home-section-button'); nextSection.type = 'button';
+    nextSection.setAttribute('aria-label', 'Next section'); nextSection.innerHTML = icon('next');
+    sectionNav.append(prevSection, nextSection);
+    head.append(h, tabs, sectionNav);
 
-    const track = el('div', 'home-track');
-    track.setAttribute('role', 'list');
-    track.setAttribute('aria-label', data.title);
-    const tiles = [];
-    data.games.forEach(game => {
-      const entry = liveGame(game.path);
-      if (!entry) { console.warn('Homepage: carousel game is not a live page:', game.path); return; }
-      const item = el('div', 'home-track-item');
-      item.setAttribute('role', 'listitem');
-      item.dataset.category = game.category;
-      item.append(tile(game, entry));
-      track.append(item);
-      tiles.push(item);
-    });
-    const empty = el('p', 'home-track-empty', 'No games in this category yet.');
-    empty.hidden = true;
-    track.append(empty);
+    const body = el('div', 'home-carousel-body');
+    const prevPage = el('button', 'home-page-button'); prevPage.type = 'button';
+    prevPage.setAttribute('aria-label', 'Previous card page'); prevPage.innerHTML = icon('prev');
+    const nextPage = el('button', 'home-page-button'); nextPage.type = 'button';
+    nextPage.setAttribute('aria-label', 'Next card page'); nextPage.innerHTML = icon('next');
+    const viewport = el('div', 'home-track');
+    viewport.setAttribute('role', 'list');
+    body.append(prevPage, viewport, nextPage);
 
-    section.append(head, track);
+    const status = el('p', 'pa-visually-hidden');
+    status.setAttribute('aria-live', 'polite');
+    section.append(head, body, status);
 
-    // Filtering: show only tiles whose category matches the pressed tab.
-    tabButtons.forEach(b => b.addEventListener('click', () => {
-      tabButtons.forEach(t => t.setAttribute('aria-pressed', String(t === b)));
-      let shown = 0;
-      tiles.forEach(item => {
-        const match = !b.dataset.category || item.dataset.category === b.dataset.category;
-        item.hidden = !match;
-        if (match) shown++;
-      });
-      empty.hidden = shown > 0;
-      track.scrollLeft = 0;
-      updateNav();
-    }));
+    const current = () => sections[sectionIndex];
+    const filtered = () => current().items.filter(({ item }) => !view.category || item.category === view.category);
+    const pageCount = () => Math.max(1, Math.ceil(filtered().length / perPage));
 
-    // Scroll buttons step by most of a view; disabled at either end.
-    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const step = dir => track.scrollBy({ left: dir * Math.max(track.clientWidth * 0.8, 180), behavior: reduceMotion ? 'auto' : 'smooth' });
-    prev.addEventListener('click', () => step(-1));
-    next.addEventListener('click', () => step(1));
-    function updateNav() {
-      const max = track.scrollWidth - track.clientWidth;
-      prev.disabled = track.scrollLeft <= 1;
-      next.disabled = track.scrollLeft >= max - 1;
+    function measure() {
+      const width = viewport.clientWidth;
+      return Math.max(1, Math.floor((width + CARD_GAP) / (CARD_MIN + CARD_GAP)));
     }
-    track.addEventListener('scroll', updateNav, { passive: true });
-    window.addEventListener('resize', updateNav);
-    requestAnimationFrame(updateNav);
-    return section;
+
+    function renderHead() {
+      const sec = current();
+      h.innerHTML = icon(sec.icon, 'home-carousel-icon');
+      h.append(el('span', '', sec.title));
+      tabs.setAttribute('aria-label', `Filter ${sec.id} by category`);
+      tabs.replaceChildren(...sec.categories.map((name, i) => {
+        const b = el('button', 'home-tab', name);
+        b.type = 'button';
+        const value = i === 0 ? '' : name;
+        b.setAttribute('aria-pressed', String(view.category === value));
+        b.addEventListener('click', () => selectCategory(value));
+        return b;
+      }));
+      prevSection.disabled = sectionIndex === 0;
+      nextSection.disabled = sectionIndex === sections.length - 1;
+    }
+
+    function renderPage() {
+      const sec = current();
+      const list = filtered();
+      view.page = Math.min(view.page, pageCount() - 1);
+      const start = view.page * perPage;
+      const shown = list.slice(start, start + perPage);
+      viewport.replaceChildren(...shown.map(({ item, entry }) => {
+        const wrap = el('div', 'home-track-item');
+        wrap.setAttribute('role', 'listitem');
+        wrap.append(tile(item, entry));
+        return wrap;
+      }));
+      if (!shown.length) {
+        const message = sec.items.length ? sec.emptyCategory : sec.emptyMessage;
+        const empty = el('div', 'home-track-empty');
+        if (!sec.items.length) empty.append(el('span', 'home-track-tag', 'Coming Soon'));
+        empty.append(el('p', '', message));
+        viewport.replaceChildren(empty);
+      }
+      prevPage.disabled = view.page === 0;
+      nextPage.disabled = view.page >= pageCount() - 1;
+      status.textContent = shown.length
+        ? `${sec.title}: page ${view.page + 1} of ${pageCount()}`
+        : `${sec.title}: ${sec.items.length ? sec.emptyCategory : sec.emptyMessage}`;
+    }
+
+    // Level 1: a new section starts on its first category and first page.
+    function switchSection(delta) {
+      const next = sectionIndex + delta;
+      if (next < 0 || next >= sections.length) return;
+      sectionIndex = next;
+      view.category = '';
+      view.page = 0;
+      renderHead();
+      renderPage();
+    }
+
+    // Level 2: page within the current category.
+    function turnPage(delta) {
+      const next = view.page + delta;
+      if (next < 0 || next >= pageCount()) return;
+      view.page = next;
+      renderPage();
+    }
+
+    function selectCategory(value) {
+      view.category = value;
+      view.page = 0;
+      renderHead();
+      renderPage();
+    }
+
+    prevSection.addEventListener('click', () => switchSection(-1));
+    nextSection.addEventListener('click', () => switchSection(1));
+    prevPage.addEventListener('click', () => turnPage(-1));
+    nextPage.addEventListener('click', () => turnPage(1));
+
+    function start() {
+      perPage = measure();
+      renderHead();
+      renderPage();
+      if (window.ResizeObserver) {
+        new ResizeObserver(() => {
+          const fit = measure();
+          if (fit === perPage) return;
+          // Keep the first visible card on screen when the page size changes.
+          const first = view.page * perPage;
+          perPage = fit;
+          view.page = Math.floor(first / perPage);
+          renderPage();
+        }).observe(viewport);
+      }
+    }
+
+    return { element: section, start };
   }
 
   // ── Page ──────────────────────────────────────────────────────────────
@@ -202,31 +306,41 @@
   if (content.featured) banners.append(banner(content.featured, 'featured'));
   if (content.spotlight) banners.append(banner(content.spotlight, 'spotlight'));
   grid.append(banners);
-  if (content.context) grid.append(contextPanel(content.context));
+  if (content.context) grid.append(atlasNavigation(content.context));
   else grid.classList.add('no-context');
 
   upper.append(grid);
   root.append(title, upper);
+  let explore = null;
   if (content.explore) {
     const lower = el('div', 'home-lower');
-    lower.append(carousel(content.explore));
+    explore = carousel(content.explore);
+    lower.append(explore.element);
     root.append(lower);
   }
   // Take the shared sidebar into this grid (layout.js holds it back on pages
   // with data-layout="home"). The page title stays first in reading order.
   if (window.PergamonLayout) window.PergamonLayout.mountSidebar(root, upper);
+  // Pages are sized from the carousel's measured width, so render once it is in place.
+  if (explore) explore.start();
 
   // A password-reset link that Supabase sent to the Site URL (the homepage)
   // instead of the reset page: finish it there. auth.js loads after this file.
+  // The same listener keeps the Atlas Navigation account row in step.
   document.addEventListener('DOMContentLoaded', () => {
     const auth = window.PergamonAuth;
     if (!auth) return;
+    auth.getSession()
+      .then(res => setAccountState(!!(res && res.data && res.data.session)))
+      .catch(() => {});
     try {
-      auth.onAuthStateChange(event => {
+      auth.onAuthStateChange((event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
           try { sessionStorage.setItem('pa-password-recovery', '1'); } catch (e) {}
           window.location.replace('/account/reset-password/');
+          return;
         }
+        setAccountState(!!session);
       });
     } catch (e) {}
   });
