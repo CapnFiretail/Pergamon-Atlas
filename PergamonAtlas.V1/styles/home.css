@@ -70,10 +70,6 @@
 .home-banner-title { margin: 0 0 10px; font: 800 clamp(30px, 5.4cqi, 44px)/1.05 var(--font-display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .home-banner-desc { margin: 0 0 20px; max-width: 36ch; color: var(--color-text-secondary); font-size: 15px; line-height: 1.5; }
 
-.home-banner--featured { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
-.home-banner--featured .home-banner-copy { padding: 28px 32px; }
-.home-banner--featured .home-banner-art { margin: 12px; }
-
 .home-banner--spotlight { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto; }
 .home-banner--spotlight .home-banner-copy { padding: 18px 28px; }
 .home-banner--spotlight .home-eyebrow { margin-bottom: 4px; }
@@ -101,6 +97,123 @@
 }
 .home-button:hover { background: var(--color-accent-hover); }
 .home-button-icon { width: 16px; height: 16px; fill: currentColor; }
+
+/* ── Featured card ─────────────────────────────────────────────────────── */
+/* Layers: artwork (object-fit cover, focal point from data) → left shade →
+   copy. The card stays dark in every mode because the artwork is dark; only
+   the accent (rules, button, border) follows the palette. Light-mode accents
+   are lifted so they still read as illuminated on the artwork. */
+.home-feature {
+  --feature-accent: var(--color-accent);
+  --feature-accent-hi: color-mix(in srgb, var(--feature-accent), #fff 40%);
+  --feature-accent-lo: color-mix(in srgb, var(--feature-accent), #000 16%);
+  --feature-accent-top: color-mix(in srgb, var(--feature-accent), #fff 24%);
+  --feature-ink: #16110A;
+  --feature-title: #F8EFDD;
+  position: relative;
+  display: flex;
+  align-items: center;
+  isolation: isolate;
+  background: #0A0806;
+  border-color: color-mix(in srgb, var(--feature-accent) 60%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--feature-accent) 16%, transparent);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+:root[data-mode="light"] .home-feature { --feature-accent: color-mix(in srgb, var(--color-accent), #fff 22%); }
+.home-feature:hover {
+  border-color: color-mix(in srgb, var(--feature-accent) 85%, transparent);
+  box-shadow: 0 0 26px color-mix(in srgb, var(--feature-accent) 26%, transparent);
+}
+.home-feature-art {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--feature-focus, 75% 25%);
+}
+.home-feature-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(5, 7, 10, 0.72) 0%, rgba(5, 7, 10, 0.5) 32%, rgba(5, 7, 10, 0.16) 58%, rgba(5, 7, 10, 0) 78%);
+}
+.home-feature-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+  min-width: 0;
+  max-width: 64%;
+  padding: 24px clamp(24px, 5.5cqi, 56px);
+}
+.home-feature-lockup { display: grid; gap: 8px; max-width: 100%; }
+.home-feature-title {
+  margin: 0;
+  color: var(--feature-title);
+  background: linear-gradient(180deg, #FFFBF3 15%, #EADBBC 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
+  font: 800 clamp(38px, 5.6cqi, 50px)/1 var(--font-display);
+  letter-spacing: 0.005em;
+  overflow-wrap: anywhere;
+}
+.home-feature-rule { display: flex; align-items: center; gap: 7px; margin: 0 6%; }
+.home-feature-rule span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--feature-accent) 22%, var(--feature-accent-hi) 50%, var(--feature-accent) 78%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--feature-accent) 75%, transparent);
+}
+.home-feature-rule--top span:first-child { background: linear-gradient(90deg, transparent, var(--feature-accent) 45%, var(--feature-accent-hi)); }
+.home-feature-rule--top span:last-child { background: linear-gradient(90deg, var(--feature-accent-hi), var(--feature-accent) 55%, transparent); }
+.home-feature-rule i {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  transform: rotate(45deg);
+  border: 1.5px solid var(--feature-accent-hi);
+  background: color-mix(in srgb, var(--feature-accent) 30%, #0A0806);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--feature-accent) 70%, transparent);
+}
+.home-feature .home-feature-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 50px;
+  padding: 0 34px 0 28px;
+  border: 1px solid var(--feature-accent-hi);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--feature-accent-top) 0%, var(--feature-accent) 50%, var(--feature-accent-lo) 100%);
+  color: var(--feature-ink);
+  font: 800 19px/1 var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+    0 0 0 3px color-mix(in srgb, var(--feature-accent) 16%, transparent),
+    0 0 20px color-mix(in srgb, var(--feature-accent) 48%, transparent),
+    0 6px 14px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+}
+.home-feature .home-feature-play:hover,
+.home-feature .home-feature-play:focus-visible {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+    0 0 0 3px color-mix(in srgb, var(--feature-accent) 24%, transparent),
+    0 0 26px color-mix(in srgb, var(--feature-accent) 55%, transparent),
+    0 8px 16px rgba(0, 0, 0, 0.4);
+}
+.home-feature .home-feature-play:focus-visible { outline: 2px solid var(--feature-title); outline-offset: 3px; }
+.home-feature-play-icon { width: 18px; height: 18px; fill: currentColor; }
 
 /* ── Atlas Navigation (right-hand panel) ───────────────────────────────── */
 .home-context {
@@ -269,9 +382,14 @@
 
 @container upper (max-width: 640px) {
   .home-banners { grid-template-rows: auto; }
-  .home-banner--featured, .home-banner--spotlight { grid-template-columns: minmax(0, 1fr); }
-  .home-banner--featured .home-banner-art { order: -1; height: 140px; margin: 10px 10px 0; }
-  .home-banner--featured .home-banner-copy { padding: 20px; }
+  .home-banner--spotlight { grid-template-columns: minmax(0, 1fr); }
+  /* Featured card: taller, copy at the bottom, the knight above it. */
+  .home-feature { align-items: flex-end; min-height: 320px; }
+  .home-feature-art { object-position: var(--feature-focus-narrow, var(--feature-focus, 75% 25%)); }
+  .home-feature-shade { background: linear-gradient(0deg, rgba(5, 7, 10, 0.9) 0%, rgba(5, 7, 10, 0.72) 38%, rgba(5, 7, 10, 0.15) 70%, rgba(5, 7, 10, 0) 100%); }
+  .home-feature-copy { max-width: 100%; gap: 18px; padding: 20px; }
+  .home-feature-title { font-size: clamp(30px, 10cqi, 40px); }
+  .home-feature .home-feature-play { height: 48px; }
   .home-banner--spotlight .home-banner-art { display: none; }
   .home-banner--spotlight .home-banner-copy { padding: 18px 20px 12px; }
   .home-banner-action { padding: 0 20px 18px; }
@@ -296,4 +414,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pa-ready .home { transition: none; }
+  .home-feature, .home-feature .home-feature-play { transition: none; }
+  .home-feature .home-feature-play:hover, .home-feature .home-feature-play:focus-visible { transform: none; }
 }

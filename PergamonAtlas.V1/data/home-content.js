@@ -1,7 +1,11 @@
 // Homepage content. /scripts/home.js renders it; nothing here affects layout.
 //
-// - featured / spotlight: the two banners in the left column. `href` should be
-//   a live game; `art` will later take an image path (null = placeholder).
+// - featured: the cinematic card (title, Play Now, full-bleed artwork). `art`
+//   gives the image (src/srcset/width/height), an optional `focus` and
+//   `focusNarrow` (CSS object-position for wide and narrow cards) and `alt`
+//   (leave '' when the artwork is decorative). No art = a plain dark card.
+// - spotlight: the smaller banner below it. `href` should be a live game;
+//   `art` will later take an image path (null = placeholder).
 // - context: the right-hand panel (Atlas Navigation). Each link may set
 //   `signedInLabel` to change its title for signed-in visitors. Set
 //   `context: null` to hide the panel.
@@ -11,12 +15,18 @@
 //   items shows its `emptyMessage`.
 window.PergamonHomeContent = {
   featured: {
-    label: 'Featured Game',
     title: 'Chess Forge',
-    description: 'A modern chess experience for strategy and skill.',
     href: '/games/chess-forge/',
     cta: 'Play Now',
-    art: null
+    art: {
+      src: '/images/featured/chess-forge.webp',
+      srcset: '/images/featured/chess-forge-960.webp 960w, /images/featured/chess-forge.webp 1619w',
+      width: 1619,
+      height: 971,
+      focus: '78% 5%',
+      focusNarrow: '88% 12%',
+      alt: ''
+    }
   },
 
   spotlight: {

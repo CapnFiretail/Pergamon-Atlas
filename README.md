@@ -21,8 +21,9 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no build)
 ├── scripts/  styles/      V1 page scripts and styles (see Design system below)
 ├── data/                  entries.js (games catalog), home-content.js (homepage)
 ├── operation/             Shared legacy layer: Supabase auth, footer, main.css
-├── images/                Logo
+├── images/                Logo; featured/ holds web copies of featured artwork
 └── ads.txt
+artwork/source/            Original artwork files (not deployed)
 supabase/migrations/       Database schema history (reference only; not deployed)
 supabase/proposed/         Reviewed-but-unapplied migrations
 vercel.json                Output directory + redirects for retired routes
@@ -59,6 +60,17 @@ A new page needs, in `<head>`: `theme.js`, the Google Fonts link,
   <div id="footer-placeholder"></div>
 </div>
 ```
+
+### Featured game card
+
+The homepage's large card is built by `featureCard()` in `scripts/home.js`
+from `featured` in `data/home-content.js`: title, `href`, `cta` and `art`
+(`src`, `srcset`, `width`, `height`, `focus`/`focusNarrow` as CSS
+`object-position`, and `alt`, empty when the art is decorative). The title,
+ornament rules and Play Now button are HTML/CSS and take the palette's
+accent; the card itself stays dark in every mode. To feature another game,
+add its artwork to `images/featured/` (keep the original in
+`artwork/source/`) and change the data; no CSS or HTML edits are needed.
 
 Game pages and the Games catalog still draw their content area with the
 legacy `operation/styles/main.css`; only their header, sidebar and footer
