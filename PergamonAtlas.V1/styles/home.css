@@ -27,6 +27,12 @@
   color: var(--color-text-primary);
 }
 .pa-ready .home { transition: grid-template-columns 0.2s ease; }
+/* First visit only, until published content (or the static fallback, at most
+   1.2s) is ready: card frames keep their size; only their contents wait. */
+.home.cms-pending .home-feature-art,
+.home.cms-pending .home-feature-copy,
+.home.cms-pending .home-feature-play,
+.home.cms-pending .home-track { opacity: 0; }
 .home > .pa-sidebar { grid-column: 1; grid-row: 1; }
 .home-upper { container: upper / inline-size; grid-column: 2; grid-row: 1; min-width: 0; }
 .home-lower { container: lower / inline-size; grid-column: 1 / -1; grid-row: 2; min-width: 0; }

@@ -402,9 +402,15 @@
   }
 
   // ── Document → model ──────────────────────────────────────────────────
+  // First render: the last published version this browser received (see
+  // scripts/cms/loader.js), else the static document. The loader then swaps
+  // in the fresh published version, if it differs, via PergamonHome.render.
+  const loader = window.PergamonCMS.loader;
   const staticCtx = { staticImages: content.staticImages || {} };
+  const cached = loader && loader.initial();
+  const cachedModel = cached ? cms.toModel(cached.doc, Object.assign({}, staticCtx, { media: cached.media })) : null;
   const fallbackModel = cms.toModel(content.document, staticCtx);
-  let model = fallbackModel || { featured: null, spotlight: null, carousel: [] };
+  let model = cachedModel || fallbackModel || { featured: null, spotlight: null, carousel: [] };
 
   // ── Page ──────────────────────────────────────────────────────────────
   // .home is the shell grid: sidebar | upper on row 1, lower across row 2.
@@ -459,6 +465,10 @@
     cardIds: () => Object.keys(cards).concat(model.carousel.map(c => c.id)),
     element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`))
   };
+
+  // Published content (staging previews and local development; production
+  // keeps the static document until the CMS is approved there).
+  if (loader) loader.attach(window.PergamonHome, root, cachedModel ? cached.version : null, content.document);
 
   // A password-reset link that Supabase sent to the Site URL (the homepage)
   // instead of the reset page: finish it there. auth.js loads after this file.

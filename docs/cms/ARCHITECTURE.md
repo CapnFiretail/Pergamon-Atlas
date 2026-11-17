@@ -165,7 +165,26 @@ upload would be served as-is. Options: resize server-side to a WebP ≤ 2560 px
 in the function (needs a WASM image library), or have the editor require
 web-sized images.
 
-## 5. Homepage loading plan (not implemented in this phase)
+## 5. Homepage loading (implemented in M2: `scripts/cms/loader.js`)
+
+As built: `supabase-config.js`, `cms/content.js` and `cms/loader.js` load
+before `home.js`, so the `get_published_content('home')` request (publishable
+key only, no session) is in flight while the page parses. Repeat visits draw
+the last published version this browser received (re-validated)
+immediately; first visits keep card frames sized and hide only their
+contents (`.home.cms-pending`) for at most 1.2 s. Invalid, slow (8 s timeout)
+or failed answers keep the static/cached copy; "nothing published" returns
+to the static copy. The browser re-validates every document
+(`content.validateDocument`: internal links only, safe image paths, text
+limits) before drawing. **Production:** the loader is off when
+`PERGAMON_ENV` is `production` (`LIVE` table in `loader.js`); flip it only
+after the production CMS rollout is approved.
+
+Known browser behaviour (M1): after a live zoom edit is reverted, Chrome can
+draw the image's edges very slightly differently (compositor resampling
+after a transform; DOM and file identical; visitors never see it).
+
+Original plan, for reference:
 
 - `scripts/home.js` keeps its renderer; it gains a `render(doc)` entry so the
   same code renders the published document (and, later, an admin's draft).

@@ -100,6 +100,36 @@
     };
   }
 
+  // Defence in depth for documents arriving from the network or a cache. The
+  // server (validate_content) is the real gate; this mirrors its essentials so
+  // a bad or tampered document can't put an external link, script URL or
+  // unexpected image on the page. Returns true only for a usable document.
+  const INTERNAL_PATH = /^\/(?!\/)[a-z0-9\/_-]*$/i;         // site path: no scheme, no //, no query
+  const STATIC_IMAGE = /^\/images\/featured\/[a-z0-9][a-z0-9-]{0,63}\.(webp|png|jpg)$/;
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  const CARD_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
+  const isText = (s, max) => typeof s === 'string' && s.length > 0 && s.length <= max && !/[<>]/.test(s);
+  function validArt(a) {
+    if (a === undefined || a === null) return true;
+    if (typeof a !== 'object' || !a.source || typeof a.source !== 'object') return false;
+    if (a.source.static !== undefined) return typeof a.source.static === 'string' && STATIC_IMAGE.test(a.source.static) && a.source.media === undefined;
+    return typeof a.source.media === 'string' && UUID.test(a.source.media);
+  }
+  function validCard(c, tile) {
+    if (!c || typeof c !== 'object') return false;
+    if (!isText(c.title, tile ? 40 : 60) || typeof c.href !== 'string' || !INTERNAL_PATH.test(c.href)) return false;
+    if (tile ? !isText(c.category, 40) : !isText(c.cta, 24)) return false;
+    return validArt(c.art);
+  }
+  function validateDocument(doc) {
+    if (!doc || doc.schema !== SCHEMA || !doc.components || typeof doc.components !== 'object') return false;
+    const comps = doc.components;
+    if (!validCard(comps['home.featured'], false) || !validCard(comps['home.spotlight'], false)) return false;
+    const carousel = comps[CAROUSEL];
+    if (!carousel || !Array.isArray(carousel.order) || carousel.order.length > 24) return false;
+    return carousel.order.every(id => typeof id === 'string' && CARD_ID.test(id) && validCard(comps[CAROUSEL + '.' + id], true));
+  }
+
   // Media ids a document references (for resolving image URLs).
   function mediaIds(doc) {
     const ids = [];
@@ -111,7 +141,7 @@
     return ids;
   }
 
-  const api = { SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, cardType: cardType, artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds };
+  const api = { SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, cardType: cardType, artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument };
   root.PergamonCMS = root.PergamonCMS || {};
   root.PergamonCMS.content = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

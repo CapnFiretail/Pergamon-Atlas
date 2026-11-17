@@ -81,6 +81,41 @@ test('unsafe or malformed values never reach CSS', () => {
   assert.equal(c.focus, undefined);
 });
 
+test('validateDocument: accepts the static copy and the staging-published shape', () => {
+  assert.equal(cms.validateDocument(home.document), true);
+  const d = clone(home.document);
+  d.components['home.carousel.pong'].art = { source: { media: '11111111-2222-4333-8444-555555555555' }, focus: { x: 1, y: 2 } };
+  assert.equal(cms.validateDocument(d), true);
+});
+
+test('validateDocument: rejects anything unsafe or malformed (defence in depth behind the server)', () => {
+  const bad = {
+    'javascript: link': d => { d.components['home.featured'].href = 'javascript:alert(1)'; },
+    'external link': d => { d.components['home.featured'].href = 'https://evil.example/'; },
+    'protocol-relative link': d => { d.components['home.spotlight'].href = '//evil.example/x'; },
+    'link with query': d => { d.components['home.carousel.pong'].href = '/games/pong/?x=1'; },
+    'markup in title': d => { d.components['home.featured'].title = '<img src=x onerror=alert(1)>'; },
+    'empty title': d => { d.components['home.spotlight'].title = ''; },
+    'long title': d => { d.components['home.featured'].title = 'x'.repeat(61); },
+    'long button label': d => { d.components['home.featured'].cta = 'x'.repeat(25); },
+    'missing category': d => { delete d.components['home.carousel.snake'].category; },
+    'remote image': d => { d.components['home.featured'].art.source = { static: 'https://evil.example/a.webp' }; },
+    'image outside folder': d => { d.components['home.featured'].art.source = { static: '/images/../x.webp' }; },
+    'svg image': d => { d.components['home.featured'].art.source = { static: '/images/featured/x.svg' }; },
+    'media not an id': d => { d.components['home.featured'].art.source = { media: '../x' }; },
+    'missing spotlight': d => { delete d.components['home.spotlight']; },
+    'order lists a missing card': d => { d.components['home.carousel'].order.push('ghost'); },
+    'bad card id': d => { d.components['home.carousel'].order[0] = '../x'; },
+    'schema 2': d => { d.schema = 2; },
+    'components not an object': d => { d.components = []; }
+  };
+  for (const [name, mut] of Object.entries(bad)) {
+    const d = clone(home.document); mut(d);
+    assert.equal(cms.validateDocument(d), false, name);
+  }
+  for (const v of [null, undefined, 'x', 42, [], {}]) assert.equal(cms.validateDocument(v), false, String(v));
+});
+
 test('wrong schema or shape -> null (caller keeps its fallback); missing cards are simply absent', () => {
   assert.equal(cms.toModel(null, ctx), null);
   assert.equal(cms.toModel({ schema: 2, components: {} }, ctx), null);
