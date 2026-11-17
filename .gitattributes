@@ -1,0 +1,3 @@
+# Vendored files are served byte-for-byte and checked with Subresource
+# Integrity: never convert their line endings.
+PergamonAtlas.V1/vendor/** -text
