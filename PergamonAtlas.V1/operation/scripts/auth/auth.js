@@ -98,6 +98,16 @@
     return { session, profile: profile || null, error: profileError || null };
   }
 
+  // CMS: asks the database whether the caller is an administrator
+  // (public.is_admin(), the check every CMS write function runs itself; see
+  // supabase/proposed/0008_site_content.sql). Resolves { data: true } only
+  // for a valid session whose profiles.role is 'admin'. Used to decide
+  // whether to build Admin Mode at all; never a substitute for the server's
+  // own checks.
+  async function isCmsAdmin() {
+    return client().rpc('is_admin');
+  }
+
   // Pergamon Publishing v1 — runtime visibility overrides (see
   // supabase/migrations/0002_atlas_visibility_overrides.sql). Readable by
   // anyone (RLS: select using (true)); insert/update/delete are enforced
@@ -194,6 +204,7 @@
     getProfile,
     updateDisplayName,
     getCurrentUserAndProfile,
+    isCmsAdmin,
     getVisibilityOverrides,
     setVisibilityOverride,
     deleteVisibilityOverride,

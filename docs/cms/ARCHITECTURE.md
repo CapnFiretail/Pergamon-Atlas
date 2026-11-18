@@ -208,6 +208,34 @@ Original plan, for reference:
 - Admins: after `is_admin()` is confirmed, the editor loads the draft via
   `get_draft`; drafts are never stored for visitors.
 
+## 5a. Admin Mode (implemented in M3: `scripts/cms/admin.js`)
+
+- **Who sees it.** Runs only where the loader is live (not production). On
+  load and on every sign-in/sign-out it reads the session and calls
+  `rpc is_admin()` with it; nothing is built (no button, no stylesheet, no
+  pencils) unless the database answers `true`. Stored state
+  (`sessionStorage['pa-cms-admin']`: on/off and view) is read only after
+  that answer, and turning Admin Mode on asks again. A forged or edited
+  session, or a regular user's session, gets `false` — and every CMS write
+  function checks `is_admin()` itself, so the interface is never the
+  boundary.
+- **Controls.** A header button (beside search / settings / account) opens
+  the Admin Mode panel: the on/off switch, "View as" Admin / User / Guest,
+  and Publish Changes (disabled until editing exists). Styles:
+  `styles/cms-admin.css`, loaded by the script after verification.
+- **Indicators.** In Admin view, every card from `PergamonHome.cardIds()` /
+  `element(id)` whose `content.cardType` is known gets an absolutely placed
+  dashed frame and a pencil button (a tile's pencil sits beside its link,
+  inside the list item, so the card still navigates). A MutationObserver
+  re-applies them when the carousel pages or the document is redrawn. No
+  card box changes size. Pencils open an informational note for now.
+- **Previews.** User and Guest views remove every editing control and show
+  the published content; Guest also shows the guest appearance
+  (`PergamonTheme.previewSignedIn(false)`: default palette, signed-out
+  Atlas Navigation row) without signing out. A bar at the bottom says which
+  view is shown and returns to Admin view. The card editor (M4) is to keep
+  its working copy in `admin.js`'s state, so switching views won't lose it.
+
 ## 6. Hardening
 
 | Item | State |

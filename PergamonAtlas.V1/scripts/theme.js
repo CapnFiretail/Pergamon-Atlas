@@ -58,15 +58,19 @@
 
   var prefs = readPrefs();
   var signedIn = hasStoredSession();
+  // Admin Mode's "View as Guest" preview: shows this page as signed out
+  // without signing out (null = no preview). In memory, this page only.
+  var preview = null;
 
   function state() {
     var systemDark = media ? media.matches : true;
+    var shownSignedIn = preview === null ? signedIn : preview;
     return {
       mode: prefs.mode,
       palette: prefs.palette,
       resolvedMode: prefs.mode === 'system' ? (systemDark ? 'dark' : 'light') : prefs.mode,
-      activePalette: signedIn ? prefs.palette : DEFAULT_PALETTE,
-      signedIn: signedIn
+      activePalette: shownSignedIn ? prefs.palette : DEFAULT_PALETTE,
+      signedIn: shownSignedIn
     };
   }
 
@@ -124,6 +128,12 @@
       value = !!value;
       if (value === signedIn) return;
       signedIn = value; apply();
+    },
+    // true / false shows the page as signed in / out; null ends the preview.
+    previewSignedIn: function (value) {
+      value = value === null || value === undefined ? null : !!value;
+      if (value === preview) return;
+      preview = value; apply();
     },
     onChange: function (fn) { listeners.push(fn); }
   };

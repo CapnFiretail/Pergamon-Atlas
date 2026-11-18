@@ -1,0 +1,219 @@
+/* Admin Mode (scripts/cms/admin.js). Loaded by that script only after the
+ * server has confirmed an administrator, so visitors never download it.
+ * Colours from /styles/theme.css; nothing here changes a card's size. */
+
+/* ── Header button ─────────────────────────────────────────────────────── */
+.cms-admin-button:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.cms-admin-button.is-active { background: var(--color-accent-soft); color: var(--color-accent-text); }
+.cms-admin-button[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--color-accent); }
+.cms-admin-button[aria-expanded="true"]::after { display: none; }   /* no tooltip over the open panel */
+.cms-admin-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--color-background);
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0;
+}
+.cms-admin-button.is-active .cms-admin-dot { opacity: 1; }
+
+/* ── Panel ─────────────────────────────────────────────────────────────── */
+.cms-admin-panel, .cms-admin-panel *, .cms-admin-bar, .cms-admin-bar *, .cms-edit-note, .cms-edit-note * { box-sizing: border-box; }
+.cms-admin-panel {
+  position: fixed;
+  right: 24px;
+  z-index: 260;
+  display: grid;
+  gap: 16px;
+  width: min(300px, calc(100vw - 24px));
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+}
+:root[data-mode="light"] .cms-admin-panel { box-shadow: 0 10px 28px rgb(0 0 0 / 0.12); }
+.cms-admin-panel[hidden] { display: none; }
+.cms-admin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cms-admin-title { margin: 0; font: 800 18px/1.2 var(--font-display); }
+.cms-admin-sub { margin: 4px 0 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 500; }
+
+.cms-admin-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  padding: 0;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.cms-admin-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.cms-admin-switch[aria-checked="true"] { border-color: var(--color-accent); background: var(--color-accent); }
+.cms-admin-switch[aria-checked="true"] .cms-admin-switch-knob { transform: translateX(18px); background: var(--color-on-accent); }
+.cms-admin-switch:disabled { cursor: progress; opacity: 0.6; }
+
+.cms-admin-label { margin: 0 0 8px; color: var(--color-text-secondary); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.cms-admin-segment { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); }
+.cms-admin-view {
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: 600 14px/1 var(--font-ui);
+  cursor: pointer;
+}
+.cms-admin-view:hover:not(:disabled) { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.cms-admin-view[aria-pressed="true"] { background: var(--color-accent-soft); color: var(--color-accent-text); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.cms-admin-view:disabled { cursor: default; opacity: 0.45; }
+
+.cms-admin-publish {
+  height: 42px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font: 700 15px/1 var(--font-ui);
+  cursor: pointer;
+}
+.cms-admin-publish:disabled { background: var(--color-surface-hover); color: var(--color-text-secondary); cursor: not-allowed; }
+.cms-admin-note { margin: -8px 0 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.4; }
+
+/* ── Preview bar (User / Guest views) ──────────────────────────────────── */
+.cms-admin-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 24px);
+  padding: 6px 6px 6px 16px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.3);
+  color: var(--color-text-primary);
+  font: 600 14px/1.2 var(--font-ui);
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.cms-admin-bar[hidden] { display: none; }
+.cms-admin-bar-back {
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-text);
+  font: 700 13px/1 var(--font-ui);
+  cursor: pointer;
+}
+.cms-admin-bar-back:hover { background: var(--color-accent); color: var(--color-on-accent); }
+
+/* ── Card indicators (Admin view) ──────────────────────────────────────── */
+/* Frame and pencil are absolutely placed in the card (or beside a tile's
+   link, in its list item): the card's own box never changes. */
+.home-track-item.cms-editable { position: relative; }
+.cms-edit-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border: 1.5px dashed color-mix(in srgb, var(--color-accent) 70%, transparent);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.home-track-item > .cms-edit-frame { border-radius: 12px; }
+.cms-edit-pencil {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1.5px solid var(--color-accent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  color: var(--color-accent-text);
+  cursor: pointer;
+}
+.home-track-item > .cms-edit-pencil { top: 8px; right: 8px; width: 30px; height: 30px; }
+.cms-edit-pencil:hover, .cms-edit-pencil[aria-expanded="true"] { background: var(--color-accent); color: var(--color-on-accent); }
+.cms-edit-pencil:focus-visible, .cms-admin-panel :focus-visible, .cms-admin-bar :focus-visible, .cms-edit-note :focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.cms-edit-icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Pencil placeholder note ───────────────────────────────────────────── */
+.cms-edit-note {
+  position: fixed;
+  z-index: 270;
+  width: min(290px, calc(100vw - 24px));
+  padding: 14px 14px 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: 12px;
+  background: var(--color-surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+}
+:root[data-mode="light"] .cms-edit-note, :root[data-mode="light"] .cms-admin-bar { box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
+.cms-edit-note-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.cms-edit-note-title { margin: 4px 0 0; font: 800 16px/1.25 var(--font-display); }
+.cms-edit-note-close { display: grid; place-items: center; flex-shrink: 0; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.cms-edit-note-close:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.cms-edit-note-text { margin: 8px 0 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.45; }
+.cms-edit-note-meta { margin: 10px 0 0; color: var(--color-accent-text); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+
+/* ── Small screens ─────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .cms-admin-panel { right: 12px; }
+}
+@media (max-width: 600px) {
+  /* A fourth header button: slightly smaller buttons keep the header on screen. */
+  .pa-capsule:has(.cms-admin-button) { gap: 0; padding: 4px; }
+  .pa-actions:has(.cms-admin-button) { gap: 0; }
+  .pa-actions:has(.cms-admin-button) .pa-icon-button { width: 32px; height: 32px; }
+  .pa-actions:has(.cms-admin-button) .pa-icon { width: 20px; height: 20px; }
+  /* And if the name is still too wide (e.g. before the web font loads), it shortens instead. */
+  .pa-header:has(.cms-admin-button) .pa-brand { flex-shrink: 1; }
+  .pa-header:has(.cms-admin-button) .pa-brand-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .cms-admin-dot { top: 4px; right: 4px; }
+}
+@media (max-width: 420px) {
+  .pa-header:has(.cms-admin-button) .pa-brand { gap: 8px; }
+  .pa-header:has(.cms-admin-button) .pa-brand-name { font-size: 15px; }
+  .cms-admin-bar { gap: 8px; padding-left: 12px; font-size: 13px; }
+}
+/* Below this the name doesn't fit beside four buttons: logo only (as under 361px for everyone). */
+@media (max-width: 374px) {
+  .pa-header:has(.cms-admin-button) .pa-brand-name { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cms-admin-switch, .cms-admin-switch-knob { transition: none; }
+}

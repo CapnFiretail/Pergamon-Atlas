@@ -96,6 +96,15 @@ palette's accent; the cards stay dark in every mode. To change a game, add
 its artwork to `images/featured/` (keep the original in `artwork/source/`)
 and edit the document; no CSS or HTML edits are needed.
 
+Where the CMS is live (development and staging previews; see
+`scripts/cms/loader.js`), administrators get **Admin Mode** on the homepage:
+`scripts/cms/admin.js` asks the server (`is_admin()`) before building
+anything, then adds a header button with the Admin Mode switch, "View as"
+Admin / User / Guest and a (for now disabled) Publish Changes button. In
+Admin view every card the document addresses gets a frame and a pencil; the
+pencil opens a placeholder until the card editor exists. Its styles
+(`styles/cms-admin.css`) load only for verified administrators.
+
 Game pages and the Games catalog still draw their content area with the
 legacy `operation/styles/main.css`; only their header, sidebar and footer
 follow the theme.

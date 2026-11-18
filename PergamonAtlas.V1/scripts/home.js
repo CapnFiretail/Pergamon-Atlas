@@ -170,9 +170,10 @@
   }
 
   // ── Atlas Navigation (right-hand panel) ───────────────────────────────
-  // Whole-row links. The account row reads "Account" for signed-in visitors:
-  // first from theme.js's stored-session guess (so the first paint is right),
-  // then from the auth client once it reports (see the bottom of this file).
+  // Whole-row links. The account row reads "Account" for signed-in visitors.
+  // It follows theme.js's sign-in state: first the stored-session guess (so
+  // the first paint is right), then the auth client's answer (layout.js), and
+  // Admin Mode's guest preview (see the bottom of this file).
   const accountRows = [];
   function setAccountState(signedIn) {
     accountRows.forEach(({ link, title, desc, data }) => {
@@ -470,23 +471,20 @@
   // keeps the static document until the CMS is approved there).
   if (loader) loader.attach(window.PergamonHome, root, cachedModel ? cached.version : null, content.document);
 
+  // The Atlas Navigation account row follows the sign-in state theme.js shows.
+  const theme = window.PergamonTheme;
+  if (theme) theme.onChange(s => setAccountState(s.signedIn));
+
   // A password-reset link that Supabase sent to the Site URL (the homepage)
   // instead of the reset page: finish it there. auth.js loads after this file.
-  // The same listener keeps the Atlas Navigation account row in step.
   document.addEventListener('DOMContentLoaded', () => {
     const auth = window.PergamonAuth;
     if (!auth) return;
-    auth.getSession()
-      .then(res => setAccountState(!!(res && res.data && res.data.session)))
-      .catch(() => {});
     try {
-      auth.onAuthStateChange((event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          try { sessionStorage.setItem('pa-password-recovery', '1'); } catch (e) {}
-          window.location.replace('/account/reset-password/');
-          return;
-        }
-        setAccountState(!!session);
+      auth.onAuthStateChange(event => {
+        if (event !== 'PASSWORD_RECOVERY') return;
+        try { sessionStorage.setItem('pa-password-recovery', '1'); } catch (e) {}
+        window.location.replace('/account/reset-password/');
       });
     } catch (e) {}
   });
