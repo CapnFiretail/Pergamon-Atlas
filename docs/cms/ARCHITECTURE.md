@@ -154,11 +154,19 @@ published, and `publish` refuses images that weren't recorded. If the copy
 succeeds but recording fails, the call is retried (same bytes → same path).
 Drafts are never deleted by the function.
 
+Identical uploads (`0011_shared_public_media.sql`): public copies are named
+by content, so uploads with the same bytes share one public object, and
+each upload keeps its own `site_media` row pointing at it (0011 removed 0009's
+`UNIQUE (public_path)`; a plain index remains). `cms_record_prepared_media`
+still only accepts the path derived from the row's own hash and type, so a
+row can only point at a copy of its own content.
+
 Orphan clean-up (later, service role, scheduled): public objects whose
 `site_media` row has `published_at is null` and `prepared_at` older than 30
 days, and draft originals whose row was never prepared after 30 days, can be
 removed; images used by any published or archived version are kept so
-rollback always works.
+rollback always works. Since 0011, delete a public object only when **no**
+`site_media` row references its path (another upload may share it).
 
 Limitation (decision below): v1 publishes the uploaded original. A 5 MB
 upload would be served as-is. Options: resize server-side to a WebP ≤ 2560 px
@@ -370,15 +378,11 @@ No schema or migration change: the browser drives the existing
 - **Rollback:** `rollback(home, archived_version_id, expected_live_id)`
   (no interface yet) republishes an earlier version as a new version; its
   images are already public.
-- **Known limitation (needs a database change, not made):**
-  `site_media.public_path` is unique, but public copies are named by
-  content. An upload that is byte-for-byte identical to an image already
-  published from another upload can't be recorded (`publish-media` answers
-  `record_failed`), so that draft can't be published. Nothing unsafe
-  happens, and the dialog explains it and suggests uploading a re-saved
-  copy. Proposed fix: drop the uniqueness of `public_path` (several rows
-  may share one content-addressed copy) and let
-  `cms_record_prepared_media` accept an existing path.
+- **Identical images** (re-uploading a picture that is already published,
+  or using it on several cards) publish normally: each upload shares the
+  one content-addressed public copy. This needs `0011_shared_public_media.sql`
+  (§4, §8). Without 0011 such a draft can't be published (`record_failed`;
+  nothing unsafe happens).
 
 ## 6. Hardening
 
@@ -406,3 +410,24 @@ endpoint. Game pages can't get a strict policy while AdSense runs inline.
 3. When to switch the CSP from report-only to enforced on non-game pages.
 4. Whether to keep `PUBLISH_MEDIA_ALLOWED_ORIGINS` to fixed domains for
    staging (previews have changing URLs; a stable preview alias helps).
+
+## 8. Migration 0011: rollout to production
+
+`supabase/proposed/0011_shared_public_media.sql` is applied to **staging
+only** (2026-11-18). Production has none of the CMS schema yet, so it goes
+with the CMS rollout, never on its own:
+
+1. Production backup first (Database → Backups).
+2. Apply in order in the production SQL editor: 0008, 0009, **0011** (and
+   0010 if approved). 0011 only drops `site_media_public_path_key` and adds
+   `site_media_public_path_idx`; it is idempotent and touches no data.
+3. Check: no unique constraint on `site_media.public_path`; the index
+   exists; `cms_record_prepared_media` is executable by `service_role` only;
+   the `site-media-drafts` policies are unchanged.
+4. Deploy `publish-media` to production (unchanged code) with production
+   origins only.
+5. Any future orphan clean-up must keep a public object while any
+   `site_media` row references its path.
+
+Reverting 0011 (re-adding the unique constraint) only works while no two rows
+share a path; once identical images are published that way, keep 0011.

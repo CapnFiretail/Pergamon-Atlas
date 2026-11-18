@@ -12,7 +12,7 @@ npm test         # node --test: database, hardening, Edge Function, config
 
 | File | Covers |
 |---|---|
-| `db.test.mjs` | 0008 + 0009 on an emulated Supabase (roles, default grants, `auth.uid()`, storage RLS) with production's 0001–0006 applied first. Authorization for guest / user / admin / service role, role spoofing, direct table access, draft privacy, validation (34 malformed or unsafe documents), conflicts, atomic publish, concurrent publish, failed-publish recovery, rollback, immutability, upload reservations, draft-bucket and public-bucket policies, prepared-media rules. |
+| `db.test.mjs` | 0008 + 0009 (+ 0011) on an emulated Supabase (roles, default grants, `auth.uid()`, storage RLS) with production's 0001–0006 applied first. Authorization for guest / user / admin / service role, role spoofing, direct table access, draft privacy, validation (34 malformed or unsafe documents), conflicts, atomic publish, concurrent publish, failed-publish recovery, rollback, immutability, upload reservations, draft-bucket and public-bucket policies, prepared-media rules, identical uploads sharing one public copy (0011) without loosening the path/hash rule, write-once fields or service-role-only recording. |
 | `hardening.test.mjs` | Optional 0010: profiles privileges, `homepage_settings` column grant, legacy bucket listing. |
 | `function.test.mjs` | `publish-media` handler and byte checks with in-memory Auth/DB/Storage: real PNG/JPEG/WebP fixtures, SVG/GIF/HTML/EXE/truncated/oversized/huge-dimension rejection, auth, admin check, CORS, request shape, path tampering, type mismatch, failed copy/record and retry. |
 | `config.test.mjs` | `tools/write-supabase-config.mjs`: production/preview/development separation, secret-key refusal, malformed input. |

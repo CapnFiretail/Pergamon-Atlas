@@ -73,6 +73,7 @@ export async function createEnv({ extra = [] } = {}) {
   }
   await db.exec(sql('supabase/proposed/0008_site_content.sql'));
   await db.exec(sql('supabase/proposed/0009_site_media.sql'));
+  await db.exec(sql('supabase/proposed/0011_shared_public_media.sql'));
   for (const f of extra) await db.exec(sql(`supabase/proposed/${f}.sql`));
 
   // Run fn as a request: role + JWT claims, in a transaction that commits on

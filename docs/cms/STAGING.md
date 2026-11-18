@@ -31,7 +31,9 @@ Supabase Dashboard → **SQL Editor**, run each file's full contents in order:
 1. `supabase/migrations/0001_pergamon_profiles.sql` … `0006_homepage_featured_trio.sql`
    (makes staging match production)
 2. `supabase/proposed/0008_site_content.sql`
-3. `supabase/proposed/0009_site_media.sql`
+3. `supabase/proposed/0009_site_media.sql`, then
+   `supabase/proposed/0011_shared_public_media.sql` (identical images share
+   one public copy; on staging since 2026-11-18, see ARCHITECTURE §8)
 4. optionally `supabase/proposed/0010_legacy_hardening.sql` (to test it before production)
 
 Then check **Storage**: buckets `site-media-drafts` (private) and

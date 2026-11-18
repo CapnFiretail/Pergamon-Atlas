@@ -216,13 +216,7 @@
       const what = e.stage === 'images'
         ? `An image couldn’t be prepared for publishing (${e.prepared} of ${e.total} ready): ${e.message}`
         : `Publishing failed: ${e.message}`;
-      const help = ['Nothing was published: the live homepage is unchanged and your saved draft is kept. Try again; images that are already prepared are skipped.'];
-      // publish-media names public copies by their content; the database
-      // currently allows one record per copy, so an exact copy of an image
-      // that was already published from another upload can't be recorded.
-      if (e.code === 'record_failed') help.push('If it fails again, this picture is probably an exact copy of one already published from an earlier upload. Upload a re-saved copy (any small edit) instead.');
-      else help.push('If it keeps failing, keep the draft and try later, or replace the image.');
-      failed(what, help);
+      failed(what, ['Nothing was published: the live homepage is unchanged and your saved draft is kept. Try again; images that are already prepared are skipped.', 'If it keeps failing, keep the draft and try later, or replace the image.']);
     }
 
     // Try again starts over from the server's current state.

@@ -1,4 +1,4 @@
-// CMS database tests: proposed 0008/0009 against an emulated Supabase
+// CMS database tests: proposed 0008/0009 (+0011) against an emulated Supabase
 // (see supabase-env.mjs). Run: npm test (from tests/cms).
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -313,4 +313,41 @@ test('prepared media is recorded once and becomes immutable', async () => {
   assert.ok(conflict(await env.rpc(env.service, 'cms_record_prepared_media', id, `media/${other}.png`, 'image/png', 300, 10, 10, other)));
   assert.equal((await env.as(env.service, tx => tx.query(`update public.site_media set width = 11 where id = $1`, [id]))).error.code, 'PT403');
   assert.equal((await env.as(env.service, tx => tx.query(`update public.site_media set draft_path = 'uploads/x.png' where id = $1`, [id]))).error.code, 'PT403');
+});
+
+test('identical uploads share one public copy (0011), without loosening anything else', async () => {
+  const sha = 'b'.repeat(64);
+  const path = `media/${sha}.png`;
+  const one = ok(await env.rpc(admin, 'create_media_upload', 'image/png', 500)).media_id;
+  const two = ok(await env.rpc(admin2, 'create_media_upload', 'image/png', 500)).media_id;   // another admin, same picture
+  ok(await env.rpc(env.service, 'cms_record_prepared_media', one, path, 'image/png', 500, 40, 30, sha));
+  const r2 = ok(await env.rpc(env.service, 'cms_record_prepared_media', two, path, 'image/png', 500, 40, 30, sha));
+  assert.equal(r2.public_path, path, 'the second upload records the same public copy');
+  assert.equal(ok(await env.rpc(env.service, 'cms_record_prepared_media', two, path, 'image/png', 500, 40, 30, sha)).already_prepared, true, 'repeat is idempotent');
+  // Still: a row can only point at a copy of its own content, write-once, service role only.
+  const three = ok(await env.rpc(admin, 'create_media_upload', 'image/png', 500)).media_id;
+  const other = 'c'.repeat(64);
+  assert.ok(invalid(await env.rpc(env.service, 'cms_record_prepared_media', three, path, 'image/png', 500, 40, 30, other)), 'the path must match the row’s own hash');
+  assert.ok(conflict(await env.rpc(env.service, 'cms_record_prepared_media', one, `media/${other}.png`, 'image/png', 500, 40, 30, other)), 'prepared rows cannot be repointed');
+  assert.ok(denied(await env.rpc(admin, 'cms_record_prepared_media', three, path, 'image/png', 500, 40, 30, sha)), 'admins cannot record');
+  // Both rows publish together and resolve to the one public path.
+  const d = homeDoc();
+  d.components['home.featured'].art = { source: { media: one }, alt: '' };
+  d.components['home.spotlight'].art = { source: { media: two }, alt: '', fit: 'height' };
+  const cur = await current();
+  const s = ok(await env.rpc(admin, 'save_draft', 'home', d, cur.draftId, null));
+  ok(await env.rpc(admin, 'publish', 'home', s.draft_id, cur.publishedId));
+  const pub = ok(await env.rpc(env.anon, 'get_published_content', 'home'));
+  assert.equal(pub.media[one].path, path);
+  assert.equal(pub.media[two].path, path);
+  // A third, unprepared copy of the same picture still can't be published.
+  const d2 = homeDoc();
+  d2.components['home.featured'].art = { source: { media: three }, alt: '' };
+  const cur2 = await current();
+  const s2 = ok(await env.rpc(admin, 'save_draft', 'home', d2, cur2.draftId, null));
+  assert.ok(conflict(await env.rpc(admin, 'publish', 'home', s2.draft_id, cur2.publishedId)), 'unprepared image refused');
+  ok(await env.rpc(admin, 'discard_draft', 'home', s2.draft_id));
+  const uniques = ok(await env.as(env.superuser, async tx => (await tx.query(
+    `select count(*)::int as n from pg_constraint where conrelid = 'public.site_media'::regclass and contype = 'u' and pg_get_constraintdef(oid) like '%public_path%'`)).rows[0].n));
+  assert.equal(uniques, 0, 'no uniqueness on public_path');
 });
