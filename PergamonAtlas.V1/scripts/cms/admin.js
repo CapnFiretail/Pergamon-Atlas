@@ -1,7 +1,8 @@
-// Admin Mode for the homepage (CMS milestones M3–M5).
+// Admin Mode for the homepage (CMS milestones M3–M6).
 //
 // Loaded after auth.js. Builds nothing, and loads the editor (workspace.js,
-// images.js, drawer.js, image-editor.js, styles/cms-admin.css), only after the
+// images.js, drawer.js, image-editor.js, publish.js, publish-dialog.js,
+// styles/cms-admin.css), only after the
 // server confirms the signed-in account is an administrator (rpc is_admin(),
 // the same check every CMS write function runs). Stored state
 // (sessionStorage) and the supabase-js session are only ever read after that
@@ -11,7 +12,7 @@
 //   header button   opens the Admin Mode panel (only for verified admins)
 //   panel           Admin Mode on/off, "View as" Admin / User / Guest, the
 //                   published / draft / unsaved state, Publish Changes
-//                   (disabled until publishing exists)
+//                   (the saved draft; publish-dialog.js and publish.js)
 //   Admin view      the working copy (workspace.js) drawn on the page, with a
 //                   frame and pencil on every supported card, found through
 //                   PergamonHome.cardIds() / element(id) (no game names here);
@@ -59,6 +60,7 @@
   let drawnKey = null;                 // what Admin Mode last drew (null: the loader's page)
   let imageStore = null;               // uploaded images (images.js createStore)
   let renewTimer = 0;                  // keeps signed preview URLs fresh
+  let publisher = null;                // the Publish Changes dialog
 
   // ── Server verification ───────────────────────────────────────────────
   async function isAdmin() {
@@ -119,7 +121,9 @@
       loadScript('/scripts/cms/workspace.js', () => !!cms.workspace),
       loadScript('/scripts/cms/images.js', () => !!cms.images),
       loadScript('/scripts/cms/drawer.js', () => !!cms.drawer),
-      loadScript('/scripts/cms/image-editor.js', () => !!cms.imageEditor)
+      loadScript('/scripts/cms/image-editor.js', () => !!cms.imageEditor),
+      loadScript('/scripts/cms/publish.js', () => !!cms.publish),
+      loadScript('/scripts/cms/publish-dialog.js', () => !!cms.publishDialog)
     ]).then(() => {
       if (!verified || ui) return;
       start();
@@ -157,6 +161,7 @@
     verified = false;
     state = { active: false, view: 'admin' };
     undecorate();
+    if (publisher) { publisher.destroy(); publisher = null; }
     if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
     if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
     workspace = null; loading = null; imageStore = null;
@@ -242,7 +247,7 @@
     publish.type = 'button';
     publish.disabled = true;
     publish.setAttribute('aria-describedby', 'cms-admin-publish-note');
-    const publishNote = el('p', 'cms-admin-note', 'Publishing comes in a later update. Use Save Draft in the card editor to keep changes.');
+    const publishNote = el('p', 'cms-admin-note');
     publishNote.id = 'cms-admin-publish-note';
 
     panel.append(head, views, stateList, publish, publishNote);
@@ -290,10 +295,48 @@
       onForbidden: () => verify()
     });
 
+    publisher = cms.publishDialog.create({
+      workspace,
+      content: cms.content,
+      publish: cms.publish,
+      cardLabel: id => cardTitle(id),
+      api: {
+        getDraft: page => auth.getCmsDraft(page),
+        describe: ids => auth.getCmsMedia(ids),
+        // A 401 means the function couldn't confirm the session: refresh it and try once more.
+        prepare: id => auth.prepareCmsMedia(id).then(functionResult).then(r => (r.error && r.error.status === 401
+          ? window.PergamonSupabaseClient.auth.refreshSession().then(() => auth.prepareCmsMedia(id)).then(functionResult)
+          : r)),
+        publish: (page, draftId, expected) => auth.publishCmsDraft(page, draftId, expected)
+      },
+      onPublished: () => {
+        // The new live version: this browser's cache and every view follow it.
+        cms.loader.refresh().catch(() => {}).then(() => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } });
+      },
+      onChanged: () => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } },
+      onForbidden: () => verify(),
+      returnFocus: () => { if (ui) ui.button.focus(); }
+    });
+    publish.addEventListener('click', () => {
+      if (publish.disabled || !publisher) return;
+      if (ui && ui.drawer.isOpen() && ui.drawer.busy()) return;
+      setPanel(false);
+      publisher.open();
+    });
+
     button.addEventListener('click', () => setPanel(panel.hidden));
     toggle.addEventListener('click', () => setActive(!state.active));
 
-    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer };
+    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer, publish, publishNote };
+  }
+
+  // publish-media's answer (supabase-js functions.invoke) → { ok } | { error: { status, code, message } }.
+  async function functionResult(r) {
+    if (r && !r.error) return { ok: true };
+    const res = r && r.error && r.error.context;
+    let body = null;
+    try { body = res && typeof res.json === 'function' ? await res.json() : null; } catch (e) {}
+    return { error: { status: res && res.status, code: (body && body.error) || '', message: (body && body.message) || 'The image service didn’t answer.' } };
   }
 
   // Games a card may link to: live entries of /data/entries.js.
@@ -314,6 +357,12 @@
       ui.panel.style.top = `${Math.round(top)}px`;
       updateStatus();
       ui.toggle.focus();
+      // Another administrator may have saved or published since: ask the
+      // server again (local edits are kept), so the states and Publish
+      // Changes are current.
+      if (workspace && workspace.isLoaded() && !ui.drawer.busy() && !(publisher && publisher.isOpen())) {
+        workspace.load().then(() => { if (ui) { draw(); decorate(); updateStatus(); } }, () => {});
+      }
     }
   }
 
@@ -376,6 +425,12 @@
       ui.drawer.hide();
       undecorate();
       if (state.active || drawnKey !== null) drawPublished();
+      // After a publish this browser may not have the new version's public images yet.
+      const pub = workspace && workspace.isLoaded() ? workspace.published() : null;
+      const live = cms.loader.published();
+      if (state.active && pub && (!live || live.version !== pub.id)) {
+        cms.loader.refresh().then(() => { if (ui && state.active && state.view !== 'admin') { drawnKey = null; drawPublished(); } }, () => {});
+      }
     }
     updateStatus();
   }
@@ -399,7 +454,7 @@
   // images; otherwise the published content (published images only).
   function draw() {
     if (state.active && state.view === 'admin' && workspace && workspace.isLoaded()) {
-      render(workspace.working(), Object.assign({}, publishedView().media, imageStore ? imageStore.map() : {}));
+      render(workspace.working(), Object.assign({}, imageStore ? imageStore.map() : {}, publishedView().media));
       resolveImages();
     } else {
       drawPublished();
@@ -427,6 +482,14 @@
     ui.stateRows.unsaved.parentElement.dataset.on = String(unsaved.length > 0);
     ui.stateRows.draft.parentElement.dataset.on = String(!!draft);
     ui.button.classList.toggle('has-unsaved', unsaved.length > 0);
+    // Publish Changes: the saved draft, for verified admins with Admin Mode on.
+    const canPublish = state.active && loaded && !!draft && !(publisher && publisher.isOpen());
+    ui.publish.disabled = !canPublish;
+    ui.publishNote.textContent = !state.active ? 'Turn on Admin Mode to publish.'
+      : !loaded ? 'Loading the saved draft…'
+      : !draft ? 'Nothing to publish yet: use Save Draft in the card editor first.'
+      : unsaved.length ? 'Publishes the saved draft. Unsaved changes are not included; you’ll be asked about them.'
+      : 'Publishes the saved draft for every visitor. You’ll see a summary first.';
   }
 
   // ── Card indicators ───────────────────────────────────────────────────

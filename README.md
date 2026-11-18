@@ -100,7 +100,7 @@ Where the CMS is live (development and staging previews; see
 `scripts/cms/loader.js`), administrators get **Admin Mode** on the homepage:
 `scripts/cms/admin.js` asks the server (`is_admin()`) before building
 anything, then adds a header button with the Admin Mode switch, "View as"
-Admin / User / Guest and a (for now disabled) Publish Changes button. In
+Admin / User / Guest and a Publish Changes button. In
 Admin view every card the document addresses gets a frame and a pencil; the
 pencil opens the card editing drawer (`scripts/cms/drawer.js`), whose
 fields come from the schema in `scripts/cms/content.js`. Edits show on the
@@ -109,6 +109,9 @@ never overwrite another administrator's draft (see
 `docs/cms/ARCHITECTURE.md` §5b). Each card's image section
 (`scripts/cms/image-editor.js`, `scripts/cms/images.js`) uploads private
 draft images and frames them separately for desktop and phone (§5c).
+**Publish Changes** (`scripts/cms/publish-dialog.js`, `scripts/cms/publish.js`)
+shows what the saved draft changes, makes its images public through the
+`publish-media` Edge Function and publishes it in one transaction (§5d).
 The editor's scripts and styles
 (`styles/cms-admin.css`) load only for verified administrators.
 

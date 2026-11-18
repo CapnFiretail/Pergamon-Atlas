@@ -78,12 +78,11 @@
   }
   function clearCache() { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
 
-  // Start the request now (before home.js renders).
-  let request = null;
-  if (enabled) {
+  // One request for the published version.
+  function fetchPublished() {
     const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     const timer = ctrl ? setTimeout(() => ctrl.abort(), TIMEOUT_MS) : null;
-    request = fetch(URL_BASE + '/rest/v1/rpc/get_published_content?p_page=home', {
+    return fetch(URL_BASE + '/rest/v1/rpc/get_published_content?p_page=home', {
       headers: { apikey: KEY, Accept: 'application/json' },
       cache: 'no-store', credentials: 'omit', signal: ctrl ? ctrl.signal : undefined
     })
@@ -95,6 +94,12 @@
         return result;
       })
       .finally(() => { if (timer) clearTimeout(timer); });
+  }
+
+  // Start the request now (before home.js renders).
+  let request = null;
+  if (enabled) {
+    request = fetchPublished();
     // Never an unhandled rejection, even if nothing attaches.
     request.catch(() => {});
   }
@@ -112,6 +117,17 @@
     published() {
       if (latest) return latest.none ? null : latest;
       return enabled ? readCache() : null;
+    },
+    // Ask again (after Admin Mode publishes or rolls back): records the
+    // answer and updates this browser's cache; doesn't draw (the caller does).
+    // Resolves to published() or rejects if the request fails.
+    refresh() {
+      if (!enabled) return Promise.resolve(null);
+      return fetchPublished().then(result => {
+        latest = result.none ? { none: true } : { version: result.version, doc: result.doc, media: result.media };
+        if (result.none) clearCache(); else writeCache(result.raw);
+        return latest.none ? null : latest;
+      });
     },
     // Resolves once the request has settled (whatever its outcome).
     settled: () => (request ? request.then(() => {}, () => {}) : Promise.resolve()),

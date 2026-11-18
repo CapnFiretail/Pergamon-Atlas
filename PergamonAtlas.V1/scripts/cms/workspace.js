@@ -71,7 +71,7 @@
       if (res.error) return { error: errorInfo(res.error) };
       const d = res.data || {};
       published = d.published && validate(d.published.content) ? { id: d.published.id, doc: d.published.content } : null;
-      draft = d.draft && validate(d.draft.content) ? { id: d.draft.id, doc: d.draft.content, savedAt: d.draft.created_at } : null;
+      draft = d.draft && validate(d.draft.content) ? { id: d.draft.id, doc: d.draft.content, savedAt: d.draft.created_at, basedOn: d.draft.based_on_published_id } : null;
       const start = draft ? { draftId: draft.id, doc: draft.doc } : { draftId: null, doc: published ? published.doc : clone(opts.fallbackDoc) };
       if (!working) {
         const saved = restore();
@@ -135,7 +135,7 @@
         return { error: err };
       }
       const id = res.data && res.data.draft_id;
-      draft = { id: id, doc: clone(doc), savedAt: new Date().toISOString() };
+      draft = { id: id, doc: clone(doc), savedAt: new Date().toISOString(), basedOn: draft ? draft.basedOn : (published ? published.id : null) };
       base = { draftId: id, doc: clone(doc) };   // edits typed while saving stay unsaved
       persist(); emit();
       return { ok: true, draftId: id };
@@ -178,13 +178,24 @@
       persist(); emit();
     }
 
+    // The saved draft went live as `version` (publish.js): it is now the
+    // published version and there is no draft. Unsaved edits made on top of
+    // it stay unsaved (they were not part of the publish).
+    function markPublished(version) {
+      if (!draft) return;
+      published = { id: version, doc: clone(draft.doc) };
+      if (base && base.draftId === draft.id) base = { draftId: null, doc: clone(draft.doc) };
+      draft = null;
+      persist(); emit();
+    }
+
     function clearLocal() {
       if (storage) { try { storage.removeItem(key); } catch (e) {} }
       working = null; base = null; loaded = false;
     }
 
     return {
-      load, setField, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, clearLocal,
+      load, setField, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, markPublished, clearLocal,
       isLoaded: () => loaded,
       working: () => working,
       component: id => comp(working, id),

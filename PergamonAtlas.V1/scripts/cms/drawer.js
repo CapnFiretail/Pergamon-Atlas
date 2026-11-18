@@ -84,7 +84,7 @@
     saveButton.setAttribute('form', uid('cms-drawer-form'));
     form.id = saveButton.getAttribute('form');
     actions.append(discardButton, saveButton);
-    foot.append(feedback, actions, el('p', 'cms-drawer-note', 'Drafts are private to administrators. Publishing comes in a later update.'));
+    foot.append(feedback, actions, el('p', 'cms-drawer-note', 'Drafts are private to administrators until published with Publish Changes in the Admin Mode panel.'));
 
     // Confirmation for leaving a card with unsaved changes.
     const prompt = el('div', 'cms-drawer-prompt');

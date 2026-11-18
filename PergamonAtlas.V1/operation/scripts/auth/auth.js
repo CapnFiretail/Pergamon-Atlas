@@ -153,6 +153,26 @@
     return client().storage.from('site-media-drafts').createSignedUrls(paths, seconds);
   }
 
+  // CMS publishing (admin only). prepareCmsMedia asks the publish-media Edge
+  // Function to check one saved draft image and copy it to the public
+  // bucket; it sends the media id only (the function reads every location
+  // from the database) with the admin's own session. publishCmsDraft makes
+  // the saved draft live in one transaction, only if it is still the
+  // current draft and the live version is still expectedPublishedId
+  // (otherwise PT409 and nothing changes); it also refuses images that
+  // haven't been prepared.
+  async function prepareCmsMedia(mediaId) {
+    return client().functions.invoke('publish-media', { body: { media_id: mediaId } });
+  }
+
+  async function publishCmsDraft(page, draftId, expectedPublishedId) {
+    return client().rpc('publish', {
+      p_page: page,
+      p_draft_id: draftId,
+      p_expected_published_id: expectedPublishedId === undefined ? null : expectedPublishedId
+    });
+  }
+
   // Pergamon Publishing v1 — runtime visibility overrides (see
   // supabase/migrations/0002_atlas_visibility_overrides.sql). Readable by
   // anyone (RLS: select using (true)); insert/update/delete are enforced
@@ -256,6 +276,8 @@
     uploadCmsDraftMedia,
     getCmsMedia,
     signCmsDraftMedia,
+    prepareCmsMedia,
+    publishCmsDraft,
     getVisibilityOverrides,
     setVisibilityOverride,
     deleteVisibilityOverride,

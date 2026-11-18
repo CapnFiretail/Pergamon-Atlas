@@ -327,6 +327,59 @@ uploads use 0009 (`create_media_upload`, `get_media`, `site-media-drafts`).
   Anyone holding a signed URL can view that one image until it expires, and
   these URLs are only ever issued to admins.
 
+## 5d. Publishing (implemented in M6)
+
+No schema or migration change: the browser drives the existing
+`publish-media` Edge Function and `publish` / `rollback` (0008).
+
+- **Publish Changes** (Admin Mode panel) is enabled for a verified admin in
+  Admin Mode when a saved draft exists. Opening the panel re-reads the
+  server state (local edits are kept), so a draft another admin saved shows
+  up. What is published is always the server's saved draft, never this
+  browser's working copy.
+- **Dialog** (`scripts/cms/publish-dialog.js`):
+  1. reads `get_draft` again;
+  2. if this browser has unsaved changes: *Save Draft and continue*, or
+     *Publish saved draft only* (they stay local and unsaved), or Cancel;
+     edits based on a draft another admin has since replaced must be saved
+     (and combined) first;
+  3. review: each changed card with what changed (title, button, link,
+     category, new / added / removed image, desktop or phone framing as
+     each layout shows it, description, edge colour) and how many uploaded
+     images will become public. If the draft was started from an older
+     live version (another admin published or rolled back since), it says
+     so and Publish needs an extra explicit confirmation;
+  4. Publish now (one at a time; repeated clicks are ignored, and the
+     server refuses a consumed draft).
+- **Sequence** (`scripts/cms/publish.js`, `run`): `get_media` for the
+  draft's images; each one not yet public goes through `publish-media`
+  (checks the bytes, copies to `site-media/media/<sha256>`, records it; a
+  401 is retried once after refreshing the session); then
+  `publish(home, draft_id, expected_live_id)`. Images not in the draft,
+  such as reverted or replaced uploads, are never sent. The content keeps
+  referencing images by media id; `get_published_content` returns their
+  public paths. Any failure publishes nothing: the live version and the
+  draft are unchanged and *Try again* skips images already prepared. An
+  image prepared before a later failure has a public copy that nothing
+  references (content-hashed name, not listed).
+- **After publishing:** the workspace marks the draft as the new published
+  version (excluded edits stay unsaved), `loader.refresh()` updates this
+  browser's cache and published images, and every view follows. Visitors get
+  the new version on their next visit; returning visitors see their cached
+  copy first and the new version as soon as the M2 request answers.
+- **Rollback:** `rollback(home, archived_version_id, expected_live_id)`
+  (no interface yet) republishes an earlier version as a new version; its
+  images are already public.
+- **Known limitation (needs a database change, not made):**
+  `site_media.public_path` is unique, but public copies are named by
+  content. An upload that is byte-for-byte identical to an image already
+  published from another upload can't be recorded (`publish-media` answers
+  `record_failed`), so that draft can't be published. Nothing unsafe
+  happens, and the dialog explains it and suggests uploading a re-saved
+  copy. Proposed fix: drop the uniqueness of `public_path` (several rows
+  may share one content-addressed copy) and let
+  `cms_record_prepared_media` accept an existing path.
+
 ## 6. Hardening
 
 | Item | State |
