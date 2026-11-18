@@ -1,7 +1,7 @@
-// Admin Mode for the homepage (CMS milestones M3–M4).
+// Admin Mode for the homepage (CMS milestones M3–M5).
 //
 // Loaded after auth.js. Builds nothing, and loads the editor (workspace.js,
-// drawer.js, styles/cms-admin.css), only after the
+// images.js, drawer.js, image-editor.js, styles/cms-admin.css), only after the
 // server confirms the signed-in account is an administrator (rpc is_admin(),
 // the same check every CMS write function runs). Stored state
 // (sessionStorage) and the supabase-js session are only ever read after that
@@ -16,6 +16,9 @@
 //                   frame and pencil on every supported card, found through
 //                   PergamonHome.cardIds() / element(id) (no game names here);
 //                   a pencil opens the card editing drawer (drawer.js)
+//   images          the working copy's uploaded images: private drafts are
+//                   shown to the administrator through short-lived signed
+//                   URLs (images.js), only ever in Admin view
 //   User / Guest    no editing controls, published content; Guest also shows
 //                   the guest appearance (PergamonTheme.previewSignedIn).
 //                   Unsaved edits stay in the working copy for Admin view.
@@ -54,6 +57,8 @@
   let workspace = null;
   let loading = null;                  // workspace.load() in flight
   let drawnKey = null;                 // what Admin Mode last drew (null: the loader's page)
+  let imageStore = null;               // uploaded images (images.js createStore)
+  let renewTimer = 0;                  // keeps signed preview URLs fresh
 
   // ── Server verification ───────────────────────────────────────────────
   async function isAdmin() {
@@ -112,7 +117,9 @@
     Promise.all([
       loadStyles(),
       loadScript('/scripts/cms/workspace.js', () => !!cms.workspace),
-      loadScript('/scripts/cms/drawer.js', () => !!cms.drawer)
+      loadScript('/scripts/cms/images.js', () => !!cms.images),
+      loadScript('/scripts/cms/drawer.js', () => !!cms.drawer),
+      loadScript('/scripts/cms/image-editor.js', () => !!cms.imageEditor)
     ]).then(() => {
       if (!verified || ui) return;
       start();
@@ -129,6 +136,19 @@
       api: { getDraft: page => auth.getCmsDraft(page), saveDraft: (page, doc, expected) => auth.saveCmsDraft(page, doc, expected) }
     });
     workspace.onChange(() => { if (ui) { updateStatus(); decorate(); ui.drawer.refresh(); } });
+    imageStore = cms.images.createStore({
+      base: window.PERGAMON_SUPABASE_URL || '',
+      api: {
+        reserve: (mime, bytes) => auth.createCmsMediaUpload(mime, bytes),
+        upload: (path, file, mime) => auth.uploadCmsDraftMedia(path, file, mime),
+        describe: ids => auth.getCmsMedia(ids),
+        sign: (paths, seconds) => auth.signCmsDraftMedia(paths, seconds)
+      },
+      head: file => file.slice(0, 16).arrayBuffer().then(b => new Uint8Array(b)),
+      decode: file => createImageBitmap(file).then(b => { const size = { width: b.width, height: b.height }; b.close(); return size; })
+    });
+    imageStore.onChange(() => { if (ui) { draw(); ui.drawer.refresh(); } });
+    renewTimer = setInterval(resolveImages, 5 * 60 * 1000);
     ui = buildInterface();
     apply();
   }
@@ -139,7 +159,8 @@
     undecorate();
     if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
     if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
-    workspace = null; loading = null;
+    workspace = null; loading = null; imageStore = null;
+    clearInterval(renewTimer);
     if (window.PergamonTheme && window.PergamonTheme.previewSignedIn) window.PergamonTheme.previewSignedIn(null);
     cms.loader.hold(false);
     if (drawnKey !== null) drawPublished();
@@ -241,6 +262,9 @@
     const drawer = cms.drawer.create({
       workspace,
       content: cms.content,
+      images: cms.images,
+      imageStore,
+      home,
       games: liveGames(),
       cardLabel: id => cardTitle(id),
       whenLoaded: ensureLoaded,
@@ -366,15 +390,28 @@
     return { doc: window.PergamonHomeContent.document, media: {} };
   }
   function render(doc, media) {
-    const key = cms.workspace.canon(doc);
+    const key = cms.workspace.canon(doc) + cms.workspace.canon(media);
     if (key === drawnKey) return;
     if (home.render(doc, { media })) drawnKey = key;
   }
   function drawPublished() { const p = publishedView(); render(p.doc, p.media); }
-  // Admin view: the working copy (once loaded); otherwise the published content.
+  // Admin view: the working copy (once loaded), with its private draft
+  // images; otherwise the published content (published images only).
   function draw() {
-    if (state.active && state.view === 'admin' && workspace && workspace.isLoaded()) render(workspace.working(), publishedView().media);
-    else drawPublished();
+    if (state.active && state.view === 'admin' && workspace && workspace.isLoaded()) {
+      render(workspace.working(), Object.assign({}, publishedView().media, imageStore ? imageStore.map() : {}));
+      resolveImages();
+    } else {
+      drawPublished();
+    }
+  }
+  // Look up images the working copy uses that aren't known yet (or whose
+  // preview URL is about to expire); the store redraws when they arrive.
+  function resolveImages() {
+    if (!imageStore || !workspace || !workspace.isLoaded() || !(state.active && state.view === 'admin')) return;
+    const known = cms.loader.published();
+    const ids = cms.content.mediaIds(workspace.working()).filter(id => !(known && known.media && known.media[id]));
+    imageStore.resolve(ids).then(r => { if (r && r.error && r.error.code === 'PT403') verify(); });
   }
 
   function updateStatus() {

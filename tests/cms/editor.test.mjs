@@ -20,16 +20,16 @@ const clone = o => JSON.parse(JSON.stringify(o));
 // ── Field schema ───────────────────────────────────────────────────────
 test('every card type gets its own fields from one schema, in order', () => {
   const keys = id => content.cardFields(id, DOC.components[id]).map(f => f.key);
-  assert.deepEqual(keys('home.featured'), ['title', 'cta', 'href']);
-  assert.deepEqual(keys('home.spotlight'), ['title', 'cta', 'href']);
-  for (const id of DOC.components['home.carousel'].order) assert.deepEqual(keys('home.carousel.' + id), ['title', 'category', 'href']);
+  assert.deepEqual(keys('home.featured'), ['title', 'cta', 'href', 'art']);
+  assert.deepEqual(keys('home.spotlight'), ['title', 'cta', 'href', 'art']);
+  for (const id of DOC.components['home.carousel'].order) assert.deepEqual(keys('home.carousel.' + id), ['title', 'category', 'href', 'art']);
   assert.deepEqual(content.cardFields('home.carousel', DOC.components['home.carousel']), [], 'the order list is not a card');
   assert.deepEqual(content.cardFields('home.unknown', {}), []);
 });
 
 test('description appears only for a card that already has one', () => {
   const withDescription = { ...DOC.components['home.featured'], description: 'A strategy classic.' };
-  assert.deepEqual(content.cardFields('home.featured', withDescription).map(f => f.key), ['title', 'description', 'cta', 'href']);
+  assert.deepEqual(content.cardFields('home.featured', withDescription).map(f => f.key), ['title', 'description', 'cta', 'href', 'art']);
 });
 
 test('limits match the server: titles 60 (cards) / 40 (tiles), button 24, categories fixed', () => {

@@ -127,6 +127,32 @@
     });
   }
 
+  // CMS draft images (admin only; see supabase/proposed/0009_site_media.sql).
+  // createCmsMediaUpload reserves one upload and resolves { media_id, bucket,
+  // path }; the private site-media-drafts bucket accepts a file only at that
+  // path, once, from the admin who reserved it. getCmsMedia describes images
+  // by id; signCmsDraftMedia makes short-lived preview URLs, which Storage
+  // only issues to admins. Nothing here can make an image public.
+  async function createCmsMediaUpload(mime, bytes) {
+    return client().rpc('create_media_upload', { p_mime: mime, p_bytes: bytes });
+  }
+
+  async function uploadCmsDraftMedia(path, file, mime) {
+    return client().storage.from('site-media-drafts').upload(path, file, {
+      contentType: mime,
+      upsert: false,
+      cacheControl: '3600'
+    });
+  }
+
+  async function getCmsMedia(ids) {
+    return client().rpc('get_media', { p_ids: ids });
+  }
+
+  async function signCmsDraftMedia(paths, seconds) {
+    return client().storage.from('site-media-drafts').createSignedUrls(paths, seconds);
+  }
+
   // Pergamon Publishing v1 — runtime visibility overrides (see
   // supabase/migrations/0002_atlas_visibility_overrides.sql). Readable by
   // anyone (RLS: select using (true)); insert/update/delete are enforced
@@ -226,6 +252,10 @@
     isCmsAdmin,
     getCmsDraft,
     saveCmsDraft,
+    createCmsMediaUpload,
+    uploadCmsDraftMedia,
+    getCmsMedia,
+    signCmsDraftMedia,
     getVisibilityOverrides,
     setVisibilityOverride,
     deleteVisibilityOverride,

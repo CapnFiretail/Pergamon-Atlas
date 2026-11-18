@@ -124,10 +124,25 @@
 
     // ── Fields ───────────────────────────────────────────────────────────
     function buildForm(id) {
+      dropImages();
       form.replaceChildren();
       fields = []; errors = {};
       const component = workspace.component(id) || {};
       content.cardFields(id, component).forEach(field => {
+        if (field.type === 'image') {
+          // The image slot has its own editor (scripts/cms/image-editor.js).
+          if (!cms.imageEditor || !env.images) return;
+          const image = cms.imageEditor.create({
+            field, cardId: id, workspace, content, images: env.images, store: env.imageStore, home: env.home,
+            commit: cardId => { env.onEdit(cardId); if (cardId === current) update(); },
+            setProblem: (key, problem) => { if (problem) errors[key] = problem; else delete errors[key]; update(); },
+            busyChanged: () => update(),
+            onForbidden: () => env.onForbidden()
+          });
+          form.append(image.element);
+          fields.push({ field, image });
+          return;
+        }
         const wrap = el('div', 'cms-field');
         const inputId = uid('cms-field');
         const errorId = uid('cms-field-error');
@@ -189,6 +204,7 @@
     function fill() {
       const component = workspace.component(current) || {};
       fields.forEach(row => {
+        if (row.image) { row.image.refresh(); return; }
         const value = typeof component[row.field.key] === 'string' ? component[row.field.key] : '';
         if (row.field.type === 'link') {
           const known = env.games.some(g => g.path === value);
@@ -227,6 +243,7 @@
     }
 
     function showError(row, problem) {
+      if (row.image) { if (!problem) row.image.clearProblems(); return; }
       if (problem) errors[row.field.key] = problem; else delete errors[row.field.key];
       row.error.textContent = problem || '';
       row.error.hidden = !problem;
@@ -250,15 +267,19 @@
       others.textContent = elsewhere.length ? `Also unsaved: ${elsewhere.map(label).join(', ')}. Save Draft saves every card.` : '';
       others.hidden = !elsewhere.length;
       const hasErrors = Object.keys(errors).length > 0;
-      discardButton.disabled = saving || !loaded || (s !== 'unsaved' && !hasErrors);
-      saveButton.disabled = saving || !loaded || hasErrors || !unsaved.length;
+      const uploading = uploadingNow();
+      discardButton.disabled = saving || uploading || !loaded || (s !== 'unsaved' && !hasErrors);
+      saveButton.disabled = saving || uploading || !loaded || hasErrors || !unsaved.length;
       saveButton.textContent = saving ? 'Saving…' : 'Save Draft';
       drawer.setAttribute('aria-busy', String(saving));
     }
 
+    const uploadingNow = () => fields.some(r => r.image && r.image.busy());
+    function dropImages() { fields.forEach(r => { if (r.image) r.image.destroy(); }); }
+
     // ── Save, conflicts ──────────────────────────────────────────────────
     async function save() {
-      if (saving) return false;
+      if (saving || uploadingNow()) return false;
       if (Object.keys(errors).length) { setFeedback('Fix the highlighted fields first.', 'error'); return false; }
       saving = true; update();
       setFeedback('Saving draft…', 'busy');
@@ -338,7 +359,7 @@
         }
         conflictBox.hidden = true;
         workspace.adopt(info);
-        Object.keys(errors).forEach(k => { const r = fields.find(x => x.field.key === k); if (r) showError(r, null); });
+        fields.forEach(r => showError(r, null));
         fill(); update(); env.onEdit(current);
         setFeedback('Showing their draft. Your edits were discarded.', 'success');
       });
@@ -377,6 +398,7 @@
     // Leave the current card: true when it's fine to go on.
     async function leave() {
       if (!current || !workspace.isLoaded()) return true;
+      if (uploadingNow()) { setFeedback('Wait for the image upload to finish.', 'busy'); return false; }
       const dirty = workspace.cardStatus(current) === 'unsaved' || Object.keys(errors).length > 0;
       if (!dirty) return true;
       const choice = await ask(current);
@@ -437,6 +459,7 @@
       current = null;
       drawer.hidden = true;
       document.documentElement.removeAttribute('data-cms-drawer');
+      dropImages();
       form.replaceChildren(); fields = []; errors = {};
       env.onClose(id);
     }
@@ -471,8 +494,8 @@
       isOpen: () => !!current && !drawer.hidden,
       current: () => current,
       refresh: () => { if (current && fields.length) fill(); update(); },
-      busy: () => saving || !!pending,
-      destroy() { if (pending) pending('cancel'); drawer.remove(); document.documentElement.removeAttribute('data-cms-drawer'); }
+      busy: () => saving || !!pending || uploadingNow(),
+      destroy() { if (pending) pending('cancel'); dropImages(); drawer.remove(); document.documentElement.removeAttribute('data-cms-drawer'); }
     };
   }
 

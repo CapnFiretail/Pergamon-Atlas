@@ -140,11 +140,21 @@
   const TITLE = max => ({ key: 'title', label: 'Title', type: 'text', max: max });
   const DESCRIPTION = { key: 'description', label: 'Description', type: 'textarea', max: 160, ifPresent: true };
   const LINK = (gamesOnly) => ({ key: 'href', label: 'Destination link', type: 'link', gamesOnly: gamesOnly });
+  // The image slot (card.art): upload / replace, framing per layout (desktop
+  // and phone, see scripts/cms/images.js) and the slot's own small fields
+  // (`parts`: keys inside art; a part with `fit` shows only for art drawn
+  // that way). `fit` is how a newly added image is drawn; an existing image
+  // keeps its own. Below recommendedWidth the editor warns the image may look soft.
+  const ALT = { key: 'alt', label: 'Image description', type: 'text', max: 140, optional: true,
+    hint: 'For screen readers. Leave empty if the image is decorative.' };
+  const EDGE = { key: 'base', label: 'Edge colour', type: 'color', fit: 'height',
+    hint: 'Fills the card beside the image and blends into its faded edges.' };
+  const IMAGE = (recommendedWidth, parts) => ({ key: 'art', label: 'Image', type: 'image', fit: 'cover', recommendedWidth: recommendedWidth, parts: parts });
   const CARD_FIELDS = {
-    feature: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false)],
-    spotlight: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false)],
+    feature: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false), IMAGE(1600, [ALT])],
+    spotlight: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false), IMAGE(1200, [EDGE, ALT])],
     // Tiles are drawn only for live games, so their links pick a game.
-    tile: [TITLE(40), DESCRIPTION, { key: 'category', label: 'Category', type: 'choice', options: CATEGORIES }, LINK(true)]
+    tile: [TITLE(40), DESCRIPTION, { key: 'category', label: 'Category', type: 'choice', options: CATEGORIES }, LINK(true), IMAGE(400, [ALT])]
   };
 
   // The fields to edit for one card (component = its current content).
@@ -166,7 +176,8 @@
       return null;
     }
     if (field.type === 'choice') return field.options.indexOf(value) < 0 ? 'Choose one of the listed options.' : null;
-    if (!value.trim()) return `${field.label} can’t be empty.`;
+    if (field.type === 'color') return /^#[0-9a-fA-F]{6}$/.test(value) ? null : 'Use a colour written like #030916.';
+    if (!value.trim()) return field.optional ? null : `${field.label} can’t be empty.`;
     if (value.length > field.max) return `Use at most ${field.max} characters (now ${value.length}).`;
     if (/[<>]/.test(value)) return 'The characters < and > aren’t allowed.';
     if (CONTROL.test(value)) return 'Remove line breaks and other invisible control characters.';

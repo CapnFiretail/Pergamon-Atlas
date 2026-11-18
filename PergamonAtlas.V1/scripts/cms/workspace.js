@@ -87,11 +87,13 @@
       return { ok: true };
     }
 
-    // Edits. `value` is already cleaned by the caller (trimmed text).
+    // Edits. `value` is already cleaned by the caller (trimmed text, or an
+    // object such as art); undefined removes the field.
     function setField(cardId, field, value) {
       const c = comp(working, cardId);
-      if (!c || c[field] === value) return;
-      c[field] = value;
+      if (!c || same(c[field], value) && (value !== undefined || !(field in c))) return;
+      if (value === undefined) delete c[field];
+      else c[field] = clone(value);
       persist(); emit();
     }
     function discardCard(cardId) {
@@ -186,6 +188,8 @@
       isLoaded: () => loaded,
       working: () => working,
       component: id => comp(working, id),
+      // The card as last saved (the draft, or the published version without one).
+      savedComponent: id => clone(comp(base && base.doc, id)),
       published: () => published,
       draft: () => draft,
       basedOnDraft: () => (base ? base.draftId : null),

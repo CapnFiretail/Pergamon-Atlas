@@ -55,18 +55,38 @@
       img.loading = 'lazy';
       if (!a.alt) box.setAttribute('aria-hidden', 'true');
       box.classList.add('has-art');
-      const set = (prop, v) => { if (v !== undefined) box.style.setProperty(prop, v); };
-      set('--art-focus', a.focus); set('--art-focus-narrow', a.focusNarrow);
-      if (a.zoom !== 1 || a.zoomNarrow !== 1) {
-        box.dataset.artZoom = '';
-        set('--art-zoom', String(a.zoom)); set('--art-zoom-narrow', String(a.zoomNarrow));
-      }
+      frameArt(box, a);
       box.append(img);
     } else {
       box.setAttribute('aria-hidden', 'true');
       box.append(el('span', 'home-art-label', 'Artwork'));
     }
     return box;
+  }
+  // The slot's crop: focal point and zoom (desktop and phone values).
+  function frameArt(box, a) {
+    ['--art-focus', '--art-focus-narrow', '--art-zoom', '--art-zoom-narrow'].forEach(p => box.style.removeProperty(p));
+    delete box.dataset.artZoom;
+    const set = (prop, v) => { if (v !== undefined) box.style.setProperty(prop, v); };
+    set('--art-focus', a.focus); set('--art-focus-narrow', a.focusNarrow);
+    if (a.zoom !== 1 || a.zoomNarrow !== 1) {
+      box.dataset.artZoom = '';
+      set('--art-zoom', String(a.zoom)); set('--art-zoom-narrow', String(a.zoomNarrow));
+    }
+  }
+  // A tile's artwork after an edit: the same picture is only re-cropped
+  // (no new image element); another picture replaces the slot.
+  function retileArt(card, a) {
+    const box = card.querySelector('.home-art');
+    if (!box) return;
+    const img = box.querySelector('img');
+    if (a && a.src && img && img.getAttribute('src') === a.src) {
+      img.alt = a.alt || '';
+      if (a.alt) box.removeAttribute('aria-hidden'); else box.setAttribute('aria-hidden', 'true');
+      frameArt(box, a);
+    } else {
+      box.replaceWith(art(a, 'home-tile-art'));
+    }
   }
 
   // ── Data ──────────────────────────────────────────────────────────────
@@ -166,7 +186,7 @@
       applyArt(item.art);
     }
 
-    return { element: section, apply };
+    return { element: section, apply, applyArt };
   }
 
   // ── Atlas Navigation (right-hand panel) ───────────────────────────────
@@ -466,11 +486,14 @@
   // leaves the page as it is, if the document can't be read. Cards are
   // addressed by component id; the featured/spotlight slots exist from the
   // first render, so a document can change their content but not add slots.
+  let artCtx = cachedModel ? Object.assign({}, staticCtx, { media: cached.media }) : staticCtx;
   window.PergamonHome = {
     render(doc, extra) {
-      const next = cms.toModel(doc, Object.assign({}, staticCtx, extra || {}));
+      const nextCtx = Object.assign({}, staticCtx, extra || {});
+      const next = cms.toModel(doc, nextCtx);
       if (!next) return false;
       model = next;
+      artCtx = nextCtx;
       if (cards['home.featured'] && next.featured) cards['home.featured'].apply(next.featured);
       if (cards['home.spotlight'] && next.spotlight) cards['home.spotlight'].apply(next.spotlight);
       if (explore) explore.setItems(next.carousel);
@@ -480,7 +503,33 @@
     cardIds: () => Object.keys(cards).concat(model.carousel.map(c => c.id)),
     element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`)),
     // Make sure a card is drawn (carousel cards may be on another page or filtered out).
-    reveal: id => (cards[id] ? true : !!(explore && explore.reveal(id)))
+    reveal: id => (cards[id] ? true : !!(explore && explore.reveal(id))),
+    // Card editor (Admin Mode). Art from a document → how this page draws it,
+    // with the images of the last render.
+    artModel: a => cms.artModel(a, artCtx),
+    // Redraw one card's artwork in place (live framing while dragging),
+    // without redrawing the page. False if the card isn't on the page.
+    previewArt(id, a) {
+      const m = cms.artModel(a, artCtx);
+      if (cards[id]) { cards[id].applyArt(m); return true; }
+      const card = root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`);
+      if (!card) return false;
+      retileArt(card, m);
+      return true;
+    },
+    // A detached copy of a card, drawn like the page draws it (the editor's
+    // framing preview): { element, art(a) } where art(a) redraws its artwork.
+    sample(id) {
+      const item = cards[id] ? model[id === 'home.spotlight' ? 'spotlight' : 'featured'] : model.carousel.find(c => c.id === id);
+      if (!item) return null;
+      if (cards[id]) {
+        const copy = featureCard(id === 'home.spotlight' ? 'spotlight' : 'featured');
+        copy.apply(item);
+        return { element: copy.element, art: a => copy.applyArt(cms.artModel(a, artCtx)) };
+      }
+      const card = tile(item, liveGame(item.href) || { path: item.href, name: item.title });
+      return { element: card, art: a => retileArt(card, cms.artModel(a, artCtx)) };
+    }
   };
 
   // Published content (staging previews and local development; production
