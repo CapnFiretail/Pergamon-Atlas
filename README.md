@@ -106,7 +106,10 @@ pencil opens the card editing drawer (`scripts/cms/drawer.js`), whose
 fields come from the schema in `scripts/cms/content.js`. Edits show on the
 page at once, stay in the browser until **Save Draft** (`save_draft`), and
 never overwrite another administrator's draft (see
-`docs/cms/ARCHITECTURE.md` §5b). The editor's scripts and styles
+`docs/cms/ARCHITECTURE.md` §5b). Each card's image section
+(`scripts/cms/image-editor.js`, `scripts/cms/images.js`) uploads private
+draft images and frames them separately for desktop and phone (§5c).
+The editor's scripts and styles
 (`styles/cms-admin.css`) load only for verified administrators.
 
 Game pages and the Games catalog still draw their content area with the

@@ -17,6 +17,7 @@ npm test         # node --test: database, hardening, Edge Function, config
 | `function.test.mjs` | `publish-media` handler and byte checks with in-memory Auth/DB/Storage: real PNG/JPEG/WebP fixtures, SVG/GIF/HTML/EXE/truncated/oversized/huge-dimension rejection, auth, admin check, CORS, request shape, path tampering, type mismatch, failed copy/record and retry. |
 | `config.test.mjs` | `tools/write-supabase-config.mjs`: production/preview/development separation, secret-key refusal, malformed input. |
 | `editor.test.mjs` | Card editor logic: the declarative field schema (`content.cardFields`, `checkField` against the server's limits and unsafe links) and `workspace.js` (published / draft / working states, Save Draft keeps other cards, discard, tab-scoped persistence and tampering, conflicting saves never overwrite, combine / use theirs). |
+| `images.test.mjs` | Card images (`scripts/cms/images.js`): the image slot and its parts in the schema, file checks by content (PNG/JPEG/WebP only, 5 MB, 10,000px), desktop / phone framing in schema v1's fields (each layout independent, server ranges, reset, match desktop, replacement), geometry matching the homepage CSS and drag maths, the upload store against a fake Supabase (issued path only, signed previews, failures and tampered answers change nothing, no retry loop), and image edits through the workspace (saved with text, discard, revert, conflicts). |
 
 The site regression suite (Playwright; homepage geometry, cards, carousel,
 themes, navigation, games, account pages, redirects) also checks the pinned

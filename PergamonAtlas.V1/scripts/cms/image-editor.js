@@ -58,8 +58,10 @@
     const { field, cardId, workspace, content, images, store, home } = env;
     const type = content.cardType(cardId);
     const isTile = type === 'tile';
-    // First time: the layout the page is showing now (the homepage switches at 640px of content).
-    if (!lastLayout) { const upper = document.querySelector('#home .home-upper'); lastLayout = upper && upper.clientWidth <= 640 ? 'phone' : 'desktop'; }
+    // First time: the layout visitors get on this screen. The homepage switches
+    // at 640px of content, which is a screen up to 672px wide (16px gutters);
+    // measured from the screen, since the docked drawer narrows the page.
+    if (!lastLayout) lastLayout = document.documentElement.clientWidth <= 672 ? 'phone' : 'desktop';
     let layout = lastLayout;
     let dead = false;
     let uploading = false;

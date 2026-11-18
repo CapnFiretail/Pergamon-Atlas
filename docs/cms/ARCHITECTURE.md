@@ -278,6 +278,55 @@ Original plan, for reference:
 - Not in M4: images (M5), publishing (M6), discarding a saved draft,
   card creation, version history.
 
+## 5c. Card images (implemented in M5)
+
+No schema or migration change: framing uses schema v1's art fields and
+uploads use 0009 (`create_media_upload`, `get_media`, `site-media-drafts`).
+
+- **Schema:** each card type's field list ends with an image slot
+  (`type: 'image'`, key `art`) with its own `parts`: *Image description*
+  (`alt`, optional, ≤ 140) for every card, and *Edge colour* (`base`,
+  `#rrggbb`) for the spotlight, shown only for `fit: 'height'` art. A card
+  type without an image slot shows no image controls.
+- **Framing** (`scripts/cms/images.js`), stored in the art, never in the file:
+
+  | Layout | cover art (featured, tiles) | `fit: 'height'` (spotlight) |
+  |---|---|---|
+  | Desktop | `focus`, `scale` (1–3) | `anchor` {x, offset, y}, `scale` (0.5–3) |
+  | Phone (≤ 640px of content) | `focusNarrow`, `scaleNarrow` | `anchorNarrow`, `scaleNarrow` |
+
+  With no phone fields the phone follows the desktop framing. Changing one
+  layout never changes the other: a desktop edit first writes out a custom
+  phone framing in full (so a shared value can't carry over). *Reset* centres
+  the layout at zoom 1; *Match Desktop* removes the phone fields. A new image
+  keeps the slot's drawing (fit, edge colour), starts centred, phone
+  following, with an empty description.
+- **Editor** (`scripts/cms/image-editor.js`, in the drawer): Desktop / Phone
+  tabs (the first opens on the layout visitors on this screen get); a stage
+  showing a copy of the card drawn by the homepage's own code and CSS
+  (`PergamonHome.sample`) at a 1440px-screen (desktop) or 390px-screen
+  (phone) size, the whole picture faded around it and the crop outlined.
+  Drag (pointer, touch, or arrow keys; the stage has `touch-action: none`, so
+  dragging never scrolls) and the zoom slider redraw the stage and the page's
+  card live (`PergamonHome.previewArt`) and go into the working copy when the
+  gesture ends, so images behave like text fields: unsaved state, Save Draft,
+  Discard, the leave prompt and conflicts are M4's.
+- **Uploads:** PNG / JPEG / WebP, ≤ 5 MB, ≤ 10,000px a side; the type is
+  read from the bytes; GIF, SVG, empty, damaged and oversized files are
+  refused before anything is sent. Small (below the slot's
+  `recommendedWidth`) or heavy (> 2 MB) images get a warning. An accepted
+  file is reserved (`create_media_upload`), uploaded to the one private path
+  issued, and shown through a signed URL. Save Draft and leaving the card wait
+  while an upload is in progress. *Revert to previous image* restores the
+  saved art.
+- **Privacy:** draft images live only in `site-media-drafts` (admin read,
+  insert to an issued path once, no update or delete). The admin's browser
+  resolves the working copy's images with `get_media` and signs previews for
+  1 hour (re-signed before expiry); only Admin view draws them. User / Guest
+  previews and visitors get published content and public images only.
+  Anyone holding a signed URL can view that one image until it expires, and
+  these URLs are only ever issued to admins.
+
 ## 6. Hardening
 
 | Item | State |
