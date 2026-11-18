@@ -28,7 +28,7 @@
 
   // Where published content is read. Production stays on the static
   // document until the CMS is approved there: set production to true then.
-  const LIVE = { development: true, preview: true, production: false };
+  const LIVE = { development: true, preview: true, production: true };
 
   const REVEAL_MS = 1200;      // longest the first visit waits before showing the static copy
   const TIMEOUT_MS = 8000;     // give up on the request after this
