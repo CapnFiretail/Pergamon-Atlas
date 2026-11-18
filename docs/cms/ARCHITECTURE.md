@@ -235,8 +235,10 @@ Original plan, for reference:
   `element(id)` whose `content.cardType` is known gets an absolutely placed
   dashed frame and a pencil button (a tile's pencil sits beside its link,
   inside the list item, so the card still navigates). A MutationObserver
-  re-applies them when the carousel pages or the document is redrawn. No
-  card box changes size. A badge on the pencil shows unsaved changes
+  re-applies them when the carousel redraws its cards or the document is
+  redrawn. While Admin view is on, the carousel stops gliding
+  (`PergamonHome.holdMotion`) and shows its real cards from the first one
+  (the moving row's inert copies carry no pencils). No card box changes size. A badge on the pencil shows unsaved changes
   (amber) or a saved draft (accent).
 - **Previews.** User and Guest views remove every editing control and show
   the published content; Guest also shows the guest appearance
@@ -269,8 +271,8 @@ Original plan, for reference:
   `site_content_routes` decides (its answer is shown on the field).
 - **Drawer** (`scripts/cms/drawer.js`): one editor for every card. Valid
   values go straight into the working copy and the card is redrawn at once
-  (`PergamonHome.render`; `PergamonHome.reveal(id)` keeps the card on the
-  carousel page). Desktop: docked on the right, the page narrows beside it.
+  (`PergamonHome.render`; `PergamonHome.reveal(id)` keeps the card in
+  view in the carousel). Desktop: docked on the right, the page narrows beside it.
   ≤ 900px: a bottom sheet with room added below the page. Leaving a card
   with unsaved changes (another pencil, close, Escape) asks Save Draft /
   Discard / Cancel. Ctrl/⌘+S saves.

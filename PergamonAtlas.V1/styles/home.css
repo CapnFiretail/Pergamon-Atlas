@@ -316,26 +316,42 @@
   cursor: default;
 }
 
-/* Level 2: card pages, either side of the cards. */
-.home-carousel-body { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; align-items: center; gap: 12px; }
+/* Level 2: one card at a time. Tall, narrow buttons as high as the cards,
+   at the carousel's edges. */
+.home-carousel { --home-tile-w: 200px; --home-card-button-w: 32px; }
+.home-carousel-body { display: grid; grid-template-columns: var(--home-card-button-w) minmax(0, 1fr) var(--home-card-button-w); align-items: stretch; gap: 12px; }
 .home-page-button {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  min-height: 44px;
   padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  border-radius: var(--radius-md);
   background: var(--color-background);
-  color: var(--color-text-primary);
+  color: var(--color-accent-text);
   cursor: pointer;
 }
-.home-page-button:hover:not(:disabled) { border-color: var(--color-accent); color: var(--color-accent-text); }
-.home-page-button:disabled { opacity: 0.35; cursor: default; }
+.home-page-button .home-svg { width: 20px; height: 20px; stroke-width: 2.4; }
+.home-page-button:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+.home-page-button:disabled {
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  opacity: 0.45;
+  cursor: default;
+}
 
-/* Only the current page's cards are rendered; nothing scrolls. */
-.home-track { display: flex; gap: 12px; min-width: 0; min-height: 166px; padding: 2px 0; overflow: hidden; }
-.home-track-item { flex: 1 1 0; min-width: 0; max-width: 200px; } /* 170px minimum is enforced by the page size in home.js */
+/* The cards glide left to right (scripts/glide.js moves the strip with a
+   transform). overflow: clip, so focusing a card can't scroll the row. */
+.home-track { min-width: 0; padding: 2px 0; overflow: hidden; overflow: clip; touch-action: pan-y; }
+.pa-glide-strip { display: flex; gap: 12px; width: max-content; }
+.home-track.is-looping .pa-glide-strip { will-change: transform; }
+.home-track.is-dragging { cursor: grabbing; }
+.home-track-item { flex: 0 0 var(--home-tile-w); width: var(--home-tile-w); min-width: 0; }
 .home-track-empty {
   flex: 1;
   display: flex;
@@ -343,7 +359,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 162px;
+  min-height: calc(var(--home-tile-w) + 60px);   /* a card's height: the row keeps its size */
   border: 1px dashed var(--color-border);
   border-radius: 12px;
   color: var(--color-text-secondary);
@@ -362,7 +378,7 @@
   border-radius: 12px;
 }
 .home-tile:hover { border-color: var(--color-accent); box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 22%, transparent); }
-.home-tile-art { height: 106px; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; }
+.home-tile-art { aspect-ratio: 1 / 1; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; }
 .home-tile-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; }
 .home-tile-text { display: flex; flex-direction: column; min-width: 0; }
 .home-tile-title { margin: 0; overflow: hidden; font: 700 16px/1.25 var(--font-display); text-overflow: ellipsis; white-space: nowrap; }
@@ -417,8 +433,8 @@
   .home-section-button { width: 36px; height: 36px; }
   /* Tabs wrap rather than scroll, so every category stays visible. */
   .home-tabs { flex-wrap: wrap; overflow: visible; }
-  .home-carousel-body { gap: 8px; grid-template-columns: 36px minmax(0, 1fr) 36px; }
-  .home-page-button { width: 36px; height: 36px; }
+  .home-carousel { --home-tile-w: 160px; --home-card-button-w: 28px; }
+  .home-carousel-body { gap: 8px; }
 }
 
 @media (max-width: 900px) {

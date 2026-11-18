@@ -250,13 +250,9 @@
   // Two independent navigation levels:
   //   Level 1, sections: the top-right arrows switch Games ⇄ Tools
   //            (state: sectionIndex; handler: switchSection).
-  //   Level 2, card pages: the arrows beside the cards step through pages of
-  //            the current category (state: view.page; handler: turnPage).
-  // Only the current page's cards are in the DOM. The page size is how many
-  // CARD_MIN-wide cards fit in the measured viewport (recomputed on resize);
-  // the cards then share the row, up to 200px each (see home.css).
-  const CARD_MIN = 170;
-  const CARD_GAP = 12;
+  //   Level 2, cards: the current category's cards glide slowly left to
+  //            right (scripts/glide.js); the tall arrows beside them move one
+  //            card at a time. Cards have one width per breakpoint (home.css).
 
   // Carousel items: { item, entry } for cards that link to a live game.
   function liveItems(items) {
@@ -278,8 +274,7 @@
     }));
 
     let sectionIndex = 0;                       // level 1
-    const view = { category: '', page: 0 };     // level 2
-    let perPage = 1;
+    const view = { category: '' };              // level 2
 
     const section = el('section', 'home-carousel');
     const headingId = uid('home-carousel');
@@ -299,13 +294,12 @@
     head.append(h, tabs, sectionNav);
 
     const body = el('div', 'home-carousel-body');
-    const prevPage = el('button', 'home-page-button'); prevPage.type = 'button';
-    prevPage.setAttribute('aria-label', 'Previous card page'); prevPage.innerHTML = icon('prev');
-    const nextPage = el('button', 'home-page-button'); nextPage.type = 'button';
-    nextPage.setAttribute('aria-label', 'Next card page'); nextPage.innerHTML = icon('next');
+    const prevCard = el('button', 'home-page-button'); prevCard.type = 'button';
+    prevCard.setAttribute('aria-label', 'Previous card'); prevCard.innerHTML = icon('prev');
+    const nextCard = el('button', 'home-page-button'); nextCard.type = 'button';
+    nextCard.setAttribute('aria-label', 'Next card'); nextCard.innerHTML = icon('next');
     const viewport = el('div', 'home-track');
-    viewport.setAttribute('role', 'list');
-    body.append(prevPage, viewport, nextPage);
+    body.append(prevCard, viewport, nextCard);
 
     const status = el('p', 'pa-visually-hidden');
     status.setAttribute('aria-live', 'polite');
@@ -313,12 +307,22 @@
 
     const current = () => sections[sectionIndex];
     const filtered = () => current().items.filter(({ item }) => !view.category || item.category === view.category);
-    const pageCount = () => Math.max(1, Math.ceil(filtered().length / perPage));
+    let shown = [];                             // the filtered cards, as drawn
 
-    function measure() {
-      const width = viewport.clientWidth;
-      return Math.max(1, Math.floor((width + CARD_GAP) / (CARD_MIN + CARD_GAP)));
-    }
+    const glide = window.PergamonGlide.create(viewport, {
+      prev: prevCard,
+      next: nextCard,
+      hoverArea: body,
+      // Copies show the card only: never Admin Mode's frame and pencil.
+      prepareCopy(copy) {
+        copy.querySelectorAll('.cms-edit-pencil, .cms-edit-frame').forEach(n => n.remove());
+        copy.classList.remove('cms-editable', 'cms-editing');
+      },
+      onStep(index, count) {
+        const entry = shown[index];
+        if (entry) status.textContent = `${entry.item.title || entry.entry.name}, card ${index + 1} of ${count}`;
+      }
+    });
 
     function renderHead() {
       const sec = current();
@@ -337,103 +341,86 @@
       nextSection.disabled = sectionIndex === sections.length - 1;
     }
 
-    function renderPage() {
+    // Draw the current category's cards. `keep` holds the row's position
+    // (a CMS redraw); otherwise it starts again from the first card.
+    function renderCards(keep) {
       const sec = current();
-      const list = filtered();
-      view.page = Math.min(view.page, pageCount() - 1);
-      const start = view.page * perPage;
-      const shown = list.slice(start, start + perPage);
-      viewport.replaceChildren(...shown.map(({ item, entry }) => {
-        const wrap = el('div', 'home-track-item');
-        wrap.setAttribute('role', 'listitem');
-        wrap.append(tile(item, entry));
-        return wrap;
-      }));
+      shown = filtered();
       if (!shown.length) {
         const message = sec.items.length ? sec.emptyCategory : sec.emptyMessage;
         const empty = el('div', 'home-track-empty');
         if (!sec.items.length) empty.append(el('span', 'home-track-tag', 'Coming Soon'));
         empty.append(el('p', '', message));
-        viewport.replaceChildren(empty);
+        glide.setEmpty(empty);
+        status.textContent = `${sec.title}: ${message}`;
+        return;
       }
-      prevPage.disabled = view.page === 0;
-      nextPage.disabled = view.page >= pageCount() - 1;
-      status.textContent = shown.length
-        ? `${sec.title}: page ${view.page + 1} of ${pageCount()}`
-        : `${sec.title}: ${sec.items.length ? sec.emptyCategory : sec.emptyMessage}`;
+      glide.setItems(shown.map(({ item, entry }) => {
+        const wrap = el('div', 'home-track-item');
+        wrap.setAttribute('role', 'listitem');
+        wrap.append(tile(item, entry));
+        return wrap;
+      }), keep);
+      status.textContent = `${sec.title}: ${shown.length} ${shown.length === 1 ? 'card' : 'cards'}`;
     }
 
-    // Level 1: a new section starts on its first category and first page.
+    // Level 1: a new section starts on its first category.
     function switchSection(delta) {
       const next = sectionIndex + delta;
       if (next < 0 || next >= sections.length) return;
       sectionIndex = next;
       view.category = '';
-      view.page = 0;
       renderHead();
-      renderPage();
-    }
-
-    // Level 2: page within the current category.
-    function turnPage(delta) {
-      const next = view.page + delta;
-      if (next < 0 || next >= pageCount()) return;
-      view.page = next;
-      renderPage();
+      renderCards();
     }
 
     function selectCategory(value) {
       view.category = value;
-      view.page = 0;
       renderHead();
-      renderPage();
+      renderCards();
     }
 
     prevSection.addEventListener('click', () => switchSection(-1));
     nextSection.addEventListener('click', () => switchSection(1));
-    prevPage.addEventListener('click', () => turnPage(-1));
-    nextPage.addEventListener('click', () => turnPage(1));
 
     function start() {
-      perPage = measure();
       renderHead();
-      renderPage();
-      if (window.ResizeObserver) {
-        new ResizeObserver(() => {
-          const fit = measure();
-          if (fit === perPage) return;
-          // Keep the first visible card on screen when the page size changes.
-          const first = view.page * perPage;
-          perPage = fit;
-          view.page = Math.floor(first / perPage);
-          renderPage();
-        }).observe(viewport);
-      }
+      renderCards();
     }
 
     // Replace the cards of document-driven sections, keeping the current
-    // section, category and (where it still exists) page.
+    // section, category and position.
     function setItems(cards) {
       let changed = false;
       sections.forEach(sec => { if (sec.component) { sec.items = liveItems(cards); changed = true; } });
-      if (changed) renderPage();
+      if (changed) renderCards(true);
     }
 
-    // Bring a document card onto the current page (the card editor's live
-    // preview): its section, then "all" if the filter hides it, then its page.
-    // Nothing changes if it is already shown.
+    // Bring a document card into view (the card editor's live preview): its
+    // section, then "all" if the filter hides it, then its position.
     function reveal(cardId) {
       const target = sections.findIndex(sec => sec.component && sec.items.some(({ item }) => item.id === cardId));
       if (target < 0) return false;
-      if (target !== sectionIndex) { sectionIndex = target; view.category = ''; view.page = 0; renderHead(); }
-      let index = filtered().findIndex(({ item }) => item.id === cardId);
-      if (index < 0) { view.category = ''; renderHead(); index = filtered().findIndex(({ item }) => item.id === cardId); }
-      const page = Math.floor(index / perPage);
-      if (page !== view.page || !viewport.querySelector(`[data-cms-id="${CSS.escape(cardId)}"]`)) { view.page = page; renderPage(); }
+      if (target !== sectionIndex) { sectionIndex = target; view.category = ''; renderHead(); renderCards(); }
+      if (!filtered().some(({ item }) => item.id === cardId)) { view.category = ''; renderHead(); renderCards(); }
+      const card = viewport.querySelector(`.home-tile[data-cms-id="${CSS.escape(cardId)}"]`);
+      if (card) glide.show(card.parentElement);
       return true;
     }
 
-    return { element: section, start, setItems, reveal };
+    // Stop or restart the gliding for an outside reason (Admin Mode editing).
+    // Stopping shows the real cards (not their copies) from the first one;
+    // restarting redraws the copies from the cards as they are now.
+    let held = false;
+    function hold(on) {
+      on = !!on;
+      if (on === held) return;
+      held = on;
+      glide.hold('outside', on);
+      renderCards(!on);
+    }
+
+    return { element: section, start, setItems, reveal, hold };
   }
 
   // ── Document → model ──────────────────────────────────────────────────
@@ -468,7 +455,7 @@
   upper.append(grid);
   root.append(title, upper);
   let explore = null;
-  if (content.explore) {
+  if (content.explore && window.PergamonGlide) {
     const lower = el('div', 'home-lower');
     explore = carousel(content.explore, model.carousel);
     lower.append(explore.element);
@@ -477,7 +464,7 @@
   // Take the shared sidebar into this grid (layout.js holds it back on pages
   // with data-layout="home"). The page title stays first in reading order.
   if (window.PergamonLayout) window.PergamonLayout.mountSidebar(root, upper);
-  // Pages are sized from the carousel's measured width, so render once it is in place.
+  // The carousel measures its width to decide whether to glide, so render once it is in place.
   if (explore) explore.start();
 
   // ── Public API ────────────────────────────────────────────────────────
@@ -502,8 +489,10 @@
     model: () => model,
     cardIds: () => Object.keys(cards).concat(model.carousel.map(c => c.id)),
     element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`)),
-    // Make sure a card is drawn (carousel cards may be on another page or filtered out).
+    // Make sure a card is drawn (carousel cards may be out of view or filtered out).
     reveal: id => (cards[id] ? true : !!(explore && explore.reveal(id))),
+    // Admin Mode editing: hold the carousel still (true) or let it glide again.
+    holdMotion: on => { if (explore) explore.hold(on); },
     // Card editor (Admin Mode). Art from a document → how this page draws it,
     // with the images of the last render.
     artModel: a => cms.artModel(a, artCtx),

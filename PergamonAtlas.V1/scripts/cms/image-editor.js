@@ -26,8 +26,8 @@
   // 1440-pixel desktop screen and on a 390-pixel phone (styles/home.css
   // decides everything else, including which layout applies).
   const LAYOUTS = {
-    desktop: { label: 'Desktop', upper: 896, lower: 1392, tile: 198, note: 'Desktop card, as on a 1440-pixel screen' },
-    phone: { label: 'Phone', upper: 358, lower: 358, tile: 200, note: 'Phone card, as on a 390-pixel screen' }
+    desktop: { label: 'Desktop', upper: 896, lower: 1392, tile: 200, note: 'Desktop card, as on a 1440-pixel screen' },
+    phone: { label: 'Phone', upper: 358, lower: 358, tile: 160, note: 'Phone card, as on a 390-pixel screen' }
   };
   const ICONS = {
     upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 15v4h14v-4"/>',

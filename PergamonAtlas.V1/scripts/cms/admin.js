@@ -161,6 +161,7 @@
     verified = false;
     state = { active: false, view: 'admin' };
     undecorate();
+    if (home.holdMotion) home.holdMotion(false);
     if (publisher) { publisher.destroy(); publisher = null; }
     if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
     if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
@@ -416,6 +417,8 @@
     }
     // While Admin Mode is on it decides what the page shows; the loader only records updates.
     cms.loader.hold(state.active);
+    // Cards stay still while they can be edited (pencils sit on the real cards).
+    if (home.holdMotion) home.holdMotion(editing);
     if (editing) {
       ensureLoaded().then(() => { if (ui && state.active && state.view === 'admin') { draw(); decorate(); updateStatus(); } }).catch(() => updateStatus());
       draw();
@@ -537,7 +540,7 @@
       const label = `Edit ${TYPE_LABELS[type].toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
       if (pencil.getAttribute('aria-label') !== label) pencil.setAttribute('aria-label', label);
     });
-    // Carousel pages and redraws replace tiles: decorate whatever appears.
+    // Carousel redraws (filters, sections, content) replace tiles: decorate whatever appears.
     if (!observer) {
       let queued = false;
       observer = new MutationObserver(() => {
