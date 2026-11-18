@@ -1,22 +1,24 @@
-// Admin Mode for the homepage (CMS milestone M3).
+// Admin Mode for the homepage (CMS milestones M3–M4).
 //
-// Loaded after auth.js. Builds nothing until the server confirms the
-// signed-in account is an administrator (rpc is_admin(), the same check
-// every CMS write function runs). Stored state (sessionStorage) and the
-// supabase-js session are only ever read after that answer, so altering
-// them in the browser can't show the controls; and the controls themselves
-// can't do anything the CMS functions would refuse.
+// Loaded after auth.js. Builds nothing, and loads the editor (workspace.js,
+// drawer.js, styles/cms-admin.css), only after the
+// server confirms the signed-in account is an administrator (rpc is_admin(),
+// the same check every CMS write function runs). Stored state
+// (sessionStorage) and the supabase-js session are only ever read after that
+// answer, so altering them in the browser can't show the controls; and the
+// controls can't do anything the CMS functions would refuse.
 //
 //   header button   opens the Admin Mode panel (only for verified admins)
-//   panel           Admin Mode on/off, "View as" Admin / User / Guest,
-//                   Publish Changes (disabled until editing exists)
-//   Admin view      a frame and pencil on every supported card, found through
-//                   PergamonHome.cardIds() / element(id) (no game names here)
+//   panel           Admin Mode on/off, "View as" Admin / User / Guest, the
+//                   published / draft / unsaved state, Publish Changes
+//                   (disabled until publishing exists)
+//   Admin view      the working copy (workspace.js) drawn on the page, with a
+//                   frame and pencil on every supported card, found through
+//                   PergamonHome.cardIds() / element(id) (no game names here);
+//                   a pencil opens the card editing drawer (drawer.js)
 //   User / Guest    no editing controls, published content; Guest also shows
-//                   the guest appearance (PergamonTheme.previewSignedIn)
-//
-// Pencils open an informational note for now; the card editor comes later
-// (its working copy will live here, so switching views keeps it).
+//                   the guest appearance (PergamonTheme.previewSignedIn).
+//                   Unsaved edits stay in the working copy for Admin view.
 (function () {
   'use strict';
   const cms = window.PergamonCMS || {};
@@ -26,13 +28,14 @@
   // Only where the homepage reads the CMS (staging previews and development).
   if (!cms.loader || !cms.loader.enabled || !cms.content || !auth || !home || !root || !window.PergamonSupabaseClient) return;
 
+  const PAGE = 'home';
   const STATE_KEY = 'pa-cms-admin';
   const VIEWS = { admin: 'Admin', user: 'User', guest: 'Guest' };
   const TYPE_LABELS = { feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' };
+  const STATUS_LABELS = { unsaved: 'unsaved changes', draft: 'saved in draft' };
   const ICONS = {
     admin: '<path d="M12 3 5 6v5c0 4.4 3 8.3 7 9.5 4-1.2 7-5.1 7-9.5V6z"/><path d="m9 12 2 2 4-4"/>',
-    pencil: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
-    close: '<path d="M6 6l12 12M18 6 6 18"/>'
+    pencil: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>'
   };
   const svg = (name, cls) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
   function el(tag, className, text) {
@@ -41,13 +44,16 @@
     if (text !== undefined) node.textContent = text;
     return node;
   }
+  const time = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); };
 
   let verified = false;
   let check = 0;                       // latest verification; older answers are ignored
   let state = { active: false, view: 'admin' };
-  let ui = null;                       // header button, panel, preview bar (once verified)
+  let ui = null;                       // header button, panel, preview bar, drawer (once verified)
   let observer = null;
-  let note = null;                     // the pencil's placeholder note
+  let workspace = null;
+  let loading = null;                  // workspace.load() in flight
+  let drawnKey = null;                 // what Admin Mode last drew (null: the loader's page)
 
   // ── Server verification ───────────────────────────────────────────────
   async function isAdmin() {
@@ -88,25 +94,70 @@
       document.head.append(link);
     });
   }
+  function loadScript(src, ready) {
+    if (ready()) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const s = el('script');
+      s.src = src;
+      s.dataset.cmsAdmin = '';
+      s.onload = () => (ready() ? resolve() : reject(new Error(src)));
+      s.onerror = () => { s.remove(); reject(new Error(src)); };
+      document.head.append(s);
+    });
+  }
 
   function mount() {
     verified = true;
     state = readState();
-    loadStyles().then(() => {
+    Promise.all([
+      loadStyles(),
+      loadScript('/scripts/cms/workspace.js', () => !!cms.workspace),
+      loadScript('/scripts/cms/drawer.js', () => !!cms.drawer)
+    ]).then(() => {
       if (!verified || ui) return;
-      ui = buildInterface();
-      apply();
+      start();
+    }, () => { verified = false; console.info('Pergamon CMS: Admin Mode could not load its editor.'); });
+  }
+
+  function start() {
+    workspace = cms.workspace.create({
+      page: PAGE,
+      scope: window.PERGAMON_SUPABASE_URL || '',
+      storage: (() => { try { return window.sessionStorage; } catch (e) { return null; } })(),
+      validate: cms.content.validateDocument,
+      fallbackDoc: window.PergamonHomeContent && window.PergamonHomeContent.document,
+      api: { getDraft: page => auth.getCmsDraft(page), saveDraft: (page, doc, expected) => auth.saveCmsDraft(page, doc, expected) }
     });
+    workspace.onChange(() => { if (ui) { updateStatus(); decorate(); ui.drawer.refresh(); } });
+    ui = buildInterface();
+    apply();
   }
 
   function unmount() {
     verified = false;
     state = { active: false, view: 'admin' };
-    closeNote();
     undecorate();
+    if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
+    if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
+    workspace = null; loading = null;
     if (window.PergamonTheme && window.PergamonTheme.previewSignedIn) window.PergamonTheme.previewSignedIn(null);
-    if (ui) { ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
+    cms.loader.hold(false);
+    if (drawnKey !== null) drawPublished();
+    drawnKey = null;
     document.documentElement.removeAttribute('data-cms-admin');
+  }
+
+  // Load published + draft once per sign-in (retried after a failure).
+  function ensureLoaded() {
+    if (!workspace) return Promise.reject(new Error('signed out'));
+    if (workspace.isLoaded()) return Promise.resolve();
+    if (!loading) {
+      const ws = workspace;
+      loading = ws.load().then(r => {
+        if (r && r.error) { loading = null; if (r.error.code === 'PT403') verify(); throw new Error(r.error.message); }
+      }, e => { loading = null; throw e; });
+    }
+    return loading;
   }
 
   function buildInterface() {
@@ -153,14 +204,27 @@
     });
     views.append(viewLabel, segment);
 
+    // Published / saved draft / unsaved, at a glance.
+    const stateList = el('ul', 'cms-admin-state');
+    stateList.setAttribute('aria-label', 'Homepage content');
+    const stateRows = {};
+    [['published', 'Published'], ['draft', 'Saved draft'], ['unsaved', 'Unsaved']].forEach(([key, name]) => {
+      const li = el('li', 'cms-admin-state-row');
+      li.dataset.state = key;
+      const value = el('span', 'cms-admin-state-value');
+      li.append(el('span', 'cms-admin-state-dot'), el('span', 'cms-admin-state-name', name), value);
+      stateRows[key] = value;
+      stateList.append(li);
+    });
+
     const publish = el('button', 'cms-admin-publish', 'Publish Changes');
     publish.type = 'button';
     publish.disabled = true;
     publish.setAttribute('aria-describedby', 'cms-admin-publish-note');
-    const publishNote = el('p', 'cms-admin-note', 'Nothing to publish. Card editing isn’t available yet.');
+    const publishNote = el('p', 'cms-admin-note', 'Publishing comes in a later update. Use Save Draft in the card editor to keep changes.');
     publishNote.id = 'cms-admin-publish-note';
 
-    panel.append(head, views, publish, publishNote);
+    panel.append(head, views, stateList, publish, publishNote);
     document.body.append(panel);
 
     // Shown while previewing as a user or guest: no editing controls, a way back.
@@ -174,10 +238,47 @@
     bar.append(barText, back);
     document.body.append(bar);
 
+    const drawer = cms.drawer.create({
+      workspace,
+      content: cms.content,
+      games: liveGames(),
+      cardLabel: id => cardTitle(id),
+      whenLoaded: ensureLoaded,
+      onEdit: id => { draw(); home.reveal(id); decorate(); },
+      onOpen: id => {
+        draw();
+        home.reveal(id);
+        decorate();
+        setEditing(id);
+        requestAnimationFrame(() => requestAnimationFrame(() => bringIntoView(id)));
+      },
+      onClose: id => {
+        setEditing(null);
+        // The page widens again and the carousel may redraw its tiles: focus
+        // the card's pencil once that has happened.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (id) home.reveal(id);
+          decorate();
+          const pencil = root.querySelector(`.cms-edit-pencil[data-cms-edit="${CSS.escape(id || '')}"]`);
+          if (pencil) pencil.focus();
+        }));
+      },
+      onForbidden: () => verify()
+    });
+
     button.addEventListener('click', () => setPanel(panel.hidden));
     toggle.addEventListener('click', () => setActive(!state.active));
 
-    return { button, panel, toggle, viewButtons, bar, barText };
+    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer };
+  }
+
+  // Games a card may link to: live entries of /data/entries.js.
+  function liveGames() {
+    const games = (window.atlasEntries && window.atlasEntries.games) || [];
+    return games
+      .filter(e => e && e.path && !e.archived && e.visibility === 'public' && e.status !== 'coming-soon')
+      .map(e => ({ path: String(e.path).replace(/\/+$/, '') + '/', name: e.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   function setPanel(open) {
@@ -187,18 +288,17 @@
     if (open) {
       const top = ui.button.getBoundingClientRect().bottom + 10;
       ui.panel.style.top = `${Math.round(top)}px`;
+      updateStatus();
       ui.toggle.focus();
     }
   }
 
   function onKey(event) {
     if (event.key !== 'Escape') return;
-    if (note) { closeNote(true); return; }
     if (ui && !ui.panel.hidden) { setPanel(false); ui.button.focus(); }
   }
   function onPointer(event) {
     const t = event.target;
-    if (note && !note.box.contains(t) && !note.pencil.contains(t)) closeNote();
     if (ui && !ui.panel.hidden && !ui.panel.contains(t) && !ui.button.contains(t)) setPanel(false);
   }
 
@@ -221,7 +321,7 @@
     saveState(); apply();
   }
 
-  // Reflect state everywhere: panel, header button, preview bar, cards, appearance.
+  // Reflect state everywhere: panel, header button, preview bar, page, cards, drawer, appearance.
   function apply() {
     if (!ui) return;
     const editing = state.active && state.view === 'admin';
@@ -241,19 +341,70 @@
     if (window.PergamonTheme && window.PergamonTheme.previewSignedIn) {
       window.PergamonTheme.previewSignedIn(state.active && state.view === 'guest' ? false : null);
     }
-    // The page shows published content in every view until the editor adds a working copy.
-    if (editing) decorate(); else undecorate();
+    // While Admin Mode is on it decides what the page shows; the loader only records updates.
+    cms.loader.hold(state.active);
+    if (editing) {
+      ensureLoaded().then(() => { if (ui && state.active && state.view === 'admin') { draw(); decorate(); updateStatus(); } }).catch(() => updateStatus());
+      draw();
+      decorate();
+      ui.drawer.show();
+    } else {
+      ui.drawer.hide();
+      undecorate();
+      if (state.active || drawnKey !== null) drawPublished();
+    }
+    updateStatus();
+  }
+
+  // ── What the page shows ───────────────────────────────────────────────
+  function publishedView() {
+    const live = cms.loader.published();                       // { version, doc, media } from the public API
+    const server = workspace && workspace.isLoaded() ? workspace.published() : null;
+    const media = live ? live.media : {};
+    if (server) return { doc: server.doc, media };
+    if (live) return { doc: live.doc, media };
+    return { doc: window.PergamonHomeContent.document, media: {} };
+  }
+  function render(doc, media) {
+    const key = cms.workspace.canon(doc);
+    if (key === drawnKey) return;
+    if (home.render(doc, { media })) drawnKey = key;
+  }
+  function drawPublished() { const p = publishedView(); render(p.doc, p.media); }
+  // Admin view: the working copy (once loaded); otherwise the published content.
+  function draw() {
+    if (state.active && state.view === 'admin' && workspace && workspace.isLoaded()) render(workspace.working(), publishedView().media);
+    else drawPublished();
+  }
+
+  function updateStatus() {
+    if (!ui) return;
+    const loaded = workspace && workspace.isLoaded();
+    const pub = loaded ? workspace.published() : null;
+    const draft = loaded ? workspace.draft() : null;
+    const unsaved = loaded ? workspace.unsavedCards() : [];
+    const live = cms.loader.published();
+    ui.stateRows.published.textContent = pub ? `Version ${pub.id}` : live ? `Version ${live.version}` : 'Built-in content';
+    ui.stateRows.draft.textContent = !loaded ? (loading ? 'Loading…' : '—') : draft ? `Saved at ${time(draft.savedAt)}` : 'None';
+    ui.stateRows.unsaved.textContent = !loaded ? '—' : unsaved.length ? `${unsaved.length} card${unsaved.length === 1 ? '' : 's'}` : 'None';
+    ui.stateRows.unsaved.parentElement.dataset.on = String(unsaved.length > 0);
+    ui.stateRows.draft.parentElement.dataset.on = String(!!draft);
+    ui.button.classList.toggle('has-unsaved', unsaved.length > 0);
   }
 
   // ── Card indicators ───────────────────────────────────────────────────
   function cardTitle(id) {
+    const c = workspace && workspace.isLoaded() ? workspace.component(id) : null;
+    if (c && c.title) return c.title;
     const m = home.model();
-    const all = [m.featured, m.spotlight].concat(m.carousel || []).filter(Boolean);
-    const item = all.find(c => c.id === id);
+    const item = [m.featured, m.spotlight].concat(m.carousel || []).filter(Boolean).find(x => x.id === id);
     return (item && item.title) || id;
   }
 
   function decorate() {
+    if (!(state.active && state.view === 'admin')) return;
+    const editingId = ui && ui.drawer.isOpen() ? ui.drawer.current() : null;
+    const loaded = workspace && workspace.isLoaded();
     home.cardIds().forEach(id => {
       const type = cms.content.cardType(id);
       const card = home.element(id);
@@ -268,16 +419,22 @@
         frame.setAttribute('aria-hidden', 'true');
         pencil = el('button', 'cms-edit-pencil');
         pencil.type = 'button';
-        pencil.innerHTML = svg('pencil', 'cms-edit-icon');
+        pencil.setAttribute('aria-controls', 'cms-drawer');
+        pencil.innerHTML = svg('pencil', 'cms-edit-icon') + '<span class="cms-edit-badge" aria-hidden="true"></span>';
         pencil.addEventListener('click', event => {
           event.preventDefault();
           event.stopPropagation();
-          openNote(pencil);
+          if (ui) ui.drawer.open(pencil.dataset.cmsEdit);
         });
         host.append(frame, pencil);
       }
       pencil.dataset.cmsEdit = id;
-      const label = `Edit ${TYPE_LABELS[type].toLowerCase()}: ${cardTitle(id)}`;
+      const status = loaded ? workspace.cardStatus(id) : 'published';
+      if (pencil.dataset.status !== status) pencil.dataset.status = status;
+      host.classList.toggle('cms-editing', id === editingId);
+      const expanded = String(id === editingId);
+      if (pencil.getAttribute('aria-expanded') !== expanded) pencil.setAttribute('aria-expanded', expanded);
+      const label = `Edit ${TYPE_LABELS[type].toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
       if (pencil.getAttribute('aria-label') !== label) pencil.setAttribute('aria-label', label);
     });
     // Carousel pages and redraws replace tiles: decorate whatever appears.
@@ -294,55 +451,28 @@
 
   function undecorate() {
     if (observer) { observer.disconnect(); observer = null; }
-    closeNote();
     root.querySelectorAll('.cms-edit-pencil, .cms-edit-frame').forEach(n => n.remove());
-    root.querySelectorAll('.cms-editable').forEach(n => n.classList.remove('cms-editable'));
+    root.querySelectorAll('.cms-editable, .cms-editing').forEach(n => n.classList.remove('cms-editable', 'cms-editing'));
   }
 
-  // ── Pencil placeholder ────────────────────────────────────────────────
-  function openNote(pencil) {
-    const id = pencil.dataset.cmsEdit;
-    if (note && note.pencil === pencil) { closeNote(true); return; }
-    closeNote();
-    const type = cms.content.cardType(id);
-    const box = el('div', 'cms-edit-note');
-    box.setAttribute('role', 'dialog');
-    box.setAttribute('aria-labelledby', 'cms-edit-note-title');
-    const head = el('div', 'cms-edit-note-head');
-    const title = el('h2', 'cms-edit-note-title', `Edit “${cardTitle(id)}”`); title.id = 'cms-edit-note-title';
-    const close = el('button', 'cms-edit-note-close');
-    close.type = 'button';
-    close.setAttribute('aria-label', 'Close');
-    close.innerHTML = svg('close', 'cms-edit-icon');
-    close.addEventListener('click', () => closeNote(true));
-    head.append(title, close);
-    box.append(head,
-      el('p', 'cms-edit-note-text', 'The card editor isn’t available yet. This is where you’ll change this card’s text, link and artwork.'),
-      el('p', 'cms-edit-note-meta', `${TYPE_LABELS[type]} · ${id}`));
-    document.body.append(box);
-    // Below the pencil (above it near the bottom), kept inside the window.
-    const r = pencil.getBoundingClientRect();
-    const w = box.offsetWidth, h = box.offsetHeight;
-    const left = Math.max(12, Math.min(window.innerWidth - w - 12, r.right - w));
-    const below = r.bottom + 8 + h <= window.innerHeight - 12;
-    box.style.left = `${Math.round(left)}px`;
-    box.style.top = `${Math.round(below ? r.bottom + 8 : Math.max(12, r.top - 8 - h))}px`;
-    pencil.setAttribute('aria-expanded', 'true');
-    note = { box, pencil };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    close.focus();
+  function setEditing(id) {
+    root.querySelectorAll('.cms-editing').forEach(n => n.classList.remove('cms-editing'));
+    decorate();
+    if (!id) root.querySelectorAll('.cms-edit-pencil[aria-expanded="true"]').forEach(p => p.setAttribute('aria-expanded', 'false'));
   }
-  function onScroll() { closeNote(); }
-  function closeNote(restoreFocus) {
-    if (!note) return;
-    const { box, pencil } = note;
-    note = null;
-    box.remove();
-    pencil.setAttribute('aria-expanded', 'false');
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('resize', onScroll);
-    if (restoreFocus && pencil.isConnected) pencil.focus();
+
+  // Keep the card being edited in sight beside (or above) the drawer.
+  function bringIntoView(id) {
+    const card = home.element(id);
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    const header = document.querySelector('.pa-header');
+    const top = header ? header.getBoundingClientRect().bottom : 0;
+    const drawerEl = document.getElementById('cms-drawer');
+    const sheet = drawerEl && getComputedStyle(drawerEl).getPropertyValue('--cms-sheet') === '1';
+    const bottom = sheet ? drawerEl.getBoundingClientRect().top : window.innerHeight;
+    if (r.top >= top + 8 && r.bottom <= bottom - 8) return;
+    window.scrollTo({ top: Math.max(0, window.scrollY + r.top - top - 12), behavior: 'auto' });
   }
 
   // ── Start, and follow sign-in / sign-out ──────────────────────────────

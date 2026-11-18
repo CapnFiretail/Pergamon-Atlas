@@ -16,6 +16,7 @@ npm test         # node --test: database, hardening, Edge Function, config
 | `hardening.test.mjs` | Optional 0010: profiles privileges, `homepage_settings` column grant, legacy bucket listing. |
 | `function.test.mjs` | `publish-media` handler and byte checks with in-memory Auth/DB/Storage: real PNG/JPEG/WebP fixtures, SVG/GIF/HTML/EXE/truncated/oversized/huge-dimension rejection, auth, admin check, CORS, request shape, path tampering, type mismatch, failed copy/record and retry. |
 | `config.test.mjs` | `tools/write-supabase-config.mjs`: production/preview/development separation, secret-key refusal, malformed input. |
+| `editor.test.mjs` | Card editor logic: the declarative field schema (`content.cardFields`, `checkField` against the server's limits and unsafe links) and `workspace.js` (published / draft / working states, Save Draft keeps other cards, discard, tab-scoped persistence and tampering, conflicting saves never overwrite, combine / use theirs). |
 
 The site regression suite (Playwright; homepage geometry, cards, carousel,
 themes, navigation, games, account pages, redirects) also checks the pinned

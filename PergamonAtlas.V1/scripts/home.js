@@ -399,7 +399,21 @@
       if (changed) renderPage();
     }
 
-    return { element: section, start, setItems };
+    // Bring a document card onto the current page (the card editor's live
+    // preview): its section, then "all" if the filter hides it, then its page.
+    // Nothing changes if it is already shown.
+    function reveal(cardId) {
+      const target = sections.findIndex(sec => sec.component && sec.items.some(({ item }) => item.id === cardId));
+      if (target < 0) return false;
+      if (target !== sectionIndex) { sectionIndex = target; view.category = ''; view.page = 0; renderHead(); }
+      let index = filtered().findIndex(({ item }) => item.id === cardId);
+      if (index < 0) { view.category = ''; renderHead(); index = filtered().findIndex(({ item }) => item.id === cardId); }
+      const page = Math.floor(index / perPage);
+      if (page !== view.page || !viewport.querySelector(`[data-cms-id="${CSS.escape(cardId)}"]`)) { view.page = page; renderPage(); }
+      return true;
+    }
+
+    return { element: section, start, setItems, reveal };
   }
 
   // ── Document → model ──────────────────────────────────────────────────
@@ -464,7 +478,9 @@
     },
     model: () => model,
     cardIds: () => Object.keys(cards).concat(model.carousel.map(c => c.id)),
-    element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`))
+    element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`)),
+    // Make sure a card is drawn (carousel cards may be on another page or filtered out).
+    reveal: id => (cards[id] ? true : !!(explore && explore.reveal(id)))
   };
 
   // Published content (staging previews and local development; production

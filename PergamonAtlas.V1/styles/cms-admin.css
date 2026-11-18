@@ -21,7 +21,7 @@
 .cms-admin-button.is-active .cms-admin-dot { opacity: 1; }
 
 /* ── Panel ─────────────────────────────────────────────────────────────── */
-.cms-admin-panel, .cms-admin-panel *, .cms-admin-bar, .cms-admin-bar *, .cms-edit-note, .cms-edit-note * { box-sizing: border-box; }
+.cms-admin-panel, .cms-admin-panel *, .cms-admin-bar, .cms-admin-bar *, .cms-drawer, .cms-drawer * { box-sizing: border-box; }
 .cms-admin-panel {
   position: fixed;
   right: 24px;
@@ -162,32 +162,193 @@
 }
 .home-track-item > .cms-edit-pencil { top: 8px; right: 8px; width: 30px; height: 30px; }
 .cms-edit-pencil:hover, .cms-edit-pencil[aria-expanded="true"] { background: var(--color-accent); color: var(--color-on-accent); }
-.cms-edit-pencil:focus-visible, .cms-admin-panel :focus-visible, .cms-admin-bar :focus-visible, .cms-edit-note :focus-visible {
+.cms-edit-pencil:focus-visible, .cms-admin-panel :focus-visible, .cms-admin-bar :focus-visible, .cms-drawer :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 .cms-edit-icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ── Pencil placeholder note ───────────────────────────────────────────── */
-.cms-edit-note {
+:root[data-mode="light"] .cms-admin-bar { box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
+
+:root { --cms-unsaved: #E9A23B; --cms-drawer-w: 400px; }
+:root[data-mode="light"] { --cms-unsaved: #B86E0B; }
+
+/* Status on pencils: amber = unsaved changes, accent = saved in draft. */
+.cms-edit-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: transparent;
+  opacity: 0;
+}
+.cms-edit-pencil[data-status="unsaved"] .cms-edit-badge { opacity: 1; background: var(--cms-unsaved); }
+.cms-edit-pencil[data-status="draft"] .cms-edit-badge { opacity: 1; background: var(--color-accent); }
+/* The card being edited: a solid frame instead of the dashed one. */
+.cms-editing > .cms-edit-frame { border: 2px solid var(--color-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent); }
+.cms-editing > .cms-edit-pencil { background: var(--color-accent); color: var(--color-on-accent); }
+.cms-admin-button.has-unsaved .cms-admin-dot { opacity: 1; background: var(--cms-unsaved); }
+
+/* ── Panel: published / draft / unsaved ────────────────────────────────── */
+.cms-admin-state { display: grid; gap: 6px; margin: 0; padding: 10px 12px; list-style: none; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-background); }
+.cms-admin-state-row { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 8px; font-size: 13px; }
+.cms-admin-state-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border); }
+.cms-admin-state-row[data-state="published"] .cms-admin-state-dot { background: var(--color-success); }
+.cms-admin-state-row[data-state="draft"][data-on="true"] .cms-admin-state-dot { background: var(--color-accent); }
+.cms-admin-state-row[data-state="unsaved"][data-on="true"] .cms-admin-state-dot { background: var(--cms-unsaved); }
+.cms-admin-state-name { color: var(--color-text-secondary); font-weight: 600; }
+.cms-admin-state-value { color: var(--color-text-primary); font-weight: 700; }
+
+/* ── Card editing drawer ───────────────────────────────────────────────── */
+/* Desktop: docked on the right; the page narrows beside it, so every card,
+   including the right-hand tiles, stays visible while it is edited. */
+.cms-drawer {
   position: fixed;
-  z-index: 270;
-  width: min(290px, calc(100vw - 24px));
-  padding: 14px 14px 12px 16px;
-  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
-  border-radius: 12px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  width: var(--cms-drawer-w);
+  border-left: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
   background: var(--color-surface);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+  box-shadow: -12px 0 32px rgb(0 0 0 / 0.28);
   color: var(--color-text-primary);
   font-family: var(--font-ui);
 }
-:root[data-mode="light"] .cms-edit-note, :root[data-mode="light"] .cms-admin-bar { box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
-.cms-edit-note-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.cms-edit-note-title { margin: 4px 0 0; font: 800 16px/1.25 var(--font-display); }
-.cms-edit-note-close { display: grid; place-items: center; flex-shrink: 0; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--color-text-secondary); cursor: pointer; }
-.cms-edit-note-close:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
-.cms-edit-note-text { margin: 8px 0 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.45; }
-.cms-edit-note-meta { margin: 10px 0 0; color: var(--color-accent-text); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
+:root[data-mode="light"] .cms-drawer { box-shadow: -8px 0 24px rgb(0 0 0 / 0.08); }
+.cms-drawer[hidden] { display: none; }
+@media (min-width: 901px) {
+  :root[data-cms-drawer="open"] .pa-page { margin-right: var(--cms-drawer-w); }
+  :root[data-cms-drawer="open"] .cms-admin-panel { right: calc(var(--cms-drawer-w) + 24px); }
+}
+
+.cms-drawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 22px 20px 16px 24px; border-bottom: 1px solid var(--color-border); }
+.cms-drawer-eyebrow { margin: 0; color: var(--color-accent-text); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.cms-drawer-title { margin: 6px 0 0; overflow-wrap: anywhere; font: 800 22px/1.2 var(--font-display); }
+.cms-drawer-status { display: inline-flex; align-items: center; gap: 7px; margin: 10px 0 0; padding: 4px 10px 4px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); color: var(--color-text-secondary); font-size: 12px; font-weight: 700; }
+.cms-drawer-status:empty { display: none; }
+.cms-drawer-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); }
+.cms-drawer-status[data-status="unsaved"] { border-color: var(--cms-unsaved); color: var(--color-text-primary); }
+.cms-drawer-status[data-status="unsaved"]::before { background: var(--cms-unsaved); }
+.cms-drawer-status[data-status="draft"] { border-color: var(--color-accent); color: var(--color-text-primary); }
+.cms-drawer-status[data-status="draft"]::before { background: var(--color-accent); }
+.cms-drawer-close { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.cms-drawer-close:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.cms-drawer-icon { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.cms-drawer-body { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px; }
+.cms-drawer-loading { margin: 0; color: var(--color-text-secondary); font-size: 14px; }
+.cms-drawer-loading[data-kind="error"] { color: var(--color-text-primary); }
+.cms-drawer-loading .cms-drawer-secondary { margin-top: 10px; }
+.cms-drawer-form { display: grid; gap: 18px; }
+.cms-drawer-form[hidden], .cms-drawer-loading[hidden] { display: none; }
+.cms-field { display: grid; gap: 7px; }
+.cms-field-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--color-text-primary); font-size: 14px; font-weight: 700; }
+.cms-field-count { color: var(--color-text-secondary); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cms-field-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font: 500 15px/1.35 var(--font-ui);
+}
+textarea.cms-field-input { min-height: 84px; resize: vertical; }
+select.cms-field-input { cursor: pointer; }
+.cms-field-input:hover { border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border)); }
+.cms-field-input:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; border-color: var(--color-accent); }
+.cms-field-input[aria-invalid="true"] { border-color: var(--color-danger); }
+.cms-field-other[hidden] { display: none; }
+.cms-field-hint { margin: 0; color: var(--color-text-secondary); font-size: 12px; }
+.cms-field-error { margin: 0; color: var(--color-danger); font-size: 13px; font-weight: 600; line-height: 1.35; }
+:root[data-mode="light"] .cms-field-error { color: #B3261E; }
+.cms-field-error[hidden] { display: none; }
+.cms-drawer-others { margin: 18px 0 0; padding: 10px 12px; border-left: 3px solid var(--cms-unsaved); border-radius: 6px; background: var(--color-background); color: var(--color-text-secondary); font-size: 13px; }
+.cms-drawer-others[hidden] { display: none; }
+
+.cms-drawer-conflict { margin: 0 16px 12px; padding: 14px 16px; border: 1px solid var(--cms-unsaved); border-radius: 12px; background: color-mix(in srgb, var(--cms-unsaved) 9%, var(--color-surface)); font-size: 14px; line-height: 1.45; }
+.cms-drawer-conflict[hidden] { display: none; }
+.cms-drawer-conflict p { margin: 8px 0 0; color: var(--color-text-secondary); }
+.cms-drawer-conflict .cms-drawer-conflict-overlap { color: var(--color-text-primary); font-weight: 600; }
+.cms-drawer-conflict-title { display: flex; align-items: center; gap: 8px; margin: 0; font: 800 15px/1.3 var(--font-ui); }
+.cms-drawer-conflict-title .cms-drawer-icon { color: var(--cms-unsaved); }
+.cms-drawer-conflict .cms-drawer-prompt-actions { margin-top: 12px; }
+
+.cms-drawer-foot { display: grid; gap: 10px; padding: 14px 24px 18px; border-top: 1px solid var(--color-border); }
+.cms-drawer-feedback { min-height: 18px; margin: 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 600; }
+.cms-drawer-feedback[data-kind="success"] { color: var(--color-success); }
+:root[data-mode="light"] .cms-drawer-feedback[data-kind="success"] { color: #1E7A3A; }
+.cms-drawer-feedback[data-kind="error"] { color: var(--color-danger); }
+:root[data-mode="light"] .cms-drawer-feedback[data-kind="error"] { color: #B3261E; }
+.cms-drawer-actions { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; }
+.cms-drawer-note { margin: 0; color: var(--color-text-secondary); font-size: 12px; }
+
+.cms-drawer-primary, .cms-drawer-secondary, .cms-drawer-ghost {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  font: 700 14px/1 var(--font-ui);
+  cursor: pointer;
+}
+.cms-drawer-primary { border: 0; background: var(--color-accent); color: var(--color-on-accent); }
+.cms-drawer-primary:hover:not(:disabled) { background: var(--color-accent-hover); }
+.cms-drawer-secondary { border: 1px solid var(--color-border); background: transparent; color: var(--color-text-primary); }
+.cms-drawer-secondary:hover:not(:disabled) { border-color: var(--color-accent); }
+.cms-drawer-ghost { border: 0; background: transparent; color: var(--color-text-secondary); }
+.cms-drawer-ghost:hover { color: var(--color-text-primary); }
+.cms-drawer-primary:disabled, .cms-drawer-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+.cms-drawer[aria-busy="true"] .cms-drawer-primary:disabled { cursor: progress; }
+
+/* Save Draft / Discard / Cancel when leaving a card with unsaved changes. */
+.cms-drawer-prompt {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 28px;
+  background: var(--color-surface);
+}
+.cms-drawer-prompt[hidden] { display: none; }
+.cms-drawer-prompt-title { margin: 0; font: 800 20px/1.25 var(--font-display); }
+.cms-drawer-prompt-text { margin: 0; color: var(--color-text-secondary); font-size: 14px; }
+.cms-drawer-prompt-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.cms-drawer.has-prompt > :not(.cms-drawer-prompt) { visibility: hidden; }
+
+/* Tablet and phone: a bottom sheet; the page gains room below so the card
+   being edited can sit above it. */
+@media (max-width: 900px) {
+  .cms-drawer {
+    --cms-sheet: 1;
+    top: auto;
+    left: 0;
+    width: auto;
+    max-height: 58vh;
+    border-left: 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -12px 32px rgb(0 0 0 / 0.3);
+  }
+  :root[data-cms-drawer="open"] .pa-page { padding-bottom: 58vh; }
+  .cms-drawer-head { padding: 14px 14px 12px 18px; }
+  .cms-drawer-title { margin-top: 4px; font-size: 19px; }
+  .cms-drawer-status { margin-top: 6px; }
+  .cms-drawer-body { padding: 14px 18px; }
+  .cms-drawer-form { gap: 14px; }
+  .cms-drawer-foot { padding: 10px 18px calc(12px + env(safe-area-inset-bottom)); gap: 8px; }
+  .cms-drawer-note { display: none; }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  :root { --cms-drawer-w: 360px; }
+}
 
 /* ── Small screens ─────────────────────────────────────────────────────── */
 @media (max-width: 900px) {

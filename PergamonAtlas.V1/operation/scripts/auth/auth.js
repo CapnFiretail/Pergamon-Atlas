@@ -108,6 +108,25 @@
     return client().rpc('is_admin');
   }
 
+  // CMS drafts (admin-only functions; the database refuses everyone else
+  // with PT403). getCmsDraft resolves { draft: {id, content, …} | null,
+  // published: {id, content, …} | null }. saveCmsDraft stores a complete
+  // document as the new draft only if the current draft is still
+  // expectedDraftId (null = there was none); otherwise the server answers
+  // PT409 and writes nothing, so another admin's draft is never overwritten.
+  async function getCmsDraft(page) {
+    return client().rpc('get_draft', { p_page: page });
+  }
+
+  async function saveCmsDraft(page, content, expectedDraftId, note) {
+    return client().rpc('save_draft', {
+      p_page: page,
+      p_content: content,
+      p_expected_draft_id: expectedDraftId === undefined ? null : expectedDraftId,
+      p_note: note || null
+    });
+  }
+
   // Pergamon Publishing v1 — runtime visibility overrides (see
   // supabase/migrations/0002_atlas_visibility_overrides.sql). Readable by
   // anyone (RLS: select using (true)); insert/update/delete are enforced
@@ -205,6 +224,8 @@
     updateDisplayName,
     getCurrentUserAndProfile,
     isCmsAdmin,
+    getCmsDraft,
+    saveCmsDraft,
     getVisibilityOverrides,
     setVisibilityOverride,
     deleteVisibilityOverride,

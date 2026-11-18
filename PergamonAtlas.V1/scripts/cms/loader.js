@@ -99,9 +99,22 @@
     request.catch(() => {});
   }
 
+  // Admin Mode draws an administrator's working copy over the page; while it
+  // holds the page, a fresh published version is recorded but not drawn.
+  let held = false;
+  let latest = null;            // { version, doc, media } last published version received, or { none: true }
+
   cms.loader = {
     enabled: enabled,
     initial: () => (enabled ? readCache() : null),
+    hold(on) { held = !!on; },
+    // The newest published version known here: fresh answer, else cache; null if none.
+    published() {
+      if (latest) return latest.none ? null : latest;
+      return enabled ? readCache() : null;
+    },
+    // Resolves once the request has settled (whatever its outcome).
+    settled: () => (request ? request.then(() => {}, () => {}) : Promise.resolve()),
     attach(home, root, shownVersion, fallbackDoc) {
       if (!enabled || !request || !home) return;
       let shown = shownVersion || null;
@@ -112,12 +125,13 @@
       }
       request
         .then(result => {
+          latest = result.none ? { none: true } : { version: result.version, doc: result.doc, media: result.media };
           if (result.none) {                                    // nothing published: back to the static copy
             clearCache();
-            if (shown && fallbackDoc && home.render(fallbackDoc)) shown = null;
+            if (!held && shown && fallbackDoc && home.render(fallbackDoc)) shown = null;
             return;
           }
-          if (result.version !== shown && home.render(result.doc, { media: result.media })) {
+          if (!held && result.version !== shown && home.render(result.doc, { media: result.media })) {
             shown = result.version;
           }
           writeCache(result.raw);

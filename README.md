@@ -102,7 +102,11 @@ Where the CMS is live (development and staging previews; see
 anything, then adds a header button with the Admin Mode switch, "View as"
 Admin / User / Guest and a (for now disabled) Publish Changes button. In
 Admin view every card the document addresses gets a frame and a pencil; the
-pencil opens a placeholder until the card editor exists. Its styles
+pencil opens the card editing drawer (`scripts/cms/drawer.js`), whose
+fields come from the schema in `scripts/cms/content.js`. Edits show on the
+page at once, stay in the browser until **Save Draft** (`save_draft`), and
+never overwrite another administrator's draft (see
+`docs/cms/ARCHITECTURE.md` §5b). The editor's scripts and styles
 (`styles/cms-admin.css`) load only for verified administrators.
 
 Game pages and the Games catalog still draw their content area with the

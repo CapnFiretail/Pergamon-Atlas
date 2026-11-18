@@ -130,6 +130,49 @@
     return carousel.order.every(id => typeof id === 'string' && CARD_ID.test(id) && validCard(comps[CAROUSEL + '.' + id], true));
   }
 
+  // ── Editable fields (the card editor's declarative schema) ──────────────
+  // One list per card type; the editor draws whatever the selected card's
+  // type lists, in order. `ifPresent` fields appear only when the card already
+  // has that field (schema v1 cards have no description, so it stays hidden).
+  // Limits and rules mirror the server's validate_content (0008), which has
+  // the final say.
+  const CATEGORIES = ['Strategy', 'Arcade', 'Classic', 'Card'];
+  const TITLE = max => ({ key: 'title', label: 'Title', type: 'text', max: max });
+  const DESCRIPTION = { key: 'description', label: 'Description', type: 'textarea', max: 160, ifPresent: true };
+  const LINK = (gamesOnly) => ({ key: 'href', label: 'Destination link', type: 'link', gamesOnly: gamesOnly });
+  const CARD_FIELDS = {
+    feature: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false)],
+    spotlight: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false)],
+    // Tiles are drawn only for live games, so their links pick a game.
+    tile: [TITLE(40), DESCRIPTION, { key: 'category', label: 'Category', type: 'choice', options: CATEGORIES }, LINK(true)]
+  };
+
+  // The fields to edit for one card (component = its current content).
+  function cardFields(id, component) {
+    const fields = CARD_FIELDS[cardType(id)] || [];
+    return fields.filter(f => !f.ifPresent || (component && Object.prototype.hasOwnProperty.call(component, f.key)));
+  }
+
+  // Site path the server could accept as a destination: lower-case segments, ending in "/".
+  const ROUTE_PATH = /^\/[a-z0-9-]+(\/[a-z0-9-]+)*\/$/;
+  const CONTROL = /[\u0000-\u001f\u007f‪-‮⁦-⁩]/;
+
+  // A field value's problem, as a sentence for the editor, or null if it's fine.
+  function checkField(field, value) {
+    if (typeof value !== 'string') return 'Enter a value.';
+    if (field.type === 'link') {
+      if (!value) return 'Choose where the card leads.';
+      if (!ROUTE_PATH.test(value)) return 'Use a site path such as /games/chess-forge/ (lower-case, starting and ending with “/”).';
+      return null;
+    }
+    if (field.type === 'choice') return field.options.indexOf(value) < 0 ? 'Choose one of the listed options.' : null;
+    if (!value.trim()) return `${field.label} can’t be empty.`;
+    if (value.length > field.max) return `Use at most ${field.max} characters (now ${value.length}).`;
+    if (/[<>]/.test(value)) return 'The characters < and > aren’t allowed.';
+    if (CONTROL.test(value)) return 'Remove line breaks and other invisible control characters.';
+    return null;
+  }
+
   // Media ids a document references (for resolving image URLs).
   function mediaIds(doc) {
     const ids = [];
@@ -141,7 +184,7 @@
     return ids;
   }
 
-  const api = { SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, cardType: cardType, artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument };
+  const api = { SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, CATEGORIES: CATEGORIES, cardType: cardType, artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument, cardFields: cardFields, checkField: checkField };
   root.PergamonCMS = root.PergamonCMS || {};
   root.PergamonCMS.content = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

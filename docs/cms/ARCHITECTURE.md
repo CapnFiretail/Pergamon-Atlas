@@ -228,13 +228,55 @@ Original plan, for reference:
   dashed frame and a pencil button (a tile's pencil sits beside its link,
   inside the list item, so the card still navigates). A MutationObserver
   re-applies them when the carousel pages or the document is redrawn. No
-  card box changes size. Pencils open an informational note for now.
+  card box changes size. A badge on the pencil shows unsaved changes
+  (amber) or a saved draft (accent).
 - **Previews.** User and Guest views remove every editing control and show
   the published content; Guest also shows the guest appearance
   (`PergamonTheme.previewSignedIn(false)`: default palette, signed-out
   Atlas Navigation row) without signing out. A bar at the bottom says which
-  view is shown and returns to Admin view. The card editor (M4) is to keep
-  its working copy in `admin.js`'s state, so switching views won't lose it.
+  view is shown and returns to Admin view. Unsaved edits stay in the working
+  copy and reappear, with the open drawer, in Admin view.
+- **Loading.** `workspace.js`, `drawer.js` and `cms-admin.css` are loaded by
+  `admin.js` only after verification; visitors download none of them.
+
+## 5b. Card editing (implemented in M4)
+
+- **States** (`scripts/cms/workspace.js`): *published* and *saved draft*
+  come from `get_draft('home')`; the *working copy* starts as the draft (or
+  the published version) and lives only in this tab
+  (`sessionStorage['pa-cms-working:<supabase url>:home']`, re-validated on
+  load, cleared on sign-out). Admin view draws the working copy; while Admin
+  Mode is on, `loader.hold(true)` stops a fresh published version from
+  being drawn over it (it's still recorded: `loader.published()`). Each card
+  is *unsaved* (working ≠ its base), *in draft* (draft ≠ published) or
+  *published*.
+- **Fields** come from one declarative schema, `content.cardFields(id)`
+  (`CARD_FIELDS` in `scripts/cms/content.js`): featured/spotlight → Title,
+  Button label, Destination link; carousel tiles → Title, Category,
+  Destination link; Description only if a card already has one (none in
+  schema v1). `content.checkField` mirrors the server's limits (60/40/24
+  characters, no `<`/`>`, no control or bidi characters, site paths only,
+  fixed categories). Links are chosen from the live games (`data/entries.js`)
+  or, for featured/spotlight, typed as a site path; the server's
+  `site_content_routes` decides (its answer is shown on the field).
+- **Drawer** (`scripts/cms/drawer.js`): one editor for every card. Valid
+  values go straight into the working copy and the card is redrawn at once
+  (`PergamonHome.render`; `PergamonHome.reveal(id)` keeps the card on the
+  carousel page). Desktop: docked on the right, the page narrows beside it.
+  ≤ 900px: a bottom sheet with room added below the page. Leaving a card
+  with unsaved changes (another pencil, close, Escape) asks Save Draft /
+  Discard / Cancel. Ctrl/⌘+S saves.
+- **Save Draft** sends the whole working copy (every card, so other cards'
+  content is kept) with the draft id it was based on: `save_draft(home, doc,
+  expected)`. If another administrator saved since, the server answers
+  `PT409` and writes nothing; the drawer explains it, keeps the local edits
+  and offers *Combine and save* (re-applies this browser's changed cards on
+  top of the newer draft; if both changed the same card it says so and the
+  button reads *Keep my version and save*), *Use their draft* (needs a
+  second click; drops the local edits) or *Not now*. Network failures and
+  `PT422`/`PT403` answers keep the edits and say what happened.
+- Not in M4: images (M5), publishing (M6), discarding a saved draft,
+  card creation, version history.
 
 ## 6. Hardening
 
