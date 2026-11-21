@@ -115,7 +115,10 @@
     let pending = null;           // resolve function of an open prompt
 
     const label = id => env.cardLabel(id);
-    const typeLabel = id => ({ feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' })[content.cardType(id)] || 'Card';
+    const typeLabel = id => {
+      const t = ({ feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' })[content.cardType(id)] || 'Card';
+      return content.isSaved && content.isSaved(id) ? `Saved ${t.toLowerCase()} (not active)` : t;
+    };
 
     function setFeedback(text, kind) {
       feedback.textContent = text || '';
@@ -396,14 +399,16 @@
     });
 
     // Leave the current card: true when it's fine to go on.
+    let leaving = false;
     async function leave() {
       if (!current || !workspace.isLoaded()) return true;
+      if (workspace.component(current) === undefined) return true;     // deleted meanwhile
       if (uploadingNow()) { setFeedback('Wait for the image upload to finish.', 'busy'); return false; }
       const dirty = workspace.cardStatus(current) === 'unsaved' || Object.keys(errors).length > 0;
       if (!dirty) return true;
       const choice = await ask(current);
       if (choice === 'save') return save();
-      if (choice === 'discard') { discard(); return true; }
+      if (choice === 'discard') { leaving = true; try { discard(); } finally { leaving = false; } return true; }
       return false;
     }
 
@@ -482,7 +487,11 @@
     }
 
     closeButton.addEventListener('click', requestClose);
-    discardButton.addEventListener('click', discard);
+    // Discarding a card that was added and never saved removes it: nothing left to edit.
+    discardButton.addEventListener('click', () => {
+      discard();
+      if (current && workspace.component(current) === undefined) close();
+    });
     form.addEventListener('submit', e => { e.preventDefault(); save(); });
     drawer.addEventListener('keydown', e => {
       if (e.key === 'Escape' && !pending) { e.stopPropagation(); requestClose(); }
@@ -493,7 +502,12 @@
       open, requestClose, close, hide, show,
       isOpen: () => !!current && !drawer.hidden,
       current: () => current,
-      refresh: () => { if (current && fields.length) fill(); update(); },
+      refresh: () => {
+        // The card was deleted (Manage cards) while open here: nothing left to edit.
+        if (current && !drawer.hidden && !leaving && !saving && workspace.isLoaded() && workspace.component(current) === undefined) { close(); return; }
+        if (current && fields.length) fill();
+        update();
+      },
       busy: () => saving || !!pending || uploadingNow(),
       destroy() { if (pending) pending('cancel'); dropImages(); drawer.remove(); document.documentElement.removeAttribute('data-cms-drawer'); }
     };

@@ -28,6 +28,34 @@
   const same = (a, b) => canon(a) === canon(b);
   const comp = (doc, id) => (doc && doc.components ? doc.components[id] : undefined);
 
+  // Ordered collections: the carousel and each slot's saved cards. A card's
+  // list is its id without the last segment (home.carousel.snake →
+  // home.carousel), its key the last segment; the list component holds
+  // { order: [keys] }. A saved list with no cards is left out of the document.
+  const LISTS = ['home.carousel', 'home.featured.saved', 'home.spotlight.saved'];
+  const listOf = id => (typeof id === 'string' && id.lastIndexOf('.') > 0 ? id.slice(0, id.lastIndexOf('.')) : '');
+  const keyOf = id => id.slice(id.lastIndexOf('.') + 1);
+  const isList = id => LISTS.indexOf(id) >= 0;
+  const orderIn = (doc, list) => { const c = comp(doc, list); return c && Array.isArray(c.order) ? c.order : []; };
+  function setOrder(doc, list, order) {
+    if (!order.length && list !== LISTS[0]) delete doc.components[list];
+    else doc.components[list] = Object.assign({}, comp(doc, list), { order: order });
+  }
+  // Every list names exactly its cards: ids without a card are dropped,
+  // cards missing from the list are appended (after a combine, say).
+  function tidy(doc) {
+    LISTS.forEach(list => {
+      const members = Object.keys(doc.components).filter(k => listOf(k) === list).map(keyOf);
+      if (!members.length && comp(doc, list) === undefined) return;
+      const order = orderIn(doc, list).filter((k, i, all) => members.indexOf(k) >= 0 && all.indexOf(k) === i);
+      members.forEach(k => { if (order.indexOf(k) < 0) order.push(k); });
+      setOrder(doc, list, order);
+    });
+    return doc;
+  }
+  // Ids present in either document whose content differs.
+  const changedIds = (a, b) => Object.keys(Object.assign({}, a.components, b.components)).filter(id => !same(comp(a, id), comp(b, id)));
+
   // Error code of a failed RPC (PostgREST passes our PTnnn codes through).
   function errorInfo(error) {
     if (!error) return null;
@@ -96,12 +124,88 @@
       else c[field] = clone(value);
       persist(); emit();
     }
+    // Back to the saved state: an edited card gets its content back, a card
+    // added here is removed, a deleted card returns to its place, a list
+    // gets its saved order back (keeping cards added or deleted since).
     function discardCard(cardId) {
       if (!working || !base) return;
       const original = comp(base.doc, cardId);
-      if (original === undefined) return;
-      working.components[cardId] = clone(original);
+      const list = listOf(cardId);
+      if (isList(cardId)) {
+        if (original === undefined) delete working.components[cardId];
+        else working.components[cardId] = clone(original);
+        tidy(working);
+      } else if (original === undefined) {
+        if (!isList(list) || comp(working, cardId) === undefined) return;
+        delete working.components[cardId];
+        tidy(working);
+      } else {
+        working.components[cardId] = clone(original);
+        if (isList(list) && orderIn(working, list).indexOf(keyOf(cardId)) < 0) {
+          const order = orderIn(working, list).slice();
+          const at = orderIn(base.doc, list).indexOf(keyOf(cardId));
+          order.splice(at < 0 ? order.length : Math.min(at, order.length), 0, keyOf(cardId));
+          setOrder(working, list, order);
+        }
+      }
       persist(); emit();
+    }
+
+    // ── Collections: add, remove, move, make active ───────────────────────
+    // Add a card to a list (at `index`, default the end) → its id, or null
+    // when the key is taken. Limits are the caller's (content.LIMITS); the
+    // server enforces them too.
+    function addCard(list, key, component, index) {
+      if (!working || !isList(list)) return null;
+      const id = list + '.' + key;
+      if (comp(working, id) !== undefined) return null;
+      working.components[id] = clone(component);
+      const order = orderIn(working, list).slice();
+      order.splice(index === undefined ? order.length : Math.max(0, Math.min(index, order.length)), 0, key);
+      setOrder(working, list, order);
+      persist(); emit();
+      return id;
+    }
+    // Remove a card from its list (an active card can't be removed).
+    function removeCard(cardId) {
+      const list = listOf(cardId);
+      if (!working || !isList(list) || comp(working, cardId) === undefined) return false;
+      delete working.components[cardId];
+      setOrder(working, list, orderIn(working, list).filter(k => k !== keyOf(cardId)));
+      persist(); emit();
+      return true;
+    }
+    // Move a card to position `index` in its list.
+    function moveCard(cardId, index) {
+      const list = listOf(cardId);
+      if (!working || !isList(list)) return false;
+      const order = orderIn(working, list).slice();
+      const from = order.indexOf(keyOf(cardId));
+      const to = Math.max(0, Math.min(index, order.length - 1));
+      if (from < 0 || from === to) return false;
+      order.splice(to, 0, order.splice(from, 1)[0]);
+      setOrder(working, list, order);
+      persist(); emit();
+      return true;
+    }
+    // A saved card becomes its slot's active card; the active card takes its
+    // place in the saved list under `outgoingKey`. Nothing is lost.
+    function activate(savedCardId, outgoingKey) {
+      const list = listOf(savedCardId);
+      const slot = list.replace(/\.saved$/, '');
+      if (!working || list === slot || !isList(list)) return false;
+      const chosen = comp(working, savedCardId), live = comp(working, slot);
+      if (chosen === undefined || live === undefined) return false;
+      const order = orderIn(working, list).slice();
+      const at = order.indexOf(keyOf(savedCardId));
+      if (order.indexOf(outgoingKey) >= 0 && outgoingKey !== keyOf(savedCardId)) return false;
+      delete working.components[savedCardId];
+      working.components[slot] = chosen;
+      working.components[list + '.' + outgoingKey] = live;
+      order[at] = outgoingKey;
+      setOrder(working, list, order);
+      persist(); emit();
+      return true;
     }
     function discardAll() {
       if (!base) return;
@@ -109,10 +213,11 @@
       persist(); emit();
     }
 
-    // Card ids whose working content differs from what it was started from.
+    // Component ids whose working content differs from what it was started
+    // from: edited, added and deleted cards, and reordered lists.
     function unsavedCards() {
       if (!working || !base) return [];
-      return Object.keys(working.components).filter(id => !same(comp(working, id), comp(base.doc, id)));
+      return changedIds(working, base.doc);
     }
     // 'unsaved' (local edits) · 'draft' (saved draft differs from live) · 'published'.
     function cardStatus(cardId) {
@@ -150,7 +255,7 @@
       const latestDraft = d.draft && validate(d.draft.content) ? { id: d.draft.id, doc: d.draft.content, savedAt: d.draft.created_at } : null;
       const latest = latestDraft ? { draftId: latestDraft.id, doc: latestDraft.doc } : { draftId: null, doc: latestPublished ? latestPublished.doc : clone(opts.fallbackDoc) };
       const mine = unsavedCards();
-      const theirs = Object.keys(latest.doc.components || {}).filter(id => !same(comp(latest.doc, id), comp(base.doc, id)));
+      const theirs = changedIds(latest.doc, base.doc);
       return {
         latest: latest, latestDraft: latestDraft, latestPublished: latestPublished,
         mine: mine,
@@ -159,11 +264,19 @@
       };
     }
 
-    // Re-apply this browser's card edits on top of the newer server state
-    // (after the administrator confirmed), then save against it.
+    // Re-apply this browser's changes on top of the newer server state
+    // (after the administrator confirmed), then save against it. Each
+    // changed component takes this browser's version (added, edited or
+    // deleted); lists are then tidied, so their cards added there stay and
+    // cards deleted there don't come back unless edited here.
     async function combine(info) {
       const next = clone(info.latest.doc);
-      info.mine.forEach(id => { if (comp(next, id) !== undefined) next.components[id] = clone(comp(working, id)); });
+      info.mine.forEach(id => {
+        const mineNow = comp(working, id);
+        if (mineNow === undefined) delete next.components[id];
+        else next.components[id] = clone(mineNow);
+      });
+      tidy(next);
       published = info.latestPublished; draft = info.latestDraft;
       base = { draftId: info.latest.draftId, doc: clone(info.latest.doc) };
       working = next;
@@ -196,6 +309,8 @@
 
     return {
       load, setField, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, markPublished, clearLocal,
+      addCard, removeCard, moveCard, activate,
+      order: list => orderIn(working, list).slice(),
       isLoaded: () => loaded,
       working: () => working,
       component: id => comp(working, id),

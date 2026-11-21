@@ -93,6 +93,10 @@ silently overwrite each other and two publishes can't both win.
     "home.spotlight": Card,
     "home.carousel":  { "order": ["battleship", "pong", ...] },   // ≤ 24 ids
     "home.carousel.battleship": CarouselCard,                     // one per id, stable ids
+    // 0012: saved (inactive) cards per slot, optional
+    "home.featured.saved":  { "order": ["summer-cup", ...] },     // ≤ 12 ids
+    "home.featured.saved.summer-cup": Card,                       // one per id
+    "home.spotlight.saved": { "order": [...] }, "home.spotlight.saved.<id>": Card,
     ...
   }
 }
@@ -118,6 +122,18 @@ Destinations come only from `site_content_routes`, which only migrations
 change — no external, protocol-relative or `javascript:` URLs. Images are
 either a `site_media` id or a file under `/images/featured/`. The renderer
 will keep using `textContent`/`setAttribute` (never `innerHTML`) for content.
+
+**Saved cards (0012).** `home.featured` / `home.spotlight` stay the
+**active** cards, in the same place and shape as before, so the public
+renderer, the static fallback and older cached scripts are unaffected. Each
+slot may also keep up to 12 saved cards (`<slot>.saved` lists their ids in
+order; each is a full Card, validated by the same `cms_check_card`). Making a
+saved card active swaps it with the active card inside the draft: nothing is
+overwritten or deleted. `get_published_content` leaves the saved lists and
+cards out (visitors receive only what they see, and only those images);
+administrators read the whole document through `get_draft`, and rollback
+restores it whole. Limits live in `content.js` `LIMITS` and in
+`validate_content` (a unit test checks they agree).
 
 ## 4. Media (0009 + Edge Function)
 
@@ -378,13 +394,49 @@ No schema or migration change: the browser drives the existing
   the new version on their next visit; returning visitors see their cached
   copy first and the new version as soon as the M2 request answers.
 - **Rollback:** `rollback(home, archived_version_id, expected_live_id)`
-  (no interface yet) republishes an earlier version as a new version; its
-  images are already public.
+  republishes an earlier version as a new version; its images are already
+  public. Admin Mode's Version History uses it (§5e).
 - **Identical images** (re-uploading a picture that is already published,
   or using it on several cards) publish normally: each upload shares the
   one content-addressed public copy. This needs `0011_shared_public_media.sql`
   (§4, §8). Without 0011 such a draft can't be published (`record_failed`;
   nothing unsafe happens).
+
+## 5e. Card collections and Version History (CMS Phase 2, 0012)
+
+- **Manage cards** (`scripts/cms/manage.js`): a button beside the pencil on
+  the Featured and Spotlight cards, and on the carousel's top edge (Admin
+  view only, absolutely placed). The dialog lists the active card first,
+  then the saved cards (thumbnail, state): Make active, Edit, Delete (asks
+  first; Undo puts the card back exactly), reorder with the drag handle or
+  Move up / Move down (announced). The carousel list does the same for its
+  cards. Add card creates a saved card (or a carousel card at the end) and
+  opens it in the card editor. Every change is a working-copy change: Save
+  Draft, then Publish Changes.
+- **Saved card editing**: the card editor edits a saved card in place; its
+  slot shows it, with a "Preview: saved card, not active" badge, while the
+  editor is open (Admin view only; visitors never get saved cards).
+- **Add card tile**: in Admin view the carousel is a fixed row (no looping
+  copies, no gliding; `glide.fix(true)`), and a dashed, card-sized Add card
+  tile follows the cards (`glide` extras: never copied). The arrows scroll to
+  it; keyboard focus brings it into view. With 24 cards it is disabled and
+  says why. Visitors' carousel is unchanged.
+- **Drafts**: `workspace.js` adds `addCard`, `removeCard`, `moveCard` and
+  `activate`; added, deleted and reordered cards count as unsaved changes,
+  Discard reverses each one, and a conflicting save combines per component
+  (my version of what I changed, their added cards kept, lists tidied).
+  Deleting a card never deletes its image or game.
+- **Version History** (`scripts/cms/history.js`, Admin Mode panel): the 20
+  newest published versions (`list_published_versions`, admin only) with
+  date, publisher, "restored from" and the change summary against the
+  previous version. Restore asks first, says it publishes immediately as a
+  new version and keeps history, and warns about a saved draft (publishing
+  it later would replace the restored version) and unsaved changes (kept).
+  It calls `rollback` with the live version it showed, so a stale list is
+  refused (PT409) and nothing changes.
+- **Older editors** keep saved cards: they save the whole document they
+  loaded, including components they don't know (`tests/cms/collections.test.mjs`
+  runs the released modules; M7 runs the released site against staging).
 
 ## 6. Hardening
 
@@ -433,3 +485,20 @@ with the CMS rollout, never on its own:
 
 Reverting 0011 (re-adding the unique constraint) only works while no two rows
 share a path; once identical images are published that way, keep 0011.
+
+## 9. Migration 0012: saved cards and version history
+
+`supabase/proposed/0012_saved_cards.sql` is applied to **staging only**
+(2026-11-21). It replaces `validate_content` and `get_published_content`,
+and adds `cms_check_card` and `list_published_versions`; no table, policy,
+bucket or data changes. Every existing document stays valid and the public
+answer for a document without saved cards is byte-identical (checked on
+staging before and after).
+
+Production, when approved: run the file in the SQL editor **before**
+releasing the code (the editor would otherwise get PT422 when saving saved
+cards; nothing unsafe), then check that `anon` can execute only
+`get_published_content`, and `authenticated` also
+`list_published_versions` (it checks `is_admin()` itself). Revert (only
+while no draft or published version uses saved cards): re-run 0008's two
+functions and drop the two new ones.

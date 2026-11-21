@@ -173,6 +173,24 @@
     });
   }
 
+  // CMS version history (admin only; supabase/proposed/0012_saved_cards.sql).
+  // listCmsVersions resolves the newest published / archived versions with
+  // their content. restoreCmsVersion republishes an archived version as a
+  // new version (rpc rollback): only if the live version is still
+  // expectedPublishedId, otherwise PT409 and nothing changes. History is
+  // never rewritten.
+  async function listCmsVersions(page, limit) {
+    return client().rpc('list_published_versions', { p_page: page, p_limit: limit || 20 });
+  }
+
+  async function restoreCmsVersion(page, versionId, expectedPublishedId) {
+    return client().rpc('rollback', {
+      p_page: page,
+      p_version_id: versionId,
+      p_expected_published_id: expectedPublishedId === undefined ? null : expectedPublishedId
+    });
+  }
+
   // Pergamon Publishing v1 — runtime visibility overrides (see
   // supabase/migrations/0002_atlas_visibility_overrides.sql). Readable by
   // anyone (RLS: select using (true)); insert/update/delete are enforced
@@ -278,6 +296,8 @@
     signCmsDraftMedia,
     prepareCmsMedia,
     publishCmsDraft,
+    listCmsVersions,
+    restoreCmsVersion,
     getVisibilityOverrides,
     setVisibilityOverride,
     deleteVisibilityOverride,

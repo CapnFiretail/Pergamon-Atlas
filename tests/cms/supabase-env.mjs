@@ -63,8 +63,9 @@ grant select, insert, update, delete on storage.objects to anon, authenticated, 
 grant select on storage.buckets to anon, authenticated, service_role;
 `;
 
-// Production today = 0001–0006. `extra` adds optional proposals (e.g. 0010).
-export async function createEnv({ extra = [] } = {}) {
+// 0001–0006 plus the CMS migrations. `extra` adds optional proposals (e.g.
+// 0010); `without: ['0012']` leaves out 0012 (the schema before saved cards).
+export async function createEnv({ extra = [], without = [] } = {}) {
   const db = new PGlite();
   await db.exec(BOOTSTRAP);
   for (const f of ['0001_pergamon_profiles', '0002_atlas_visibility_overrides', '0003_homepage_settings',
@@ -74,6 +75,7 @@ export async function createEnv({ extra = [] } = {}) {
   await db.exec(sql('supabase/proposed/0008_site_content.sql'));
   await db.exec(sql('supabase/proposed/0009_site_media.sql'));
   await db.exec(sql('supabase/proposed/0011_shared_public_media.sql'));
+  if (!without.includes('0012')) await db.exec(sql('supabase/proposed/0012_saved_cards.sql'));
   for (const f of extra) await db.exec(sql(`supabase/proposed/${f}.sql`));
 
   // Run fn as a request: role + JWT claims, in a transaction that commits on

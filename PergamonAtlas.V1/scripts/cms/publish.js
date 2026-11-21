@@ -51,9 +51,18 @@
     return out;
   }
 
+  const LIST_LABELS = { 'home.carousel': 'Carousel order', 'home.featured.saved': 'Saved featured cards order', 'home.spotlight.saved': 'Saved spotlight cards order' };
+  // Whether the cards present in both lists are in a different order
+  // (adding or deleting a card alone isn't a reorder).
+  function reordered(before, after) {
+    const a = (before && before.order) || [], b = (after && after.order) || [];
+    const common = a.filter(k => b.indexOf(k) >= 0);
+    return !same(common, b.filter(k => a.indexOf(k) >= 0));
+  }
+
   // published / draft: documents (published may be null: nothing live yet);
   // imgs: scripts/cms/images.js when available.
-  // → { cards: [{ id, type, title, changes: [...] }], newImages: [media ids], other: [...], empty }
+  // → { cards: [{ id, type, typeLabel, title, changes: [...] }], newImages: [media ids], other: [...], empty }
   function summarize(published, draft, content, imgs) {
     const pub = (published && published.components) || {};
     const next = (draft && draft.components) || {};
@@ -61,13 +70,30 @@
     const cards = [], other = [];
     ids.forEach(id => {
       if (same(pub[id], next[id])) return;
+      if (LIST_LABELS[id]) { if (reordered(pub[id], next[id])) other.push(LIST_LABELS[id]); return; }
       const type = content.cardType(id);
-      if (!type) { other.push(id === content.CAROUSEL ? 'Carousel order' : id); return; }
-      const a = pub[id] || {}, b = next[id] || {};
-      const changes = Object.keys(FIELD_LABELS).filter(k => !same(a[k], b[k])).map(k => FIELD_LABELS[k]);
-      changes.push(...artChanges(a.art, b.art, imgs, type));
-      ['style'].forEach(k => { if (!same(a[k], b[k])) changes.push('Style'); });
-      cards.push({ id, type, typeLabel: CARD_TYPES[type] || 'Card', title: String(b.title || a.title || id), changes });
+      if (!type) { other.push(id); return; }
+      const saved = content.isSaved && content.isSaved(id);
+      const typeLabel = (saved ? 'Saved ' + (CARD_TYPES[type] || 'card').toLowerCase() : CARD_TYPES[type]) || 'Card';
+      const a = pub[id], b = next[id];
+      let changes;
+      if (a === undefined) changes = [saved ? 'Added to saved cards' : 'Added'];
+      else if (b === undefined) changes = [saved ? 'Deleted from saved cards' : 'Deleted'];
+      else {
+        // An active card replaced: by one of the saved cards, or by a new
+        // card while the previous one was moved to the saved cards.
+        const slot = !saved && content.slotOf && content.slotOf(id) === id;
+        const from = slot ? Object.keys(pub).find(k => content.isSaved(k) && content.slotOf(k) === id && same(pub[k], b)) : null;
+        const kept = slot && !from ? Object.keys(next).find(k => content.isSaved(k) && content.slotOf(k) === id && same(next[k], a)) : null;
+        if (from) changes = ['Now shows a saved card (was “' + String(a.title || '') + '”)'];
+        else if (kept) changes = ['Now shows a new card (“' + String(a.title || '') + '” was saved)'];
+        else {
+          changes = Object.keys(FIELD_LABELS).filter(k => !same(a[k], b[k])).map(k => FIELD_LABELS[k]);
+          changes.push(...artChanges(a.art, b.art, imgs, type));
+          ['style'].forEach(k => { if (!same(a[k], b[k])) changes.push('Style'); });
+        }
+      }
+      cards.push({ id, type, typeLabel, title: String((b && b.title) || (a && a.title) || id), changes });
     });
     const live = content.mediaIds(published || {});
     const newImages = content.mediaIds(draft || {}).filter(id => live.indexOf(id) < 0);

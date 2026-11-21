@@ -96,6 +96,17 @@
 }
 .cms-admin-publish:disabled { background: var(--color-surface-hover); color: var(--color-text-secondary); cursor: not-allowed; }
 .cms-admin-note { margin: -8px 0 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.4; }
+.cms-admin-history {
+  height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-primary);
+  font: 700 14px/1 var(--font-ui);
+  cursor: pointer;
+}
+.cms-admin-history:hover:not(:disabled) { border-color: var(--color-accent); }
+.cms-admin-history:disabled { color: var(--color-text-secondary); opacity: 0.6; cursor: not-allowed; }
 
 /* ── Preview bar (User / Guest views) ──────────────────────────────────── */
 .cms-admin-bar {
@@ -167,6 +178,70 @@
   outline-offset: 2px;
 }
 .cms-edit-icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Manage cards: the pencil's look, beside it on a Featured / Spotlight card,
+   on the carousel's top edge. Absolutely placed: no box changes size. */
+.home-carousel.cms-manageable { position: relative; }
+.cms-manage-button {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1.5px solid var(--color-accent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  color: var(--color-accent-text);
+  cursor: pointer;
+}
+.home-carousel > .cms-manage-button { top: -16px; right: 20px; }
+.cms-manage-button:hover { background: var(--color-accent); color: var(--color-on-accent); }
+.cms-manage-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* A saved card shown in its slot while it is edited. */
+.cms-preview-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 4;
+  padding: 5px 10px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  color: var(--color-accent-text);
+  font: 700 12px/1.2 var(--font-ui);
+  pointer-events: none;
+}
+
+/* The carousel's "Add card" tile (Admin view only): a card-sized dashed slot. */
+.cms-add-tile {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  min-height: calc(var(--home-tile-w, 200px) + 48px);
+  padding: 12px;
+  border: 2px dashed color-mix(in srgb, var(--color-accent) 65%, transparent);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-accent-text);
+  font: 700 14px/1.2 var(--font-ui);
+  text-align: center;
+  cursor: pointer;
+}
+.cms-add-tile:hover:not(:disabled) { border-style: solid; background: var(--color-accent-soft); }
+.cms-add-tile:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.cms-add-tile:disabled { cursor: not-allowed; opacity: 0.55; }
+.cms-add-icon { width: 34px; height: 34px; padding: 6px; border: 1.5px solid currentColor; border-radius: 50%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.cms-add-note { color: var(--color-text-secondary); font-size: 12px; font-weight: 600; }
+.cms-add-note:empty { display: none; }
 
 :root[data-mode="light"] .cms-admin-bar { box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); }
 
@@ -517,6 +592,62 @@ select.cms-field-input { cursor: pointer; }
 .cms-publish-status:empty { display: none; }
 .cms-publish-status[data-kind="error"] { color: var(--color-danger); }
 .cms-publish-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+/* ── Manage cards / Version History (the publish dialog's frame) ───────── */
+.cms-manage-dialog, .cms-history-dialog { width: min(640px, 100%); }
+.cms-manage-intro { margin: -4px 0 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.5; }
+.cms-manage-list, .cms-history-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cms-manage-row {
+  display: grid;
+  grid-template-columns: 20px auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background);
+  touch-action: pan-y;
+}
+.cms-manage-row[data-active="true"] { border-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-border)); }
+.cms-manage-row.is-dragging { position: relative; z-index: 2; box-shadow: 0 8px 24px rgb(0 0 0 / 0.35); }
+.cms-manage-row.is-target { border-color: var(--color-accent); }
+.cms-manage-grip { display: grid; place-items: center; width: 20px; height: 32px; color: var(--color-text-secondary); cursor: grab; touch-action: none; }
+.cms-manage-grip.is-empty { cursor: default; }
+.cms-manage-row.is-dragging .cms-manage-grip { cursor: grabbing; }
+.cms-manage-thumb { display: grid; place-items: center; width: 80px; height: 45px; overflow: hidden; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); }
+.cms-manage[data-list="home.carousel"] .cms-manage-thumb { width: 48px; height: 48px; }
+.cms-manage-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.cms-manage-thumb[data-fit="height"] img { object-fit: contain; }
+.cms-manage-thumb-empty { color: var(--color-text-secondary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.cms-manage-text { display: grid; gap: 3px; min-width: 0; }
+.cms-manage-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.cms-manage-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; color: var(--color-text-secondary); font-size: 13px; }
+.cms-manage-active { display: inline-block; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent-text); font-size: 12px; font-weight: 800; }
+.cms-manage-state { padding: 1px 8px; border: 1px solid var(--color-accent); border-radius: var(--radius-pill); color: var(--color-text-primary); font-size: 12px; font-weight: 700; }
+.cms-manage-state[data-status="unsaved"] { border-color: var(--cms-unsaved); }
+.cms-manage-tools { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.cms-manage-tools .cms-drawer-primary, .cms-manage-tools .cms-drawer-secondary, .cms-manage-tools .cms-drawer-ghost { min-height: 36px; padding: 0 14px; font-size: 13px; }
+.cms-manage-icon { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid var(--color-border); border-radius: 50%; background: transparent; color: var(--color-text-primary); cursor: pointer; }
+.cms-manage-icon:hover:not(:disabled) { border-color: var(--color-accent); }
+.cms-manage-icon:disabled { opacity: 0.35; cursor: default; }
+.cms-manage-delete { color: var(--color-danger); }
+.cms-manage-tools .cms-manage-danger { background: var(--color-danger); color: #fff; }
+.cms-manage-ask { flex-basis: 100%; margin: 0 0 4px; color: var(--color-text-primary); font-size: 13px; line-height: 1.45; }
+.cms-manage-empty { padding: 14px; border: 1px dashed var(--color-border); border-radius: 12px; color: var(--color-text-secondary); font-size: 14px; }
+.cms-manage-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.cms-manage-count { margin: 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 600; }
+.cms-manage-undo { min-height: 30px; padding: 0 10px; }
+.cms-history-row { display: grid; gap: 6px; justify-items: start; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-background); }
+.cms-history-head { display: flex; align-items: center; gap: 8px; }
+.cms-history-name { font-size: 15px; color: var(--color-text-primary); }
+.cms-history-meta { margin: 0; color: var(--color-text-secondary); font-size: 13px; }
+.cms-history-changes { display: grid; gap: 2px; margin: 0; padding-left: 18px; color: var(--color-text-secondary); font-size: 13px; }
+.cms-history-row .cms-drawer-secondary { min-height: 36px; font-size: 13px; }
+@media (min-width: 601px) {
+  .cms-manage-row { grid-template-columns: 20px auto minmax(0, 1fr) auto; }
+  .cms-manage-tools { grid-column: auto; justify-content: flex-end; }
+  .cms-manage-row[data-confirm="true"] .cms-manage-tools { grid-column: 2 / -1; justify-content: flex-start; }
+}
 .cms-publish-dialog[data-step="done"] .cms-publish-title { color: var(--color-success); }
 :root[data-mode="light"] .cms-publish-dialog[data-step="done"] .cms-publish-title { color: #1E7A3A; }
 @media (max-width: 600px) {

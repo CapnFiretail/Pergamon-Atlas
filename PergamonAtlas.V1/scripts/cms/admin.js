@@ -23,6 +23,10 @@
 //   User / Guest    no editing controls, published content; Guest also shows
 //                   the guest appearance (PergamonTheme.previewSignedIn).
 //                   Unsaved edits stay in the working copy for Admin view.
+//   collections     "Manage cards" on the Featured / Spotlight cards and the
+//                   carousel, and the carousel's "Add card" tile (manage.js);
+//                   a saved card being edited is previewed in its slot
+//   history         Version History and Restore in the panel (history.js)
 (function () {
   'use strict';
   const cms = window.PergamonCMS || {};
@@ -37,9 +41,13 @@
   const VIEWS = { admin: 'Admin', user: 'User', guest: 'Guest' };
   const TYPE_LABELS = { feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' };
   const STATUS_LABELS = { unsaved: 'unsaved changes', draft: 'saved in draft' };
+  const LIST_LABELS = { 'home.carousel': 'Carousel order', 'home.featured.saved': 'Saved featured cards order', 'home.spotlight.saved': 'Saved spotlight cards order' };
+  const MANAGE_LABELS = { 'home.featured': 'featured cards', 'home.spotlight': 'spotlight cards', 'home.carousel': 'carousel cards' };
   const ICONS = {
     admin: '<path d="M12 3 5 6v5c0 4.4 3 8.3 7 9.5 4-1.2 7-5.1 7-9.5V6z"/><path d="m9 12 2 2 4-4"/>',
-    pencil: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>'
+    pencil: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+    stack: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>'
   };
   const svg = (name, cls) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
   function el(tag, className, text) {
@@ -61,6 +69,10 @@
   let imageStore = null;               // uploaded images (images.js createStore)
   let renewTimer = 0;                  // keeps signed preview URLs fresh
   let publisher = null;                // the Publish Changes dialog
+  let manager = null;                  // Manage cards (manage.js)
+  let history = null;                  // Version History (history.js)
+  let addTile = null;                  // the carousel's "Add card" tile (Admin view)
+  let previewId = null;                // saved card shown in its slot while edited
 
   // ── Server verification ───────────────────────────────────────────────
   async function isAdmin() {
@@ -123,7 +135,9 @@
       loadScript('/scripts/cms/drawer.js', () => !!cms.drawer),
       loadScript('/scripts/cms/image-editor.js', () => !!cms.imageEditor),
       loadScript('/scripts/cms/publish.js', () => !!cms.publish),
-      loadScript('/scripts/cms/publish-dialog.js', () => !!cms.publishDialog)
+      loadScript('/scripts/cms/publish-dialog.js', () => !!cms.publishDialog),
+      loadScript('/scripts/cms/manage.js', () => !!cms.manage),
+      loadScript('/scripts/cms/history.js', () => !!cms.history)
     ]).then(() => {
       if (!verified || ui) return;
       start();
@@ -139,7 +153,7 @@
       fallbackDoc: window.PergamonHomeContent && window.PergamonHomeContent.document,
       api: { getDraft: page => auth.getCmsDraft(page), saveDraft: (page, doc, expected) => auth.saveCmsDraft(page, doc, expected) }
     });
-    workspace.onChange(() => { if (ui) { updateStatus(); decorate(); ui.drawer.refresh(); } });
+    workspace.onChange(() => { if (ui) { updateStatus(); decorate(); ui.drawer.refresh(); if (manager) manager.refresh(); } });
     imageStore = cms.images.createStore({
       base: window.PERGAMON_SUPABASE_URL || '',
       api: {
@@ -163,6 +177,9 @@
     undecorate();
     if (home.holdMotion) home.holdMotion(false);
     if (publisher) { publisher.destroy(); publisher = null; }
+    if (manager) { manager.destroy(); manager = null; }
+    if (history) { history.destroy(); history = null; }
+    addTile = null;
     if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
     if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
     workspace = null; loading = null; imageStore = null;
@@ -251,7 +268,11 @@
     const publishNote = el('p', 'cms-admin-note');
     publishNote.id = 'cms-admin-publish-note';
 
-    panel.append(head, views, stateList, publish, publishNote);
+    const historyButton = el('button', 'cms-admin-history', 'Version History');
+    historyButton.type = 'button';
+    historyButton.disabled = true;
+
+    panel.append(head, views, stateList, publish, publishNote, historyButton);
     document.body.append(panel);
 
     // Shown while previewing as a user or guest: no editing controls, a way back.
@@ -277,6 +298,8 @@
       onEdit: id => { draw(); home.reveal(id); decorate(); },
       onOpen: id => {
         draw();
+        // A saved card is edited where it would appear: shown in its slot.
+        setPreview(cms.content.isSaved(id) ? id : null);
         home.reveal(id);
         decorate();
         setEditing(id);
@@ -284,13 +307,19 @@
       },
       onClose: id => {
         setEditing(null);
+        setPreview(null);
         // The page widens again and the carousel may redraw its tiles: focus
-        // the card's pencil once that has happened.
+        // the card's pencil once that has happened (for a saved card, its
+        // slot's Manage cards button, which lists it).
         requestAnimationFrame(() => requestAnimationFrame(() => {
           if (id) home.reveal(id);
           decorate();
-          const pencil = root.querySelector(`.cms-edit-pencil[data-cms-edit="${CSS.escape(id || '')}"]`);
-          if (pencil) pencil.focus();
+          const slot = cms.content.isSaved(id) ? cms.content.slotOf(id) : null;
+          const target = slot
+            ? root.querySelector(`.cms-manage-button[data-cms-manage="${CSS.escape(slot)}"]`)
+            : root.querySelector(`.cms-edit-pencil[data-cms-edit="${CSS.escape(id || '')}"]`) ||
+              (cms.content.listOf(id) === cms.content.CAROUSEL ? root.querySelector('.cms-manage-button[data-cms-manage="home.carousel"]') : null);
+          if (target) target.focus();
         }));
       },
       onForbidden: () => verify()
@@ -325,10 +354,61 @@
       publisher.open();
     });
 
+    manager = cms.manage.create({
+      workspace,
+      content: cms.content,
+      home,
+      games: liveGames(),
+      cardLabel: id => cardTitle(id),
+      openEditor: id => drawer.open(id),
+      onChanged: () => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } },
+      returnFocus: () => { if (ui) ui.button.focus(); }
+    });
+
+    history = cms.history.create({
+      workspace,
+      content: cms.content,
+      publish: cms.publish,
+      images: cms.images,
+      api: {
+        list: (page, limit) => auth.listCmsVersions(page, limit),
+        restore: (page, id, expected) => auth.restoreCmsVersion(page, id, expected)
+      },
+      // The restored version is live: this browser's cache, the workspace's
+      // published version and every view follow it (local edits are kept).
+      onRestored: () => {
+        Promise.all([cms.loader.refresh().catch(() => {}), workspace.load().catch(() => {})])
+          .then(() => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } });
+      },
+      onForbidden: () => verify(),
+      returnFocus: () => { if (ui) ui.button.focus(); }
+    });
+    historyButton.addEventListener('click', () => {
+      if (historyButton.disabled || !history) return;
+      if (ui && ui.drawer.isOpen() && ui.drawer.busy()) return;
+      setPanel(false);
+      history.open();
+    });
+
     button.addEventListener('click', () => setPanel(panel.hidden));
     toggle.addEventListener('click', () => setActive(!state.active));
 
-    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer, publish, publishNote };
+    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer, publish, publishNote, historyButton };
+  }
+
+  // A saved card shown in its slot (null: the active cards), in Admin view only.
+  function setPreview(id) {
+    if (previewId === id) return;
+    previewId = id && home.previewSaved ? (home.previewSaved(id) ? id : null) : null;
+    if (!previewId && home.previewSaved) home.previewSaved(null);
+    root.querySelectorAll('.cms-preview-badge').forEach(n => n.remove());
+    if (previewId) {
+      const host = home.element(previewId);
+      if (host) {
+        const badge = el('span', 'cms-preview-badge', 'Preview: saved card, not active');
+        host.append(badge);
+      }
+    }
   }
 
   // publish-media's answer (supabase-js functions.invoke) → { ok } | { error: { status, code, message } }.
@@ -478,10 +558,12 @@
     const pub = loaded ? workspace.published() : null;
     const draft = loaded ? workspace.draft() : null;
     const unsaved = loaded ? workspace.unsavedCards() : [];
+    const unsavedCards = unsaved.filter(id => cms.content.cardType(id)).length;
     const live = cms.loader.published();
     ui.stateRows.published.textContent = pub ? `Version ${pub.id}` : live ? `Version ${live.version}` : 'Built-in content';
     ui.stateRows.draft.textContent = !loaded ? (loading ? 'Loading…' : '—') : draft ? `Saved at ${time(draft.savedAt)}` : 'None';
-    ui.stateRows.unsaved.textContent = !loaded ? '—' : unsaved.length ? `${unsaved.length} card${unsaved.length === 1 ? '' : 's'}` : 'None';
+    ui.stateRows.unsaved.textContent = !loaded ? '—' : unsavedCards ? `${unsavedCards} card${unsavedCards === 1 ? '' : 's'}` : unsaved.length ? 'Card order' : 'None';
+    ui.historyButton.disabled = !state.active;
     ui.stateRows.unsaved.parentElement.dataset.on = String(unsaved.length > 0);
     ui.stateRows.draft.parentElement.dataset.on = String(!!draft);
     ui.button.classList.toggle('has-unsaved', unsaved.length > 0);
@@ -496,11 +578,18 @@
   }
 
   // ── Card indicators ───────────────────────────────────────────────────
+  // A component's name in lists and messages: its title; a deleted card's
+  // last saved title; a list's name.
   function cardTitle(id) {
-    const c = workspace && workspace.isLoaded() ? workspace.component(id) : null;
+    if (LIST_LABELS[id]) return LIST_LABELS[id];
+    const loaded = workspace && workspace.isLoaded();
+    const c = loaded ? workspace.component(id) : null;
     if (c && c.title) return c.title;
+    const saved = loaded ? workspace.savedComponent(id) : null;
+    if (saved && saved.title) return `${saved.title} (deleted)`;
     const m = home.model();
-    const item = [m.featured, m.spotlight].concat(m.carousel || []).filter(Boolean).find(x => x.id === id);
+    const all = [m.featured, m.spotlight].concat(m.carousel || [], ...Object.values(m.saved || {}));
+    const item = all.filter(Boolean).find(x => x.id === id);
     return (item && item.title) || id;
   }
 
@@ -539,7 +628,32 @@
       if (pencil.getAttribute('aria-expanded') !== expanded) pencil.setAttribute('aria-expanded', expanded);
       const label = `Edit ${TYPE_LABELS[type].toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
       if (pencil.getAttribute('aria-label') !== label) pencil.setAttribute('aria-label', label);
+      // Featured / Spotlight: Manage cards beside the pencil.
+      if (cms.content.slotOf(id) === id) manageButton(host, id, pencil);
     });
+    const carousel = root.querySelector('.home-carousel');
+    if (carousel) manageButton(carousel, cms.content.CAROUSEL, null);
+    // The carousel's "Add card" tile follows the cards while Admin view holds the row.
+    if (!addTile) {
+      addTile = el('div', 'cms-add-tile-item');
+      const b = el('button', 'cms-add-tile');
+      b.type = 'button';
+      b.innerHTML = svg('plus', 'cms-add-icon');
+      b.append(el('span', 'cms-add-label', 'Add card'), el('span', 'cms-add-note'));
+      b.addEventListener('click', () => {
+        if (!ui || !workspace || !workspace.isLoaded() || !manager) return;
+        manager.addCarouselCard();
+      });
+      addTile.append(b);
+      if (home.setCarouselTail) home.setCarouselTail(addTile);
+    }
+    const n = loaded ? workspace.order(cms.content.CAROUSEL).length : 0;
+    const full = n >= cms.content.LIMITS.carousel;
+    const addButton = addTile.firstChild;
+    addButton.disabled = !loaded || full;
+    addButton.lastChild.textContent = full ? `Limit of ${cms.content.LIMITS.carousel} cards reached` : '';
+    const addLabel = full ? `Add carousel card (limit of ${cms.content.LIMITS.carousel} reached)` : 'Add carousel card';
+    if (addButton.getAttribute('aria-label') !== addLabel) addButton.setAttribute('aria-label', addLabel);
     // Carousel redraws (filters, sections, content) replace tiles: decorate whatever appears.
     if (!observer) {
       let queued = false;
@@ -552,10 +666,40 @@
     }
   }
 
+  // "Manage cards" for a slot or the carousel (beside the pencil, or on the
+  // carousel's corner): placed absolutely, so no box changes size.
+  function manageButton(host, which, after) {
+    let b = host.querySelector(':scope > .cms-manage-button');
+    if (!b) {
+      b = el('button', 'cms-manage-button');
+      b.type = 'button';
+      b.dataset.cmsManage = which;
+      b.setAttribute('aria-haspopup', 'dialog');
+      b.innerHTML = svg('stack', 'cms-edit-icon');
+      b.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!ui || !manager) return;
+        const open = () => manager.open(which, b);
+        if (!workspace.isLoaded()) ensureLoaded().then(open, () => {});
+        else open();
+      });
+      host.classList.add('cms-manageable');
+      if (after) after.after(b); else host.append(b);
+    }
+    const loaded = workspace && workspace.isLoaded();
+    const n = loaded ? workspace.order(which === cms.content.CAROUSEL ? which : cms.content.savedList(which)).length : null;
+    const label = `Manage ${MANAGE_LABELS[which]}` + (n === null ? '' : which === cms.content.CAROUSEL ? ` (${n})` : ` (${n} saved)`);
+    if (b.getAttribute('aria-label') !== label) b.setAttribute('aria-label', label);
+  }
+
   function undecorate() {
     if (observer) { observer.disconnect(); observer = null; }
-    root.querySelectorAll('.cms-edit-pencil, .cms-edit-frame').forEach(n => n.remove());
-    root.querySelectorAll('.cms-editable, .cms-editing').forEach(n => n.classList.remove('cms-editable', 'cms-editing'));
+    setPreview(null);
+    if (addTile && home.setCarouselTail) home.setCarouselTail(null);
+    addTile = null;
+    root.querySelectorAll('.cms-edit-pencil, .cms-edit-frame, .cms-manage-button').forEach(n => n.remove());
+    root.querySelectorAll('.cms-editable, .cms-editing, .cms-manageable').forEach(n => n.classList.remove('cms-editable', 'cms-editing', 'cms-manageable'));
   }
 
   function setEditing(id) {

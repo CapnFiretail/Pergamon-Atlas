@@ -2,22 +2,57 @@
 // docs/cms/ARCHITECTURE.md) -> the render model scripts/home.js draws.
 //
 // The document keeps positions as numbers (percent / px); this is the only
-// place they become CSS. Card identity is the component id
-// (home.featured, home.spotlight, home.carousel.<id>); card type comes from
-// the id's pattern, never from game names. Works in the browser
-// (window.PergamonCMS.content) and in Node (module.exports) for tests.
+// place they become CSS. Card identity is the component id; card type comes
+// from the id's pattern, never from game names:
+//   home.featured, home.spotlight            the active cards (what visitors see)
+//   home.featured.saved.<key>, …spotlight…   saved cards, listed in order by
+//                                            home.featured.saved / home.spotlight.saved
+//   home.carousel.<key>                      carousel cards, in home.carousel's order
+// Works in the browser (window.PergamonCMS.content) and in Node
+// (module.exports) for tests.
 (function (root) {
   'use strict';
 
   const SCHEMA = 1;
   const CAROUSEL = 'home.carousel';
+  const SLOTS = ['home.featured', 'home.spotlight'];
   const CARD_TYPES = { 'home.featured': 'feature', 'home.spotlight': 'spotlight' };
+  // Collection sizes. The server (validate_content, 0008 / 0012) enforces
+  // the same numbers.
+  const LIMITS = { saved: 12, carousel: 24 };
+  const KEY = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+  // A slot's saved-card list, and one saved card's id.
+  const savedList = slot => slot + '.saved';
+  const savedId = (slot, key) => slot + '.saved.' + key;
+  // The slot a saved card belongs to (home.featured.saved.x → home.featured).
+  function slotOf(id) {
+    if (typeof id !== 'string') return null;
+    return SLOTS.find(s => id === s || (id.indexOf(s + '.saved.') === 0 && KEY.test(id.slice(s.length + 7)))) || null;
+  }
+  const isSaved = id => !!slotOf(id) && id.indexOf('.saved.') > 0;
+  // The ordered list a card is part of (carousel or saved), or null for an active card.
+  function listOf(id) {
+    if (isSaved(id)) return savedList(slotOf(id));
+    if (typeof id === 'string' && id.indexOf(CAROUSEL + '.') === 0) return CAROUSEL;
+    return null;
+  }
 
   // Card type for a component id, or null if it isn't a card.
   function cardType(id) {
     if (CARD_TYPES[id]) return CARD_TYPES[id];
+    if (isSaved(id)) return CARD_TYPES[slotOf(id)];
     if (typeof id === 'string' && id.indexOf(CAROUSEL + '.') === 0) return 'tile';
     return null;
+  }
+
+  // A new card key from its title, unique among `taken` (keys or ids ending in them).
+  function newKey(title, taken) {
+    const used = new Set((taken || []).map(t => String(t).split('.').pop()));
+    const base = String(title || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 34).replace(/-+$/, '') || 'card';
+    let key = base, n = 2;
+    while (used.has(key)) key = `${base}-${n++}`;
+    return key;
   }
 
   const isNum = n => typeof n === 'number' && isFinite(n);
@@ -84,19 +119,28 @@
     return model;
   }
 
-  // Document -> { featured, spotlight, carousel: [tile models in order] }.
+  // Keys listed by an ordered component ({ order: [...] }), [] when absent.
+  const orderOf = (comps, list) => (comps[list] && Array.isArray(comps[list].order) ? comps[list].order : []);
+
+  // Document -> { featured, spotlight, carousel: [tile models in order],
+  // saved: { 'home.featured': [models], 'home.spotlight': [models] } }.
+  // Visitors' documents have no saved cards (the server leaves them out).
   // A malformed or unknown-schema document returns null so the caller can
   // fall back to the static copy.
   function toModel(doc, ctx) {
     if (!doc || doc.schema !== SCHEMA || !doc.components || typeof doc.components !== 'object') return null;
     const comps = doc.components;
-    const order = (comps[CAROUSEL] && Array.isArray(comps[CAROUSEL].order)) ? comps[CAROUSEL].order : [];
+    const saved = {};
+    SLOTS.forEach(slot => {
+      saved[slot] = orderOf(comps, savedList(slot)).map(key => cardModel(savedId(slot, key), comps[savedId(slot, key)], ctx)).filter(Boolean);
+    });
     return {
       featured: cardModel('home.featured', comps['home.featured'], ctx),
       spotlight: cardModel('home.spotlight', comps['home.spotlight'], ctx),
-      carousel: order
+      carousel: orderOf(comps, CAROUSEL)
         .map(cardId => cardModel(CAROUSEL + '.' + cardId, comps[CAROUSEL + '.' + cardId], ctx))
-        .filter(Boolean)
+        .filter(Boolean),
+      saved: saved
     };
   }
 
@@ -107,7 +151,7 @@
   const INTERNAL_PATH = /^\/(?!\/)[a-z0-9\/_-]*$/i;         // site path: no scheme, no //, no query
   const STATIC_IMAGE = /^\/images\/featured\/[a-z0-9][a-z0-9-]{0,63}\.(webp|png|jpg)$/;
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-  const CARD_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
+  const CARD_ID = KEY;
   const isText = (s, max) => typeof s === 'string' && s.length > 0 && s.length <= max && !/[<>]/.test(s);
   function validArt(a) {
     if (a === undefined || a === null) return true;
@@ -126,8 +170,16 @@
     const comps = doc.components;
     if (!validCard(comps['home.featured'], false) || !validCard(comps['home.spotlight'], false)) return false;
     const carousel = comps[CAROUSEL];
-    if (!carousel || !Array.isArray(carousel.order) || carousel.order.length > 24) return false;
-    return carousel.order.every(id => typeof id === 'string' && CARD_ID.test(id) && validCard(comps[CAROUSEL + '.' + id], true));
+    if (!carousel || !Array.isArray(carousel.order) || carousel.order.length > LIMITS.carousel) return false;
+    if (!carousel.order.every(id => typeof id === 'string' && CARD_ID.test(id) && validCard(comps[CAROUSEL + '.' + id], true))) return false;
+    // Saved cards (administrators' documents only): a list per slot, a card per listed key.
+    return SLOTS.every(slot => {
+      const list = comps[savedList(slot)];
+      if (list === undefined) return true;
+      return !!list && Array.isArray(list.order) && list.order.length <= LIMITS.saved &&
+        new Set(list.order).size === list.order.length &&
+        list.order.every(key => typeof key === 'string' && CARD_ID.test(key) && validCard(comps[savedId(slot, key)], false));
+    });
   }
 
   // ── Editable fields (the card editor's declarative schema) ──────────────
@@ -195,7 +247,12 @@
     return ids;
   }
 
-  const api = { SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, CATEGORIES: CATEGORIES, cardType: cardType, artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument, cardFields: cardFields, checkField: checkField };
+  const api = {
+    SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, SLOTS: SLOTS, LIMITS: LIMITS, CATEGORIES: CATEGORIES,
+    cardType: cardType, slotOf: slotOf, isSaved: isSaved, listOf: listOf, savedList: savedList, savedId: savedId, newKey: newKey,
+    artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument,
+    cardFields: cardFields, checkField: checkField
+  };
   root.PergamonCMS = root.PergamonCMS || {};
   root.PergamonCMS.content = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

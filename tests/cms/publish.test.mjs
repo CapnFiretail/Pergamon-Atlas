@@ -61,7 +61,8 @@ test('summary: desktop framing, description, removed image; identical draft is e
   assert.ok(same.empty && !same.cards.length);
   const first = publish.summarize(null, DOC, content);
   assert.equal(first.cards.length, Object.keys(DOC.components).filter(k => content.cardType(k)).length, 'nothing live yet: every card is new');
-  assert.deepEqual(first.other, ['Carousel order']);
+  assert.ok(first.cards.every(c => c.changes.join() === 'Added'), 'reported as added');
+  assert.deepEqual(first.other, [], 'adding cards alone is not a reorder');
 });
 
 // ── Sequence ───────────────────────────────────────────────────────────

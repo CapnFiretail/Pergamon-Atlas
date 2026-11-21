@@ -341,12 +341,19 @@
       nextSection.disabled = sectionIndex === sections.length - 1;
     }
 
+    // Outside hold (Admin Mode editing): the row stands still without copies,
+    // and an "add" tile from Admin Mode (setTail) follows the cards of
+    // document-driven sections.
+    let held = false;
+    let tail = null;
+
     // Draw the current category's cards. `keep` holds the row's position
     // (a CMS redraw); otherwise it starts again from the first card.
     function renderCards(keep) {
       const sec = current();
       shown = filtered();
-      if (!shown.length) {
+      const extras = held && tail && sec.component ? [tail] : [];
+      if (!shown.length && !extras.length) {
         const message = sec.items.length ? sec.emptyCategory : sec.emptyMessage;
         const empty = el('div', 'home-track-empty');
         if (!sec.items.length) empty.append(el('span', 'home-track-tag', 'Coming Soon'));
@@ -360,7 +367,7 @@
         wrap.setAttribute('role', 'listitem');
         wrap.append(tile(item, entry));
         return wrap;
-      }), keep);
+      }), keep, extras);
       status.textContent = `${sec.title}: ${shown.length} ${shown.length === 1 ? 'card' : 'cards'}`;
     }
 
@@ -409,18 +416,26 @@
     }
 
     // Stop or restart the gliding for an outside reason (Admin Mode editing).
-    // Stopping shows the real cards (not their copies) from the first one;
-    // restarting redraws the copies from the cards as they are now.
-    let held = false;
+    // Stopping shows the real cards (not their copies) from the first one,
+    // as a fixed row the arrows scroll; restarting redraws the copies from
+    // the cards as they are now.
     function hold(on) {
       on = !!on;
       if (on === held) return;
       held = on;
       glide.hold('outside', on);
+      glide.fix(on);
       renderCards(!on);
     }
 
-    return { element: section, start, setItems, reveal, hold };
+    // Admin Mode's tile after the cards (null removes it). Only drawn while held.
+    function setTail(node) {
+      if (node) { node.classList.add('home-track-item'); node.setAttribute('role', 'listitem'); }
+      tail = node;
+      if (held) renderCards(true);
+    }
+
+    return { element: section, start, setItems, reveal, hold, setTail, category: () => view.category };
   }
 
   // ── Document → model ──────────────────────────────────────────────────
@@ -474,6 +489,20 @@
   // addressed by component id; the featured/spotlight slots exist from the
   // first render, so a document can change their content but not add slots.
   let artCtx = cachedModel ? Object.assign({}, staticCtx, { media: cached.media }) : staticCtx;
+  // A saved card drawn in its slot instead of the active one, while Admin
+  // Mode edits it: { slot, id }. Visitors never have one.
+  let previewing = null;
+  const slotKey = slot => (slot === 'home.spotlight' ? 'spotlight' : 'featured');
+  const savedModel = id => {
+    const slot = cms.slotOf(id);
+    return slot && model.saved ? (model.saved[slot] || []).find(c => c.id === id) || null : null;
+  };
+  // The slot (home.featured / home.spotlight) that shows card `id` now, or null.
+  const slotShowing = id => (cards[id] ? id : previewing && previewing.id === id && cards[previewing.slot] ? previewing.slot : null);
+  function drawSlot(slot) {
+    const shownItem = (previewing && previewing.slot === slot && savedModel(previewing.id)) || model[slotKey(slot)];
+    if (cards[slot] && shownItem) cards[slot].apply(shownItem);
+  }
   window.PergamonHome = {
     render(doc, extra) {
       const nextCtx = Object.assign({}, staticCtx, extra || {});
@@ -481,18 +510,32 @@
       if (!next) return false;
       model = next;
       artCtx = nextCtx;
-      if (cards['home.featured'] && next.featured) cards['home.featured'].apply(next.featured);
-      if (cards['home.spotlight'] && next.spotlight) cards['home.spotlight'].apply(next.spotlight);
+      if (previewing && !savedModel(previewing.id)) previewing = null;
+      drawSlot('home.featured');
+      drawSlot('home.spotlight');
       if (explore) explore.setItems(next.carousel);
       return true;
     },
     model: () => model,
     cardIds: () => Object.keys(cards).concat(model.carousel.map(c => c.id)),
-    element: id => (cards[id] ? cards[id].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`)),
+    element: id => {
+      const slot = slotShowing(id);
+      return slot ? cards[slot].element : root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`);
+    },
     // Make sure a card is drawn (carousel cards may be out of view or filtered out).
-    reveal: id => (cards[id] ? true : !!(explore && explore.reveal(id))),
+    reveal: id => (slotShowing(id) ? true : !!(explore && explore.reveal(id))),
     // Admin Mode editing: hold the carousel still (true) or let it glide again.
     holdMotion: on => { if (explore) explore.hold(on); },
+    // Admin Mode: show a saved card in its slot (null: the active cards again).
+    previewSaved(id) {
+      const was = previewing;
+      previewing = id && savedModel(id) ? { slot: cms.slotOf(id), id } : null;
+      [was && was.slot, previewing && previewing.slot].filter(Boolean).forEach(drawSlot);
+      return !!previewing;
+    },
+    // Admin Mode: a tile after the carousel cards while it is held (null removes it).
+    setCarouselTail: node => { if (explore) explore.setTail(node); },
+    carouselCategory: () => (explore ? explore.category() : ''),
     // Card editor (Admin Mode). Art from a document → how this page draws it,
     // with the images of the last render.
     artModel: a => cms.artModel(a, artCtx),
@@ -500,7 +543,8 @@
     // without redrawing the page. False if the card isn't on the page.
     previewArt(id, a) {
       const m = cms.artModel(a, artCtx);
-      if (cards[id]) { cards[id].applyArt(m); return true; }
+      const slot = slotShowing(id);
+      if (slot) { cards[slot].applyArt(m); return true; }
       const card = root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`);
       if (!card) return false;
       retileArt(card, m);
@@ -509,10 +553,11 @@
     // A detached copy of a card, drawn like the page draws it (the editor's
     // framing preview): { element, art(a) } where art(a) redraws its artwork.
     sample(id) {
-      const item = cards[id] ? model[id === 'home.spotlight' ? 'spotlight' : 'featured'] : model.carousel.find(c => c.id === id);
+      const slot = cards[id] ? id : cms.slotOf(id);
+      const item = cards[id] ? model[slotKey(id)] : savedModel(id) || model.carousel.find(c => c.id === id);
       if (!item) return null;
-      if (cards[id]) {
-        const copy = featureCard(id === 'home.spotlight' ? 'spotlight' : 'featured');
+      if (slot) {
+        const copy = featureCard(slot === 'home.spotlight' ? 'spotlight' : 'featured');
         copy.apply(item);
         return { element: copy.element, art: a => copy.applyArt(cms.artModel(a, artCtx)) };
       }

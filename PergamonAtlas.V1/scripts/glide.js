@@ -3,12 +3,17 @@
 // sections can reuse it:
 //
 //   const g = PergamonGlide.create(viewport, { prev, next, hoverArea, onStep, prepareCopy });
-//   g.setItems(elements, keep)  show these card elements (keep: stay at the
-//                               current card instead of the first)
+//   g.setItems(elements, keep, extras)  show these card elements (keep: stay
+//                               at the current card instead of the first;
+//                               extras: elements after the cards, such as an
+//                               "add" tile, shown only while fixed, never copied)
 //   g.setEmpty(node)            no cards: show this message instead
 //   g.step(±1)                  move one card position (the arrows call this)
 //   g.show(element)             bring a card fully into view (no animation)
 //   g.hold(reason, on)          pause/resume for an outside reason
+//   g.fix(on)                   fixed row: no copies and no gliding; the arrows
+//                               scroll between its ends (editing, where
+//                               targets must not move or repeat)
 //   g.loops()                   whether the row moves
 //
 // Seamless loop without duplicate controls: the strip is the cards followed
@@ -46,6 +51,10 @@
     viewport.replaceChildren(strip);
 
     let items = [];              // the real card wrappers
+    let extras = [];             // shown after them while fixed (never copied)
+    let fixed = false;           // fix(true): no copies, no gliding
+    let scrollable = false;      // fixed and wider than the view
+    let maxOffset = 0;           // fixed: the furthest the row can scroll
     let looping = false;
     let step = 0;                // card width + gap
     let setWidth = 0;            // one full set of cards (items.length * step)
@@ -79,35 +88,40 @@
     // fractional). A redraw that keeps its place carries on moving smoothly.
     function build(position, keep) {
       if (strip.parentNode !== viewport) viewport.replaceChildren(strip);
-      strip.replaceChildren(...items);
+      const shown = fixed ? items.concat(extras) : items;
+      strip.replaceChildren(...shown);
       const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
-      step = items.length ? items[0].getBoundingClientRect().width + gap : 0;
+      step = shown.length ? shown[0].getBoundingClientRect().width + gap : 0;
       setWidth = items.length * step;
       const view = viewport.clientWidth;
-      looping = items.length > 1 && step > 0 && (setWidth - gap > view + 1 || items.length >= MIN_LOOP);
+      looping = !fixed && items.length > 1 && step > 0 && (setWidth - gap > view + 1 || items.length >= MIN_LOOP);
       if (looping) {
         // Enough copies to fill the row from any point in the first set.
         const sets = Math.max(1, Math.ceil(view / setWidth));
         for (let s = 0; s < sets; s++) strip.append(...items.map(copyOf));
       }
+      maxOffset = fixed ? Math.max(0, shown.length * step - gap - view) : 0;
+      scrollable = fixed && maxOffset > 1;
       pending = 0;
-      if (!keep) speed = 0;      // a new row starts still and eases up
-      offset = looping ? mod((position || 0) * step, setWidth) : 0;
+      if (!keep || fixed) speed = 0;      // a new row starts still and eases up
+      offset = looping ? mod((position || 0) * step, setWidth) : scrollable ? clamp((position || 0) * step) : 0;
       draw();
       viewport.classList.toggle('is-looping', looping);
-      if (opts.prev) opts.prev.disabled = !looping;
-      if (opts.next) opts.next.disabled = !looping;
+      if (opts.prev) opts.prev.disabled = !(looping || scrollable);
+      if (opts.next) opts.next.disabled = !(looping || scrollable);
       schedule();
     }
 
-    const position = () => (looping && step ? (offset + pending) / step : 0);
+    const moves = () => looping || scrollable;
+    const clamp = v => Math.max(0, Math.min(maxOffset, v));
+    const position = () => (moves() && step ? (offset + pending) / step : 0);
 
-    function wrap() { if (looping && setWidth) offset = mod(offset, setWidth); }
-    function draw() { strip.style.transform = looping ? `translate3d(${-offset}px, 0, 0)` : ''; }
+    function wrap() { if (looping && setWidth) offset = mod(offset, setWidth); else if (scrollable) offset = clamp(offset); }
+    function draw() { strip.style.transform = moves() && offset ? `translate3d(${-offset}px, 0, 0)` : ''; }
 
     // ── Motion ──────────────────────────────────────────────────────────
-    const active = () => looping && inView && !document.hidden;
-    const autoAllowed = () => active() && !holds.size && !reduced();
+    const active = () => moves() && inView && !document.hidden;
+    const autoAllowed = () => looping && active() && !holds.size && !reduced();
 
     function schedule() {
       const needed = active() && (pending !== 0 || autoAllowed() || speed > 0);
@@ -140,6 +154,7 @@
     // move stops the gliding at once, so it lands exactly on a card edge.
     function travel(delta) {
       speed = 0;
+      if (scrollable) delta = clamp(offset + pending + delta) - (offset + pending);
       if (!delta) return;
       if (reduced()) { offset += delta; pending = 0; wrap(); draw(); return; }
       pending += delta;
@@ -157,9 +172,10 @@
     }
 
     function stepBy(dir) {
-      if (!looping) return;
+      if (!moves()) return;
       travel(toEdge(dir));
-      if (opts.onStep) opts.onStep(mod(Math.round((offset + pending) / step), items.length), items.length);
+      const at = Math.round((offset + pending) / step);
+      if (opts.onStep && items.length) opts.onStep(looping ? mod(at, items.length) : Math.min(at, items.length - 1), items.length);
     }
 
     // ── Holds: hover, focus, touch, outside ─────────────────────────────
@@ -184,7 +200,7 @@
     // Keyboard: a focused card is brought into view and holds the row still.
     viewport.addEventListener('focusin', e => {
       hold('focus', true);
-      const item = items.find(i => i.contains(e.target));
+      const item = items.concat(fixed ? extras : []).find(i => i.contains(e.target));
       if (item) reveal(item, true);
     });
     viewport.addEventListener('focusout', e => {
@@ -198,7 +214,7 @@
     let drag = null;
     let draggedAt = 0;
     viewport.addEventListener('pointerdown', e => {
-      if (!looping || e.pointerType === 'mouse' || !e.isPrimary) return;
+      if (!moves() || e.pointerType === 'mouse' || !e.isPrimary) return;
       drag = { id: e.pointerId, x: e.clientX, y: e.clientY, start: offset + pending, moved: false };
       pending = 0;
     });
@@ -254,22 +270,27 @@
       new ResizeObserver(() => {
         if (viewport.clientWidth === width) return;
         width = viewport.clientWidth;
-        if (items.length) build(position(), true);
+        if (items.length || (fixed && extras.length)) build(position(), true);
       }).observe(viewport);
     }
 
-    // Bring a real card fully into view (instant, or animated for keyboard).
+    // Bring a real card (or, fixed, an extra) fully into view (instant, or
+    // animated for keyboard).
     function reveal(item, animate) {
-      const i = items.indexOf(item);
-      if (i < 0 || !looping) return;
+      const i = items.concat(fixed ? extras : []).indexOf(item);
+      if (i < 0 || !moves()) return;
       const left = i * step;
       const now = offset + pending;
       const view = viewport.clientWidth;
       // Already fully visible (as the card itself, not a copy)?
       if (left >= now && left + step <= now + view + 1) return;
       let delta = left - now;
-      if (delta > setWidth / 2) delta -= setWidth;
-      if (delta < -setWidth / 2) delta += setWidth;
+      if (looping) {
+        if (delta > setWidth / 2) delta -= setWidth;
+        if (delta < -setWidth / 2) delta += setWidth;
+      } else if (delta > 0) {
+        delta = left + step - (parseFloat(getComputedStyle(strip).columnGap) || 0) - view - now;   // right edge in view
+      }
       if (animate) travel(delta);
       else { speed = 0; offset = now + delta; pending = 0; wrap(); draw(); }
     }
@@ -278,14 +299,17 @@
     if (opts.next) opts.next.addEventListener('click', () => stepBy(1));
 
     return {
-      setItems(list, keep) {
+      setItems(list, keep, more) {
         const at = keep ? position() : 0;
         items = list.slice();
+        extras = (more || []).slice();
         build(at, keep);
       },
       setEmpty(node) {
         items = [];
+        extras = [];
         looping = false;
+        scrollable = false;
         pending = 0;
         viewport.classList.remove('is-looping');
         viewport.replaceChildren(node);
@@ -296,6 +320,8 @@
       step: stepBy,
       show: item => reveal(item, false),
       hold,
+      // Callers redraw (setItems) after changing this.
+      fix(on) { fixed = !!on; },
       loops: () => looping,
       element: strip
     };
