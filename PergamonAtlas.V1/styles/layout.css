@@ -291,6 +291,30 @@
   .pa-brand-name { display: none; }
 }
 
+/* Administrators' extra header button: the Handbook's book icon
+   (scripts/handbook/entry.js; only present for verified administrators).
+   As with Admin Mode's button (cms-admin.css), smaller buttons keep the
+   header on screen, and the name gives way when it no longer fits. */
+@media (max-width: 600px) {
+  .pa-capsule:has(.pa-handbook-link) { gap: 0; padding: 4px; }
+  .pa-actions:has(.pa-handbook-link) { gap: 0; }
+  .pa-actions:has(.pa-handbook-link) .pa-icon-button { width: 32px; height: 32px; }
+  .pa-actions:has(.pa-handbook-link) .pa-icon { width: 20px; height: 20px; }
+  .pa-header:has(.pa-handbook-link) .pa-brand { flex-shrink: 1; }
+  .pa-header:has(.pa-handbook-link) .pa-brand-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 449px) {
+  /* Book icon and Admin Mode together: logo only, rather than a cut-off name. */
+  .pa-header:has(.pa-handbook-link):has(.cms-admin-button) .pa-brand-name { display: none; }
+}
+@media (max-width: 420px) {
+  .pa-header:has(.pa-handbook-link) .pa-brand { gap: 8px; }
+  .pa-header:has(.pa-handbook-link) .pa-brand-name { font-size: 15px; }
+}
+@media (max-width: 374px) {
+  .pa-header:has(.pa-handbook-link) .pa-brand-name { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pa-ready .pa-sidebar, .pa-ready .pa-layout, .pa-ready #footer-placeholder, .pa-backdrop, .pa-sidebar-toggle .pa-icon { transition: none; }
 }

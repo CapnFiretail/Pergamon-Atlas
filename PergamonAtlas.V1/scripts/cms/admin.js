@@ -213,7 +213,9 @@
     button.setAttribute('aria-controls', 'cms-admin-panel');
     button.setAttribute('aria-expanded', 'false');
     button.innerHTML = svg('admin', 'pa-icon') + '<span class="cms-admin-dot" aria-hidden="true"></span>';
-    if (actions) actions.prepend(button);
+    // First in the header's actions, after the Handbook's book icon if it is there.
+    const book = actions && actions.querySelector('.pa-handbook-link');
+    if (book) book.after(button); else if (actions) actions.prepend(button);
 
     const panel = el('div', 'cms-admin-panel');
     panel.id = 'cms-admin-panel';
