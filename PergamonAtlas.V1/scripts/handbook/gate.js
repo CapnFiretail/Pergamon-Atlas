@@ -16,7 +16,8 @@
     { js: '/scripts/handbook/handbook.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.app) },
     { js: '/scripts/handbook/typography-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.typographyPage) },
     { js: '/scripts/handbook/vision-content.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.vision) },
-    { js: '/scripts/handbook/vision-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.visionPage) }
+    { js: '/scripts/handbook/vision-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.visionPage) },
+    { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) }
   ];
   let loading = null;
   let shown = null;                    // 'handbook' | 'denied'

@@ -124,6 +124,14 @@
       else c[field] = clone(value);
       persist(); emit();
     }
+    // A whole component at once (site-wide settings such as site.sidebar,
+    // which belong to no list); undefined removes it.
+    function setComponent(id, value) {
+      if (!working || same(comp(working, id), value)) return;
+      if (value === undefined) delete working.components[id];
+      else working.components[id] = clone(value);
+      persist(); emit();
+    }
     // Back to the saved state: an edited card gets its content back, a card
     // added here is removed, a deleted card returns to its place, a list
     // gets its saved order back (keeping cards added or deleted since).
@@ -136,9 +144,9 @@
         else working.components[cardId] = clone(original);
         tidy(working);
       } else if (original === undefined) {
-        if (!isList(list) || comp(working, cardId) === undefined) return;
+        if (comp(working, cardId) === undefined) return;
         delete working.components[cardId];
-        tidy(working);
+        if (isList(list)) tidy(working);
       } else {
         working.components[cardId] = clone(original);
         if (isList(list) && orderIn(working, list).indexOf(keyOf(cardId)) < 0) {
@@ -308,7 +316,7 @@
     }
 
     return {
-      load, setField, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, markPublished, clearLocal,
+      load, setField, setComponent, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, markPublished, clearLocal,
       addCard, removeCard, moveCard, activate,
       order: list => orderIn(working, list).slice(),
       isLoaded: () => loaded,

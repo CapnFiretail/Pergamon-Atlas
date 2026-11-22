@@ -1,43 +1,60 @@
-// The Atlas Handbook (H1): an internal, read-only design-system reference for
+// The Atlas Handbook: an internal, read-only design-system catalogue for
 // administrators. Loaded by gate.js only after the server confirms an admin.
 //
-//   SECTIONS     the Handbook's navigation, one tree for every section;
-//                a section is 'ready' when a renderer is registered for it
-//   routes       #/<section>[/<child>] (one page, no server routes needed);
-//                anything after a registered path is passed on as ctx.rest
-//                (e.g. #/vision/north-star), and a renderer with
-//                navigate(rest) handles changes to it without a re-render
-//   renderers    PergamonHandbook.app.register(path, { title, render(el, ctx) })
-//                e.g. typography-page.js registers 'foundations/typography'
+//   GROUPS       the Handbook's navigation, defined here in code. While the
+//                Handbook is open it replaces the site sidebar's destinations
+//                (PergamonLayout.setNavigation, the same sidebar component as
+//                the rest of the site); leaving or losing access restores them
+//   routes       #/<path> (one page, no server routes needed): overview,
+//                vision, foundations[/<id>], library[/<id>]; anything after a
+//                registered path is passed on as ctx.rest (e.g.
+//                #/vision/north-star), and a renderer with navigate(rest)
+//                handles changes to it without a re-render
+//   renderers    PergamonHandbook.app.register(path, { render(el, ctx), specimen?, navigate? })
+//                (typography-page.js, vision-page.js, widgets-page.js)
 //   frame mode   /handbook/?view=specimen#/<path> draws only that section's
 //                specimen (renderer.specimen) without the site chrome, for the
 //                phone-width preview <iframe>
 //
-// Layers follow the long-term model: Foundations → Elements → Widgets → Pages.
 // Everything is drawn with the site's own tokens and type roles
 // (styles/theme.css, styles/typography.css); handbook.css only lays it out.
 (function () {
   'use strict';
   const ns = window.PergamonHandbook = window.PergamonHandbook || {};
 
-  const SECTIONS = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'vision', label: 'Vision & Architecture' },
-    {
-      id: 'foundations', label: 'Foundations',
-      plan: 'The shared design decisions every element is built from.',
-      children: [
-        { id: 'typography', label: 'Typography' },
-        { id: 'colors', label: 'Colors & Themes', plan: 'The four palettes in dark and light mode, the semantic colour tokens derived from them, and contrast checks for every pairing.' },
-        { id: 'spacing', label: 'Spacing & Layout', plan: 'A spacing scale, radii, breakpoints and the page frame (header, sidebar, content width).' },
-        { id: 'motion', label: 'Motion', plan: 'Durations, easing and reduced-motion rules, including the homepage carousel’s glide.' }
-      ]
-    },
-    { id: 'elements', label: 'Elements', plan: 'Buttons, tabs, form fields, tags, icons and dialogs: the small parts every page shares, each with its variants and states.' },
-    { id: 'widgets', label: 'Widgets', plan: 'Composed components such as the Featured card, carousel and navigation panel, with live previews and the type roles and tokens each one consumes.' },
-    { id: 'pages', label: 'Page Architecture', plan: 'Page families (home, catalogue, game, account), their layouts and which widgets they use. The foundation for a future page builder.' },
-    { id: 'exceptions', label: 'Exceptions & Migration', plan: 'Every approved exception and every legacy style still waiting to adopt the shared system, with its migration status.' }
+  // Sidebar icons for the Handbook's own sections (24px grid, stroked like the site's).
+  const ICONS = {
+    book: '<path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2.5z"/><path d="M6 21h13v-2M8 7h7"/>',
+    dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+    vision: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+    typography: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
+    colors: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.9-.3-1 .4-2.1 1.5-2.1H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
+    spacing: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+    motion: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+    elements: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
+    widgets: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><path d="M17 13v8M13 17h8"/>',
+    layouts: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>'
+  };
+
+  const GROUPS = [
+    { id: 'overview', label: 'Overview', items: [
+      { path: 'overview', label: 'Dashboard', icon: 'dashboard' },
+      { path: 'vision', label: 'Vision', icon: 'vision', text: 'Where Atlas is heading: the long-term architecture, in the team’s own words.' }
+    ] },
+    { id: 'foundations', label: 'Foundations', text: 'The shared design decisions everything else is built from.', items: [
+      { path: 'foundations/typography', label: 'Typography', icon: 'typography', text: 'Type roles, font families and text styles, drawn by the live stylesheet.' },
+      { path: 'foundations/colors', label: 'Colors', icon: 'colors', text: 'The four palettes in dark and light mode, the colour roles built on them, and contrast checks.' },
+      { path: 'foundations/spacing', label: 'Spacing', icon: 'spacing', text: 'A spacing scale, radii, breakpoints and the page frame.' },
+      { path: 'foundations/motion', label: 'Motion', icon: 'motion', text: 'Durations, easing and reduced-motion rules, including the carousel’s glide.' }
+    ] },
+    { id: 'library', label: 'Library', text: 'The reusable parts Atlas pages are made of, from small elements to whole layouts.', items: [
+      { path: 'library/elements', label: 'Elements', icon: 'elements', text: 'Buttons, labels, fields, tags and icons: the small parts every page shares.' },
+      { path: 'library/widgets', label: 'Widgets', icon: 'widgets', text: 'Navigation, Featured Game, Spotlight, the games carousel and other reusable components.' },
+      { path: 'library/layouts', label: 'Layouts', icon: 'layouts', text: 'Page structures and arrangements: home, catalogue, game and account pages.' }
+    ] }
   ];
+  // Addresses from earlier versions of the Handbook.
+  const ALIASES = { elements: 'library/elements', widgets: 'library/widgets', pages: 'library/layouts', exceptions: 'foundations/typography' };
 
   const renderers = {};
   let root = null;
@@ -54,153 +71,162 @@
     return n;
   }
   const chip = (text, tone) => el('span', 'pa-type-label hb-chip' + (tone ? ' hb-chip--' + tone : ''), text);
+  function icon(name, cls) {
+    const span = el('span', cls || 'hb-icon');
+    span.setAttribute('aria-hidden', 'true');
+    span.innerHTML = `<svg viewBox="0 0 24 24" focusable="false">${ICONS[name] || ''}</svg>`;
+    return span;
+  }
 
   // ── Routing ───────────────────────────────────────────────────────────
-  function flat() {
-    const out = [];
-    for (const s of SECTIONS) {
-      out.push({ path: s.id, node: s, parent: null });
-      for (const c of s.children || []) out.push({ path: s.id + '/' + c.id, node: c, parent: s });
-    }
-    return out;
-  }
+  const pages = () => GROUPS.flatMap(g => g.items.map(item => ({ path: item.path, item, group: g })));
+  const groupPage = id => GROUPS.find(g => g.id === id && id !== 'overview');
   function current() {
-    const path = window.location.hash.replace(/^#\/?/, '').replace(/\/$/, '');
-    const all = flat();
-    const exact = all.find(x => x.path === path);
+    let path = window.location.hash.replace(/^#\/?/, '').replace(/\/$/, '');
+    if (ALIASES[path]) path = ALIASES[path];
+    const exact = pages().find(p => p.path === path);
     if (exact) return Object.assign({ rest: '' }, exact);
-    const base = all.find(x => renderers[x.path] && path.startsWith(x.path + '/'));
+    if (groupPage(path)) return { path, group: groupPage(path), item: null, rest: '' };
+    const base = pages().find(p => renderers[p.path] && path.indexOf(p.path + '/') === 0);
     if (base) return Object.assign({ rest: path.slice(base.path.length + 1) }, base);
-    return Object.assign({ rest: '' }, all[0]);
+    return Object.assign({ rest: '' }, pages()[0]);
   }
-  const ready = path => path === 'overview' || !!renderers[path] || !!(flat().find(x => x.path === path) || {}).node.children;
+  const ready = path => path === 'overview' || !!renderers[path];
 
-  // ── Navigation ────────────────────────────────────────────────────────
-  function link(entry, label) {
-    const a = el('a', 'hb-nav-link pa-type-tab');
-    a.href = '#/' + entry.path;
-    a.dataset.path = entry.path;
-    a.append(el('span', 'hb-nav-text', label));
-    if (!ready(entry.path)) a.append(el('span', 'pa-type-caption hb-nav-soon', 'Planned'));
-    return a;
+  // ── The site sidebar shows the Handbook's sections ────────────────────
+  function sidebarNav(path) {
+    return {
+      label: 'Handbook sections',
+      prefKey: 'paHandbookSidebarCollapsed',
+      title: { label: 'Handbook', icon: 'book' },
+      icons: ICONS,
+      sections: GROUPS.map(g => ({ title: g.label, items: g.items.map(i => ({ label: i.label, icon: i.icon, href: '#/' + i.path })) })),
+      current: '#/' + path
+    };
   }
-  function buildNav() {
-    const nav = el('nav', 'hb-nav');
-    nav.setAttribute('aria-label', 'Handbook sections');
-    const menu = el('details', 'hb-nav-menu');
-    const summary = el('summary', 'hb-nav-summary');
-    summary.append(el('span', 'pa-type-label hb-nav-kicker', 'Handbook'), el('span', 'pa-type-item-title hb-nav-current'));
-    const body = el('div', 'hb-nav-body');
-    body.append(el('p', 'pa-type-label hb-nav-heading', 'Atlas Handbook'));
-    const list = el('ul', 'hb-nav-list');
-    for (const s of SECTIONS) {
-      const li = el('li', 'hb-nav-item');
-      li.append(link({ path: s.id }, s.label));
-      if (s.children) {
-        const sub = el('ul', 'hb-nav-sub');
-        for (const c of s.children) { const cli = el('li', 'hb-nav-item'); cli.append(link({ path: s.id + '/' + c.id }, c.label)); sub.append(cli); }
-        li.append(sub);
-      }
-      list.append(li);
-    }
-    body.append(list);
-    menu.append(summary, body);
-    nav.append(menu);
-    // Open on wide screens; a collapsible menu on narrow ones.
-    const wide = window.matchMedia('(min-width: 901px)');
-    const sync = () => { menu.open = wide.matches; };
-    sync();
-    if (wide.addEventListener) wide.addEventListener('change', sync);
-    nav.addEventListener('click', e => { if (e.target.closest('a') && !wide.matches) menu.open = false; });
+  function showSidebar(path) {
+    const layout = window.PergamonLayout;
+    if (!layout || !layout.setNavigation || frame) return;
+    // A group page marks nothing; a page inside a section marks that section.
+    const mark = pages().some(p => p.path === path) ? path : '';
+    layout.setNavigation(sidebarNav(mark));
+  }
+
+  // ── Shared page parts ─────────────────────────────────────────────────
+  function crumbs(here) {
+    const nav = el('nav', 'hb-crumbs pa-type-body-small');
+    nav.setAttribute('aria-label', 'Breadcrumb');
+    const ol = el('ol');
+    const add = (label, href) => {
+      const li = el('li');
+      if (href) { const a = el('a', '', label); a.href = href; li.append(a); }
+      else { const s = el('span', '', label); s.setAttribute('aria-current', 'page'); li.append(s); }
+      ol.append(li);
+    };
+    add('Handbook', here.path === 'overview' ? null : '#/overview');
+    if (here.group && here.group.id !== 'overview') add(here.group.label, here.item ? '#/' + here.group.id : null);
+    if (here.item && here.path !== 'overview') add(here.item.label, null);
+    nav.append(ol);
     return nav;
   }
-  function markNav(path) {
-    root.querySelectorAll('.hb-nav-link').forEach(a => {
-      const on = a.dataset.path === path;
-      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-    });
-    const here = flat().find(x => x.path === path);
-    const label = root.querySelector('.hb-nav-current');
-    if (label && here) label.textContent = (here.parent ? here.parent.label + ' · ' : '') + here.node.label;
-  }
-
-  // ── Pages ─────────────────────────────────────────────────────────────
   function header(title, lead, chips) {
     const head = el('header', 'hb-page-head');
     const h = el('h1', 'pa-type-page-title hb-page-title', title);
     h.tabIndex = -1;
     head.append(h);
-    if (chips && chips.length) { const row = el('div', 'hb-chips'); chips.forEach(c => row.append(c)); head.append(row); }
     if (lead) head.append(el('p', 'pa-type-body hb-lead', lead));
+    if (chips && chips.length) { const row = el('div', 'hb-chips'); chips.forEach(c => row.append(c)); head.append(row); }
     return head;
   }
 
+  // Small, restrained illustrations for the catalogue cards: drawn with the
+  // site's own tokens and type roles, never images.
+  function preview(kind) {
+    const box = el('div', 'hb-pv hb-pv--' + kind);
+    box.setAttribute('aria-hidden', 'true');
+    const add = (cls, text) => { const n = el('span', cls, text); box.append(n); return n; };
+    if (kind === 'foundations' || kind === 'typography') {
+      add('hb-pv-aa', 'Aa');
+      const meta = add('hb-pv-stack');
+      meta.append(el('span', 'hb-pv-line hb-pv-line--title'), el('span', 'hb-pv-line'), el('span', 'hb-pv-line hb-pv-line--short'));
+      if (kind === 'foundations') { const sw = add('hb-pv-swatches'); ['accent', 'surface', 'text'].forEach(s => sw.append(el('span', 'hb-pv-swatch hb-pv-swatch--' + s))); }
+    } else if (kind === 'colors') {
+      const sw = add('hb-pv-swatches hb-pv-swatches--large');
+      ['accent', 'accent-soft', 'surface', 'border', 'text'].forEach(s => sw.append(el('span', 'hb-pv-swatch hb-pv-swatch--' + s)));
+    } else if (kind === 'spacing') {
+      [16, 32, 56, 88].forEach(w => { const b = add('hb-pv-bar'); b.style.width = w + 'px'; });
+    } else if (kind === 'motion') {
+      box.innerHTML = '<svg class="hb-pv-curve" viewBox="0 0 120 60"><path d="M4 56C40 56 46 4 116 4"/><circle cx="116" cy="4" r="4"/></svg>';
+    } else if (kind === 'elements') {
+      add('hb-pv-button pa-type-button-small', 'Play now');
+      add('pa-type-label hb-chip hb-chip--active', 'New');
+      add('hb-pv-field');
+      add('hb-pv-toggle');
+    } else if (kind === 'widgets') {
+      const rail = add('hb-pv-rail');
+      for (let i = 0; i < 4; i++) rail.append(el('span', 'hb-pv-dot' + (i ? '' : ' is-on')));
+      const card = add('hb-pv-card');
+      card.append(el('span', 'hb-pv-card-rule'), el('span', 'hb-pv-card-title', 'Chess Forge'), el('span', 'hb-pv-card-cta'));
+    } else if (kind === 'layouts') {
+      add('hb-pv-wire hb-pv-wire--head'); add('hb-pv-wire hb-pv-wire--side'); add('hb-pv-wire hb-pv-wire--main'); add('hb-pv-wire hb-pv-wire--wide');
+    }
+    return box;
+  }
+
+  // One catalogue card: preview, name, description, state.
+  function card(path, title, text, kind, state) {
+    const li = el('li', 'hb-cat' + (state === 'planned' ? ' is-planned' : ''));
+    const a = el('a', 'hb-cat-link');
+    a.href = '#/' + path;
+    const body = el('span', 'hb-cat-body');
+    const name = el('span', 'hb-cat-name pa-type-section-title', title);
+    const row = el('span', 'hb-cat-row');
+    row.append(name, chip(state === 'planned' ? 'Planned' : state === 'ready' ? 'Ready' : state, state === 'planned' ? 'muted' : 'active'));
+    body.append(row, el('span', 'hb-cat-text pa-type-body-small', text));
+    a.append(preview(kind), body);
+    li.append(a);
+    return li;
+  }
+
+  // ── Pages ─────────────────────────────────────────────────────────────
   function overview(view) {
-    view.append(header('Atlas Handbook',
-      'The design system behind Pergamon Atlas: the shared foundations, elements, widgets and page patterns every page is built from, with live previews drawn by the site’s own styles.',
-      [chip('Read-only'), chip('Phase H1', 'muted')]));
+    view.append(header('Atlas Handbook', 'The design system and component library behind Pergamon Atlas: the shared foundations, the parts pages are built from, and how they fit together.'));
 
-    const layers = el('section', 'hb-section');
-    layers.append(el('h2', 'pa-type-section-title', 'How Atlas is built'));
-    const steps = el('ol', 'hb-layers');
-    [['Foundations', 'Type, colour, spacing, motion', 'Typography ready', 'active'],
-     ['Elements', 'Buttons, fields, tags, icons', 'Planned', 'muted'],
-     ['Widgets', 'Cards, carousel, panels', 'Planned', 'muted'],
-     ['Pages', 'Page families and layouts', 'Planned', 'muted']].forEach(([name, what, status, tone]) => {
-      const li = el('li', 'hb-layer');
-      li.append(el('span', 'pa-type-section-title', name), el('span', 'pa-type-caption hb-muted', what), chip(status, tone));
-      steps.append(li);
-    });
-    layers.append(steps, el('p', 'pa-type-body-small hb-muted', 'Each layer is made only from the one before it, so a change to a foundation, such as a type role, reaches every element, widget and page that uses it.'));
+    const cats = el('ul', 'hb-cats hb-cats--four');
+    cats.setAttribute('aria-label', 'Catalogue');
+    const library = GROUPS[2];
+    cats.append(
+      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography ready'),
+      card('library/elements', 'Elements', library.items[0].text, 'elements', 'planned'),
+      card('library/widgets', 'Widgets', 'Larger reusable components: navigation, Featured Game, Spotlight and the games carousel.', 'widgets', 'ready'),
+      card('library/layouts', 'Layouts', library.items[2].text, 'layouts', 'planned')
+    );
 
-    const sync = el('section', 'hb-section');
-    sync.append(el('h2', 'pa-type-section-title', 'One source of truth'));
-    const flow = el('ol', 'hb-flow');
-    [['Registry', 'scripts/design/typography.js', 'Roles, their values, intended use and where the site uses them.'],
-     ['Generated stylesheet', 'styles/typography.css', 'Tokens and classes written from the registry by tools/build-typography.mjs.'],
-     ['Site and Handbook', 'Pages, widgets, these previews', 'Both draw with the same classes, so a preview here is the real style.']].forEach(([name, file, text]) => {
-      const li = el('li', 'hb-flow-step');
-      li.append(el('span', 'pa-type-item-title', name), el('code', 'hb-code', file), el('span', 'pa-type-caption hb-muted', text));
-      flow.append(li);
-    });
-    sync.append(flow, el('p', 'pa-type-body-small hb-muted', 'Automated tests (tests/design) fail if the stylesheet is stale or if the registry describes the site’s CSS incorrectly.'));
+    const vision = el('a', 'hb-banner');
+    vision.href = '#/vision';
+    const vt = el('span', 'hb-banner-text');
+    vt.append(el('span', 'pa-type-label hb-banner-kicker', 'Vision & Architecture'),
+      el('span', 'pa-type-section-title-large', 'Where Atlas is heading'),
+      el('span', 'pa-type-body-small hb-muted', 'The long-term plan for foundations, widgets, layouts and visual editing.'));
+    vision.append(icon('vision', 'hb-banner-icon'), vt, el('span', 'hb-banner-go pa-type-button-small', 'Read the vision'));
 
-    const list = el('section', 'hb-section');
-    list.append(el('h2', 'pa-type-section-title', 'Sections'));
-    const ul = el('ul', 'hb-section-list');
-    for (const x of flat().filter(x => x.path !== 'overview')) {
-      const li = el('li', 'hb-section-row' + (x.parent ? ' is-child' : ''));
-      const a = el('a', 'pa-type-item-title', x.node.label); a.href = '#/' + x.path;
-      li.append(a, chip(ready(x.path) && !x.node.children ? 'Ready' : x.node.children ? 'Group' : 'Planned', ready(x.path) && !x.node.children ? 'active' : 'muted'));
-      ul.append(li);
-    }
-    list.append(ul);
-
-    const edit = el('section', 'hb-note');
-    edit.append(el('h2', 'pa-type-item-title', 'Editing is planned'),
-      el('p', 'pa-type-body-small', 'This version documents the system. A later phase adds editing with preview, validation, draft, publish and rollback, so a change such as the game title’s size can be made here once and reach every page that uses it.'));
-    view.append(layers, sync, list, edit);
+    view.append(cats, vision,
+      el('p', 'pa-type-caption hb-muted hb-foot', 'Read-only. Sections marked Planned are listed so the structure is in place before they arrive.'));
   }
 
-  function group(view, node, path) {
-    view.append(header(node.label, node.plan));
-    const ul = el('ul', 'hb-cards');
-    for (const c of node.children) {
-      const li = el('li', 'hb-card');
-      const a = el('a', 'pa-type-section-title hb-card-link', c.label); a.href = '#/' + path + '/' + c.id;
-      const isReady = ready(path + '/' + c.id);
-      li.append(a, chip(isReady ? 'Ready' : 'Planned', isReady ? 'active' : 'muted'));
-      if (c.plan) li.append(el('p', 'pa-type-body-small hb-muted', c.plan));
-      ul.append(li);
-    }
-    view.append(ul);
+  function group(view, g) {
+    view.append(header(g.label, g.text));
+    const cats = el('ul', 'hb-cats');
+    g.items.forEach(i => cats.append(card(i.path, i.label, i.text, i.icon, ready(i.path) ? 'ready' : 'planned')));
+    view.append(cats);
   }
 
-  function planned(view, node, parent) {
-    view.append(header(node.label, node.plan, [chip('Planned', 'muted')].concat(parent ? [chip(parent.label, 'muted')] : [])));
-    const note = el('section', 'hb-note');
-    note.append(el('p', 'pa-type-body-small', 'This section isn’t built yet. It is listed so the Handbook’s structure is in place when it arrives.'));
-    view.append(note);
+  function planned(view, here) {
+    view.append(header(here.item.label, here.item.text, [chip('Planned', 'muted')]));
+    const box = el('section', 'hb-planned');
+    box.append(preview(here.item.icon), el('h2', 'pa-type-section-title', 'Not built yet'),
+      el('p', 'pa-type-body-small hb-muted', 'This section is part of the Handbook’s structure and arrives in a later phase. Until then, the live site is the reference.'));
+    view.append(box);
   }
 
   function render() {
@@ -212,17 +238,21 @@
     if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
     shownPath = here.path;
     const view = el('div', 'hb-view');
-    const ctx = { el, chip, header, frame, rest: here.rest, onCleanup: fn => { cleanup = fn; } };
+    const ctx = { el, chip, header, icon, frame, rest: here.rest, sidebarNav, onCleanup: fn => { cleanup = fn; } };
     if (frame) {
       if (r && r.specimen) r.specimen(view, ctx); else view.append(el('p', 'pa-type-body', 'No specimen for this section.'));
-    } else if (here.path === 'overview') overview(view);
-    else if (r) r.render(view, ctx);
-    else if (here.node.children) group(view, here.node, here.path);
-    else planned(view, here.node, here.parent);
+    } else {
+      view.append(crumbs(here));
+      if (here.path === 'overview') overview(view);
+      else if (r) r.render(view, ctx);
+      else if (!here.item && here.group) group(view, here.group);
+      else planned(view, here);
+    }
     content.replaceChildren(view);
-    document.title = (here.path === 'overview' ? 'Atlas Handbook' : here.node.label + ' · Atlas Handbook') + ' · Pergamon Atlas';
+    const name = here.item ? here.item.label : here.group ? here.group.label : 'Atlas Handbook';
+    document.title = (here.path === 'overview' ? 'Atlas Handbook' : name + ' · Atlas Handbook') + ' · Pergamon Atlas';
     if (!frame) {
-      markNav(here.path);
+      showSidebar(here.path);
       // Move focus to the new page's heading (not on first load).
       if (!firstRender && !here.rest) { const h = content.querySelector('h1'); if (h) h.focus({ preventScroll: true }); window.scrollTo(0, 0); }
     }
@@ -235,15 +265,16 @@
       if (root) ns.app.stop();
       root = target;
       root.classList.add('hb-root');
-      if (frame) {
-        document.documentElement.setAttribute('data-handbook-frame', '');
-        content = el('div', 'hb-frame');
-        root.replaceChildren(content);
-      } else {
-        const shell = el('div', 'hb');
-        content = el('div', 'hb-content');
-        shell.append(buildNav(), content);
-        root.replaceChildren(shell);
+      content = el('div', frame ? 'hb-frame' : 'hb-content');
+      if (frame) document.documentElement.setAttribute('data-handbook-frame', '');
+      const shell = el('div', 'hb');
+      shell.append(content);
+      root.replaceChildren(frame ? content : shell);
+      // The site sidebar sits in the Handbook's grid as the floating rail,
+      // as on the homepage (the same component and styles).
+      if (!frame && window.PergamonLayout && window.PergamonLayout.mountSidebar) {
+        window.PergamonLayout.mountSidebar(shell, content);
+        shell.classList.add('has-sidebar');
       }
       window.addEventListener('hashchange', render);
       render();
@@ -252,8 +283,13 @@
       window.removeEventListener('hashchange', render);
       if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
       if (root) root.classList.remove('hb-root');
+      if (!frame && window.PergamonLayout && window.PergamonLayout.clearNavigation) {
+        window.PergamonLayout.clearNavigation();
+        if (window.PergamonLayout.unmountSidebar) window.PergamonLayout.unmountSidebar();
+      }
       root = null; content = null; firstRender = true; shownPath = null;
     },
-    sections: SECTIONS
+    groups: GROUPS,
+    icons: ICONS
   };
 })();

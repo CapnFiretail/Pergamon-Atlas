@@ -52,6 +52,8 @@
   }
 
   const LIST_LABELS = { 'home.carousel': 'Carousel order', 'home.featured.saved': 'Saved featured cards order', 'home.spotlight.saved': 'Saved spotlight cards order' };
+  // Components that aren't cards: site-wide settings stored in this document.
+  const OTHER_LABELS = { 'site.sidebar': 'Site Navigation (every page)' };
   // Whether the cards present in both lists are in a different order
   // (adding or deleting a card alone isn't a reorder).
   function reordered(before, after) {
@@ -72,7 +74,7 @@
       if (same(pub[id], next[id])) return;
       if (LIST_LABELS[id]) { if (reordered(pub[id], next[id])) other.push(LIST_LABELS[id]); return; }
       const type = content.cardType(id);
-      if (!type) { other.push(id); return; }
+      if (!type) { other.push(OTHER_LABELS[id] || id); return; }
       const saved = content.isSaved && content.isSaved(id);
       const typeLabel = (saved ? 'Saved ' + (CARD_TYPES[type] || 'card').toLowerCase() : CARD_TYPES[type]) || 'Card';
       const a = pub[id], b = next[id];

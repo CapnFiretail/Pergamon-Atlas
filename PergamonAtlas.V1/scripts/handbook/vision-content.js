@@ -575,7 +575,7 @@
     {
      "type": "p",
      "text": [
-      "As of 2026-11-22 (Phase H2, second step). This section is maintained with the code; the vision above is not changed by it."
+      "As of 2026-11-22 (after the Handbook redesign and Site Navigation milestone). This section is maintained with the code; the vision above is not changed by it."
      ]
     },
     {
@@ -680,7 +680,45 @@
       ],
       [
        [
-        "Remaining differences, Admin Mode"
+        "Handbook catalogue redesign: Dashboard, Typography specimens, Widgets catalogue, Handbook sections in the shared sidebar"
+       ],
+       [
+        "Implemented (Handbook redesign milestone)"
+       ],
+       [
+        [
+         "code",
+         "scripts/handbook/"
+        ],
+        ", ",
+        [
+         "code",
+         "scripts/layout.js"
+        ]
+       ]
+      ],
+      [
+       [
+        "Site Navigation: the sidebar links edited in Admin Mode, published with the homepage"
+       ],
+       [
+        "Implemented (Handbook redesign milestone; migration 0013 on staging)"
+       ],
+       [
+        [
+         "code",
+         "scripts/cms/site-nav.js"
+        ],
+        ", ",
+        [
+         "code",
+         "site.sidebar"
+        ]
+       ]
+      ],
+      [
+       [
+        "Remaining typography differences, Admin Mode typography"
        ],
        [
         "Planned (H2)"

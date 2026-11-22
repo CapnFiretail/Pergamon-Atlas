@@ -27,6 +27,10 @@
 //                   carousel, and the carousel's "Add card" tile (manage.js);
 //                   a saved card being edited is previewed in its slot
 //   history         Version History and Restore in the panel (history.js)
+//   site navigation the sidebar's links on every page (site-nav.js), stored
+//                   as `site.sidebar` in this same document: opened from the
+//                   panel or the pencil on the homepage's sidebar; Admin view
+//                   shows the working copy's links on that sidebar
 (function () {
   'use strict';
   const cms = window.PergamonCMS || {};
@@ -73,6 +77,9 @@
   let history = null;                  // Version History (history.js)
   let addTile = null;                  // the carousel's "Add card" tile (Admin view)
   let previewId = null;                // saved card shown in its slot while edited
+  let siteNav = null;                  // Site Navigation editor (site-nav.js)
+  const layout = window.PergamonLayout && window.PergamonLayout.siteNavigation ? window.PergamonLayout : null;
+  const NAV_ID = 'site.sidebar';
 
   // ── Server verification ───────────────────────────────────────────────
   async function isAdmin() {
@@ -137,7 +144,8 @@
       loadScript('/scripts/cms/publish.js', () => !!cms.publish),
       loadScript('/scripts/cms/publish-dialog.js', () => !!cms.publishDialog),
       loadScript('/scripts/cms/manage.js', () => !!cms.manage),
-      loadScript('/scripts/cms/history.js', () => !!cms.history)
+      loadScript('/scripts/cms/history.js', () => !!cms.history),
+      loadScript('/scripts/cms/site-nav.js', () => !!cms.siteNav)
     ]).then(() => {
       if (!verified || ui) return;
       start();
@@ -153,7 +161,7 @@
       fallbackDoc: window.PergamonHomeContent && window.PergamonHomeContent.document,
       api: { getDraft: page => auth.getCmsDraft(page), saveDraft: (page, doc, expected) => auth.saveCmsDraft(page, doc, expected) }
     });
-    workspace.onChange(() => { if (ui) { updateStatus(); decorate(); ui.drawer.refresh(); if (manager) manager.refresh(); } });
+    workspace.onChange(() => { if (ui) { updateStatus(); decorate(); ui.drawer.refresh(); if (manager) manager.refresh(); if (siteNav) siteNav.refresh(); } });
     imageStore = cms.images.createStore({
       base: window.PERGAMON_SUPABASE_URL || '',
       api: {
@@ -179,6 +187,8 @@
     if (publisher) { publisher.destroy(); publisher = null; }
     if (manager) { manager.destroy(); manager = null; }
     if (history) { history.destroy(); history = null; }
+    if (siteNav) { siteNav.destroy(); siteNav = null; }
+    if (layout) layout.previewSiteNavigation();     // back to the published links
     addTile = null;
     if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
     if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
@@ -226,7 +236,7 @@
     const head = el('div', 'cms-admin-head');
     const heading = el('div', 'cms-admin-heading');
     const title = el('h2', 'cms-admin-title', 'Admin Mode'); title.id = 'cms-admin-title';
-    heading.append(title, el('p', 'cms-admin-sub', 'Verified administrator · homepage cards'));
+    heading.append(title, el('p', 'cms-admin-sub', 'Verified administrator · homepage and site navigation'));
     const toggle = el('button', 'cms-admin-switch');
     toggle.type = 'button';
     toggle.setAttribute('role', 'switch');
@@ -274,7 +284,17 @@
     historyButton.type = 'button';
     historyButton.disabled = true;
 
-    panel.append(head, views, stateList, publish, publishNote, historyButton);
+    // Site Navigation: the sidebar on every page (stored with the homepage).
+    const navButton = el('button', 'cms-admin-nav');
+    navButton.type = 'button';
+    navButton.disabled = true;
+    navButton.setAttribute('aria-describedby', 'cms-admin-nav-note');
+    navButton.append(el('span', '', 'Site Navigation'));
+    const navNote = el('p', 'cms-admin-note', 'The sidebar links on every page. Published with the homepage.');
+    navNote.id = 'cms-admin-nav-note';
+    if (!layout) { navButton.hidden = true; navNote.hidden = true; }
+
+    panel.append(head, views, stateList, publish, publishNote, historyButton, navButton, navNote);
     document.body.append(panel);
 
     // Shown while previewing as a user or guest: no editing controls, a way back.
@@ -343,7 +363,7 @@
       },
       onPublished: () => {
         // The new live version: this browser's cache and every view follow it.
-        cms.loader.refresh().catch(() => {}).then(() => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } });
+        cms.loader.refresh().catch(() => {}).then(() => { followPublishedNav(); if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } });
       },
       onChanged: () => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } },
       onForbidden: () => verify(),
@@ -380,7 +400,7 @@
       // published version and every view follow it (local edits are kept).
       onRestored: () => {
         Promise.all([cms.loader.refresh().catch(() => {}), workspace.load().catch(() => {})])
-          .then(() => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } });
+          .then(() => { followPublishedNav(); if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } });
       },
       onForbidden: () => verify(),
       returnFocus: () => { if (ui) ui.button.focus(); }
@@ -392,10 +412,40 @@
       history.open();
     });
 
+    if (layout) {
+      siteNav = cms.siteNav.create({
+        workspace,
+        layout,
+        games: liveGames(),
+        onChanged: () => { if (ui) { draw(); decorate(); updateStatus(); ui.drawer.refresh(); } },
+        onForbidden: () => verify(),
+        returnFocus: () => { if (ui) ui.button.focus(); }
+      });
+      navButton.addEventListener('click', () => {
+        if (navButton.disabled) return;
+        setPanel(false);
+        openSiteNav(ui.button);
+      });
+    }
+
     button.addEventListener('click', () => setPanel(panel.hidden));
     toggle.addEventListener('click', () => setActive(!state.active));
 
-    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer, publish, publishNote, historyButton };
+    return { button, panel, toggle, viewButtons, stateRows, bar, barText, drawer, publish, publishNote, historyButton, navButton };
+  }
+
+  // Site Navigation needs the working copy (it edits it); it opens in Admin view.
+  function openSiteNav(from) {
+    if (!siteNav || !state.active) return;
+    if (ui && ui.drawer.isOpen() && ui.drawer.busy()) return;
+    if (state.view !== 'admin') setView('admin');
+    ensureLoaded().then(() => { if (siteNav && state.active) siteNav.open(from); }, () => updateStatus());
+  }
+  // After a publish or restore: the sidebar's published links follow the new live version.
+  function followPublishedNav() {
+    if (!layout) return;
+    const live = cms.loader.published();
+    if (live && live.doc) layout.setPublishedSiteNavigation(live.doc.components ? live.doc.components[NAV_ID] : undefined);
   }
 
   // A saved card shown in its slot (null: the active cards), in Admin view only.
@@ -529,17 +579,23 @@
     if (live) return { doc: live.doc, media };
     return { doc: window.PergamonHomeContent.document, media: {} };
   }
-  function render(doc, media) {
+  // `working`: the administrator's working copy, whose Site Navigation the
+  // homepage's sidebar previews; otherwise the sidebar shows the published links.
+  function render(doc, media, working) {
+    if (layout) {
+      if (working) { const nav = doc && doc.components ? doc.components[NAV_ID] : undefined; layout.previewSiteNavigation(nav === undefined ? null : nav); }
+      else layout.previewSiteNavigation();
+    }
     const key = cms.workspace.canon(doc) + cms.workspace.canon(media);
     if (key === drawnKey) return;
     if (home.render(doc, { media })) drawnKey = key;
   }
-  function drawPublished() { const p = publishedView(); render(p.doc, p.media); }
+  function drawPublished() { const p = publishedView(); render(p.doc, p.media, false); }
   // Admin view: the working copy (once loaded), with its private draft
   // images; otherwise the published content (published images only).
   function draw() {
     if (state.active && state.view === 'admin' && workspace && workspace.isLoaded()) {
-      render(workspace.working(), Object.assign({}, imageStore ? imageStore.map() : {}, publishedView().media));
+      render(workspace.working(), Object.assign({}, imageStore ? imageStore.map() : {}, publishedView().media), true);
       resolveImages();
     } else {
       drawPublished();
@@ -564,8 +620,13 @@
     const live = cms.loader.published();
     ui.stateRows.published.textContent = pub ? `Version ${pub.id}` : live ? `Version ${live.version}` : 'Built-in content';
     ui.stateRows.draft.textContent = !loaded ? (loading ? 'Loading…' : '—') : draft ? `Saved at ${time(draft.savedAt)}` : 'None';
-    ui.stateRows.unsaved.textContent = !loaded ? '—' : unsavedCards ? `${unsavedCards} card${unsavedCards === 1 ? '' : 's'}` : unsaved.length ? 'Card order' : 'None';
+    const parts = [];
+    if (unsavedCards) parts.push(`${unsavedCards} card${unsavedCards === 1 ? '' : 's'}`);
+    if (unsaved.indexOf(NAV_ID) >= 0) parts.push('Site Navigation');
+    if (!parts.length && unsaved.length) parts.push('Card order');
+    ui.stateRows.unsaved.textContent = !loaded ? '—' : parts.length ? parts.join(', ') : 'None';
     ui.historyButton.disabled = !state.active;
+    ui.navButton.disabled = !state.active || !siteNav;
     ui.stateRows.unsaved.parentElement.dataset.on = String(unsaved.length > 0);
     ui.stateRows.draft.parentElement.dataset.on = String(!!draft);
     ui.button.classList.toggle('has-unsaved', unsaved.length > 0);
@@ -584,6 +645,7 @@
   // last saved title; a list's name.
   function cardTitle(id) {
     if (LIST_LABELS[id]) return LIST_LABELS[id];
+    if (id === NAV_ID) return 'Site Navigation (every page)';
     const loaded = workspace && workspace.isLoaded();
     const c = loaded ? workspace.component(id) : null;
     if (c && c.title) return c.title;
@@ -635,6 +697,25 @@
     });
     const carousel = root.querySelector('.home-carousel');
     if (carousel) manageButton(carousel, cms.content.CAROUSEL, null);
+    // Site Navigation: a pencil on the homepage's sidebar (the desktop rail;
+    // on phones the panel's Site Navigation button opens the same editor).
+    const rail = layout && siteNav ? layout.sidebar : null;
+    if (rail) {
+      let p = rail.querySelector(':scope > .cms-nav-pencil');
+      if (!p) {
+        p = el('button', 'cms-nav-pencil');
+        p.type = 'button';
+        p.setAttribute('aria-haspopup', 'dialog');
+        p.innerHTML = svg('pencil', 'cms-edit-icon') + '<span class="cms-edit-badge" aria-hidden="true"></span>';
+        p.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); openSiteNav(p); });
+        rail.classList.add('cms-nav-editable');
+        rail.append(p);
+      }
+      const status = loaded ? workspace.cardStatus(NAV_ID) : 'published';
+      if (p.dataset.status !== status) p.dataset.status = status;
+      const label = `Edit Site Navigation (every page)${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
+      if (p.getAttribute('aria-label') !== label) { p.setAttribute('aria-label', label); p.dataset.tip = 'Edit Site Navigation'; }
+    }
     // The carousel's "Add card" tile follows the cards while Admin view holds the row.
     if (!addTile) {
       addTile = el('div', 'cms-add-tile-item');
@@ -701,6 +782,7 @@
     if (addTile && home.setCarouselTail) home.setCarouselTail(null);
     addTile = null;
     root.querySelectorAll('.cms-edit-pencil, .cms-edit-frame, .cms-manage-button').forEach(n => n.remove());
+    if (layout) { layout.sidebar.querySelectorAll(':scope > .cms-nav-pencil').forEach(n => n.remove()); layout.sidebar.classList.remove('cms-nav-editable'); }
     root.querySelectorAll('.cms-editable, .cms-editing, .cms-manageable').forEach(n => n.classList.remove('cms-editable', 'cms-editing', 'cms-manageable'));
   }
 

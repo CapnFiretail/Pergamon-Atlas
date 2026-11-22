@@ -97,6 +97,11 @@ silently overwrite each other and two publishes can't both win.
     "home.featured.saved":  { "order": ["summer-cup", ...] },     // ≤ 12 ids
     "home.featured.saved.summer-cup": Card,                       // one per id
     "home.spotlight.saved": { "order": [...] }, "home.spotlight.saved.<id>": Card,
+    // 0013: Site Navigation (the sidebar on every page), optional; site-wide,
+    // stored here to share this document's draft / publish / history
+    "site.sidebar": { "sections": [ { "items": [
+      { "id": "home", "label": "Home", "icon": "home", "href": "/", "visible": true }, ...
+    ] }, ... ] },                                                  // ≤ 4 groups, ≤ 12 each, ≤ 16 in all
     ...
   }
 }
@@ -486,6 +491,34 @@ with the CMS rollout, never on its own:
 Reverting 0011 (re-adding the unique constraint) only works while no two rows
 share a path; once identical images are published that way, keep 0011.
 
+## 5f. Site Navigation (H3, 0013)
+
+- **What**: the sidebar's links on every regular page, as `site.sidebar` in
+  the homepage document. It is site-wide configuration, independent of the
+  homepage's cards and their order; it is stored here only so it shares the
+  draft, Publish Changes, Version History and Restore (one publishing
+  system). The Handbook's sidebar sections are defined in code and are not
+  part of it.
+- **Visitors** (`scripts/layout.js`): every page draws the last published
+  Site Navigation this browser has (localStorage `pa-site-nav`) or the
+  built-in links, then reads `get_published_content('home')` (on the
+  homepage, the CMS loader's request) and redraws if it differs. A missing,
+  invalid or unreachable answer keeps the built-in links (or the cached
+  ones). The browser re-checks shape, icons, labels and destinations.
+- **Editing** (`scripts/cms/site-nav.js`): Admin Mode panel › Site
+  Navigation, or the pencil on the homepage's sidebar. Groups of links;
+  per link: label, icon (fixed set), destination (the site's pages and live
+  games only), visible; move up / down (across groups), add, remove with
+  undo, add a group. Changes go into the working copy, so Admin view draws
+  them on the homepage's sidebar at once; Save Draft is in the dialog (or
+  any card editor), Publish Changes in the panel. The publish dialog and
+  Version History name it "Site Navigation (every page)".
+- **Security**: `cms_check_nav` (0013) accepts only the fixed icon list and
+  internal destinations (`/`, the site's own pages, game pages from
+  `site_content_routes`); never external, script, admin or Handbook URLs.
+  Hiding or removing a link never protects a page: pages keep their own
+  access checks (the Handbook its admin gate).
+
 ## 9. Migration 0012: saved cards and version history
 
 `supabase/proposed/0012_saved_cards.sql` is applied to **staging only**
@@ -502,3 +535,20 @@ cards; nothing unsafe), then check that `anon` can execute only
 `list_published_versions` (it checks `is_admin()` itself). Revert (only
 while no draft or published version uses saved cards): re-run 0008's two
 functions and drop the two new ones.
+
+## 10. Migration 0013: Site Navigation
+
+`supabase/proposed/0013_site_sidebar.sql` is applied to **staging only**
+(2026-11-22; `verify_0013.sql` 7/7). It adds `cms_check_nav` and replaces
+`validate_content` (0012's body plus an optional `site.sidebar` checked by
+`cms_check_nav`); no table, policy, grant or data changes. Every existing
+document stays valid; `get_published_content` is unchanged and already
+returns the component.
+
+Production, when approved: run the file in the SQL editor, then
+`verify_0013.sql` (all rows true). The code is safe either way: without
+0013, pages show the built-in links (no published document has
+`site.sidebar`), and saving a Site Navigation draft would be refused with
+PT422 (the editor shows the error; nothing is stored). Revert (only while no
+draft or published version contains `site.sidebar`): re-run 0012's
+`validate_content`, then drop `cms_check_nav`.

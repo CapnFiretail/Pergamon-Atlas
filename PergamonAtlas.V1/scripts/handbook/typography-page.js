@@ -150,10 +150,22 @@
     head.append(title, chips);
 
     const s = sampleBox(role, ctx);
-    const body = ctx.el('div', 'hb-role-body');
+    s.box.classList.add('hb-sample--large');
+    // Three panels: the role's values, where it is used, how it responds.
+    const panels = ctx.el('div', 'hb-role-panels');
+    const panel = (title, cls) => {
+      const p = ctx.el('section', 'hb-panel' + (cls ? ' ' + cls : ''));
+      p.append(ctx.el('h4', 'pa-type-item-title hb-panel-title', title));
+      panels.append(p);
+      return p;
+    };
+    const details = panel('Role details');
     // Filled by _refresh() once the sample is on the page (computed styles
     // need an attached element), and again on resize or theme change.
     const values = ctx.el('dl', 'hb-values');
+    details.append(values);
+
+    const usage = panel('Usage', 'hb-panel--usage');
     const about = ctx.el('div', 'hb-role-about');
     about.append(ctx.el('p', 'pa-type-body-small', role.use));
     if (role.restrictions && role.restrictions.length) {
@@ -161,12 +173,24 @@
       role.restrictions.forEach(t => ul.append(ctx.el('li', 'pa-type-body-small hb-muted', t)));
       about.append(ul);
     }
-    if (role.inherits && role.inherits.length) about.append(ctx.el('p', 'pa-type-caption hb-muted', `Inherits ${role.inherits.map(p => PROP_LABEL[p].toLowerCase()).join(', ')} from ${(typo.role(role.of) || {}).name}, so changes to it reach this variant.`));
-    const resp = (role.responsive || []).map(x => x.type === 'note' ? x.text : `${x.type === 'container' ? 'In the ' + x.container + ' container at ' : 'At '}${x.query.replace(/[()]/g, '')}: ${x.size}.`);
-    if (resp.length) { const p = ctx.el('p', 'pa-type-caption hb-muted'); p.textContent = 'Responsive: ' + resp.join(' '); about.append(p); }
-    body.append(values, about);
+    usage.append(about);
+
+    const steps = panel('Responsive');
+    const resp = (role.responsive || []).filter(x => x.type !== 'note');
+    if (resp.length) {
+      const ul = ctx.el('ul', 'hb-steps');
+      const row = (label, size) => { const li = ctx.el('li'); li.append(ctx.el('span', 'pa-type-caption hb-muted', label), ctx.el('code', 'hb-code', size)); ul.append(li); };
+      row('Default', role.size);
+      resp.forEach(x => row(x.type === 'container' ? `${x.container} container ${x.query.replace(/[()]/g, '').replace('max-width: ', '≤ ')}` : x.query.replace(/[()]/g, '').replace('max-width: ', '≤ '), x.size));
+      steps.append(ul);
+    } else {
+      steps.append(ctx.el('p', 'pa-type-body-small hb-muted', /vw|cqi/.test(role.size) ? `Fluid: ${role.size}.` : role.size === 'inherit' ? 'Takes its size from where it is used.' : 'The same at every width.'));
+    }
+    (role.responsive || []).filter(x => x.type === 'note').forEach(x => steps.append(ctx.el('p', 'pa-type-caption hb-muted', x.text)));
+    if (role.inherits && role.inherits.length) steps.append(ctx.el('p', 'pa-type-caption hb-muted', `Inherits ${role.inherits.map(p => PROP_LABEL[p].toLowerCase()).join(', ')} from ${(typo.role(role.of) || {}).name}, so changes to it reach this variant.`));
 
     const uses = ctx.el('details', 'hb-uses');
+    uses.open = true;
     const counts = {};
     (role.adoption || []).forEach(a => { counts[a.status] = (counts[a.status] || 0) + 1; });
     const sum = ctx.el('summary', 'pa-type-body-small');
@@ -189,6 +213,7 @@
       ul.append(li);
     }
     uses.append(sum, ul);
+    if ((role.adoption || []).length) usage.append(uses);
 
     const off = drift(role);
     art.append(head);
@@ -198,7 +223,7 @@
       warn.textContent = `The stylesheet differs from the registry for ${off.map(p => PROP_LABEL[p].toLowerCase()).join(', ')}. Run node tools/build-typography.mjs.`;
       art.append(warn);
     }
-    art.append(s.box, body, uses);
+    art.append(s.box, panels);
     let current = values;
     art._refresh = () => { const fresh = valuesList(role, s.text, ctx); current.replaceWith(fresh); current = fresh; };
     return art;
@@ -207,21 +232,25 @@
   // ── The page ──────────────────────────────────────────────────────────
   function render(view, ctx) {
     const roles = registry.roles;
-    const count = k => roles.filter(r => r.kind === k).length;
     view.append(ctx.header('Typography',
-      'Atlas’s semantic type roles: what each one is for, how it looks right now and where the site uses it. Every sample below is drawn by the live stylesheet.',
+      'The type system behind Pergamon Atlas: what each role is for, how it looks right now and where the site uses it. Every sample is drawn by the live stylesheet.',
       [ctx.chip('Read-only'), ctx.chip('Editing planned', 'muted')]));
 
-    const stats = ctx.el('ul', 'hb-stats');
-    const adoption = roles.flatMap(r => r.adoption || []);
-    [[count('role'), 'Global roles'], [count('variant'), 'Variants'], [count('exception'), 'Approved exceptions'],
-     [adoption.filter(a => a.status === 'adopted').length, 'Connected styles'],
-     [adoption.filter(a => a.status !== 'adopted').length, 'Not yet connected']].forEach(([n, label]) => {
-      const li = ctx.el('li', 'hb-stat');
-      li.append(ctx.el('span', 'pa-type-section-title-large pa-type-numeric', String(n)), ctx.el('span', 'pa-type-caption hb-muted', label));
-      stats.append(li);
-    });
-    view.append(stats);
+    // A large specimen of the page title, with its live values.
+    const lead = registry.roles.find(r => r.id === 'page-title');
+    const hero = ctx.el('section', 'hb-hero');
+    hero.setAttribute('aria-label', 'Page title specimen');
+    const eyebrow = ctx.el('p', 'pa-type-label hb-hero-eyebrow', lead.name);
+    eyebrow.append(ctx.el('span', 'hb-hero-rule'));
+    const big = ctx.el('p', 'pa-type-page-title hb-hero-sample', 'The Atlas Experience');
+    const meta = ctx.el('p', 'pa-type-label hb-hero-meta');
+    const fillMeta = () => {
+      if (!big.isConnected) return;
+      const r = rendered(big);
+      meta.textContent = [registry.families[lead.family].configured, r.size, r.weight, (parseFloat(r.leading) / parseFloat(r.size)).toFixed(2).replace(/0$/, '') + ' line height'].join('  ·  ');
+    };
+    hero.append(eyebrow, big, meta);
+    view.append(hero);
 
     const source = ctx.el('section', 'hb-note');
     source.append(ctx.el('h2', 'pa-type-item-title', 'Source of truth'));
@@ -326,8 +355,8 @@
     // Keep the readouts true to the current width and theme.
     let t = 0;
     // (PergamonTheme has no way to unsubscribe, so a page that is gone ignores it.)
-    const refresh = () => { clearTimeout(t); t = setTimeout(() => { if (list.isConnected) entries.forEach(({ e }) => e._refresh()); }, 120); };
-    requestAnimationFrame(() => entries.forEach(({ e }) => e._refresh()));
+    const refresh = () => { clearTimeout(t); t = setTimeout(() => { if (list.isConnected) { entries.forEach(({ e }) => e._refresh()); fillMeta(); } }, 120); };
+    requestAnimationFrame(() => { entries.forEach(({ e }) => e._refresh()); fillMeta(); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
     window.addEventListener('resize', refresh);
     const theme = window.PergamonTheme;

@@ -140,7 +140,7 @@ These are sequencing intentions, not deadlines or commitments to specific techno
 
 ## Implementation status
 
-As of 2026-11-22 (Phase H2, second step). This section is maintained with the code; the vision above is not changed by it.
+As of 2026-11-22 (after the Handbook redesign and Site Navigation milestone). This section is maintained with the code; the vision above is not changed by it.
 
 | Area | State | Where |
 |---|---|---|
@@ -149,7 +149,9 @@ As of 2026-11-22 (Phase H2, second step). This section is maintained with the co
 | Live Typography page: specimens, roles, values, usage, exceptions | Implemented (H1) | Foundations › Typography |
 | This vision, readable in the Handbook | Implemented (H1) | Vision & Architecture |
 | Header, sidebar, homepage widgets, Settings, Account and footer using the type roles where they match | Implemented (H2) | Their CSS reads the role tokens |
-| Remaining differences, Admin Mode | Planned (H2) | Kept as pending in the registry |
+| Handbook catalogue redesign: Dashboard, Typography specimens, Widgets catalogue, Handbook sections in the shared sidebar | Implemented (Handbook redesign milestone) | `scripts/handbook/`, `scripts/layout.js` |
+| Site Navigation: the sidebar links edited in Admin Mode, published with the homepage | Implemented (Handbook redesign milestone; migration 0013 on staging) | `scripts/cms/site-nav.js`, `site.sidebar` |
+| Remaining typography differences, Admin Mode typography | Planned (H2) | Kept as pending in the registry |
 | Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
 | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | Planned (H3) | Shown as Planned in the Handbook |
 | Element and widget registry with live previews and where-used | Long-term (H4) | — |

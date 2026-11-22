@@ -1,8 +1,10 @@
 # Atlas Handbook
 
-An internal, read-only design-system reference for administrators, at
-`/handbook/`. Phase H1 builds the shell and the typography foundation;
-the long-term layers are **Foundations → Elements → Widgets → Pages**.
+An internal, read-only design-system catalogue for administrators, at
+`/handbook/`, inside the normal site (header, footer, themes). Its sections
+are **Overview** (Dashboard, Vision), **Foundations** (Typography; Colors,
+Spacing and Motion planned) and **Library** (Widgets; Elements and Layouts
+planned).
 
 **The long-term architecture is defined in [`ATLAS_VISION.md`](ATLAS_VISION.md)**,
 the canonical, living vision for the design system, widgets, page builder and
@@ -20,7 +22,9 @@ vision and lists recommendations for later phases.
 | | Overview, Foundations › Typography (live specimens, values, usage, exceptions) | H1 |
 | | Vision & Architecture (this vision, rendered from the repository) | H1 |
 | **Implemented** | Header, sidebar, homepage widgets, Settings, Account and footer take matching styles from the roles | H2 |
-| **Planned** | Review of the remaining differences; Admin Mode; legacy game typography | H2 |
+| **Implemented** | Handbook redesign: catalogue Dashboard, Typography specimens, Widgets catalogue; Handbook sections in the shared site sidebar | H3 |
+| | Site Navigation: the sidebar's links, edited in Admin Mode, published with the homepage (`site.sidebar`, migration 0013) | H3 |
+| **Planned** | Review of the remaining typography differences; Admin Mode typography; legacy game typography | H2 |
 | | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | H3 |
 | **Long-term** | Element and widget registry with live previews, dependencies, where-used | H4 |
 | | Page model, templates and layout constraints | H5 |
@@ -38,7 +42,10 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/handbook/index.html` | The page: shared header, sidebar, footer and themes; an empty `#handbook-root` until access is decided. `noindex`. |
 | `PergamonAtlas.V1/scripts/handbook/entry.js` | Administrator check and the header's book icon. Loaded on the homepage and the Handbook. |
 | `PergamonAtlas.V1/scripts/handbook/gate.js` | Shows the Handbook (and only then loads its code) or a generic access-denied notice. |
-| `PergamonAtlas.V1/scripts/handbook/handbook.js` | App shell: section tree, hash routes, Overview, planned-section pages, the phone-preview frame mode. |
+| `PergamonAtlas.V1/scripts/handbook/handbook.js` | App shell: the sections (`GROUPS`, shown in the site sidebar), hash routes, breadcrumbs, the Dashboard, group and planned pages, the phone-preview frame mode. |
+| `PergamonAtlas.V1/scripts/handbook/widgets-page.js` | Library › Widgets: the widget catalogue. |
+| `PergamonAtlas.V1/scripts/layout.js` | The site's header and sidebar. One sidebar renderer for Site Navigation (published, cached or built-in) and a section's own navigation (the Handbook). |
+| `PergamonAtlas.V1/scripts/cms/site-nav.js` | Admin Mode's Site Navigation editor. |
 | `PergamonAtlas.V1/scripts/handbook/typography-page.js` | Foundations › Typography. |
 | `PergamonAtlas.V1/styles/handbook.css` | Handbook layout (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/design/typography.js` | **Typography registry: the source of truth.** |
@@ -114,9 +121,36 @@ it can be bookmarked or shared with another admin. The contents list sits
 beside the document on wide screens and becomes a menu above it below
 1201px; it marks the section being read.
 
+## Navigation: one sidebar
+
+The Handbook has no menu of its own. While it is open, `handbook.js` gives
+the site's sidebar its sections (`PergamonLayout.setNavigation`), so the
+same component, styles, collapse button and phone menu serve both. On desktop
+it sits in the Handbook's grid as the floating, rounded rail, exactly as on the
+homepage (`PergamonLayout.mountSidebar`; `unmountSidebar` when the Handbook
+closes), and stays in view while long pages scroll. The
+Handbook opens the sidebar expanded (with group names) and remembers its own
+collapsed / expanded choice, separately from the rest of the site. Leaving
+the Handbook, or losing access to it, puts the site's links back. Guests and
+members never receive the Handbook's sections: they are in the Handbook's
+code, which only administrators load.
+
+The rest of the site shows **Site Navigation**: the links administrators edit
+in Admin Mode (see `docs/cms/ARCHITECTURE.md` §5f), or the built-in links in
+`layout.js` when nothing is published.
+
+## The Widgets catalogue
+
+One entry per widget: purpose, a preview, its configuration, the type roles
+it uses and its source files. Sidebar Navigation is drawn live by the site's
+sidebar code; the homepage widgets are static previews (labelled as such)
+that use the widgets' real type roles. Drawing them live would mean loading
+the homepage's code into the Handbook; that waits for component extraction.
+
 ## Adding a section
 
-Add it to `SECTIONS` in `handbook.js` (it appears as Planned), then register a
+Add it to `GROUPS` in `handbook.js` (it appears as Planned, in the sidebar
+and on its group page), then register a
 renderer: `PergamonHandbook.app.register('<group>/<id>', { render(el, ctx), specimen?(el, ctx), navigate?(rest) })`
 from a script that `gate.js` loads. Anything after the section's path in the
 address arrives as `ctx.rest`; a renderer with `navigate(rest)` handles later
