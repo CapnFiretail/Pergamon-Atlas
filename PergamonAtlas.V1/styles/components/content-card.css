@@ -1,0 +1,45 @@
+/* Content card (scripts/components/content-card.js): artwork, title,
+ * metadata and an optional action icon. Moved from styles/home.css unchanged.
+ * The card fills the width it is given (a carousel sets it); a narrow card
+ * (180px or less, as in a compact carousel) uses the artwork's phone crop. */
+
+.home-tile, .home-tile *, .home-tile *::before, .home-tile *::after { box-sizing: border-box; }
+.home-tile { container: content-card / inline-size; color: inherit; text-decoration: none; }
+.home-tile:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* ── Artwork placeholder ───────────────────────────────────────────────── */
+.home-art {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-surface-hover);
+  border: 1px dashed var(--color-border);
+  border-radius: 10px;
+}
+.home-art img { width: 100%; height: 100%; object-fit: cover; object-position: var(--art-focus, 50% 50%); display: block; }
+/* Zoom past "cover" around the focal point (only when the art sets a zoom). */
+.home-art[data-art-zoom] img { transform: scale(var(--art-zoom, 1)); transform-origin: var(--art-focus, 50% 50%); }
+.home-art-label { color: var(--color-text-secondary); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.home-tile {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+.home-tile:hover { border-color: var(--color-accent); box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.home-tile-art { aspect-ratio: 1 / 1; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; }
+.home-tile-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; }
+.home-tile-text { display: flex; flex-direction: column; min-width: 0; }
+.home-tile-title { margin: 0; overflow: hidden; font-family: var(--type-card-title-family); font-size: var(--type-card-title-size); font-weight: var(--type-card-title-weight); line-height: var(--type-card-title-leading); letter-spacing: var(--type-card-title-tracking); text-transform: var(--type-card-title-transform); text-overflow: ellipsis; white-space: nowrap; }
+.home-tile-category { color: var(--color-text-secondary); font-size: 13px; font-weight: 500; }
+.home-tile-play { width: 30px; height: 30px; flex-shrink: 0; padding: 7px 6px 7px 8px; border: 1.5px solid var(--color-accent); border-radius: 50%; fill: var(--color-accent-text); }
+
+@container content-card (max-width: 180px) {
+  /* Carousel artwork: the phone crop, when the card has one. */
+  .home-art img { object-position: var(--art-focus-narrow, var(--art-focus, 50% 50%)); }
+  .home-art[data-art-zoom] img { transform: scale(var(--art-zoom-narrow, var(--art-zoom, 1))); transform-origin: var(--art-focus-narrow, var(--art-focus, 50% 50%)); }
+}

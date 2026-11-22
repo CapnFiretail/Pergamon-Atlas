@@ -26,7 +26,8 @@ vision and lists recommendations for later phases.
 | | Site Navigation: the sidebar's links, edited in Admin Mode, published with the homepage (`site.sidebar`, migration 0013) | H3 |
 | **Planned** | Review of the remaining typography differences; Admin Mode typography; legacy game typography | H2 |
 | | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | H3 |
-| **Long-term** | Element and widget registry with live previews, dependencies, where-used | H4 |
+| **Implemented** | Component library: Feature banner (hero, banner), Content Card, Carousel, extracted from the homepage and previewed live in the Handbook | H4 |
+| **Long-term** | Element and widget registry with dependencies and automatic where-used | H4+ |
 | | Page model, templates and layout constraints | H5 |
 | | Visual editing: drafts, preview, validation, publish, rollback | H6 |
 | | Hybrid template + blank-grid page builder | H7 |
@@ -43,7 +44,9 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/scripts/handbook/entry.js` | Administrator check and the header's book icon. Loaded on the homepage and the Handbook. |
 | `PergamonAtlas.V1/scripts/handbook/gate.js` | Shows the Handbook (and only then loads its code) or a generic access-denied notice. |
 | `PergamonAtlas.V1/scripts/handbook/handbook.js` | App shell: the sections (`GROUPS`, shown in the site sidebar), hash routes, breadcrumbs, the Dashboard, group and planned pages, the phone-preview frame mode. |
-| `PergamonAtlas.V1/scripts/handbook/widgets-page.js` | Library › Widgets: the widget catalogue. |
+| `PergamonAtlas.V1/scripts/handbook/widgets-page.js` | Library › Widgets: the component catalogue, with live previews. |
+| `PergamonAtlas.V1/scripts/handbook/component-examples.js` | Sample inputs for those previews (content only; the components draw them). |
+| `PergamonAtlas.V1/scripts/components/*.js`, `styles/components/*.css` | The component library: `feature-banner`, `content-card`, `carousel`. |
 | `PergamonAtlas.V1/scripts/layout.js` | The site's header and sidebar. One sidebar renderer for Site Navigation (published, cached or built-in) and a section's own navigation (the Handbook). |
 | `PergamonAtlas.V1/scripts/cms/site-nav.js` | Admin Mode's Site Navigation editor. |
 | `PergamonAtlas.V1/scripts/handbook/typography-page.js` | Foundations › Typography. |
@@ -139,13 +142,60 @@ The rest of the site shows **Site Navigation**: the links administrators edit
 in Admin Mode (see `docs/cms/ARCHITECTURE.md` §5f), or the built-in links in
 `layout.js` when nothing is published.
 
+## The component library (H4)
+
+General-purpose components, not game widgets. Each owns its presentation and
+behaviour and knows nothing about games, the CMS, Admin Mode or the page it
+is on (a test checks the code for that):
+
+| Component | Kind | Owns | Inputs |
+|---|---|---|---|
+| Feature banner (`feature-banner.js`) | Content | Artwork, title lockup, one action; variants `hero` (Featured Content) and `banner` (Spotlight) | `{ title, actionLabel, href, art }`, `actionIcon` |
+| Content Card (`content-card.js`) | Content | Artwork (with its phone crop when 180px or narrower), title, metadata, link, optional action icon | `{ title, meta, href, art, action }` |
+| Carousel (`carousel.js`) | Container | Layout, gliding and arrows (`glide.js`), optional filters and sections, empty state, announcements, responsive widths | sections of `{ key, element, label, facet }` items |
+
+The **homepage** (`scripts/home.js`) owns everything game- and CMS-specific:
+it turns CMS cards and game entries into those inputs (`featureSlot`,
+`gameCard`, `gamesCarousel`), places them, and keeps the API Admin Mode
+uses. Admin Mode marks its controls `data-no-copy`, so the carousel's
+moving copies leave them out without knowing about Admin Mode.
+
+**Responsiveness**: the Carousel and the Content Card follow their own width
+(size containers `carousel` and `content-card`). The feature banner's
+compact layout follows the page area it sits in (a size container named
+`upper`): a banner can be narrow inside a wide two-column page and should
+keep its wide layout there, so that is the page's decision. Its height also
+comes from where it is placed.
+
+**Placing a feature banner on another page.** Put it in a page area that is a
+size container named `upper`, and give the banner its height there (the
+homepage uses rows of 260px for the hero and 140px for the banner, and `auto`
+once compact):
+
+```css
+.my-area { container: upper / inline-size; display: grid; grid-template-rows: 260px; }
+@container upper (max-width: 640px) { .my-area { grid-template-rows: auto; } }
+```
+
+The compact layout then applies when that area is 640px or narrower. Without
+an `upper` area the banner always shows its wide layout. The Handbook's
+previews and Admin Mode's image editor provide such an area the same way.
+
+The CSS class names (`home-*`) are kept from the homepage so nothing that
+relies on them changed; renaming them is optional later work.
+
 ## The Widgets catalogue
 
-One entry per widget: purpose, a preview, its configuration, the type roles
-it uses and its source files. Sidebar Navigation is drawn live by the site's
-sidebar code; the homepage widgets are static previews (labelled as such)
-that use the widgets' real type roles. Drawing them live would mean loading
-the homepage's code into the Handbook; that waits for component extraction.
+Grouped as **Containers** (Carousel), **Content components** (Featured
+Content — Hero, Spotlight — Banner, Content Card) and **Navigation and page
+widgets** (Sidebar Navigation, Atlas Navigation panel). Every preview is drawn
+by the real code: the components with the sample inputs in
+`component-examples.js` (variants, missing artwork, long titles, no action
+icon, filters, an empty collection, and a Wide / Compact width control), the
+sidebar by the site's sidebar code. Only the Atlas Navigation panel, a
+homepage widget that isn't a component yet, is a labelled static preview.
+Each entry lists its inputs, what it owns, where it is used, what Admin Mode
+can change, its type roles and its source files.
 
 ## Adding a section
 

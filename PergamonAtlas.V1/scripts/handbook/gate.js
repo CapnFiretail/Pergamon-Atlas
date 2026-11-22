@@ -17,6 +17,15 @@
     { js: '/scripts/handbook/typography-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.typographyPage) },
     { js: '/scripts/handbook/vision-content.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.vision) },
     { js: '/scripts/handbook/vision-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.visionPage) },
+    // The component library, for the Widgets page's live previews.
+    { css: '/styles/components/feature-banner.css' },
+    { css: '/styles/components/content-card.css' },
+    { css: '/styles/components/carousel.css' },
+    { js: '/scripts/glide.js', ready: () => !!window.PergamonGlide },
+    { js: '/scripts/components/feature-banner.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.featureBanner) },
+    { js: '/scripts/components/content-card.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.contentCard) },
+    { js: '/scripts/components/carousel.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.carousel) },
+    { js: '/scripts/handbook/component-examples.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.componentExamples) },
     { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) }
   ];
   let loading = null;

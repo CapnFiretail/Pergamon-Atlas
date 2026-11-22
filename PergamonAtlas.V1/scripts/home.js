@@ -1,26 +1,29 @@
-// Homepage renderer. Card content is a CMS document (data/home-content.js is
-// the static copy), translated by scripts/cms/content.js; game lookups come
-// from /data/entries.js. This file only builds structure.
+// Homepage: composition, game and CMS adaptation, and placement. Card content
+// is a CMS document (data/home-content.js is the static copy), translated by
+// scripts/cms/content.js; game lookups come from /data/entries.js.
 //
 // Included as a plain script right after <div id="home">, so the page renders
 // while it is still parsing (no layout shift once the rest loads).
 //
-// Components: featureCard() for the featured and spotlight games,
-// atlasNavigation() for the right-hand panel, carousel() + tile() for the
-// explore strip. Each knows nothing about the page grid. Card components are
-// built once and then apply(model) in place, so they can be redrawn from a
-// new document (window.PergamonHome.render) without rebuilding the page.
+// The reusable components live in scripts/components/ and know nothing about
+// games, the CMS or this page:
+//   featureBanner  the Featured (variant 'hero') and Spotlight ('banner') cards
+//   contentCard    one carousel card (here: a game)
+//   carousel       the explore strip (here: Games and Tools, filtered by category)
+// This file turns CMS cards and game entries into their neutral inputs
+// (featureSlot, gameCard, gamesCarousel), places them, and keeps the API Admin
+// Mode uses (window.PergamonHome). atlasNavigation() is the right-hand panel,
+// a homepage widget. Cards are built once and then updated in place, so they
+// can be redrawn from a new document (PergamonHome.render) without rebuilding
+// the page.
 (function () {
   const content = window.PergamonHomeContent;
   const cms = window.PergamonCMS && window.PergamonCMS.content;
   const root = document.getElementById('home');
-  if (!content || !cms || !root) return;
+  const C = window.PergamonComponents;
+  if (!content || !cms || !root || !C || !C.featureBanner || !C.contentCard || !C.carousel) return;
 
   const ICONS = {
-    play: '<path d="M8 5.5v13l11-6.5z"/>',
-    playSolid: '<path d="M5 2.5v19l16.5-9.5z"/>',
-    prev: '<path d="m15 6-6 6 6 6"/>',
-    next: '<path d="m9 6 6 6-6 6"/>',
     games: '<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M7 10v4M5 12h4M15.5 11h.01M18 13h.01"/>',
     tools: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.1-2.1z"/>',
     account: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
@@ -41,152 +44,25 @@
   let idCount = 0;
   const uid = prefix => `${prefix}-${++idCount}`;
 
-  // Artwork slot: the image (cover crop, focal point and zoom from the art
-  // model; separate phone values), or the neutral placeholder when empty.
-  function art(a, className) {
-    const box = el('div', 'home-art ' + (className || ''));
-    if (a && a.src) {
-      const img = el('img');
-      img.src = a.src;
-      if (a.width) img.width = a.width;
-      if (a.height) img.height = a.height;
-      img.alt = a.alt || '';
-      img.decoding = 'async';
-      img.loading = 'lazy';
-      if (!a.alt) box.setAttribute('aria-hidden', 'true');
-      box.classList.add('has-art');
-      frameArt(box, a);
-      box.append(img);
-    } else {
-      box.setAttribute('aria-hidden', 'true');
-      box.append(el('span', 'home-art-label', 'Artwork'));
-    }
-    return box;
-  }
-  // The slot's crop: focal point and zoom (desktop and phone values).
-  function frameArt(box, a) {
-    ['--art-focus', '--art-focus-narrow', '--art-zoom', '--art-zoom-narrow'].forEach(p => box.style.removeProperty(p));
-    delete box.dataset.artZoom;
-    const set = (prop, v) => { if (v !== undefined) box.style.setProperty(prop, v); };
-    set('--art-focus', a.focus); set('--art-focus-narrow', a.focusNarrow);
-    if (a.zoom !== 1 || a.zoomNarrow !== 1) {
-      box.dataset.artZoom = '';
-      set('--art-zoom', String(a.zoom)); set('--art-zoom-narrow', String(a.zoomNarrow));
-    }
-  }
-  // A tile's artwork after an edit: the same picture is only re-cropped
-  // (no new image element); another picture replaces the slot.
-  function retileArt(card, a) {
-    const box = card.querySelector('.home-art');
-    if (!box) return;
-    const img = box.querySelector('img');
-    if (a && a.src && img && img.getAttribute('src') === a.src) {
-      img.alt = a.alt || '';
-      if (a.alt) box.removeAttribute('aria-hidden'); else box.setAttribute('aria-hidden', 'true');
-      frameArt(box, a);
-    } else {
-      box.replaceWith(art(a, 'home-tile-art'));
-    }
-  }
-
   // ── Data ──────────────────────────────────────────────────────────────
   const entries = (window.atlasEntries && window.atlasEntries.games) || [];
   const norm = path => String(path || '').replace(/\/+$/, '');
   const liveGame = path => entries.find(e => norm(e.path) === norm(path) && !e.archived && e.visibility === 'public' && e.status !== 'coming-soon') || null;
 
   // ── Featured / spotlight cards ────────────────────────────────────────
-  // Full-bleed artwork, a shade, then the title lockup (ornament rules
-  // around a live heading) and the Play Now link. Everything but the image
-  // comes from CSS, so another game only needs new data. The featured card
-  // stacks the button under the title; the spotlight puts it on the right.
-  // Built once; apply(model) sets text, link and art in place.
-  const FEATURE_VARS = ['--feature-focus', '--feature-focus-narrow', '--feature-zoom', '--feature-zoom-narrow',
-    '--feature-art-scale', '--feature-art-scale-narrow', '--feature-art-x', '--feature-art-x-narrow',
-    '--feature-art-y', '--feature-art-y-narrow', '--feature-base'];
-
-  function featureCard(variant) {
-    const spotlight = variant === 'spotlight';
-    const section = el('section', spotlight
-      ? 'home-banner home-banner--spotlight home-feature home-feature--spotlight'
-      : 'home-banner home-banner--featured home-feature');
-    const headingId = uid('home-feature');
-    section.setAttribute('aria-labelledby', headingId);
-
-    const shade = el('div', 'home-feature-shade');
-    shade.setAttribute('aria-hidden', 'true');
-    const copy = el('div', 'home-feature-copy');
-    const lockup = el('div', 'home-feature-lockup');
-    const rule = modifier => {
-      const r = el('div', `home-feature-rule home-feature-rule--${modifier}`);
-      r.setAttribute('aria-hidden', 'true');
-      r.innerHTML = modifier === 'top' ? '<span></span><i></i><span></span>' : '<span></span>';
-      return r;
+  // A CMS card (home.featured / home.spotlight, or a saved card) shown by the
+  // feature banner: the Featured slot is the 'hero' variant, the Spotlight
+  // the 'banner'. The card's `cta` is the banner's action label.
+  function featureSlot(slot) {
+    const b = C.featureBanner({ variant: slot === 'home.spotlight' ? 'banner' : 'hero' });
+    return {
+      element: b.element,
+      applyArt: b.applyArt,
+      apply(item) {
+        b.element.dataset.cmsId = item.id;
+        b.apply({ title: item.title, actionLabel: item.cta, href: item.href, art: item.art });
+      }
     };
-    const h = el('h2', 'home-feature-title'); h.id = headingId;
-    lockup.append(rule('top'), h, rule('bottom'));
-    const action = el('a', 'home-feature-play');
-    action.innerHTML = icon('playSolid', 'home-feature-play-icon');
-    const label = el('span', '');
-    action.append(label);
-    if (spotlight) {
-      copy.append(lockup);
-      section.append(shade, copy, action);
-    } else {
-      copy.append(lockup, action);
-      section.append(shade, copy);
-    }
-
-    let img = null;
-    function applyArt(a) {
-      FEATURE_VARS.forEach(v => section.style.removeProperty(v));
-      delete section.dataset.artFit;
-      delete section.dataset.artZoom;
-      if (!a || !a.src) { if (img) { img.remove(); img = null; } return; }
-      if (!img) { img = el('img', 'home-feature-art'); section.prepend(img); }
-      if (img.getAttribute('src') !== a.src) {
-        if (a.srcset) { img.srcset = a.srcset; img.sizes = '(max-width: 900px) 100vw, 60vw'; }
-        else { img.removeAttribute('srcset'); img.removeAttribute('sizes'); }
-        if (a.width) img.width = a.width; else img.removeAttribute('width');
-        if (a.height) img.height = a.height; else img.removeAttribute('height');
-        img.src = a.src;
-      }
-      img.alt = a.alt || '';
-      if (a.alt) img.removeAttribute('aria-hidden'); else img.setAttribute('aria-hidden', 'true');
-      img.decoding = 'async';
-      img.setAttribute('fetchpriority', spotlight ? 'auto' : 'high');
-      const set = (prop, v) => { if (v !== undefined) section.style.setProperty(prop, v); };
-      if (a.fit === 'height') {
-        // fit: 'height' sizes the art by the card's height (scale × height,
-        // scaleNarrow on phones) instead of covering it, centres it at x / xNarrow, and
-        // feathers its sides into the card colour (`base`). For artwork much
-        // narrower than the card, where "cover" would crop away the subject.
-        section.dataset.artFit = 'height';
-        set('--feature-art-scale', a.scale !== undefined ? String(a.scale) : undefined);
-        set('--feature-art-scale-narrow', a.scaleNarrow !== undefined ? String(a.scaleNarrow) : undefined);
-        set('--feature-art-x', a.x); set('--feature-art-x-narrow', a.xNarrow);
-        set('--feature-art-y', a.y); set('--feature-art-y-narrow', a.yNarrow);
-        set('--feature-base', a.base);
-      } else {
-        set('--feature-focus', a.focus);
-        set('--feature-focus-narrow', a.focusNarrow);
-        // Cover zoom (scale past "cover", around the focal point).
-        if (a.zoom !== 1 || a.zoomNarrow !== 1) {
-          section.dataset.artZoom = '';
-          set('--feature-zoom', String(a.zoom)); set('--feature-zoom-narrow', String(a.zoomNarrow));
-        }
-      }
-    }
-
-    function apply(item) {
-      section.dataset.cmsId = item.id;
-      h.textContent = item.title;
-      action.href = item.href;
-      action.setAttribute('aria-label', `${item.cta}: ${item.title}`);
-      label.textContent = item.cta;
-      applyArt(item.art);
-    }
-
-    return { element: section, apply, applyArt };
   }
 
   // ── Atlas Navigation (right-hand panel) ───────────────────────────────
@@ -231,211 +107,57 @@
     return panel;
   }
 
-  // ── Carousel tile ─────────────────────────────────────────────────────
-  function tile(item, entry) {
-    const card = el('a', 'home-tile');
-    card.href = norm(entry.path) + '/';
-    if (item.id) card.dataset.cmsId = item.id;
-    card.append(art(item.art, 'home-tile-art'));
-    const meta = el('div', 'home-tile-meta');
-    const text = el('div', 'home-tile-text');
-    text.append(el('h3', 'home-tile-title', item.title || entry.name), el('span', 'home-tile-category', item.category));
-    meta.append(text);
-    meta.insertAdjacentHTML('beforeend', icon('play', 'home-tile-play'));
-    card.append(meta);
-    return card;
+  // ── Carousel card ─────────────────────────────────────────────────────
+  // A game as a content card: its live page, its catalogue name when the
+  // card has no title, its category as the card's line of metadata.
+  function gameCard(item, entry) {
+    const card = C.contentCard({ title: item.title || entry.name, meta: item.category, href: norm(entry.path) + '/', art: item.art, action: 'play' });
+    if (item.id) card.element.dataset.cmsId = item.id;
+    return card.element;
   }
 
   // ── Carousel ──────────────────────────────────────────────────────────
-  // Two independent navigation levels:
-  //   Level 1, sections: the top-right arrows switch Games ⇄ Tools
-  //            (state: sectionIndex; handler: switchSection).
-  //   Level 2, cards: the current category's cards glide slowly left to
-  //            right (scripts/glide.js); the tall arrows beside them move one
-  //            card at a time. Cards have one width per breakpoint (home.css).
-
-  // Carousel items: { item, entry } for cards that link to a live game.
+  // The explore strip: one carousel with two sections (Games, Tools; the
+  // top-right arrows), each filtered by category (the tabs). A section with
+  // `component` takes its cards from that document component; only cards
+  // that link to a live game are shown.
   function liveItems(items) {
     return (items || []).map(item => {
       const target = item.href || item.path;
       if (!target) return null;
       const entry = liveGame(target);
       if (!entry) { console.warn('Homepage: carousel item is not a live page:', target); return null; }
-      return { item, entry };
+      return { key: item.id || norm(entry.path), element: gameCard(item, entry), label: item.title || entry.name, facet: item.category };
     }).filter(Boolean);
   }
 
   // `cards` = tile models for sections that take their items from a document
   // component (section.component); other sections use their own `items`.
-  function carousel(data, cards) {
-    const sections = data.sections.map(sec => ({
-      ...sec,
-      items: liveItems(sec.component ? cards : sec.items)
-    }));
-
-    let sectionIndex = 0;                       // level 1
-    const view = { category: '' };              // level 2
-
-    const section = el('section', 'home-carousel');
-    const headingId = uid('home-carousel');
-    section.setAttribute('aria-labelledby', headingId);
-
-    const head = el('div', 'home-carousel-head');
-    const h = el('h2', 'home-carousel-title'); h.id = headingId;
-    const tabs = el('div', 'home-tabs');
-    tabs.setAttribute('role', 'group');
-
-    const sectionNav = el('div', 'home-section-nav');
-    const prevSection = el('button', 'home-section-button'); prevSection.type = 'button';
-    prevSection.setAttribute('aria-label', 'Previous section'); prevSection.innerHTML = icon('prev');
-    const nextSection = el('button', 'home-section-button'); nextSection.type = 'button';
-    nextSection.setAttribute('aria-label', 'Next section'); nextSection.innerHTML = icon('next');
-    sectionNav.append(prevSection, nextSection);
-    head.append(h, tabs, sectionNav);
-
-    const body = el('div', 'home-carousel-body');
-    const prevCard = el('button', 'home-page-button'); prevCard.type = 'button';
-    prevCard.setAttribute('aria-label', 'Previous card'); prevCard.innerHTML = icon('prev');
-    const nextCard = el('button', 'home-page-button'); nextCard.type = 'button';
-    nextCard.setAttribute('aria-label', 'Next card'); nextCard.innerHTML = icon('next');
-    const viewport = el('div', 'home-track');
-    body.append(prevCard, viewport, nextCard);
-
-    const status = el('p', 'pa-visually-hidden');
-    status.setAttribute('aria-live', 'polite');
-    section.append(head, body, status);
-
-    const current = () => sections[sectionIndex];
-    const filtered = () => current().items.filter(({ item }) => !view.category || item.category === view.category);
-    let shown = [];                             // the filtered cards, as drawn
-
-    const glide = window.PergamonGlide.create(viewport, {
-      prev: prevCard,
-      next: nextCard,
-      hoverArea: body,
-      // Copies show the card only: never Admin Mode's frame and pencil.
-      prepareCopy(copy) {
-        copy.querySelectorAll('.cms-edit-pencil, .cms-edit-frame').forEach(n => n.remove());
-        copy.classList.remove('cms-editable', 'cms-editing');
-      },
-      onStep(index, count) {
-        const entry = shown[index];
-        if (entry) status.textContent = `${entry.item.title || entry.entry.name}, card ${index + 1} of ${count}`;
-      }
+  function gamesCarousel(data, cards) {
+    const docSection = (data.sections.find(sec => sec.component) || {}).id;
+    const c = C.carousel({
+      sections: data.sections.map(sec => ({
+        id: sec.id,
+        title: sec.title,
+        icon: ICONS[sec.icon],
+        filters: sec.categories,
+        items: liveItems(sec.component ? cards : sec.items),
+        emptyMessage: sec.emptyMessage,
+        emptyTag: 'Coming Soon',
+        emptyFilterMessage: sec.emptyCategory
+      }))
     });
-
-    function renderHead() {
-      const sec = current();
-      h.innerHTML = icon(sec.icon, 'home-carousel-icon');
-      h.append(el('span', '', sec.title));
-      tabs.setAttribute('aria-label', `Filter ${sec.id} by category`);
-      tabs.replaceChildren(...sec.categories.map((name, i) => {
-        const b = el('button', 'home-tab', name);
-        b.type = 'button';
-        const value = i === 0 ? '' : name;
-        b.setAttribute('aria-pressed', String(view.category === value));
-        b.addEventListener('click', () => selectCategory(value));
-        return b;
-      }));
-      prevSection.disabled = sectionIndex === 0;
-      nextSection.disabled = sectionIndex === sections.length - 1;
-    }
-
-    // Outside hold (Admin Mode editing): the row stands still without copies,
-    // and an "add" tile from Admin Mode (setTail) follows the cards of
-    // document-driven sections.
-    let held = false;
-    let tail = null;
-
-    // Draw the current category's cards. `keep` holds the row's position
-    // (a CMS redraw); otherwise it starts again from the first card.
-    function renderCards(keep) {
-      const sec = current();
-      shown = filtered();
-      const extras = held && tail && sec.component ? [tail] : [];
-      if (!shown.length && !extras.length) {
-        const message = sec.items.length ? sec.emptyCategory : sec.emptyMessage;
-        const empty = el('div', 'home-track-empty');
-        if (!sec.items.length) empty.append(el('span', 'home-track-tag', 'Coming Soon'));
-        empty.append(el('p', '', message));
-        glide.setEmpty(empty);
-        status.textContent = `${sec.title}: ${message}`;
-        return;
-      }
-      glide.setItems(shown.map(({ item, entry }) => {
-        const wrap = el('div', 'home-track-item');
-        wrap.setAttribute('role', 'listitem');
-        wrap.append(tile(item, entry));
-        return wrap;
-      }), keep, extras);
-      status.textContent = `${sec.title}: ${shown.length} ${shown.length === 1 ? 'card' : 'cards'}`;
-    }
-
-    // Level 1: a new section starts on its first category.
-    function switchSection(delta) {
-      const next = sectionIndex + delta;
-      if (next < 0 || next >= sections.length) return;
-      sectionIndex = next;
-      view.category = '';
-      renderHead();
-      renderCards();
-    }
-
-    function selectCategory(value) {
-      view.category = value;
-      renderHead();
-      renderCards();
-    }
-
-    prevSection.addEventListener('click', () => switchSection(-1));
-    nextSection.addEventListener('click', () => switchSection(1));
-
-    function start() {
-      renderHead();
-      renderCards();
-    }
-
-    // Replace the cards of document-driven sections, keeping the current
-    // section, category and position.
-    function setItems(cards) {
-      let changed = false;
-      sections.forEach(sec => { if (sec.component) { sec.items = liveItems(cards); changed = true; } });
-      if (changed) renderCards(true);
-    }
-
-    // Bring a document card into view (the card editor's live preview): its
-    // section, then "all" if the filter hides it, then its position.
-    function reveal(cardId) {
-      const target = sections.findIndex(sec => sec.component && sec.items.some(({ item }) => item.id === cardId));
-      if (target < 0) return false;
-      if (target !== sectionIndex) { sectionIndex = target; view.category = ''; renderHead(); renderCards(); }
-      if (!filtered().some(({ item }) => item.id === cardId)) { view.category = ''; renderHead(); renderCards(); }
-      const card = viewport.querySelector(`.home-tile[data-cms-id="${CSS.escape(cardId)}"]`);
-      if (card) glide.show(card.parentElement);
-      return true;
-    }
-
-    // Stop or restart the gliding for an outside reason (Admin Mode editing).
-    // Stopping shows the real cards (not their copies) from the first one,
-    // as a fixed row the arrows scroll; restarting redraws the copies from
-    // the cards as they are now.
-    function hold(on) {
-      on = !!on;
-      if (on === held) return;
-      held = on;
-      glide.hold('outside', on);
-      glide.fix(on);
-      renderCards(!on);
-    }
-
-    // Admin Mode's tile after the cards (null removes it). Only drawn while held.
-    function setTail(node) {
-      if (node) { node.classList.add('home-track-item'); node.setAttribute('role', 'listitem'); }
-      tail = node;
-      if (held) renderCards(true);
-    }
-
-    return { element: section, start, setItems, reveal, hold, setTail, category: () => view.category };
+    return {
+      element: c.element,
+      start: c.start,
+      // New document cards for the document-driven section (position kept).
+      setItems: next => data.sections.forEach(sec => { if (sec.component) c.setItems(sec.id, liveItems(next)); }),
+      reveal: c.reveal,
+      hold: c.hold,
+      // Admin Mode's "Add card" tile follows the document's cards only.
+      setTail: node => c.setTail(node, docSection),
+      category: c.filter
+    };
   }
 
   // ── Document → model ──────────────────────────────────────────────────
@@ -458,7 +180,7 @@
   const cards = {};                              // component id -> card component
   [['featured', 'home.featured'], ['spotlight', 'home.spotlight']].forEach(([key, id]) => {
     if (!model[key]) return;
-    const card = featureCard(key === 'spotlight' ? 'spotlight' : 'featured');
+    const card = featureSlot(id);
     card.apply(model[key]);
     cards[id] = card;
     banners.append(card.element);
@@ -472,7 +194,7 @@
   let explore = null;
   if (content.explore && window.PergamonGlide) {
     const lower = el('div', 'home-lower');
-    explore = carousel(content.explore, model.carousel);
+    explore = gamesCarousel(content.explore, model.carousel);
     lower.append(explore.element);
     root.append(lower);
   }
@@ -547,7 +269,7 @@
       if (slot) { cards[slot].applyArt(m); return true; }
       const card = root.querySelector(`.home-tile[data-cms-id="${CSS.escape(id)}"]`);
       if (!card) return false;
-      retileArt(card, m);
+      C.contentCard.setArt(card, m);
       return true;
     },
     // A detached copy of a card, drawn like the page draws it (the editor's
@@ -557,12 +279,12 @@
       const item = cards[id] ? model[slotKey(id)] : savedModel(id) || model.carousel.find(c => c.id === id);
       if (!item) return null;
       if (slot) {
-        const copy = featureCard(slot === 'home.spotlight' ? 'spotlight' : 'featured');
+        const copy = featureSlot(slot);
         copy.apply(item);
         return { element: copy.element, art: a => copy.applyArt(cms.artModel(a, artCtx)) };
       }
-      const card = tile(item, liveGame(item.href) || { path: item.href, name: item.title });
-      return { element: card, art: a => retileArt(card, cms.artModel(a, artCtx)) };
+      const card = gameCard(item, liveGame(item.href) || { path: item.href, name: item.title });
+      return { element: card, art: a => C.contentCard.setArt(card, cms.artModel(a, artCtx)) };
     }
   };
 

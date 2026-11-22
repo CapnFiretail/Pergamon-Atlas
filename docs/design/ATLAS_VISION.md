@@ -140,7 +140,7 @@ These are sequencing intentions, not deadlines or commitments to specific techno
 
 ## Implementation status
 
-As of 2026-11-22 (after the Handbook redesign and Site Navigation milestone). This section is maintained with the code; the vision above is not changed by it.
+As of 2026-11-22 (after the H4 component library). This section is maintained with the code; the vision above is not changed by it.
 
 | Area | State | Where |
 |---|---|---|
@@ -154,7 +154,8 @@ As of 2026-11-22 (after the Handbook redesign and Site Navigation milestone). Th
 | Remaining typography differences, Admin Mode typography | Planned (H2) | Kept as pending in the registry |
 | Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
 | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | Planned (H3) | Shown as Planned in the Handbook |
-| Element and widget registry with live previews and where-used | Long-term (H4) | — |
+| Component library: Feature banner (hero / banner), Content Card, Carousel, previewed live in the Handbook | Implemented (H4) | `scripts/components/`, `styles/components/` |
+| Element and widget registry with dependencies and automatic where-used | Long-term (H4+) | — |
 | Page model, templates and layout constraints | Long-term (H5) | — |
 | Visual editing with drafts, preview, publish and rollback | Long-term (H6) | — |
 | Hybrid page builder | Long-term (H7) | — |

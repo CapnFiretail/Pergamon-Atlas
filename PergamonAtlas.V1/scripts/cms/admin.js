@@ -673,7 +673,9 @@
         host.classList.add('cms-editable');
         const frame = el('span', 'cms-edit-frame');
         frame.setAttribute('aria-hidden', 'true');
+        frame.dataset.noCopy = '';                   // never in the carousel's moving copies
         pencil = el('button', 'cms-edit-pencil');
+        pencil.dataset.noCopy = '';
         pencil.type = 'button';
         pencil.setAttribute('aria-controls', 'cms-drawer');
         pencil.innerHTML = svg('pencil', 'cms-edit-icon') + '<span class="cms-edit-badge" aria-hidden="true"></span>';

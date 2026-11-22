@@ -118,10 +118,10 @@
       use: 'A page’s main content section heading, and dialog titles.',
       restrictions: ['At most one level above Section title; never instead of the Page title.'],
       size: '22px',
-      responsive: [{ type: 'container', container: 'lower', query: '(max-width: 640px)', size: '18px', name: 'narrow' }],
+      responsive: [{ type: 'container', container: 'carousel', query: '(max-width: 640px)', size: '18px', name: 'narrow' }],
       preview: { text: 'Explore More Games' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-carousel-title', status: 'adopted', note: 'Games carousel heading; 18px when its section is 640px wide or less.' },
+        { file: 'styles/components/carousel.css', selector: '.home-carousel-title', status: 'adopted', note: 'Games carousel heading; 18px when its section is 640px wide or less.' },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-title', status: 'pending', current: { weight: 800 } },
         { file: 'styles/cms-admin.css', selector: '.cms-publish-title', status: 'pending', current: { weight: 800 } }
       ]
@@ -134,7 +134,7 @@
       responsive: [],
       preview: { text: 'Connect Four' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-tile-title', status: 'adopted', note: 'Games carousel cards.' },
+        { file: 'styles/components/content-card.css', selector: '.home-tile-title', status: 'adopted', note: 'Games carousel cards.' },
         { file: 'games/index.html', selector: '.feat-name', status: 'legacy', current: { size: '15px' }, note: 'Games catalogue cards: Georgia 15px (inherited family).' }
       ]
     },
@@ -173,7 +173,7 @@
       responsive: [],
       preview: { text: 'Guests use Obsidian & Gold. Sign in to choose another palette.' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-track-empty p', status: 'adopted', note: 'Games carousel message for an empty category.' },
+        { file: 'styles/components/carousel.css', selector: '.home-track-empty p', status: 'adopted', note: 'Games carousel message for an empty category.' },
         { file: 'styles/settings.css', selector: '.settings-note', status: 'adopted', note: 'Settings notes.' },
         { file: 'styles/account.css', selector: '.account-intro', status: 'adopted', note: 'Account introduction.' },
         { file: 'styles/account.css', selector: '.account-benefits li', status: 'adopted', note: 'Account: member benefits list.' },
@@ -192,7 +192,7 @@
         { file: 'styles/home.css', selector: '.home-context-desc', status: 'adopted', note: 'Atlas Navigation row descriptions.' },
         { file: 'styles/settings.css', selector: '.settings-storage', status: 'adopted', note: 'Settings: where choices are stored.' },
         { file: 'styles/account.css', selector: '.account-member dt', status: 'adopted', note: 'Account: member detail labels.' },
-        { file: 'styles/home.css', selector: '.home-tile-category', status: 'pending', current: { weight: 500 } }
+        { file: 'styles/components/content-card.css', selector: '.home-tile-category', status: 'pending', current: { weight: 500 } }
       ]
     },
     {
@@ -204,9 +204,9 @@
       preview: { text: 'Coming soon' },
       adoption: [
         { file: 'styles/placeholder.css', selector: '.pa-placeholder .pa-placeholder-tag', status: 'pending', current: { leading: '1.6' }, note: 'Inherits line height 1.6 from the placeholder paragraph style.' },
-        { file: 'styles/home.css', selector: '.home-track-tag', status: 'adopted', note: 'Games carousel “Coming soon” tags.' },
+        { file: 'styles/components/carousel.css', selector: '.home-track-tag', status: 'adopted', note: 'Games carousel “Coming soon” tags.' },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-eyebrow', status: 'equivalent' },
-        { file: 'styles/home.css', selector: '.home-art-label', status: 'pending', current: { weight: 600 } },
+        { file: 'styles/components/content-card.css', selector: '.home-art-label', status: 'pending', current: { weight: 600 } },
         { file: 'styles/layout.css', selector: '.pa-sidebar-heading', status: 'pending', current: { weight: 600, tracking: '0.04em' } },
         { file: 'styles/cms-admin.css', selector: '.cms-admin-label', status: 'pending', current: { tracking: '0.06em' } }
       ]
@@ -232,7 +232,7 @@
       responsive: [],
       preview: { text: 'All Games' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-tab', status: 'adopted', note: 'Games carousel category tabs.' },
+        { file: 'styles/components/carousel.css', selector: '.home-tab', status: 'adopted', note: 'Games carousel category tabs.' },
         { file: 'styles/account.css', selector: '.account-tab', status: 'equivalent', note: 'Matches, except it drops to 12px at 360px and below; left separate so that step stays its own.' },
         { file: 'styles/settings.css', selector: '.mode-option', status: 'pending', current: { size: '15px' } }
       ]
@@ -311,7 +311,7 @@
       family: 'display', size: 'clamp(38px, 5.6cqi, 50px)', weight: 800, leading: '1', tracking: '0.005em', transform: 'none',
       responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(30px, 10cqi, 40px)', name: 'narrow' }],
       preview: { text: 'Chess Forge', container: FEATURE_CONTAINER, width: 700, surface: 'feature' },
-      adoption: [{ file: 'styles/home.css', selector: '.home-feature-title', status: 'adopted', note: 'Featured card.' }]
+      adoption: [{ file: 'styles/components/feature-banner.css', selector: '.home-feature-title', status: 'adopted', note: 'Featured card.' }]
     },
     {
       id: 'spotlight-title', name: 'Spotlight title', kind: 'variant', of: 'feature-title', status: 'active',
@@ -320,7 +320,7 @@
       size: 'clamp(26px, 3.6cqi, 32px)',
       responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(24px, 7.5cqi, 30px)', name: 'narrow' }],
       preview: { text: 'Connect Four', container: FEATURE_CONTAINER, width: 700, surface: 'feature' },
-      adoption: [{ file: 'styles/home.css', selector: '.home-feature--spotlight .home-feature-title', status: 'adopted', note: 'Spotlight card.' }]
+      adoption: [{ file: 'styles/components/feature-banner.css', selector: '.home-feature--spotlight .home-feature-title', status: 'adopted', note: 'Spotlight card.' }]
     },
     {
       id: 'feature-cta', name: 'Feature call to action', kind: 'exception', status: 'active',
@@ -329,7 +329,7 @@
       family: 'display', size: '19px', weight: 800, leading: '1', tracking: '0.04em', transform: 'uppercase',
       responsive: [],
       preview: { text: 'Play now', surface: 'feature' },
-      adoption: [{ file: 'styles/home.css', selector: '.home-feature .home-feature-play', status: 'adopted', note: 'Featured card.' }]
+      adoption: [{ file: 'styles/components/feature-banner.css', selector: '.home-feature .home-feature-play', status: 'adopted', note: 'Featured card.' }]
     },
     {
       id: 'spotlight-cta', name: 'Spotlight call to action', kind: 'variant', of: 'feature-cta', status: 'active',
@@ -338,7 +338,7 @@
       size: '16px',
       responsive: [],
       preview: { text: 'Play now', surface: 'feature' },
-      adoption: [{ file: 'styles/home.css', selector: '.home-feature--spotlight .home-feature-play', status: 'adopted', note: 'Spotlight card.' }]
+      adoption: [{ file: 'styles/components/feature-banner.css', selector: '.home-feature--spotlight .home-feature-play', status: 'adopted', note: 'Spotlight card.' }]
     }
   ];
 

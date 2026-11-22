@@ -575,7 +575,7 @@
     {
      "type": "p",
      "text": [
-      "As of 2026-11-22 (after the Handbook redesign and Site Navigation milestone). This section is maintained with the code; the vision above is not changed by it."
+      "As of 2026-11-22 (after the H4 component library). This section is maintained with the code; the vision above is not changed by it."
      ]
     },
     {
@@ -751,10 +751,29 @@
       ],
       [
        [
-        "Element and widget registry with live previews and where-used"
+        "Component library: Feature banner (hero / banner), Content Card, Carousel, previewed live in the Handbook"
        ],
        [
-        "Long-term (H4)"
+        "Implemented (H4)"
+       ],
+       [
+        [
+         "code",
+         "scripts/components/"
+        ],
+        ", ",
+        [
+         "code",
+         "styles/components/"
+        ]
+       ]
+      ],
+      [
+       [
+        "Element and widget registry with dependencies and automatic where-used"
+       ],
+       [
+        "Long-term (H4+)"
        ],
        [
         "—"
