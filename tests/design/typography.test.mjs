@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { build } from '../../tools/build-typography.mjs';
@@ -123,6 +123,7 @@ test('adoption claims match the CSS they point at', () => {
     for (const a of r.adoption || []) {
       const found = rules(a.file).filter(x => !x.at && norm(x.selector) === norm(a.selector));
       if (!found.length) { problems.push(`${r.id}: no rule "${a.selector}" in ${a.file}`); continue; }
+      if (a.status === 'adopted') { problems.push(...adoptedProblems(r, a, found)); continue; }
       const d = Object.assign({}, ...found.map(x => declared(x.decls)));
       // Expected = the role's values, overridden by `current` for pending/legacy entries.
       const expect = Object.assign({}, Object.fromEntries(PROPS.map(p => [p, r[p]])), a.current || {});
@@ -147,8 +148,54 @@ test('adoption claims match the CSS they point at', () => {
   assert.deepEqual(problems, []);
 });
 
-test('no role is adopted yet (H1 changes no existing page)', () => {
-  // When a selector starts using the tokens, mark it 'adopted' and relax this.
-  const adopted = registry.roles.flatMap(r => (r.adoption || []).filter(a => a.status === 'adopted'));
-  assert.equal(adopted.length, 0);
+// An 'adopted' selector takes all six properties from its role's tokens (so
+// any change to the role reaches it), takes container steps from the role's
+// named step tokens, and has no viewport rule left that sets a size by hand
+// (the role's viewport steps are on its tokens).
+const CSS_PROPS = { family: 'font-family', size: 'font-size', weight: 'font-weight', leading: 'line-height', tracking: 'letter-spacing', transform: 'text-transform' };
+function adoptedProblems(r, a, found) {
+  const problems = [];
+  const decls = Object.assign({}, ...found.map(x => x.decls));
+  if (decls.font) problems.push(`${r.id}: ${a.selector} still has a font shorthand`);
+  for (const [p, css] of Object.entries(CSS_PROPS)) {
+    if (norm(decls[css] || '') !== norm(`var(${typo.token(r.id, p)})`)) problems.push(`${r.id}: ${a.file} ${a.selector} ${css} is "${decls[css] || '(not set)'}", expected var(${typo.token(r.id, p)})`);
+  }
+  const all = rules(a.file).filter(x => x.at && norm(x.selector) === norm(a.selector));
+  for (const s of (r.responsive || []).filter(s => s.type === 'container')) {
+    const at = norm(`@container ${s.container} ${s.query}`);
+    const step = all.find(x => x.at === at && x.decls['font-size']);
+    if (!step || norm(step.decls['font-size']) !== norm(`var(${typo.token(r.id, 'size')}-${s.name})`)) problems.push(`${r.id}: ${a.file} ${at} ${a.selector} should use var(${typo.token(r.id, 'size')}-${s.name})`);
+  }
+  for (const x of all.filter(x => x.at.startsWith('@media'))) {
+    for (const css of Object.values(CSS_PROPS).concat('font')) if (x.decls[css] && !/var\(--type-/.test(x.decls[css])) problems.push(`${r.id}: ${a.file} ${x.at} ${a.selector} sets ${css} by hand`);
+  }
+  return problems;
+}
+
+test('every page that uses role tokens loads typography.css first', () => {
+  const pages = [];
+  (function walk(dir) {
+    for (const e of readdirSync(path.join(SITE, dir), { withFileTypes: true })) {
+      const rel = dir ? `${dir}/${e.name}` : e.name;
+      if (e.isDirectory() && !['operation', 'vendor', 'node_modules'].includes(e.name)) walk(rel);
+      else if (e.name === 'index.html') pages.push(rel);
+    }
+  })('');
+  const consumers = [...new Set(registry.roles.flatMap(r => (r.adoption || []).filter(a => a.status === 'adopted' && a.file.endsWith('.css')).map(a => a.file)))];
+  assert.ok(consumers.length, 'some stylesheet uses the tokens');
+  const missing = [];
+  for (const page of pages) {
+    const html = readFileSync(path.join(SITE, page), 'utf8');
+    const at = f => html.indexOf(`href="/${f}"`);
+    for (const f of consumers) if (at(f) >= 0 && !(at('styles/typography.css') >= 0 && at('styles/typography.css') < at(f))) missing.push(`${page} loads ${f} without typography.css before it`);
+  }
+  assert.deepEqual(missing, []);
+});
+
+test('variants inherit from their base role through its tokens', () => {
+  const css = build();
+  for (const r of registry.roles.filter(r => r.kind === 'variant')) {
+    assert.ok(r.inherits && r.inherits.length, `${r.id} inherits something`);
+    for (const p of r.inherits) assert.ok(css.includes(`${typo.token(r.id, p)}: var(${typo.token(r.of, p)});`), `${r.id} ${p} points at ${r.of}`);
+  }
 });

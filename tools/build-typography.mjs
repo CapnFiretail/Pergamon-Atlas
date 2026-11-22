@@ -29,7 +29,9 @@ export function build() {
     ' * Do not edit: change the registry and run `node tools/build-typography.mjs`.',
     ' *',
     ' * Semantic type roles: --type-<role>-<property> tokens on :root and one',
-    ' * .pa-type-<role> class per role that applies them. Font families come from',
+    ' * .pa-type-<role> class per role that applies them. Site components use the',
+    ' * same tokens in their own CSS, so a change here reaches them. A variant’s',
+    ' * inherited values point at its base role’s tokens. Font families come from',
     ' * styles/theme.css (--font-display, --font-ui); the legacy serif is defined',
     ' * here so the current game header can be described. Text colour is not part',
     ' * of a role: it comes from the theme tokens. */',
@@ -41,7 +43,12 @@ export function build() {
   }
   for (const r of registry.roles) {
     lines.push(`  /* ${r.name} (${r.kind}${r.of ? ' of ' + r.of : ''}${r.status === 'legacy' ? ', legacy' : ''}) */`);
-    for (const p of PROPS) if (value(r, p) !== 'inherit') lines.push(`  ${token(r.id, p)}: ${value(r, p)};`);
+    for (const p of PROPS) {
+      if (value(r, p) === 'inherit') continue;
+      const v = (r.inherits || []).includes(p) ? `var(${token(r.of, p)})` : value(r, p);
+      lines.push(`  ${token(r.id, p)}: ${v};`);
+    }
+    for (const s of r.responsive || []) if (s.type === 'container') lines.push(`  ${token(r.id, 'size')}-${s.name}: ${s.size};`);
     if (r.numeric) lines.push(`  ${token(r.id, 'numeric')}: ${r.numeric};`);
   }
   lines.push('}', '');
@@ -64,7 +71,7 @@ export function build() {
   // Container steps apply to the role's class inside the named container.
   for (const r of registry.roles) {
     for (const s of r.responsive || []) {
-      if (s.type === 'container') lines.push(`@container ${s.container} ${s.query} { .pa-type-${r.id} { ${token(r.id, 'size')}: ${s.size}; } }`);
+      if (s.type === 'container') lines.push(`@container ${s.container} ${s.query} { .pa-type-${r.id} { ${token(r.id, 'size')}: var(${token(r.id, 'size')}-${s.name}); } }`);
     }
   }
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';

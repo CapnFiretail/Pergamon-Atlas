@@ -19,14 +19,21 @@
 //                   responsive[], preview, adoption[] }
 //     kind        'role' (global) | 'variant' (a controlled variation of `of`)
 //                 | 'exception' (approved, documented, one place only)
+//     variants    list only the values that differ from their base role; the
+//                 rest are inherited (filled in below, listed in `inherits`),
+//                 and their generated tokens point at the base role's, so a
+//                 change to the base reaches the variant too
 //     status      'active' | 'legacy' (describes styling that awaits migration)
 //     responsive  { type: 'media', query, size } — applied by the generated CSS
-//                 { type: 'container', container, query, size } — applied to
-//                   .pa-type-* elements inside that named container
+//                 { type: 'container', container, query, size, name } — a
+//                   --type-<role>-size-<name> token; the generated CSS applies it
+//                   to .pa-type-* elements in that named container, and a
+//                   component's own container rule uses the same token
 //                 { type: 'note', text } — behaviour the tokens don't carry yet
 //     adoption    where the site's existing CSS has this role today:
 //                 { file, selector, status, current?, note? }
-//                   'adopted'     the selector uses the role's tokens
+//                   'adopted'     the selector uses the role's tokens, so it
+//                                 follows any change to the role
 //                   'equivalent'  same declared values, not yet linked
 //                   'pending'     differs; `current` records today's values
 //                                 (verified by the test), normalisation pending
@@ -99,7 +106,7 @@
       responsive: [],
       preview: { text: 'Atlas Navigation' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-context-title', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-context-title', status: 'adopted', note: 'Atlas Navigation panel heading.' },
         { file: 'operation/styles/footer.css', selector: '.footer-brand h3', status: 'equivalent', note: 'The footer brand uses this style; it should stop being a heading (see the heading-structure decision).' },
         { file: 'styles/settings.css', selector: '.settings-heading', status: 'pending', current: { leading: '1.3' } },
         { file: 'styles/account.css', selector: '.account-heading', status: 'pending', current: { size: '23px', leading: '1.3' } },
@@ -110,11 +117,11 @@
       id: 'section-title-large', name: 'Section title, large', kind: 'variant', of: 'section-title', status: 'active',
       use: 'A page’s main content section heading, and dialog titles.',
       restrictions: ['At most one level above Section title; never instead of the Page title.'],
-      family: 'display', size: '22px', weight: 700, leading: '1.2', tracking: 'normal', transform: 'none',
-      responsive: [{ type: 'note', text: 'The homepage carousel title drops to 18px when its section is 640px wide or less (container query in home.css).' }],
+      size: '22px',
+      responsive: [{ type: 'container', container: 'lower', query: '(max-width: 640px)', size: '18px', name: 'narrow' }],
       preview: { text: 'Explore More Games' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-carousel-title', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-carousel-title', status: 'adopted', note: 'Games carousel heading; 18px when its section is 640px wide or less.' },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-title', status: 'pending', current: { weight: 800 } },
         { file: 'styles/cms-admin.css', selector: '.cms-publish-title', status: 'pending', current: { weight: 800 } }
       ]
@@ -127,7 +134,7 @@
       responsive: [],
       preview: { text: 'Connect Four' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-tile-title', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-tile-title', status: 'adopted', note: 'Games carousel cards.' },
         { file: 'games/index.html', selector: '.feat-name', status: 'legacy', current: { size: '15px' }, note: 'Games catalogue cards: Georgia 15px (inherited family).' }
       ]
     },
@@ -139,7 +146,7 @@
       responsive: [],
       preview: { text: 'Login / Sign Up' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-context-label', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-context-label', status: 'adopted', note: 'Atlas Navigation rows.' },
         { file: 'styles/settings.css', selector: '.palette-name', status: 'equivalent' },
         { file: 'styles/cms-admin.css', selector: '.cms-manage-name', status: 'pending', current: { weight: 400 }, note: 'Inherits weight 400.' }
       ]
@@ -166,6 +173,7 @@
       responsive: [],
       preview: { text: 'Guests use Obsidian & Gold. Sign in to choose another palette.' },
       adoption: [
+        { file: 'styles/home.css', selector: '.home-track-empty p', status: 'adopted', note: 'Games carousel message for an empty category.' },
         { file: 'styles/settings.css', selector: '.settings-note', status: 'equivalent' },
         { file: 'styles/account.css', selector: '.account-intro', status: 'equivalent' },
         { file: 'styles/cms-admin.css', selector: '.cms-publish-body', status: 'equivalent' }
@@ -179,7 +187,7 @@
       responsive: [],
       preview: { text: 'Sign in or create an account' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-context-desc', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-context-desc', status: 'adopted', note: 'Atlas Navigation row descriptions.' },
         { file: 'styles/settings.css', selector: '.settings-storage', status: 'equivalent' },
         { file: 'styles/home.css', selector: '.home-tile-category', status: 'pending', current: { weight: 500 } }
       ]
@@ -193,7 +201,7 @@
       preview: { text: 'Coming soon' },
       adoption: [
         { file: 'styles/placeholder.css', selector: '.pa-placeholder .pa-placeholder-tag', status: 'equivalent' },
-        { file: 'styles/home.css', selector: '.home-track-tag', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-track-tag', status: 'adopted', note: 'Games carousel “Coming soon” tags.' },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-eyebrow', status: 'equivalent' },
         { file: 'styles/home.css', selector: '.home-art-label', status: 'pending', current: { weight: 600 } },
         { file: 'styles/layout.css', selector: '.pa-sidebar-heading', status: 'pending', current: { weight: 600, tracking: '0.04em' } },
@@ -208,20 +216,20 @@
       responsive: [],
       preview: { text: 'Games' },
       adoption: [
-        { file: 'styles/layout.css', selector: '.pa-sidebar a, .pa-sidebar-toggle', status: 'equivalent' },
-        { file: 'styles/layout.css', selector: '.pa-nav a', status: 'equivalent', note: 'Line height inherited; the link’s height is fixed.' },
-        { file: 'operation/styles/footer.css', selector: '.footer-links a', status: 'equivalent', note: 'Line height inherited.' }
+        { file: 'styles/layout.css', selector: '.pa-sidebar a, .pa-sidebar-toggle', status: 'adopted', note: 'Sidebar links and its expand/collapse button.' },
+        { file: 'styles/layout.css', selector: '.pa-nav a', status: 'adopted', note: 'Header navigation. The link’s height is fixed, so line height 1 doesn’t move it.' },
+        { file: 'operation/styles/footer.css', selector: '.footer-links a', status: 'pending', current: { leading: '1.5' }, note: 'Inherits line height 1.5; with no fixed height, line height 1 would make the links shorter.' }
       ]
     },
     {
       id: 'tab', name: 'Tab', kind: 'variant', of: 'nav', status: 'active',
       use: 'Category filters, tab lists and segmented controls.',
       restrictions: [],
-      family: 'ui', size: '14px', weight: 600, leading: 'normal', tracking: 'normal', transform: 'none',
+      size: '14px', leading: 'normal',
       responsive: [],
       preview: { text: 'All Games' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-tab', status: 'equivalent' },
+        { file: 'styles/home.css', selector: '.home-tab', status: 'adopted', note: 'Games carousel category tabs.' },
         { file: 'styles/account.css', selector: '.account-tab', status: 'equivalent' },
         { file: 'styles/settings.css', selector: '.mode-option', status: 'pending', current: { size: '15px' } }
       ]
@@ -242,7 +250,7 @@
       id: 'button-small', name: 'Button, small', kind: 'variant', of: 'button', status: 'active',
       use: 'Compact buttons in drawers, dialogs and lists.',
       restrictions: [],
-      family: 'ui', size: '14px', weight: 700, leading: '1', tracking: 'normal', transform: 'none',
+      size: '14px',
       responsive: [],
       preview: { text: 'Save draft' },
       adoption: [
@@ -291,37 +299,43 @@
         { type: 'note', text: 'Hidden at 360px and below (and below 375px when Admin Mode adds header buttons).' }
       ],
       preview: { text: 'PergamonAtlas' },
-      adoption: [{ file: 'styles/layout.css', selector: '.pa-brand-name', status: 'equivalent' }]
+      adoption: [{ file: 'styles/layout.css', selector: '.pa-brand-name', status: 'adopted', note: 'Header. On phones the admin header shrinks it to 15px (layout.css), outside the role.' }]
     },
     {
       id: 'feature-title', name: 'Feature title', kind: 'exception', status: 'active',
       use: 'The title on the homepage’s Featured card.',
       restrictions: ['Featured card only: always on dark artwork, in fixed ivory with a shadow (home.css).'],
       family: 'display', size: 'clamp(38px, 5.6cqi, 50px)', weight: 800, leading: '1', tracking: '0.005em', transform: 'none',
-      responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(30px, 10cqi, 40px)' }],
+      responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(30px, 10cqi, 40px)', name: 'narrow' }],
       preview: { text: 'Chess Forge', container: FEATURE_CONTAINER, width: 700, surface: 'feature' },
-      adoption: [{ file: 'styles/home.css', selector: '.home-feature-title', status: 'equivalent' }]
+      adoption: [{ file: 'styles/home.css', selector: '.home-feature-title', status: 'adopted', note: 'Featured card.' }]
     },
     {
       id: 'spotlight-title', name: 'Spotlight title', kind: 'variant', of: 'feature-title', status: 'active',
       use: 'The title on the homepage’s Spotlight card.',
       restrictions: ['Spotlight card only.'],
-      family: 'display', size: 'clamp(26px, 3.6cqi, 32px)', weight: 800, leading: '1', tracking: '0.005em', transform: 'none',
-      responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(24px, 7.5cqi, 30px)' }],
+      size: 'clamp(26px, 3.6cqi, 32px)',
+      responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(24px, 7.5cqi, 30px)', name: 'narrow' }],
       preview: { text: 'Connect Four', container: FEATURE_CONTAINER, width: 700, surface: 'feature' },
-      adoption: [{ file: 'styles/home.css', selector: '.home-feature--spotlight .home-feature-title', status: 'equivalent' }]
+      adoption: [{ file: 'styles/home.css', selector: '.home-feature--spotlight .home-feature-title', status: 'adopted', note: 'Spotlight card.' }]
     },
     {
       id: 'feature-cta', name: 'Feature call to action', kind: 'exception', status: 'active',
       use: 'The Play button on the Featured and Spotlight cards.',
       restrictions: ['Featured and Spotlight cards only.'],
       family: 'display', size: '19px', weight: 800, leading: '1', tracking: '0.04em', transform: 'uppercase',
-      responsive: [{ type: 'note', text: 'The Spotlight card uses 16px.' }],
+      responsive: [],
       preview: { text: 'Play now', surface: 'feature' },
-      adoption: [
-        { file: 'styles/home.css', selector: '.home-feature .home-feature-play', status: 'equivalent' },
-        { file: 'styles/home.css', selector: '.home-feature--spotlight .home-feature-play', status: 'pending', current: { size: '16px' }, note: 'The Spotlight’s smaller size is intended; it becomes a variant when the card adopts the tokens.' }
-      ]
+      adoption: [{ file: 'styles/home.css', selector: '.home-feature .home-feature-play', status: 'adopted', note: 'Featured card.' }]
+    },
+    {
+      id: 'spotlight-cta', name: 'Spotlight call to action', kind: 'variant', of: 'feature-cta', status: 'active',
+      use: 'The Play button on the Spotlight card: the Feature call to action, smaller.',
+      restrictions: ['Spotlight card only.'],
+      size: '16px',
+      responsive: [],
+      preview: { text: 'Play now', surface: 'feature' },
+      adoption: [{ file: 'styles/home.css', selector: '.home-feature--spotlight .home-feature-play', status: 'adopted', note: 'Spotlight card.' }]
     }
   ];
 
@@ -335,6 +349,19 @@
   // ── Tokens ────────────────────────────────────────────────────────────
   const PROPS = ['family', 'size', 'weight', 'leading', 'tracking', 'transform'];
   const token = (id, prop) => `--type-${id}-${prop}`;
+
+  // A variant takes every value it doesn't set from its base role.
+  function inherit(list) {
+    for (const r of list) {
+      if (r.kind !== 'variant' || r.inherits) continue;
+      const base = list.find(x => x.id === r.of);
+      if (!base) continue;
+      r.inherits = PROPS.filter(p => r[p] === undefined);
+      r.inherits.forEach(p => { r[p] = base[p]; });
+    }
+    return list;
+  }
+  inherit(roles);
   // The CSS value of one property (family as the family token).
   function value(role, prop) {
     if (prop === 'family') return `var(${families[role.family].token})`;
@@ -384,6 +411,7 @@
         if (!/^\((max|min)-width: \d+px\)$/.test(s.query || '')) err(at, `responsive query "${s.query}"`);
         if (!SIZE.test(String(s.size))) err(at, `responsive size "${s.size}"`);
         if (s.type === 'container' && !ID.test(s.container || '')) err(at, 'container steps need a container name');
+        if (s.type === 'container' && !ID.test(s.name || '')) err(at, 'container steps need a step name (for their token)');
       }
       for (const a of r.adoption || []) {
         if (!ADOPTION.includes(a.status)) err(at, `adoption status "${a.status}"`);
@@ -392,13 +420,16 @@
     }
     for (const r of (reg && reg.roles) || []) {
       if (r.kind === 'variant' && !ids.has(r.of)) err(`roles.${r.id}`, `variant of unknown role "${r.of}"`);
+      const base = r.kind === 'variant' && reg.roles.find(x => x.id === r.of);
+      if (base && base.kind === 'variant') err(`roles.${r.id}`, 'the base of a variant must be a role or exception');
+      if (base) for (const p of r.inherits || []) if (r[p] !== base[p]) err(`roles.${r.id}`, `inherits ${p} from ${r.of} but has a different value`);
       if (r.kind !== 'variant' && r.of) err(`roles.${r.id}`, 'only variants name a parent');
     }
     return errors;
   }
 
   const registry = { version: VERSION, families, roles, glyphExceptions };
-  const api = { registry, PROPS, token, value, validate, role: id => roles.find(r => r.id === id) || null };
+  const api = { registry, PROPS, token, value, validate, inherit, role: id => roles.find(r => r.id === id) || null };
 
   if (typeof module === 'object' && module.exports) module.exports = api;
   else {

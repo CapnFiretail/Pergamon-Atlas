@@ -1,5 +1,7 @@
 /* Shared chrome: header, sidebar, mobile drawer and the page frame.
- * Markup comes from /scripts/layout.js; colours from /styles/theme.css. */
+ * Markup comes from /scripts/layout.js; colours from /styles/theme.css;
+ * type from the Handbook's roles (--type-<role>-* in /styles/typography.css,
+ * which every page loads), so changing a role restyles the chrome. */
 
 :root { --pa-header-h: 88px; --pa-sidebar-w: 220px; }
 :root[data-sidebar="collapsed"] { --pa-sidebar-w: 80px; }
@@ -42,11 +44,13 @@
 .pa-brand { display: flex; align-items: center; gap: 14px; flex-shrink: 0; min-width: 0; }
 .pa-logo { display: block; width: auto; height: 64px; }
 .pa-brand-name {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1;
+  /* Brand role; its narrower sizes are the role's viewport steps. */
+  font-family: var(--type-brand-family);
+  font-size: var(--type-brand-size);
+  font-weight: var(--type-brand-weight);
+  line-height: var(--type-brand-leading);
+  letter-spacing: var(--type-brand-tracking);
+  text-transform: var(--type-brand-transform);
   white-space: nowrap;
 }
 
@@ -68,8 +72,12 @@
   padding: 0 16px;
   border-radius: var(--radius-pill);
   color: var(--color-text-secondary);
-  font-size: 15px;
-  font-weight: 600;
+  font-family: var(--type-nav-family);
+  font-size: var(--type-nav-size);
+  font-weight: var(--type-nav-weight);
+  line-height: var(--type-nav-leading);
+  letter-spacing: var(--type-nav-tracking);
+  text-transform: var(--type-nav-transform);
   white-space: nowrap;
 }
 .pa-actions { display: flex; align-items: center; gap: 2px; padding-left: 6px; border-left: 1px solid var(--color-border); }
@@ -137,7 +145,12 @@
   border-radius: 8px;
   background: transparent;
   color: var(--color-text-secondary);
-  font: 600 15px/1 var(--font-ui);
+  font-family: var(--type-nav-family);
+  font-size: var(--type-nav-size);
+  font-weight: var(--type-nav-weight);
+  line-height: var(--type-nav-leading);
+  letter-spacing: var(--type-nav-tracking);
+  text-transform: var(--type-nav-transform);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -215,7 +228,6 @@
 /* ── Laptop ────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .pa-header { gap: 12px; padding: 0 18px; }
-  .pa-brand-name { font-size: 23px; }
   .pa-nav a { padding: 0 12px; }
 }
 
@@ -226,7 +238,6 @@
   .pa-menu-button { display: grid; flex-shrink: 0; }
   .pa-brand { gap: 10px; }
   .pa-logo { height: 40px; }
-  .pa-brand-name { font-size: 20px; }
   .pa-nav { display: none; }
   .pa-actions { padding-left: 0; border-left: 0; }
   .pa-actions [data-tip]::after { display: none; }
@@ -285,7 +296,6 @@
   .pa-header { gap: 8px; }
   .pa-icon-button { width: 36px; height: 36px; }
   .pa-capsule { gap: 0; padding: 4px; }
-  .pa-brand-name { font-size: 17px; }
 }
 @media (max-width: 360px) {
   .pa-brand-name { display: none; }

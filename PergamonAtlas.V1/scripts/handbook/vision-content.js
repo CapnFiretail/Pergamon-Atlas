@@ -575,7 +575,7 @@
     {
      "type": "p",
      "text": [
-      "As of 2026-11-21 (Phase H1). This section is maintained with the code; the vision above is not changed by it."
+      "As of 2026-11-21 (Phase H2, first step). This section is maintained with the code; the vision above is not changed by it."
      ]
     },
     {
@@ -669,18 +669,24 @@
       ],
       [
        [
-        "Existing pages using the type roles"
+        "Header, sidebar and homepage widgets using the type roles"
+       ],
+       [
+        "Implemented (H2, first step)"
+       ],
+       [
+        "Their CSS reads the role tokens"
+       ]
+      ],
+      [
+       [
+        "Other pages using the type roles"
        ],
        [
         "Planned (H2)"
        ],
        [
-        "Nothing adopts ",
-        [
-         "code",
-         ".pa-type-*"
-        ],
-        " yet"
+        "Settings, Account, footer, Admin Mode"
        ]
       ],
       [

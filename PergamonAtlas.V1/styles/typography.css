@@ -2,7 +2,9 @@
  * Do not edit: change the registry and run `node tools/build-typography.mjs`.
  *
  * Semantic type roles: --type-<role>-<property> tokens on :root and one
- * .pa-type-<role> class per role that applies them. Font families come from
+ * .pa-type-<role> class per role that applies them. Site components use the
+ * same tokens in their own CSS, so a change here reaches them. A variant’s
+ * inherited values point at its base role’s tokens. Font families come from
  * styles/theme.css (--font-display, --font-ui); the legacy serif is defined
  * here so the current game header can be described. Text colour is not part
  * of a role: it comes from the theme tokens. */
@@ -24,12 +26,13 @@
   --type-section-title-tracking: normal;
   --type-section-title-transform: none;
   /* Section title, large (variant of section-title) */
-  --type-section-title-large-family: var(--font-display);
+  --type-section-title-large-family: var(--type-section-title-family);
   --type-section-title-large-size: 22px;
-  --type-section-title-large-weight: 700;
-  --type-section-title-large-leading: 1.2;
-  --type-section-title-large-tracking: normal;
-  --type-section-title-large-transform: none;
+  --type-section-title-large-weight: var(--type-section-title-weight);
+  --type-section-title-large-leading: var(--type-section-title-leading);
+  --type-section-title-large-tracking: var(--type-section-title-tracking);
+  --type-section-title-large-transform: var(--type-section-title-transform);
+  --type-section-title-large-size-narrow: 18px;
   /* Card title (role) */
   --type-card-title-family: var(--font-display);
   --type-card-title-size: 16px;
@@ -80,12 +83,12 @@
   --type-nav-tracking: normal;
   --type-nav-transform: none;
   /* Tab (variant of nav) */
-  --type-tab-family: var(--font-ui);
+  --type-tab-family: var(--type-nav-family);
   --type-tab-size: 14px;
-  --type-tab-weight: 600;
+  --type-tab-weight: var(--type-nav-weight);
   --type-tab-leading: normal;
-  --type-tab-tracking: normal;
-  --type-tab-transform: none;
+  --type-tab-tracking: var(--type-nav-tracking);
+  --type-tab-transform: var(--type-nav-transform);
   /* Button (role) */
   --type-button-family: var(--font-ui);
   --type-button-size: 15px;
@@ -94,12 +97,12 @@
   --type-button-tracking: normal;
   --type-button-transform: none;
   /* Button, small (variant of button) */
-  --type-button-small-family: var(--font-ui);
+  --type-button-small-family: var(--type-button-family);
   --type-button-small-size: 14px;
-  --type-button-small-weight: 700;
-  --type-button-small-leading: 1;
-  --type-button-small-tracking: normal;
-  --type-button-small-transform: none;
+  --type-button-small-weight: var(--type-button-weight);
+  --type-button-small-leading: var(--type-button-leading);
+  --type-button-small-tracking: var(--type-button-tracking);
+  --type-button-small-transform: var(--type-button-transform);
   /* Numeric (role) */
   --type-numeric-family: var(--font-ui);
   --type-numeric-weight: 700;
@@ -127,13 +130,15 @@
   --type-feature-title-leading: 1;
   --type-feature-title-tracking: 0.005em;
   --type-feature-title-transform: none;
+  --type-feature-title-size-narrow: clamp(30px, 10cqi, 40px);
   /* Spotlight title (variant of feature-title) */
-  --type-spotlight-title-family: var(--font-display);
+  --type-spotlight-title-family: var(--type-feature-title-family);
   --type-spotlight-title-size: clamp(26px, 3.6cqi, 32px);
-  --type-spotlight-title-weight: 800;
-  --type-spotlight-title-leading: 1;
-  --type-spotlight-title-tracking: 0.005em;
-  --type-spotlight-title-transform: none;
+  --type-spotlight-title-weight: var(--type-feature-title-weight);
+  --type-spotlight-title-leading: var(--type-feature-title-leading);
+  --type-spotlight-title-tracking: var(--type-feature-title-tracking);
+  --type-spotlight-title-transform: var(--type-feature-title-transform);
+  --type-spotlight-title-size-narrow: clamp(24px, 7.5cqi, 30px);
   /* Feature call to action (exception) */
   --type-feature-cta-family: var(--font-display);
   --type-feature-cta-size: 19px;
@@ -141,6 +146,13 @@
   --type-feature-cta-leading: 1;
   --type-feature-cta-tracking: 0.04em;
   --type-feature-cta-transform: uppercase;
+  /* Spotlight call to action (variant of feature-cta) */
+  --type-spotlight-cta-family: var(--type-feature-cta-family);
+  --type-spotlight-cta-size: 16px;
+  --type-spotlight-cta-weight: var(--type-feature-cta-weight);
+  --type-spotlight-cta-leading: var(--type-feature-cta-leading);
+  --type-spotlight-cta-tracking: var(--type-feature-cta-tracking);
+  --type-spotlight-cta-transform: var(--type-feature-cta-transform);
 }
 
 @media (max-width: 1200px) { :root { --type-game-title-size: clamp(22px, 9cqi, 46px); } }
@@ -168,6 +180,8 @@
 .pa-type-feature-title { font-family: var(--type-feature-title-family); font-size: var(--type-feature-title-size); font-weight: var(--type-feature-title-weight); line-height: var(--type-feature-title-leading); letter-spacing: var(--type-feature-title-tracking); text-transform: var(--type-feature-title-transform); }
 .pa-type-spotlight-title { font-family: var(--type-spotlight-title-family); font-size: var(--type-spotlight-title-size); font-weight: var(--type-spotlight-title-weight); line-height: var(--type-spotlight-title-leading); letter-spacing: var(--type-spotlight-title-tracking); text-transform: var(--type-spotlight-title-transform); }
 .pa-type-feature-cta { font-family: var(--type-feature-cta-family); font-size: var(--type-feature-cta-size); font-weight: var(--type-feature-cta-weight); line-height: var(--type-feature-cta-leading); letter-spacing: var(--type-feature-cta-tracking); text-transform: var(--type-feature-cta-transform); }
+.pa-type-spotlight-cta { font-family: var(--type-spotlight-cta-family); font-size: var(--type-spotlight-cta-size); font-weight: var(--type-spotlight-cta-weight); line-height: var(--type-spotlight-cta-leading); letter-spacing: var(--type-spotlight-cta-tracking); text-transform: var(--type-spotlight-cta-transform); }
 
-@container upper (max-width: 640px) { .pa-type-feature-title { --type-feature-title-size: clamp(30px, 10cqi, 40px); } }
-@container upper (max-width: 640px) { .pa-type-spotlight-title { --type-spotlight-title-size: clamp(24px, 7.5cqi, 30px); } }
+@container lower (max-width: 640px) { .pa-type-section-title-large { --type-section-title-large-size: var(--type-section-title-large-size-narrow); } }
+@container upper (max-width: 640px) { .pa-type-feature-title { --type-feature-title-size: var(--type-feature-title-size-narrow); } }
+@container upper (max-width: 640px) { .pa-type-spotlight-title { --type-spotlight-title-size: var(--type-spotlight-title-size-narrow); } }

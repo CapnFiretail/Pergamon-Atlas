@@ -19,7 +19,8 @@ vision and lists recommendations for later phases.
 | | Typography registry, generated tokens and `.pa-type-*` classes, alignment tests | H1 |
 | | Overview, Foundations › Typography (live specimens, values, usage, exceptions) | H1 |
 | | Vision & Architecture (this vision, rendered from the repository) | H1 |
-| **Planned** | Existing pages adopt the type roles; normalisations; legacy game typography | H2 |
+| **Implemented** | Header, sidebar and homepage widgets take their type from the roles | H2 (first step) |
+| **Planned** | Other pages adopt the type roles; normalisations; legacy game typography | H2 |
 | | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | H3 |
 | **Long-term** | Element and widget registry with live previews, dependencies, where-used | H4 |
 | | Page model, templates and layout constraints | H5 |
@@ -121,12 +122,49 @@ from a script that `gate.js` loads. Anything after the section's path in the
 address arrives as `ctx.rest`; a renderer with `navigate(rest)` handles later
 changes to it without being drawn again.
 
-## H1 limits
+## Connecting a component to a role (H2)
 
-- No existing page uses the `.pa-type-*` classes yet; every page renders as
-  before. Adopting them (pixel-identical first), then the approved
-  normalisations, are later phases.
-- `styles/typography.css` is loaded only by the Handbook for now.
+A component keeps its own selector and takes its text style from the role's
+tokens in its own stylesheet; no classes are added to the HTML or JavaScript:
+
+```css
+.home-tile-title {
+  font-family: var(--type-card-title-family);
+  font-size: var(--type-card-title-size);
+  font-weight: var(--type-card-title-weight);
+  line-height: var(--type-card-title-leading);
+  letter-spacing: var(--type-card-title-tracking);
+  text-transform: var(--type-card-title-transform);
+}
+```
+
+All six, so any change to the role reaches it. Then set its registry
+`adoption` entry to `adopted`; the tests check that the rule really uses
+those tokens.
+
+- **Viewport steps** (e.g. the brand's smaller sizes) live on the role's
+  tokens, so the component needs no media rule for them.
+- **Container steps** have a name; the component's own container rule uses
+  `font-size: var(--type-<role>-size-<name>)`.
+- **A genuine variation** (the Spotlight's smaller Play button) is a variant
+  that lists only what differs; the rest is inherited from its base role
+  through the tokens, so changing the base changes the variant too.
+- If using a role would visibly change a component, leave the component's own
+  values and record it as `pending` with today's values for later review.
+
+Every page loads `styles/typography.css` right after `theme.css`; a test
+checks it, because a page without it would lose the shell's text styles.
+
+Connected so far: the header (brand, navigation), the sidebar, and the
+homepage's Featured and Spotlight cards, Atlas Navigation and games carousel.
+
+## Current limits
+
+- Other pages (Settings, Account, placeholder pages, Suggestions), the
+  footer, Admin Mode's interface and the games still use their own values;
+  their entries say whether they match a role (`equivalent`), differ
+  (`pending`) or await the game migration (`legacy`).
+- The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
 - The book icon appears where Admin Mode lives (the homepage) and on the
   Handbook itself.

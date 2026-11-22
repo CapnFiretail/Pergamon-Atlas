@@ -20,7 +20,7 @@
 
   const KIND = { role: 'Global role', variant: 'Variant', exception: 'Approved exception' };
   const ADOPTION = {
-    adopted: ['Adopted', 'active', 'Uses the role’s tokens.'],
+    adopted: ['Connected', 'active', 'Uses the role’s tokens, so a change to the role reaches it.'],
     equivalent: ['Equivalent', 'active', 'Same declared values; not yet linked to the tokens.'],
     pending: ['Pending', 'warn', 'Differs today; normalisation awaits approval.'],
     legacy: ['Legacy', 'muted', 'Legacy page styling; migration not started.']
@@ -161,6 +161,7 @@
       role.restrictions.forEach(t => ul.append(ctx.el('li', 'pa-type-body-small hb-muted', t)));
       about.append(ul);
     }
+    if (role.inherits && role.inherits.length) about.append(ctx.el('p', 'pa-type-caption hb-muted', `Inherits ${role.inherits.map(p => PROP_LABEL[p].toLowerCase()).join(', ')} from ${(typo.role(role.of) || {}).name}, so changes to it reach this variant.`));
     const resp = (role.responsive || []).map(x => x.type === 'note' ? x.text : `${x.type === 'container' ? 'In the ' + x.container + ' container at ' : 'At '}${x.query.replace(/[()]/g, '')}: ${x.size}.`);
     if (resp.length) { const p = ctx.el('p', 'pa-type-caption hb-muted'); p.textContent = 'Responsive: ' + resp.join(' '); about.append(p); }
     body.append(values, about);
@@ -187,8 +188,7 @@
       li.append(where, what);
       ul.append(li);
     }
-    const consumers = ctx.el('p', 'pa-type-caption hb-muted', 'Widgets using this role: none registered yet. Widgets arrive in a later phase and will list the roles they consume.');
-    uses.append(sum, ul, consumers);
+    uses.append(sum, ul);
 
     const off = drift(role);
     art.append(head);
@@ -215,8 +215,8 @@
     const stats = ctx.el('ul', 'hb-stats');
     const adoption = roles.flatMap(r => r.adoption || []);
     [[count('role'), 'Global roles'], [count('variant'), 'Variants'], [count('exception'), 'Approved exceptions'],
-     [adoption.filter(a => a.status === 'equivalent' || a.status === 'adopted').length, 'Uses already matching'],
-     [adoption.filter(a => a.status === 'pending' || a.status === 'legacy').length, 'Uses awaiting migration']].forEach(([n, label]) => {
+     [adoption.filter(a => a.status === 'adopted').length, 'Connected styles'],
+     [adoption.filter(a => a.status !== 'adopted').length, 'Not yet connected']].forEach(([n, label]) => {
       const li = ctx.el('li', 'hb-stat');
       li.append(ctx.el('span', 'pa-type-section-title-large pa-type-numeric', String(n)), ctx.el('span', 'pa-type-caption hb-muted', label));
       stats.append(li);
@@ -228,7 +228,7 @@
     const p = ctx.el('p', 'pa-type-body-small');
     p.append('Roles are defined once in ', ctx.el('code', 'hb-code', 'scripts/design/typography.js'), '. ',
       ctx.el('code', 'hb-code', 'tools/build-typography.mjs'), ' writes them to ', ctx.el('code', 'hb-code', 'styles/typography.css'),
-      ' as tokens (--type-<role>-<property>) and classes (.pa-type-<role>), and tests check both the stylesheet and every “where it’s used” entry against the CSS. Existing pages don’t use the classes yet: this phase keeps every page exactly as it was.');
+      ' as tokens (--type-<role>-<property>) and classes (.pa-type-<role>), and tests check both the stylesheet and every “where it’s used” entry against the CSS. The site’s header, sidebar and homepage widgets use the tokens in their own CSS (“Connected”), so changing a role here restyles them; other pages still have their own values (“Equivalent”, “Pending”, “Legacy”).');
     source.append(p);
     view.append(source);
 

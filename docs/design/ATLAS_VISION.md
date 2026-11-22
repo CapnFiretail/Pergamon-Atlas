@@ -140,7 +140,7 @@ These are sequencing intentions, not deadlines or commitments to specific techno
 
 ## Implementation status
 
-As of 2026-11-21 (Phase H1). This section is maintained with the code; the vision above is not changed by it.
+As of 2026-11-21 (Phase H2, first step). This section is maintained with the code; the vision above is not changed by it.
 
 | Area | State | Where |
 |---|---|---|
@@ -148,7 +148,8 @@ As of 2026-11-21 (Phase H1). This section is maintained with the code; the visio
 | Typography registry, generated tokens and `.pa-type-*` classes, alignment tests | Implemented (H1) | `scripts/design/typography.js`, `styles/typography.css`, `tests/design/` |
 | Live Typography page: specimens, roles, values, usage, exceptions | Implemented (H1) | Foundations › Typography |
 | This vision, readable in the Handbook | Implemented (H1) | Vision & Architecture |
-| Existing pages using the type roles | Planned (H2) | Nothing adopts `.pa-type-*` yet |
+| Header, sidebar and homepage widgets using the type roles | Implemented (H2, first step) | Their CSS reads the role tokens |
+| Other pages using the type roles | Planned (H2) | Settings, Account, footer, Admin Mode |
 | Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
 | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | Planned (H3) | Shown as Planned in the Handbook |
 | Element and widget registry with live previews and where-used | Long-term (H4) | — |
