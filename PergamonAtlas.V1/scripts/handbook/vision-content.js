@@ -760,7 +760,32 @@
       ],
       [
        [
-        "Spacing & Grid, Surfaces, Motion, Responsive, Accessibility"
+        "Spacing & Surfaces: spacing scale, page frame tokens (two inset families, 16px widget gutter), radii and elevation, documented live"
+       ],
+       [
+        "Implemented (H5.2b)"
+       ],
+       [
+        [
+         "code",
+         "styles/theme.css"
+        ],
+        ", ",
+        [
+         "code",
+         "styles/layout.css"
+        ],
+        ", ",
+        [
+         "code",
+         "scripts/design/surfaces.js"
+        ],
+        ", Handbook › Spacing & Surfaces"
+       ]
+      ],
+      [
+       [
+        "Atlas Grid, Motion, Responsive, Accessibility"
        ],
        [
         "Planned (H5)"

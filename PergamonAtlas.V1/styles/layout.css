@@ -6,6 +6,19 @@
 :root { --pa-header-h: 88px; --pa-sidebar-w: 220px; }
 :root[data-sidebar="collapsed"] { --pa-sidebar-w: 80px; }
 
+/* Page frame tokens. Two inset families, deliberately different:
+   --page-inset-*   ordinary pages (Settings, placeholders, games)
+   --page-inset-widgets  widget pages built from panels (homepage, Handbook)
+   --layout-gutter  the default space between widgets on a widget page (not
+                    for spacing inside a widget: use the --space-* scale)
+   Narrow screens (≤ 900px) use the smaller values below. */
+:root {
+  --page-inset-block: var(--space-8);
+  --page-inset-inline: var(--space-8);
+  --page-inset-widgets: var(--space-6);
+  --layout-gutter: var(--space-4);
+}
+
 /* ── Page frame ────────────────────────────────────────────────────────── */
 .pa-page { min-height: 100vh; display: flex; flex-direction: column; }
 .pa-layout { flex: 1; display: flex; align-items: stretch; margin-left: var(--pa-sidebar-w); }
@@ -14,7 +27,7 @@
 .pa-main {
   flex: 1;
   min-width: 0;
-  padding: 32px;
+  padding: var(--page-inset-block) var(--page-inset-inline);
   box-sizing: border-box;
   background: var(--color-background);
   color: var(--color-text-primary);
@@ -142,7 +155,7 @@
   height: 46px;
   padding: 0 12px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-item);
   background: transparent;
   color: var(--color-text-secondary);
   font-family: var(--type-nav-family);
@@ -209,13 +222,13 @@
   min-height: 0;
   padding: 14px 0;
   border: 1px solid var(--color-border);
-  border-radius: 14px;
+  border-radius: var(--radius-panel);
   transform: none;
   visibility: visible;
   overflow: hidden;
   transition: none;
 }
-:root:root .pa-sidebar--preview a { justify-content: flex-start; gap: 12px; width: auto; height: 46px; margin: 0; padding: 0 12px; border-radius: 8px; }
+:root:root .pa-sidebar--preview a { justify-content: flex-start; gap: 12px; width: auto; height: 46px; margin: 0; padding: 0 12px; border-radius: var(--radius-item); }
 :root:root .pa-sidebar--preview .pa-nav-label { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
 :root:root .pa-sidebar--preview .pa-sidebar-heading { visibility: visible; height: auto; margin: 0 0 6px; }
 :root:root .pa-sidebar--preview .pa-sidebar-title { justify-content: flex-start; margin: 0 10px 4px; padding: 4px 12px 14px; }
@@ -263,10 +276,9 @@
     min-height: 0;
     padding: 12px 0;
     border: 1px solid var(--color-border);
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgb(0 0 0 / 0.22);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-raised);
   }
-  :root[data-mode="light"] .pa-sidebar.is-inline { box-shadow: 0 4px 14px rgb(0 0 0 / 0.08); }
 }
 
 /* ── Focus ─────────────────────────────────────────────────────────────── */
@@ -306,7 +318,7 @@
   :root[data-drawer="open"] { overflow: hidden; }
 
   /* The drawer always shows labels, whatever the desktop collapse state. */
-  :root[data-sidebar="collapsed"] .pa-sidebar a { justify-content: flex-start; gap: 12px; width: auto; height: 46px; margin: 0; padding: 0 12px; border-radius: 8px; }
+  :root[data-sidebar="collapsed"] .pa-sidebar a { justify-content: flex-start; gap: 12px; width: auto; height: 46px; margin: 0; padding: 0 12px; border-radius: var(--radius-item); }
   :root[data-sidebar="collapsed"] .pa-sidebar .pa-nav-label { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
   :root[data-sidebar="collapsed"] .pa-sidebar-heading { visibility: visible; height: auto; margin: 0 0 6px; }
   :root[data-sidebar="collapsed"] .pa-sidebar-title { justify-content: flex-start; margin: 0 10px 4px; padding: 4px 12px 14px; }
@@ -338,7 +350,7 @@
   }
   :root[data-drawer="open"] .pa-backdrop { opacity: 1; visibility: visible; }
 
-  .pa-main { padding: 24px 16px; }
+  :root { --page-inset-block: var(--space-6); --page-inset-inline: var(--space-4); --page-inset-widgets: var(--space-4); }
 }
 
 @media (max-width: 420px) {

@@ -115,6 +115,12 @@
   --color-success: #8FD3A0;
   /* Dims the page behind a modal layer (the phone menu, Admin Mode dialogs). */
   --color-overlay: rgb(0 0 0 / 0.55);
+
+  /* Elevation: how far a surface floats above the page. Lighter in light
+     mode, where the same shadow reads much heavier. */
+  --shadow-raised: 0 6px 20px rgb(0 0 0 / 0.22);    /* panels lifted off the page: the sidebar rail */
+  --shadow-popover: 0 12px 32px rgb(0 0 0 / 0.35);  /* panels opened over the page: the Admin Mode panel */
+  --shadow-dialog: 0 18px 48px rgb(0 0 0 / 0.45);   /* modal dialogs, above the overlay */
 }
 
 :root {
@@ -124,8 +130,24 @@
   --font-display: "Aptos Slab", "Roboto Slab", Rockwell, Georgia, serif;
   --font-ui: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  /* Spacing scale: steps of 4px. Most gaps, paddings and margins are one of
+     these; 6, 10 and 14px are deliberate component steps and stay literal.
+     The page frame's tokens (insets, gutter) are in /styles/layout.css. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Corner radii, by surface (larger surfaces, rounder corners). */
+  --radius-sm: 6px;       /* small chips, tags and inset swatches */
+  --radius-item: 8px;     /* items inside a panel: navigation links, options, fields */
+  --radius-md: 10px;      /* controls: buttons and icon buttons */
+  --radius-card: 12px;    /* cards and option groups inside a panel */
+  --radius-panel: 14px;   /* panels: sidebar, homepage widgets, Settings cards */
+  --radius-dialog: 16px;  /* dialogs */
   --radius-pill: 999px;
 
   /* Legacy aliases used by older page styles. */
@@ -142,6 +164,9 @@
   --color-on-accent: #FFFFFF;
   --color-danger: #B3261E;
   --color-success: #1E7A3C;
+  --shadow-raised: 0 4px 14px rgb(0 0 0 / 0.08);
+  --shadow-popover: 0 10px 28px rgb(0 0 0 / 0.12);
+  --shadow-dialog: 0 14px 40px rgb(0 0 0 / 0.16);
 }
 /* Obsidian & Gold, light: white on the light-mode gold is only 3.7:1, so
    labels on the accent use a dark ink instead (5.1:1), and hover lightens the

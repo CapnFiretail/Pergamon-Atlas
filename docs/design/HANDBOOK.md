@@ -2,8 +2,8 @@
 
 An internal, read-only design-system catalogue for administrators, at
 `/handbook/`, inside the normal site (header, footer, themes). Its sections
-are **Overview** (Dashboard, Vision), **Foundations** (Typography; Colors,
-Spacing and Motion planned) and **Library** (Widgets; Elements and Layouts
+are **Overview** (Dashboard, Vision), **Foundations** (Typography, Colors,
+Spacing & Surfaces; Motion planned) and **Library** (Widgets; Elements and Layouts
 planned).
 
 **The long-term architecture is defined in [`ATLAS_VISION.md`](ATLAS_VISION.md)**,
@@ -25,8 +25,10 @@ vision and lists recommendations for later phases.
 | **Implemented** | Handbook redesign: catalogue Dashboard, Typography specimens, Widgets catalogue; Handbook sections in the shared site sidebar | H3 |
 | | Site Navigation: the sidebar's links, edited in Admin Mode, published with the homepage (`site.sidebar`, migration 0013) | H3 |
 | **Planned** | Review of the remaining typography differences; Admin Mode typography; legacy game typography | H2 |
-| | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | H3 |
+| | Motion, Responsive, Accessibility | H5 |
 | **Implemented** | Component library: Feature banner (hero, banner), Content Card, Carousel, extracted from the homepage and previewed live in the Handbook | H4 |
+| **Implemented** | Foundations › Colors: colour roles, previews that resolve every role per palette and mode, live contrast checks | H5.2a |
+| | Foundations › Spacing & Surfaces: spacing scale, page frame (insets, widget gutter), radii and elevation tokens | H5.2b |
 | **Long-term** | Element and widget registry with dependencies and automatic where-used | H4+ |
 | | Page model, templates and layout constraints | H5 |
 | | Visual editing: drafts, preview, validation, publish, rollback | H6 |
@@ -50,6 +52,12 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/scripts/layout.js` | The site's header and sidebar. One sidebar renderer for Site Navigation (published, cached or built-in) and a section's own navigation (the Handbook). |
 | `PergamonAtlas.V1/scripts/cms/site-nav.js` | Admin Mode's Site Navigation editor. |
 | `PergamonAtlas.V1/scripts/handbook/typography-page.js` | Foundations › Typography. |
+| `PergamonAtlas.V1/scripts/handbook/colors-page.js` | Foundations › Colors: palettes, roles, examples, contrast, exceptions. |
+| `PergamonAtlas.V1/scripts/handbook/spacing-page.js` | Foundations › Spacing & Surfaces: scale, page frame, radii, surfaces, elevation. |
+| `PergamonAtlas.V1/styles/theme.css` | **Colour, spacing, radius and elevation values: the source of truth.** |
+| `PergamonAtlas.V1/styles/layout.css` | Page frame tokens (`--page-inset-*`, `--layout-gutter`) and their narrow-screen values. |
+| `PergamonAtlas.V1/scripts/design/colors.js`, `scripts/design/surfaces.js` | What each colour, spacing and surface token is for (no values); read by the Handbook. |
+| `tests/design/colors.test.mjs`, `tests/design/surfaces.test.mjs` | Token definitions, documentation and contrast checks. |
 | `PergamonAtlas.V1/styles/handbook.css` | Handbook layout (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/design/typography.js` | **Typography registry: the source of truth.** |
 | `tools/build-typography.mjs` | Writes `styles/typography.css` from the registry (`--check` to verify). |

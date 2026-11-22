@@ -44,7 +44,7 @@
     { id: 'foundations', label: 'Foundations', text: 'The shared design decisions everything else is built from.', items: [
       { path: 'foundations/typography', label: 'Typography', icon: 'typography', text: 'Type roles, font families and text styles, drawn by the live stylesheet.' },
       { path: 'foundations/colors', label: 'Colors', icon: 'colors', text: 'The four palettes in dark and light mode, the colour roles built on them, and contrast checks.' },
-      { path: 'foundations/spacing', label: 'Spacing', icon: 'spacing', text: 'A spacing scale, radii, breakpoints and the page frame.' },
+      { path: 'foundations/spacing', label: 'Spacing & Surfaces', icon: 'spacing', text: 'The spacing scale, the page frame, and the surfaces: panels, cards, controls, radii and elevation.' },
       { path: 'foundations/motion', label: 'Motion', icon: 'motion', text: 'Durations, easing and reduced-motion rules, including the carousel’s glide.' }
     ] },
     { id: 'library', label: 'Library', text: 'The reusable parts Atlas pages are made of, from small elements to whole layouts.', items: [
@@ -196,7 +196,7 @@
     cats.setAttribute('aria-label', 'Catalogue');
     const library = GROUPS[2];
     cats.append(
-      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography and Colors ready'),
+      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography, Colors, Spacing & Surfaces ready'),
       card('library/elements', 'Elements', library.items[0].text, 'elements', 'planned'),
       card('library/widgets', 'Widgets', 'Larger reusable components: navigation, Featured Game, Spotlight and the games carousel.', 'widgets', 'ready'),
       card('library/layouts', 'Layouts', library.items[2].text, 'layouts', 'planned')

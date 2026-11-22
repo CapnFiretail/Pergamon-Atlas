@@ -28,7 +28,7 @@
   overflow: hidden;
   background: var(--color-background);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
 }
 .home-tile:hover { border-color: var(--color-accent); box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 22%, transparent); }
 .home-tile-art { aspect-ratio: 1 / 1; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; }

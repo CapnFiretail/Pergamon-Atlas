@@ -17,6 +17,8 @@
     { js: '/scripts/handbook/typography-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.typographyPage) },
     { js: '/scripts/design/colors.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.colors) },
     { js: '/scripts/handbook/colors-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.colorsPage) },
+    { js: '/scripts/design/surfaces.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.surfaces) },
+    { js: '/scripts/handbook/spacing-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.spacingPage) },
     { js: '/scripts/handbook/vision-content.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.vision) },
     { js: '/scripts/handbook/vision-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.visionPage) },
     // The component library, for the Widgets page's live previews.

@@ -19,12 +19,12 @@
  * its fixed-position mobile drawer.
  */
 
-.pa-main.home-page { padding: 24px; }
+.pa-main.home-page { padding: var(--page-inset-widgets); }
 .home {
   display: grid;
   grid-template-columns: var(--pa-sidebar-w) minmax(0, 1fr);
   align-items: stretch;
-  gap: 16px;
+  gap: var(--layout-gutter);
   font-family: var(--font-ui);
   color: var(--color-text-primary);
 }
@@ -46,10 +46,10 @@
 .home-feature-grid {
   display: grid;
   grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
-  gap: 16px;
+  gap: var(--layout-gutter);
 }
 .home-feature-grid.no-context { grid-template-columns: minmax(0, 1fr); }
-.home-banners { container: banners / inline-size; display: grid; grid-template-rows: 260px 140px; gap: 16px; min-width: 0; }
+.home-banners { container: banners / inline-size; display: grid; grid-template-rows: 260px 140px; gap: var(--layout-gutter); min-width: 0; }
 
 /* Icons in the Atlas Navigation panel (the carousel has its own copy). */
 .home-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -64,7 +64,7 @@
   padding: 20px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 14px;
+  border-radius: var(--radius-panel);
 }
 .home-context-title { margin: 0; font-family: var(--type-section-title-family); font-size: var(--type-section-title-size); font-weight: var(--type-section-title-weight); line-height: var(--type-section-title-leading); letter-spacing: var(--type-section-title-tracking); text-transform: var(--type-section-title-transform); }
 .home-context-list { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; margin: 0; padding: 0; list-style: none; }
@@ -99,7 +99,6 @@
 }
 
 @media (max-width: 900px) {
-  .pa-main.home-page { padding: 16px; }
   .home { grid-template-columns: minmax(0, 1fr); }
   .home-upper, .home-lower { grid-column: 1; grid-row: auto; }
 }
