@@ -1,4 +1,5 @@
-/* Site footer. Colours and fonts come from the tokens in /styles/theme.css. */
+/* Site footer. Colours and fonts come from the tokens in /styles/theme.css;
+   the brand heading uses the Handbook's Section title role (--type-section-title-*). */
 .site-footer{
   background:var(--color-surface);
   color:var(--color-text-primary);
@@ -19,7 +20,12 @@
 
 .footer-brand h3{
   margin:0 0 6px 0;
-  font:700 20px/1.2 var(--font-display);
+  font-family:var(--type-section-title-family);
+  font-size:var(--type-section-title-size);
+  font-weight:var(--type-section-title-weight);
+  line-height:var(--type-section-title-leading);
+  letter-spacing:var(--type-section-title-tracking);
+  text-transform:var(--type-section-title-transform);
   color:var(--color-accent-text);
 }
 

@@ -19,8 +19,8 @@ vision and lists recommendations for later phases.
 | | Typography registry, generated tokens and `.pa-type-*` classes, alignment tests | H1 |
 | | Overview, Foundations › Typography (live specimens, values, usage, exceptions) | H1 |
 | | Vision & Architecture (this vision, rendered from the repository) | H1 |
-| **Implemented** | Header, sidebar and homepage widgets take their type from the roles | H2 (first step) |
-| **Planned** | Other pages adopt the type roles; normalisations; legacy game typography | H2 |
+| **Implemented** | Header, sidebar, homepage widgets, Settings, Account and footer take matching styles from the roles | H2 |
+| **Planned** | Review of the remaining differences; Admin Mode; legacy game typography | H2 |
 | | Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | H3 |
 | **Long-term** | Element and widget registry with live previews, dependencies, where-used | H4 |
 | | Page model, templates and layout constraints | H5 |
@@ -155,15 +155,30 @@ those tokens.
 Every page loads `styles/typography.css` right after `theme.css`; a test
 checks it, because a page without it would lose the shell's text styles.
 
-Connected so far: the header (brand, navigation), the sidebar, and the
-homepage's Featured and Spotlight cards, Atlas Navigation and games carousel.
+Connected so far:
+- the header (brand, navigation) and the sidebar;
+- the homepage's Featured and Spotlight cards, Atlas Navigation and games
+  carousel;
+- Settings (title, introduction, notes, palette names, storage note);
+- Account (introduction, benefits list, loading message, member detail
+  labels);
+- the footer's brand heading.
+
+Before connecting a style, compare it in the browser with the role applied
+in the same place: inherited line heights (and buttons, which don't inherit
+them) can make a style that looks equivalent in the CSS render differently.
 
 ## Current limits
 
-- Other pages (Settings, Account, placeholder pages, Suggestions), the
-  footer, Admin Mode's interface and the games still use their own values;
-  their entries say whether they match a role (`equivalent`), differ
-  (`pending`) or await the game migration (`legacy`).
+- Styles that differ from their role keep their own values for review
+  (`pending`), for example the placeholder pages' title (38px), lead text
+  and tag (line height 1.6), Settings section headings and mode buttons,
+  Account headings, field labels and submit button, and the footer links.
+  Account tabs match but keep their own 12px size on very small screens.
+  The Suggestions title matches, but its style is inline and covered by a
+  CSP hash in `vercel.json`, so it stays as it is until that hash is updated.
+- Admin Mode's interface and the games still use their own values (`legacy`
+  for the games).
 - The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
 - The book icon appears where Admin Mode lives (the homepage) and on the

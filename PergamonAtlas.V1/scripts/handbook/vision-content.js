@@ -575,7 +575,7 @@
     {
      "type": "p",
      "text": [
-      "As of 2026-11-21 (Phase H2, first step). This section is maintained with the code; the vision above is not changed by it."
+      "As of 2026-11-22 (Phase H2, second step). This section is maintained with the code; the vision above is not changed by it."
      ]
     },
     {
@@ -669,10 +669,10 @@
       ],
       [
        [
-        "Header, sidebar and homepage widgets using the type roles"
+        "Header, sidebar, homepage widgets, Settings, Account and footer using the type roles where they match"
        ],
        [
-        "Implemented (H2, first step)"
+        "Implemented (H2)"
        ],
        [
         "Their CSS reads the role tokens"
@@ -680,13 +680,13 @@
       ],
       [
        [
-        "Other pages using the type roles"
+        "Remaining differences, Admin Mode"
        ],
        [
         "Planned (H2)"
        ],
        [
-        "Settings, Account, footer, Admin Mode"
+        "Kept as pending in the registry"
        ]
       ],
       [

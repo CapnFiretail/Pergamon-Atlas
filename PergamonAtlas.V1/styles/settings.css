@@ -1,8 +1,9 @@
-/* Settings page. Colours and fonts come from the tokens in /styles/theme.css. */
+/* Settings page. Colours and fonts come from the tokens in /styles/theme.css;
+   text styles that match a Handbook type role use its tokens (--type-<role>-*). */
 .settings { max-width: 760px; margin: 0 auto; padding: 8px 0 40px; }
 .settings * { box-sizing: border-box; }
-.settings-title { margin: 0 0 6px; font: 800 clamp(28px, 4vw, 40px)/1.15 var(--font-display); }
-.settings-intro { margin: 0 0 28px; color: var(--color-text-secondary); font-size: 16px; }
+.settings-title { margin: 0 0 6px; font-family: var(--type-page-title-family); font-size: var(--type-page-title-size); font-weight: var(--type-page-title-weight); line-height: var(--type-page-title-leading); letter-spacing: var(--type-page-title-tracking); text-transform: var(--type-page-title-transform); }
+.settings-intro { margin: 0 0 28px; color: var(--color-text-secondary); font-family: var(--type-body-family); font-size: var(--type-body-size); font-weight: var(--type-body-weight); line-height: var(--type-body-leading); letter-spacing: var(--type-body-tracking); text-transform: var(--type-body-transform); }
 
 .settings-card {
   margin: 0 0 20px;
@@ -12,7 +13,7 @@
   border-radius: 14px;
 }
 .settings-heading { margin: 0 0 6px; font: 700 20px/1.3 var(--font-display); }
-.settings-note { margin: 0 0 16px; color: var(--color-text-secondary); font-size: 14px; }
+.settings-note { margin: 0 0 16px; color: var(--color-text-secondary); font-family: var(--type-body-small-family); font-size: var(--type-body-small-size); font-weight: var(--type-body-small-weight); line-height: var(--type-body-small-leading); letter-spacing: var(--type-body-small-tracking); text-transform: var(--type-body-small-transform); }
 .settings-note:empty { display: none; }
 
 /* Display mode: a three-way segmented control built on native radios. */
@@ -62,7 +63,7 @@ label.palette-option { cursor: pointer; }
 label.palette-option:hover { border-color: var(--color-text-secondary); }
 .palette-option:has(input:checked) { border-color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
 .palette-option.is-locked .palette-preview { opacity: 0.8; }
-.palette-name { font-weight: 700; font-size: 15px; }
+.palette-name { font-family: var(--type-item-title-family); font-size: var(--type-item-title-size); font-weight: var(--type-item-title-weight); line-height: var(--type-item-title-leading); letter-spacing: var(--type-item-title-tracking); text-transform: var(--type-item-title-transform); }
 .palette-status { justify-self: end; padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); color: var(--color-text-secondary); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .palette-status.is-active { border-color: var(--color-accent); color: var(--color-accent-text); }
 
@@ -91,7 +92,7 @@ label.palette-option:hover { border-color: var(--color-text-secondary); }
 .settings-cta { display: inline-block; margin-top: 16px; color: var(--color-accent-text); font-weight: 600; font-size: 14px; text-underline-offset: 3px; }
 .settings-cta:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
 .settings-cta[hidden] { display: none; }
-.settings-storage { margin: 0; color: var(--color-text-secondary); font-size: 13px; }
+.settings-storage { margin: 0; color: var(--color-text-secondary); font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); line-height: var(--type-caption-leading); letter-spacing: var(--type-caption-tracking); text-transform: var(--type-caption-transform); }
 
 @media (max-width: 560px) {
   .settings-card { padding: 18px; }

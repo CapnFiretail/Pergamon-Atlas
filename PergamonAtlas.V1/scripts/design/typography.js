@@ -92,8 +92,8 @@
       responsive: [{ type: 'note', text: 'Fluid with the viewport: 28px at 700px wide and below, 40px at 1000px and above.' }],
       preview: { text: 'Settings' },
       adoption: [
-        { file: 'styles/settings.css', selector: '.settings-title', status: 'equivalent' },
-        { file: 'suggestions/index.html', selector: '.pa-main h1', status: 'equivalent' },
+        { file: 'styles/settings.css', selector: '.settings-title', status: 'adopted', note: 'Settings page title.' },
+        { file: 'suggestions/index.html', selector: '.pa-main h1', status: 'equivalent', note: 'Suggestions page title. Its style is inline and covered by a CSP hash (vercel.json), so connecting it means updating that hash too.' },
         { file: 'styles/placeholder.css', selector: '.pa-placeholder h1', status: 'pending',
           current: { size: 'clamp(28px, 4vw, 38px)' }, note: 'Placeholder pages top out at 38px; normalising to 40px is pending approval.' }
       ]
@@ -107,7 +107,7 @@
       preview: { text: 'Atlas Navigation' },
       adoption: [
         { file: 'styles/home.css', selector: '.home-context-title', status: 'adopted', note: 'Atlas Navigation panel heading.' },
-        { file: 'operation/styles/footer.css', selector: '.footer-brand h3', status: 'equivalent', note: 'The footer brand uses this style; it should stop being a heading (see the heading-structure decision).' },
+        { file: 'operation/styles/footer.css', selector: '.footer-brand h3', status: 'adopted', note: 'Footer brand name. It probably shouldn’t be a heading (a separate accessibility item).' },
         { file: 'styles/settings.css', selector: '.settings-heading', status: 'pending', current: { leading: '1.3' } },
         { file: 'styles/account.css', selector: '.account-heading', status: 'pending', current: { size: '23px', leading: '1.3' } },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-prompt-title', status: 'pending', current: { weight: 800, leading: '1.25' } }
@@ -147,7 +147,7 @@
       preview: { text: 'Login / Sign Up' },
       adoption: [
         { file: 'styles/home.css', selector: '.home-context-label', status: 'adopted', note: 'Atlas Navigation rows.' },
-        { file: 'styles/settings.css', selector: '.palette-name', status: 'equivalent' },
+        { file: 'styles/settings.css', selector: '.palette-name', status: 'adopted', note: 'Settings palette names.' },
         { file: 'styles/cms-admin.css', selector: '.cms-manage-name', status: 'pending', current: { weight: 400 }, note: 'Inherits weight 400.' }
       ]
     },
@@ -160,7 +160,7 @@
       preview: { text: 'Choose how PergamonAtlas looks on this device. Your choices apply to every page.' },
       adoption: [
         { file: 'styles/theme.css', selector: 'body', status: 'equivalent', note: 'Size is the browser default (16px).' },
-        { file: 'styles/settings.css', selector: '.settings-intro', status: 'equivalent' },
+        { file: 'styles/settings.css', selector: '.settings-intro', status: 'adopted', note: 'Settings introduction.' },
         { file: 'styles/placeholder.css', selector: '.pa-placeholder p', status: 'pending', current: { leading: '1.6' } },
         { file: 'suggestions/index.html', selector: '.pa-main p', status: 'pending', current: { size: '17px', leading: '1.6' } }
       ]
@@ -174,8 +174,10 @@
       preview: { text: 'Guests use Obsidian & Gold. Sign in to choose another palette.' },
       adoption: [
         { file: 'styles/home.css', selector: '.home-track-empty p', status: 'adopted', note: 'Games carousel message for an empty category.' },
-        { file: 'styles/settings.css', selector: '.settings-note', status: 'equivalent' },
-        { file: 'styles/account.css', selector: '.account-intro', status: 'equivalent' },
+        { file: 'styles/settings.css', selector: '.settings-note', status: 'adopted', note: 'Settings notes.' },
+        { file: 'styles/account.css', selector: '.account-intro', status: 'adopted', note: 'Account introduction.' },
+        { file: 'styles/account.css', selector: '.account-benefits li', status: 'adopted', note: 'Account: member benefits list.' },
+        { file: 'styles/account.css', selector: '.account-loading', status: 'adopted', note: 'Account: loading message.' },
         { file: 'styles/cms-admin.css', selector: '.cms-publish-body', status: 'equivalent' }
       ]
     },
@@ -188,7 +190,8 @@
       preview: { text: 'Sign in or create an account' },
       adoption: [
         { file: 'styles/home.css', selector: '.home-context-desc', status: 'adopted', note: 'Atlas Navigation row descriptions.' },
-        { file: 'styles/settings.css', selector: '.settings-storage', status: 'equivalent' },
+        { file: 'styles/settings.css', selector: '.settings-storage', status: 'adopted', note: 'Settings: where choices are stored.' },
+        { file: 'styles/account.css', selector: '.account-member dt', status: 'adopted', note: 'Account: member detail labels.' },
         { file: 'styles/home.css', selector: '.home-tile-category', status: 'pending', current: { weight: 500 } }
       ]
     },
@@ -200,7 +203,7 @@
       responsive: [],
       preview: { text: 'Coming soon' },
       adoption: [
-        { file: 'styles/placeholder.css', selector: '.pa-placeholder .pa-placeholder-tag', status: 'equivalent' },
+        { file: 'styles/placeholder.css', selector: '.pa-placeholder .pa-placeholder-tag', status: 'pending', current: { leading: '1.6' }, note: 'Inherits line height 1.6 from the placeholder paragraph style.' },
         { file: 'styles/home.css', selector: '.home-track-tag', status: 'adopted', note: 'Games carousel “Coming soon” tags.' },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-eyebrow', status: 'equivalent' },
         { file: 'styles/home.css', selector: '.home-art-label', status: 'pending', current: { weight: 600 } },
@@ -230,7 +233,7 @@
       preview: { text: 'All Games' },
       adoption: [
         { file: 'styles/home.css', selector: '.home-tab', status: 'adopted', note: 'Games carousel category tabs.' },
-        { file: 'styles/account.css', selector: '.account-tab', status: 'equivalent' },
+        { file: 'styles/account.css', selector: '.account-tab', status: 'equivalent', note: 'Matches, except it drops to 12px at 360px and below; left separate so that step stays its own.' },
         { file: 'styles/settings.css', selector: '.mode-option', status: 'pending', current: { size: '15px' } }
       ]
     },
