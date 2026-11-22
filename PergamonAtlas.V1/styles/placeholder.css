@@ -8,7 +8,7 @@
 .pa-placeholder-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .pa-placeholder-actions a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-primary); font-weight: 600; text-decoration: none; }
 .pa-placeholder-actions a:hover { border-color: var(--color-accent); }
-.pa-placeholder-actions a.is-primary { background: var(--color-accent-text); border-color: var(--color-accent-text); color: var(--color-on-accent); }
+.pa-placeholder-actions a.is-primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
 .pa-placeholder-actions a.is-primary:hover { background: var(--color-accent-hover); }
 .pa-placeholder-actions a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 @media (max-width: 560px) { .pa-placeholder { margin: 16px 0; padding: 24px 18px; } }

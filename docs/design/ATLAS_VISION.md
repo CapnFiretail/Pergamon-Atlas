@@ -153,7 +153,8 @@ As of 2026-11-22 (after the H4 component library). This section is maintained wi
 | Site Navigation: the sidebar links edited in Admin Mode, published with the homepage | Implemented (Handbook redesign milestone; migration 0013 on staging) | `scripts/cms/site-nav.js`, `site.sidebar` |
 | Remaining typography differences, Admin Mode typography | Planned (H2) | Kept as pending in the registry |
 | Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
-| Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | Planned (H3) | Shown as Planned in the Handbook |
+| Colors & Themes: colour roles documented, previews resolve every role per palette and mode, live contrast checks | Implemented (H5.2a) | `styles/theme.css`, `scripts/design/colors.js`, Handbook › Colors |
+| Spacing & Grid, Surfaces, Motion, Responsive, Accessibility | Planned (H5) | Shown as Planned in the Handbook |
 | Component library: Feature banner (hero / banner), Content Card, Carousel, previewed live in the Handbook | Implemented (H4) | `scripts/components/`, `styles/components/` |
 | Element and widget registry with dependencies and automatic where-used | Long-term (H4+) | — |
 | Page model, templates and layout constraints | Long-term (H5) | — |

@@ -6,8 +6,13 @@
  * Each palette × mode below defines the six base colours; every other token
  * is derived from them. Shared components use only the semantic tokens.
  * Without JavaScript the :root defaults (Obsidian & Gold, dark) apply.
- * [data-theme-preview] scopes a palette to one element (Settings previews);
- * only the six base colours are available inside it.
+ * [data-theme-preview="<palette>"][data-mode="<mode>"] scopes a palette to one
+ * element (Settings previews, the Handbook's Colors page) without changing
+ * the page's own theme: the six base colours and every derived role resolve
+ * for that palette and mode inside it.
+ *
+ * The roles' names and purposes are documented in /scripts/design/colors.js
+ * (the Handbook reads it); the values live only here.
  */
 
 /* ── Palette A — Obsidian & Gold (default) ─────────────────────────────── */
@@ -48,7 +53,7 @@
   --color-border: #D8E1EF;
   --color-accent: #2867C8;
   --color-text-primary: #18283C;
-  --color-text-secondary: #64748B;
+  --color-text-secondary: #5E6E85;
 }
 
 /* ── Palette C — Graphite & Emerald ────────────────────────────────────── */
@@ -68,7 +73,7 @@
   --color-border: #D7E2DD;
   --color-accent: #16845F;
   --color-text-primary: #1C3029;
-  --color-text-secondary: #647B71;
+  --color-text-secondary: #5B7168;
 }
 
 /* ── Palette D — Onyx & Copper ─────────────────────────────────────────── */
@@ -88,11 +93,15 @@
   --color-border: #E7DAD0;
   --color-accent: #A75B32;
   --color-text-primary: #332820;
-  --color-text-secondary: #887468;
+  --color-text-secondary: #7C695E;
 }
 
 /* ── Derived tokens (all palettes) ─────────────────────────────────────── */
-:root {
+/* Declared on every element that sets a palette (the page and any preview),
+   so the colour-mix() roles are worked out from that element's own base
+   colours rather than inherited already resolved from the page. */
+:root,
+[data-theme-preview] {
   --pa-color-scheme: dark;
   --color-surface-hover: color-mix(in srgb, var(--color-surface), var(--color-text-primary) 6%);
   --color-accent-hover: color-mix(in srgb, var(--color-accent), var(--color-text-primary) 16%);
@@ -104,7 +113,11 @@
   --color-focus: var(--color-accent);
   --color-danger: #F08A7E;
   --color-success: #8FD3A0;
+  /* Dims the page behind a modal layer (the phone menu, Admin Mode dialogs). */
+  --color-overlay: rgb(0 0 0 / 0.55);
+}
 
+:root {
   /* Typography. Aptos Slab is only used when installed on the visitor's
      device (no font files are served; web licensing is unverified). Roboto
      Slab is the embedded fallback. */
@@ -122,12 +135,22 @@
   --pa-text: var(--color-text-primary);
   --pa-font: var(--font-display);
 }
-:root[data-mode="light"] {
+:root[data-mode="light"],
+[data-theme-preview][data-mode="light"] {
   --pa-color-scheme: light;
   --color-accent-text: color-mix(in srgb, var(--color-accent) 78%, #000);
   --color-on-accent: #FFFFFF;
   --color-danger: #B3261E;
   --color-success: #1E7A3C;
+}
+/* Obsidian & Gold, light: white on the light-mode gold is only 3.7:1, so
+   labels on the accent use a dark ink instead (5.1:1), and hover lightens the
+   gold rather than darkening it so the ink stays readable (6.4:1). The gold
+   itself is unchanged. */
+:root[data-palette="obsidian"][data-mode="light"],
+[data-theme-preview="obsidian"][data-mode="light"] {
+  --color-on-accent: #17110A;
+  --color-accent-hover: color-mix(in srgb, var(--color-accent), #FFFFFF 16%);
 }
 
 /* color-scheme (native controls, scrollbars) is applied only to themed

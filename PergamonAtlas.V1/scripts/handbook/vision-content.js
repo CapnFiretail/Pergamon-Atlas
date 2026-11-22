@@ -740,10 +740,30 @@
       ],
       [
        [
-        "Colors & Themes, Spacing & Grid, Surfaces, Motion, Responsive, Accessibility"
+        "Colors & Themes: colour roles documented, previews resolve every role per palette and mode, live contrast checks"
        ],
        [
-        "Planned (H3)"
+        "Implemented (H5.2a)"
+       ],
+       [
+        [
+         "code",
+         "styles/theme.css"
+        ],
+        ", ",
+        [
+         "code",
+         "scripts/design/colors.js"
+        ],
+        ", Handbook › Colors"
+       ]
+      ],
+      [
+       [
+        "Spacing & Grid, Surfaces, Motion, Responsive, Accessibility"
+       ],
+       [
+        "Planned (H5)"
        ],
        [
         "Shown as Planned in the Handbook"

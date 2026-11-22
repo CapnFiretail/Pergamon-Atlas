@@ -554,7 +554,7 @@ select.cms-field-input { cursor: pointer; }
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgb(0 0 0 / 0.55);
+  background: var(--color-overlay);
   font-family: var(--font-ui);
 }
 .cms-publish[hidden] { display: none; }

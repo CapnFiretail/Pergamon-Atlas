@@ -196,7 +196,7 @@
     cats.setAttribute('aria-label', 'Catalogue');
     const library = GROUPS[2];
     cats.append(
-      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography ready'),
+      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography and Colors ready'),
       card('library/elements', 'Elements', library.items[0].text, 'elements', 'planned'),
       card('library/widgets', 'Widgets', 'Larger reusable components: navigation, Featured Game, Spotlight and the games carousel.', 'widgets', 'ready'),
       card('library/layouts', 'Layouts', library.items[2].text, 'layouts', 'planned')
