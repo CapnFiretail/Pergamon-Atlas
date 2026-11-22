@@ -30,6 +30,7 @@
     typography: '<path d="M5 7V4h14v3M12 4v16M9 20h6"/>',
     colors: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.9-.3-1 .4-2.1 1.5-2.1H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
     spacing: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+    grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
     motion: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
     elements: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
     widgets: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><path d="M17 13v8M13 17h8"/>',
@@ -45,6 +46,7 @@
       { path: 'foundations/typography', label: 'Typography', icon: 'typography', text: 'Type roles, font families and text styles, drawn by the live stylesheet.' },
       { path: 'foundations/colors', label: 'Colors', icon: 'colors', text: 'The four palettes in dark and light mode, the colour roles built on them, and contrast checks.' },
       { path: 'foundations/spacing', label: 'Spacing & Surfaces', icon: 'spacing', text: 'The spacing scale, the page frame, and the surfaces: panels, cards, controls, radii and elevation.' },
+      { path: 'foundations/grid', label: 'Atlas Grid', icon: 'grid', text: 'The 20-column square-cell grid widgets snap to: coordinates, spans, sizing contracts, validation and narrow screens.' },
       { path: 'foundations/motion', label: 'Motion', icon: 'motion', text: 'Durations, easing and reduced-motion rules, including the carousel’s glide.' }
     ] },
     { id: 'library', label: 'Library', text: 'The reusable parts Atlas pages are made of, from small elements to whole layouts.', items: [
@@ -155,6 +157,10 @@
       ['accent', 'accent-soft', 'surface', 'border', 'text'].forEach(s => sw.append(el('span', 'hb-pv-swatch hb-pv-swatch--' + s)));
     } else if (kind === 'spacing') {
       [16, 32, 56, 88].forEach(w => { const b = add('hb-pv-bar'); b.style.width = w + 'px'; });
+    } else if (kind === 'grid') {
+      // Placed blocks over faint empty cells.
+      [[1, 1, 3, 2], [4, 1, 3, 1], [4, 2, 2, 2], [1, 3, 3, 1], [6, 3, 1, 1]].forEach(([c, r, w, h]) => { const n = add('hb-pv-cell'); n.style.gridArea = r + ' / ' + c + ' / span ' + h + ' / span ' + w; });
+      const ghost = add('hb-pv-cell hb-pv-cell--ghost'); ghost.style.gridArea = '2 / 6 / span 1 / span 1';
     } else if (kind === 'motion') {
       box.innerHTML = '<svg class="hb-pv-curve" viewBox="0 0 120 60"><path d="M4 56C40 56 46 4 116 4"/><circle cx="116" cy="4" r="4"/></svg>';
     } else if (kind === 'elements') {
@@ -196,7 +202,7 @@
     cats.setAttribute('aria-label', 'Catalogue');
     const library = GROUPS[2];
     cats.append(
-      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography, Colors, Spacing & Surfaces ready'),
+      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography, Colors, Spacing & Surfaces, Atlas Grid ready'),
       card('library/elements', 'Elements', library.items[0].text, 'elements', 'planned'),
       card('library/widgets', 'Widgets', 'Larger reusable components: navigation, Featured Game, Spotlight and the games carousel.', 'widgets', 'ready'),
       card('library/layouts', 'Layouts', library.items[2].text, 'layouts', 'planned')

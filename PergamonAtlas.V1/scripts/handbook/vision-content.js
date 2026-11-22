@@ -785,7 +785,38 @@
       ],
       [
        [
-        "Atlas Grid, Motion, Responsive, Accessibility"
+        "Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook (no page uses it yet)"
+       ],
+       [
+        "Implemented (H5.2c)"
+       ],
+       [
+        [
+         "code",
+         "scripts/grid/"
+        ],
+        ", ",
+        [
+         "code",
+         "styles/grid.css"
+        ],
+        ", Handbook › Atlas Grid"
+       ]
+      ],
+      [
+       [
+        "Homepage on the Atlas Grid; Layout Lab; layout editing in Admin Mode"
+       ],
+       [
+        "Planned (H5.3+)"
+       ],
+       [
+        "—"
+       ]
+      ],
+      [
+       [
+        "Motion, Responsive, Accessibility"
        ],
        [
         "Planned (H5)"

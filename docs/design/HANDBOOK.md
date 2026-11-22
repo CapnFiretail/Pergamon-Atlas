@@ -3,7 +3,7 @@
 An internal, read-only design-system catalogue for administrators, at
 `/handbook/`, inside the normal site (header, footer, themes). Its sections
 are **Overview** (Dashboard, Vision), **Foundations** (Typography, Colors,
-Spacing & Surfaces; Motion planned) and **Library** (Widgets; Elements and Layouts
+Spacing & Surfaces, Atlas Grid; Motion planned) and **Library** (Widgets; Elements and Layouts
 planned).
 
 **The long-term architecture is defined in [`ATLAS_VISION.md`](ATLAS_VISION.md)**,
@@ -29,6 +29,7 @@ vision and lists recommendations for later phases.
 | **Implemented** | Component library: Feature banner (hero, banner), Content Card, Carousel, extracted from the homepage and previewed live in the Handbook | H4 |
 | **Implemented** | Foundations › Colors: colour roles, previews that resolve every role per palette and mode, live contrast checks | H5.2a |
 | | Foundations › Spacing & Surfaces: spacing scale, page frame (insets, widget gutter), radii and elevation tokens | H5.2b |
+| | Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation, read-only renderer; Foundations › Atlas Grid (no page uses it yet) | H5.2c |
 | **Long-term** | Element and widget registry with dependencies and automatic where-used | H4+ |
 | | Page model, templates and layout constraints | H5 |
 | | Visual editing: drafts, preview, validation, publish, rollback | H6 |
@@ -58,6 +59,11 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/styles/layout.css` | Page frame tokens (`--page-inset-*`, `--layout-gutter`) and their narrow-screen values. |
 | `PergamonAtlas.V1/scripts/design/colors.js`, `scripts/design/surfaces.js` | What each colour, spacing and surface token is for (no values); read by the Handbook. |
 | `tests/design/colors.test.mjs`, `tests/design/surfaces.test.mjs` | Token definitions, documentation and contrast checks. |
+| `PergamonAtlas.V1/scripts/grid/atlas-grid.js` | **Atlas Grid engine:** geometry (square cells, 1-based coordinates, canvas extent) and validation with structured errors. No DOM; also runs in Node. |
+| `PergamonAtlas.V1/scripts/grid/widget-types.js` | **Widget sizing contracts: the source of truth** (minimum and default cells, content minimums in pixels, how they were measured). |
+| `PergamonAtlas.V1/scripts/grid/renderer.js`, `styles/grid.css` | Read-only renderer: places widgets with CSS Grid, stacks below a page-set breakpoint, refuses invalid layouts, optional cell overlay. |
+| `PergamonAtlas.V1/scripts/handbook/grid-page.js` | Foundations › Atlas Grid: live demonstrations drawn by the renderer. |
+| `tests/design/grid.test.mjs` | Geometry, contracts, validation and fit (`node --test tests/design/grid.test.mjs`). |
 | `PergamonAtlas.V1/styles/handbook.css` | Handbook layout (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/design/typography.js` | **Typography registry: the source of truth.** |
 | `tools/build-typography.mjs` | Writes `styles/typography.css` from the registry (`--check` to verify). |

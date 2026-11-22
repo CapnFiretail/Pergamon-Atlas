@@ -19,6 +19,11 @@
     { js: '/scripts/handbook/colors-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.colorsPage) },
     { js: '/scripts/design/surfaces.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.surfaces) },
     { js: '/scripts/handbook/spacing-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.spacingPage) },
+    // Atlas Grid: the engine, the widget sizing contracts and the renderer.
+    { css: '/styles/grid.css' },
+    { js: '/scripts/grid/atlas-grid.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.validateLayout) },
+    { js: '/scripts/grid/widget-types.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.widgetTypes) },
+    { js: '/scripts/grid/renderer.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.renderer) },
     { js: '/scripts/handbook/vision-content.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.vision) },
     { js: '/scripts/handbook/vision-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.visionPage) },
     // The component library, for the Widgets page's live previews.
@@ -30,7 +35,8 @@
     { js: '/scripts/components/content-card.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.contentCard) },
     { js: '/scripts/components/carousel.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.carousel) },
     { js: '/scripts/handbook/component-examples.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.componentExamples) },
-    { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) }
+    { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) },
+    { js: '/scripts/handbook/grid-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.gridPage) }
   ];
   let loading = null;
   let shown = null;                    // 'handbook' | 'denied'

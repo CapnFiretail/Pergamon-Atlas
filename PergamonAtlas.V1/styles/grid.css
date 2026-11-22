@@ -1,0 +1,76 @@
+/* Atlas Grid (scripts/grid/renderer.js; geometry in scripts/grid/atlas-grid.js).
+ * Twenty columns of square cells separated by the layout gutter. The cell
+ * size comes from the container's own width (container query units), so the
+ * rows match the columns at any width without measuring:
+ *   cell = (100cqi − 19 × gap) / 20
+ * Widgets are placed by their 1-based cell coordinates; the canvas has as
+ * many rows as its lowest widget reaches, and empty cells stay empty.
+ * Slots add no padding, borders or margins: a widget's own border and shadow
+ * sit inside its rectangle and never move the grid. */
+.atlas-grid {
+  --atlas-columns: 20;
+  --atlas-gap: var(--layout-gutter, 16px);
+  container-type: inline-size;
+  min-width: 0;
+}
+.atlas-grid-canvas {
+  --atlas-cell: calc((100cqi - (var(--atlas-columns) - 1) * var(--atlas-gap)) / var(--atlas-columns));
+  display: grid;
+  grid-template-columns: repeat(var(--atlas-columns), minmax(0, 1fr));
+  /* The canvas height is set once from the formula and its rows share it,
+     like the columns share the width: each row is exactly one cell, with no
+     rounding building up down a long canvas. */
+  height: calc(var(--atlas-extent) * var(--atlas-cell) + (var(--atlas-extent) - 1) * var(--atlas-gap));
+  grid-template-rows: repeat(var(--atlas-extent), minmax(0, 1fr));
+  gap: var(--atlas-gap);
+}
+.atlas-grid-slot {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  grid-column: var(--atlas-col) / span var(--atlas-cols);
+  grid-row: var(--atlas-row) / span var(--atlas-rows);
+  min-width: 0;
+  min-height: 0;
+  /* A size container (named by the page's draw config when a component's
+     CSS expects one), so components can respond to their own rectangle. */
+  container-type: inline-size;
+}
+.atlas-grid-slot > * { min-width: 0; min-height: 0; }
+
+/* An empty layout has no rows at all. */
+.atlas-grid-canvas[data-atlas-empty] { height: 0; grid-template-rows: none; }
+
+/* Stacked presentation (below the page's stackBelow width): one widget per
+   row, in reading order, each at least its content's minimum height. The
+   layout itself is unchanged. */
+.atlas-grid[data-atlas-state="stack"] .atlas-grid-canvas { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+.atlas-grid[data-atlas-state="stack"] .atlas-grid-slot { grid-column: 1; grid-row: auto; order: var(--atlas-order); min-height: var(--atlas-min-height); }
+
+/* A refused layout shows nothing rather than something wrong. */
+.atlas-grid[data-atlas-state="invalid"] .atlas-grid-slot { display: none; }
+
+/* Debug view (Handbook): faint square cells behind the widgets. A tinted
+   layer masked to the intersection of the column and row bands, so only the
+   cells show and the gutters stay clear. */
+.atlas-grid[data-atlas-debug] .atlas-grid-canvas {
+  position: relative;
+  isolation: isolate;
+  outline: 1px dashed color-mix(in srgb, var(--color-accent) 40%, transparent);
+  outline-offset: 4px;
+}
+.atlas-grid[data-atlas-debug] .atlas-grid-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 var(--atlas-cell), transparent 0), linear-gradient(to bottom, #000 var(--atlas-cell), transparent 0);
+  -webkit-mask-size: calc(var(--atlas-cell) + var(--atlas-gap)) 100%, 100% calc(var(--atlas-cell) + var(--atlas-gap));
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, #000 var(--atlas-cell), transparent 0), linear-gradient(to bottom, #000 var(--atlas-cell), transparent 0);
+  mask-size: calc(var(--atlas-cell) + var(--atlas-gap)) 100%, 100% calc(var(--atlas-cell) + var(--atlas-gap));
+  mask-composite: intersect;
+}
+.atlas-grid[data-atlas-debug][data-atlas-state="stack"] .atlas-grid-canvas::before,
+.atlas-grid[data-atlas-debug][data-atlas-state="invalid"] .atlas-grid-canvas::before { display: none; }

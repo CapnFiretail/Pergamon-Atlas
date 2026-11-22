@@ -155,7 +155,9 @@ As of 2026-11-22 (after the H4 component library). This section is maintained wi
 | Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
 | Colors & Themes: colour roles documented, previews resolve every role per palette and mode, live contrast checks | Implemented (H5.2a) | `styles/theme.css`, `scripts/design/colors.js`, Handbook › Colors |
 | Spacing & Surfaces: spacing scale, page frame tokens (two inset families, 16px widget gutter), radii and elevation, documented live | Implemented (H5.2b) | `styles/theme.css`, `styles/layout.css`, `scripts/design/surfaces.js`, Handbook › Spacing & Surfaces |
-| Atlas Grid, Motion, Responsive, Accessibility | Planned (H5) | Shown as Planned in the Handbook |
+| Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook (no page uses it yet) | Implemented (H5.2c) | `scripts/grid/`, `styles/grid.css`, Handbook › Atlas Grid |
+| Homepage on the Atlas Grid; Layout Lab; layout editing in Admin Mode | Planned (H5.3+) | — |
+| Motion, Responsive, Accessibility | Planned (H5) | Shown as Planned in the Handbook |
 | Component library: Feature banner (hero / banner), Content Card, Carousel, previewed live in the Handbook | Implemented (H4) | `scripts/components/`, `styles/components/` |
 | Element and widget registry with dependencies and automatic where-used | Long-term (H4+) | — |
 | Page model, templates and layout constraints | Long-term (H5) | — |
