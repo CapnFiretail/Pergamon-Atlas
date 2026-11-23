@@ -355,6 +355,9 @@
 
 @media (max-width: 420px) {
   .pa-header { gap: 8px; }
+  /* A wider fallback font shortens the name rather than widening the page. */
+  .pa-brand { flex-shrink: 1; }
+  .pa-brand-name { min-width: 0; overflow-x: clip; overflow-y: visible; text-overflow: ellipsis; }
   .pa-icon-button { width: 36px; height: 36px; }
   .pa-capsule { gap: 0; padding: 4px; }
 }

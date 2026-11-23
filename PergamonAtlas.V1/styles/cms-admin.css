@@ -29,6 +29,8 @@
   display: grid;
   gap: 16px;
   width: min(300px, calc(100vw - 24px));
+  max-height: calc(100vh - 92px);
+  overflow-y: auto;
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
   border-radius: 14px;
@@ -426,8 +428,8 @@ select.cms-field-input { cursor: pointer; }
 /* Beside the drawer the page is too narrow for the header's text links
    (they're also in the sidebar): icons only while it is open. */
 @media (min-width: 901px) and (max-width: 1280px) {
-  :root[data-cms-drawer="open"] .pa-nav { display: none; }
-  :root[data-cms-drawer="open"] .pa-actions { padding-left: 0; border-left: 0; }
+  :root[data-cms-drawer="open"]:not([data-cms-mode="layout"]) .pa-nav { display: none; }
+  :root[data-cms-drawer="open"]:not([data-cms-mode="layout"]) .pa-actions { padding-left: 0; border-left: 0; }
 }
 .cms-drawer-actions > button { padding: 0 12px; white-space: nowrap; }
 
@@ -613,7 +615,7 @@ select.cms-field-input { cursor: pointer; }
 .cms-manage-grip.is-empty { cursor: default; }
 .cms-manage-row.is-dragging .cms-manage-grip { cursor: grabbing; }
 .cms-manage-thumb { display: grid; place-items: center; width: 80px; height: 45px; overflow: hidden; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); }
-.cms-manage[data-list="home.carousel"] .cms-manage-thumb { width: 48px; height: 48px; }
+.cms-manage[data-kind="carousel"] .cms-manage-thumb { width: 48px; height: 48px; }
 .cms-manage-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .cms-manage-thumb[data-fit="height"] img { object-fit: contain; }
 .cms-manage-thumb-empty { color: var(--color-text-secondary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -736,4 +738,114 @@ select.cms-field-input { cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) {
   .cms-admin-switch, .cms-admin-switch-knob { transition: none; }
+}
+
+/* ── Content / Layout, Undo / Redo (panel) ─────────────────────────────── */
+.cms-admin-segment--two { grid-template-columns: repeat(2, 1fr); }
+.cms-admin-steps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+.cms-admin-step { height: 34px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: transparent; color: var(--color-text-primary); font: 600 14px/1 var(--font-ui); cursor: pointer; }
+.cms-admin-step:hover:not(:disabled) { border-color: var(--color-accent); }
+.cms-admin-step:disabled { opacity: 0.45; cursor: default; }
+
+/* ── Layout Mode (scripts/cms/layout-mode.js) ──────────────────────────── */
+/* Over 900px wide: the page on a canvas scaled to fit, beside a column on the
+   right with the inspector and, over it, the card editor (one column, one
+   width: opening the editor doesn't move the canvas). Narrower: the inspector
+   is a strip at the bottom that only says the page can't be arranged there.
+   Decorations: styles/grid-editor.css. */
+.cms-layout-bar, .cms-layout-bar * { box-sizing: border-box; }
+.cms-layout-bar {
+  position: fixed;
+  z-index: 140;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: 500 14px/1.35 var(--font-ui);
+}
+.cms-layout-bar[hidden], .cms-layout-bar [hidden] { display: none; }
+.cms-layout-section { display: grid; gap: 8px; min-width: 0; }
+.cms-layout-section .cms-admin-label { margin: 0; }
+.cms-layout-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.cms-layout-info { display: grid; gap: 2px; min-height: 54px; min-width: 0; margin: 0; align-content: start; }
+.cms-layout-name { font-size: 16px; font-weight: 800; }
+.cms-layout-details { color: var(--color-text-secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
+.cms-layout-tool, .cms-layout-select {
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font: 600 13px/1.1 var(--font-ui);
+  cursor: pointer;
+}
+.cms-layout-tool:hover:not(:disabled), .cms-layout-select:hover { border-color: var(--color-accent); }
+.cms-layout-tool:disabled { opacity: 0.45; cursor: default; }
+.cms-layout-tool[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-accent-soft); color: var(--color-accent-text); }
+.cms-layout-remove { grid-column: 1 / -1; color: var(--color-danger); }
+.cms-layout-label { align-self: center; color: var(--color-text-secondary); font-size: 13px; font-weight: 700; }
+[data-section="add"] .cms-layout-group { grid-template-columns: auto minmax(0, 1fr); }
+[data-section="add"] .cms-layout-tool { grid-column: 1 / -1; }
+[data-section="canvas"] .cms-layout-group { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; }
+.cms-layout-zoom { min-width: 40px; color: var(--color-text-secondary); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.cms-layout-zoom:empty { display: none; }
+.cms-layout-save .cms-drawer-primary, .cms-layout-save .cms-drawer-secondary { min-height: 40px; }
+.cms-layout-save > .cms-layout-tool { grid-column: 1 / -1; }
+.cms-layout-bar :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.cms-layout-notice, .cms-layout-status { margin: 0; color: var(--color-text-secondary); font-size: 13px; }
+.cms-layout-notice { padding-left: 10px; border-left: 3px solid var(--cms-unsaved); color: var(--color-text-primary); }
+.cms-layout-status:empty { display: none; }
+.cms-layout-status[data-kind="error"] { color: var(--color-danger); font-weight: 600; }
+:root[data-mode="light"] .cms-layout-status[data-kind="error"] { color: #B3261E; }
+.cms-layout-status[data-kind="success"] { color: var(--color-success); font-weight: 600; }
+:root[data-mode="light"] .cms-layout-status[data-kind="success"] { color: #1E7A3A; }
+/* A region with no widgets still shows where it is. */
+:root[data-cms-mode="layout"] .home-region[data-cms-empty] { min-height: 96px; border: 2px dashed color-mix(in srgb, var(--color-accent) 50%, transparent); border-radius: var(--radius-panel); }
+
+@media (min-width: 901px) {
+  /* Always a scrollbar: the canvas must not change width with its own height. */
+  :root[data-cms-mode="layout"] { --cms-drawer-w: 360px; overflow-y: scroll; }
+  :root[data-cms-mode="layout"] .cms-layout-bar {
+    top: var(--cms-layout-top, 88px);
+    right: 0;
+    bottom: 0;
+    width: var(--cms-drawer-w);
+    padding: 20px;
+    border-left: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+  }
+  /* The card editor in the same column, under the header; the page doesn't narrow. */
+  :root[data-cms-mode="layout"] .cms-drawer { top: var(--cms-layout-top, 88px); box-shadow: none; }
+  :root[data-cms-mode="layout"][data-cms-drawer="open"] .pa-page { margin-right: 0; }
+  :root[data-cms-mode="layout"][data-cms-drawer="open"] .cms-admin-panel { right: 24px; }
+  :root[data-cms-mode="layout"] .pa-main.home-page, :root[data-cms-mode="layout"] #footer-placeholder { margin-right: var(--cms-drawer-w); }
+  :root[data-cms-mode="layout"] #home {
+    width: var(--cms-canvas-width, auto);
+    margin: 0 0 var(--cms-canvas-below, 0) var(--cms-canvas-left, 0);
+    transform: scale(var(--atlas-scale, 1));
+    transform-origin: 0 0;
+  }
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  :root[data-cms-mode="layout"] { --cms-drawer-w: 320px; }
+}
+@media (max-width: 900px) {
+  .cms-layout-bar {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-height: 46vh;
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-popover);
+  }
+  .cms-layout-bar[data-paused] [data-section="widget"], .cms-layout-bar[data-paused] [data-section="add"] { display: none; }
+  :root[data-cms-mode="layout"] .atlas-edit-item { display: none; }
+  :root[data-cms-mode="layout"] .pa-page { padding-bottom: 190px; }
+  /* Behind the card editor's sheet there is no room for both. */
+  :root[data-cms-drawer="open"] .cms-layout-bar { display: none; }
 }

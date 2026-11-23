@@ -1,0 +1,45 @@
+/* Atlas Navigation (scripts/components/atlas-navigation.js). Colours and
+ * fonts from the theme and the Handbook’s type roles. Its rows share the
+ * panel’s height; a page can give stacked panels natural rows (home.css). */
+
+/* Icons in the Atlas Navigation panel (the carousel has its own copy). */
+.home-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Atlas Navigation (right-hand panel) ───────────────────────────────── */
+.home-context {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+}
+.home-context-title { margin: 0; font-family: var(--type-section-title-family); font-size: var(--type-section-title-size); font-weight: var(--type-section-title-weight); line-height: var(--type-section-title-leading); letter-spacing: var(--type-section-title-tracking); text-transform: var(--type-section-title-transform); }
+.home-context-list { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; margin: 0; padding: 0; list-style: none; }
+.home-context-item { flex: 1; display: flex; min-height: 56px; }
+.home-context-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 12px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+.home-context-row:hover { border-color: var(--color-accent); background: var(--color-surface-hover); }
+.home-context-icon { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: var(--color-accent-soft); color: var(--color-accent-text); }
+.home-context-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.home-context-label { font-family: var(--type-item-title-family); font-size: var(--type-item-title-size); font-weight: var(--type-item-title-weight); line-height: var(--type-item-title-leading); letter-spacing: var(--type-item-title-tracking); text-transform: var(--type-item-title-transform); }
+.home-context-desc { overflow: hidden; color: var(--color-text-secondary); font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); line-height: var(--type-caption-leading); letter-spacing: var(--type-caption-tracking); text-transform: var(--type-caption-transform); text-overflow: ellipsis; white-space: nowrap; }
+/* The arrow fills only the middle of its box: the empty sides go to the text. */
+.home-context-chevron { width: 18px; height: 18px; margin: 0 -3px 0 -4px; flex-shrink: 0; fill: none; stroke: var(--color-text-secondary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.home-context-row:hover .home-context-chevron { stroke: var(--color-accent-text); }
+/* Self-contained on any page (the homepage also sets these for all of .home). */
+.home-context, .home-context *, .home-context *::before, .home-context *::after { box-sizing: border-box; }
+.home-context-row { color: inherit; text-decoration: none; }
+.home-context-row:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }

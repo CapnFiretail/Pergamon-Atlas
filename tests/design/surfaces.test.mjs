@@ -87,7 +87,9 @@ test('the frame tokens are used by the page frame and the widget pages', () => {
   const home = rules(read('styles/home.css')), hb = rules(read('styles/handbook.css'));
   assert.equal(decl(home, '.pa-main.home-page', 'padding'), 'var(--page-inset-widgets)');
   assert.equal(decl(hb, '.pa-main.hb-root', 'padding'), 'var(--page-inset-widgets)');
-  for (const sel of ['.home', '.home-feature-grid', '.home-banners']) assert.equal(decl(home, sel, 'gap'), 'var(--layout-gutter)', sel);
+  assert.equal(decl(home, '.home', 'gap'), 'var(--layout-gutter)');
+  // The homepage's widgets are placed by the Atlas Grid, whose gap is the gutter.
+  assert.ok(read('styles/grid.css').includes('--atlas-gap: var(--layout-gutter'));
   // No stale fixed insets left in the narrow-screen rules.
   assert.equal(decl(L, '.pa-main', 'padding', '(max-width: 900px)'), undefined);
   assert.equal(decl(home, '.pa-main.home-page', 'padding', '(max-width: 900px)'), undefined);

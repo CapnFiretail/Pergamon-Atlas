@@ -2,9 +2,12 @@
  * Decorations are grid items on the same lines as the widgets
  * (--atlas-col/-row/-cols/-rows), drawn above them; they never change a
  * widget's geometry. Colours are theme roles only.
+ * On a page drawn scaled (--atlas-scale, set by the editor; 1 otherwise) they
+ * are drawn larger by as much, so they keep their size on screen.
  * Touch: an unselected widget keeps normal page scrolling; a selected one and
  * its handles don't (touch-action is set by state, before any gesture). */
 .atlas-edit-item {
+  --edit-px: calc(1px / var(--atlas-scale, 1));
   grid-column: var(--atlas-col) / span var(--atlas-cols);
   grid-row: var(--atlas-row) / span var(--atlas-rows);
   position: relative;
@@ -22,8 +25,8 @@
   outline: none;
   transition: box-shadow 0.12s ease, background-color 0.12s ease;
 }
-.atlas-edit-hit:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 55%, transparent); }
-.atlas-edit-hit:focus-visible { box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-focus); }
+.atlas-edit-hit:hover { box-shadow: inset 0 0 0 var(--edit-px) color-mix(in srgb, var(--color-accent) 55%, transparent); }
+.atlas-edit-hit:focus-visible { box-shadow: 0 0 0 calc(2 * var(--edit-px)) var(--color-background), 0 0 0 calc(4 * var(--edit-px)) var(--color-focus); }
 .atlas-edit-hit.is-selected { cursor: grab; touch-action: none; }
 .atlas-edit-hit.is-source { background: color-mix(in srgb, var(--color-background) 40%, transparent); }
 
@@ -31,39 +34,39 @@
 .atlas-edit-selection {
   z-index: 3;
   pointer-events: none;
-  box-shadow: 0 0 0 2px var(--color-accent);
+  box-shadow: 0 0 0 calc(2 * var(--edit-px)) var(--color-accent);
 }
 .atlas-edit-selection.is-editing { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 50%, transparent); }
 .atlas-edit-badge {
   position: absolute;
-  top: var(--space-2);
-  left: var(--space-2);
-  max-width: calc(100% - var(--space-4));
-  padding: 2px var(--space-2);
+  top: calc(8 * var(--edit-px));
+  left: calc(8 * var(--edit-px));
+  max-width: calc(100% - 16 * var(--edit-px));
+  padding: calc(2 * var(--edit-px)) calc(8 * var(--edit-px));
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text-primary);
-  font: 600 12px/1.4 var(--font-ui);
+  font: 600 calc(12 * var(--edit-px))/1.4 var(--font-ui);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 .atlas-edit-handle {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  margin: -12px 0 0 -12px;
+  width: calc(24 * var(--edit-px));
+  height: calc(24 * var(--edit-px));
+  margin: calc(-12 * var(--edit-px)) 0 0 calc(-12 * var(--edit-px));
   pointer-events: auto;
   touch-action: none;
 }
 .atlas-edit-handle::before {
   content: "";
   position: absolute;
-  inset: 7px;
-  border: 2px solid var(--color-accent);
-  border-radius: 3px;
+  inset: calc(7 * var(--edit-px));
+  border: calc(2 * var(--edit-px)) solid var(--color-accent);
+  border-radius: calc(3 * var(--edit-px));
   background: var(--color-surface);
 }
 .atlas-edit-handle:hover::before { background: var(--color-accent); }

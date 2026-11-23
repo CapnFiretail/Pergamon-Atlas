@@ -128,6 +128,10 @@ change — no external, protocol-relative or `javascript:` URLs. Images are
 either a `site_media` id or a file under `/images/featured/`. The renderer
 will keep using `textContent`/`setAttribute` (never `innerHTML`) for content.
 
+**Schema 2 (0014, §11)** adds the page's layout (`regions` of widget
+instances) and lets any number of instances have cards like these; the schema-1
+document above stays valid, and stays schema 1 until its layout is changed.
+
 **Saved cards (0012).** `home.featured` / `home.spotlight` stay the
 **active** cards, in the same place and shape as before, so the public
 renderer, the static fallback and older cached scripts are unaffected. Each
@@ -552,3 +556,162 @@ Production, when approved: run the file in the SQL editor, then
 PT422 (the editor shows the error; nothing is stored). Revert (only while no
 draft or published version contains `site.sidebar`): re-run 0012's
 `validate_content`, then drop `cms_check_nav`.
+
+## 11. Migration 0014: page layout, schema 2 (applied to staging only, 2026-11-23)
+
+`supabase/proposed/0014_page_layout.sql` (H5.3) lets the homepage document
+describe its own layout, so widgets can be placed, resized, added and
+removed as independent instances.
+
+| Where | State |
+|---|---|
+| Local | Complete: validator, client mirror, renderer and editor tested against 0013 + 0014 in PGlite |
+| Staging | Applied 2026-11-23 on top of 0013: function bodies match the file and every stored document was unchanged. The full lifecycle (layout draft, second instance with its own saved card, publish, public page, restore to schema 1) passed through the Admin UI; staging is back on its schema-1 baseline |
+| Production | **Not applied** (0013 isn't either). Nothing there writes or receives schema 2 |
+
+It only creates or replaces functions and their grants: no table, policy or
+data changes. Staging image publishing from a schema-2 page is not yet tested
+live (the path is the same as schema 1's).
+
+```jsonc
+{
+  "schema": 2,
+  "regions": [
+    { "id": "upper", "frame": "sidebar", "rowHeight": 23.43,
+      "stack": ["featured", "spotlight", "navigation"], "widgets": [
+      { "id": "featured",   "type": "feature-hero",      "col": 1,  "row": 1, "cols": 14, "rows": 7 },
+      { "id": "spotlight",  "type": "feature-spotlight", "col": 1,  "row": 8, "cols": 14, "rows": 4 },
+      { "id": "navigation", "type": "atlas-navigation",  "col": 15, "row": 1, "cols": 6,  "rows": 11 } ] },
+    { "id": "lower", "rowHeight": 23.43, "widgets": [
+      { "id": "carousel",   "type": "carousel",          "col": 1,  "row": 1, "cols": 20, "rows": 10 } ] }
+  ],
+  "components": {
+    "home.featured": Card, "home.featured.saved": { "order": [...] }, "home.featured.saved.<key>": Card,
+    "home.spotlight": Card, …,
+    "home.carousel": { "order": [...] }, "home.carousel.<key>": CarouselCard,
+    "site.sidebar": { … }
+  }
+}
+```
+
+- **Instances.** A widget instance is a placement (in exactly one region) plus
+  its content under `home.<instance id>`: a Card (with its own saved cards)
+  for `feature-hero` / `feature-spotlight`, an `{ order }` list plus
+  `.<key>` cards for a `carousel`, nothing for `atlas-navigation`. Two
+  Featured widgets are two instances with two cards. Every component must
+  belong to an instance (or be `site.sidebar`); nothing is orphaned, and a
+  saved card is always listed in its instance's `.saved` order (without a list
+  there can be none), so none goes unchecked.
+  Today's keys become today's instances (`featured`, `spotlight`,
+  `carousel`), so upgrading a schema-1 document renames nothing
+  (`content.upgradeDocument`).
+- **Server checks** (`cms_validate_home_v2`): allowlisted fields and types; 1–4
+  regions with unique ids; `frame` only `"sidebar"`; `rowHeight` 8–400px;
+  an optional `stack` (the order on narrow screens) listing every widget of
+  its region once; ≤ 24 widgets with unique ids page-wide; whole-number positions and spans
+  within 20 columns and 400 rows; no overlaps within a region; each instance's
+  content checked with the existing card / carousel-card / list rules.
+  Pixel content floors depend on screen width and fonts, so the editor
+  checks them (`scripts/grid/atlas-grid.js`), not the server.
+- **Schema 1 is unchanged**: its validator is 0013's, renamed
+  `cms_validate_home_v1`; `validate_content` dispatches on the document's own
+  `schema`. Rollback to any schema-1 version keeps working. Every existing CMS
+  test passes with 0014 applied (`CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout`).
+- **Visitors** still receive no saved cards: `get_published_content` now
+  strips `home.<any instance>.saved…`.
+- **`site_pages.schema_version` stays 1.** `get_published_content` reports it
+  and the loader still requires it; a document's own `schema` says which shape
+  it is.
+- **Tests:** `tests/cms/page-layout.test.mjs` (server and client must agree on
+  every case).
+- **The homepage draws both schemas.** `content.toModel`
+  reads either schema: a schema-1 document is upgraded for drawing only (the
+  stored document is never changed), so today's published content is drawn
+  as the two regions above. `scripts/home.js` renders each region with the
+  shared Atlas Grid renderer; a document whose layout fails
+  `PergamonGrid.validatePage` is refused whole (the page keeps what it had).
+  `content.validateDocument` accepts schema 2 (with the grid rules when the
+  grid scripts are on the page), so the loader and its cache take schema-2
+  documents.
+- **Long titles.** Titles never go below a readable size (Hero 26px,
+  Spotlight 20px; compact 30 / 24px; fallback font 22 / 18px). On the grid the
+  sizing contracts guarantee the room; stacked cards are at least their
+  authored height and grow with their content (layout data is untouched).
+- **Production rollout**, when approved: 0013, then 0014, in the SQL editor
+  (each with its checks); then the H5.3 front end. Site scripts are cached for
+  up to 4 hours: an older page that receives a schema-2 document shows its
+  built-in content, and an older Admin Mode tab would start from the built-in
+  content too. So wait out the cache and reload admin tabs before publishing
+  the first layout.
+- **Not needed for content.** A document stays schema 1 until its layout
+  changes, so without 0014 Admin Mode works exactly as before; only saving a
+  layout is refused (PT422, shown as "This server can't store page layouts
+  yet"), with nothing stored and the edits kept.
+
+## 12. Layout Mode: the admin visual editor (H5.3)
+
+Admin Mode on the homepage has two modes (panel › Edit): **Content**, as
+before, and **Layout**, where the widgets themselves are selected, moved,
+resized, added and removed on the page.
+
+- **Code.** `scripts/cms/layout-mode.js` is wiring, the inspector and the
+  scaled workspace. The grid
+  side is the Layout Lab's shared code, loaded by `admin.js` only after
+  `is_admin`: `grid/editor.js` (proposals; new here: `proposeAdd`,
+  `proposeRemove`, `proposeStack`, `history.amend`), `grid/interaction.js`
+  and `grid/overlay.js`, one of each per region over the homepage's own
+  renderers (`PergamonHome.regions()`). The document side is the workspace.
+  Visitors download none of it (checked: guest and member pages are
+  byte-identical to before, scripts included).
+- **Document.** `workspace.js` holds one undo / redo history for the whole
+  document: cards, lists, Site Navigation, widgets. Typing in one field is one
+  step; every gesture, key press, addition and removal is one step; undo
+  reaches back past a save. `setRegion`, `addInstance`, `removeInstance` and
+  `discardLayout` keep nothing the page couldn't show
+  (`content.validateDocument`, with the grid rules). The first layout change
+  turns a schema-1 document into schema 2; a layout back at today's homepage
+  on a schema-1 base is schema 1 again.
+- **Instances.** What an id means comes from the document
+  (`content.ownerOf(id, ...docs)`; `cardType`, `isSaved`, `slotOf`, `listOf`
+  and `cardFields` take documents too; without any they answer for today's
+  homepage). New widgets get ids no known document uses (`featured-2`, …), so
+  a new widget is never taken for a removed one. A new Featured / Spotlight
+  starts with a placeholder card, a Carousel empty, and goes to the first free
+  place of its default size in the chosen region. Removing a widget removes
+  its cards and saved cards with it, in one undoable step. The card drawer,
+  Manage cards, the Add card tile and the image editor work per instance.
+- **Regions** are fixed: a widget stays in its region. "Earlier / Later on
+  phones" changes the region's `stack` order; the grid doesn't move.
+- **Widths.** A change must fit the region as it is in a 1280px window with
+  the sidebar expanded (981px beside it, 1217px full width), or at its current
+  width if narrower, and at every wider one.
+- **Workspace** (windows over 900px). The page is laid out at desktop size
+  (the window's width, at least a 1280px window's) and drawn with a transform
+  on `#home`, scaled to fit beside a right-hand column: 360px, 320px up to
+  1100px. The column holds the inspector and, over it, the card editor, so
+  nothing covers a widget and opening the editor doesn't move or restack the
+  page. Tall pages shrink to 60% (or what the width allows), then scroll; the
+  canvas is never rescaled during a drag. `layout-mode.js` sets the variables
+  (`--cms-canvas-*`, `--atlas-scale`) and removes them on leaving;
+  `cms-admin.css` has the rules. The renderer, engine and controller are
+  unchanged: they measure layout pixels, and the controller reads positions
+  from the screen. `--atlas-scale` is also read by `grid-editor.css` (handles
+  and outlines keep their on-screen size) and `glide.js` (a card's layout
+  width); without it both are as before. At 900px and narrower nothing can be
+  arranged, the page shows as it does there, and the inspector says so.
+- **Saving, conflicts, publishing.** Save Draft, Publish Changes, Version
+  History and Restore are the same calls. A conflicting save is combined
+  widget by widget (a placement changed on one side only is kept; on both,
+  this browser's, after asking); layouts that don't fit together are refused
+  and nothing changes. The publish review and Version History list layout
+  changes per widget; a draft or version whose layout this site wouldn't show
+  can't be published or restored from the dialogs. Restoring a schema-1
+  version brings back today's homepage, layout and content.
+- **Image previews.** `PergamonHome.cardSize(id, layout, room)` gives the size
+  a card's widget is really drawn at (its own or a saved card's), and the
+  image editor builds the card in a grid slot of that size: in this window as
+  if the drawer weren't docked; stacked at 390px for Phone. A widget too narrow
+  for the wide card on any screen (560px or less) offers the phone framing only.
+- **Tests.** `tests/cms/layout-editing.test.mjs` (workspace, history,
+  instances, conflicts, draft → publish → rollback against 0014 in PGlite, and
+  without it), `tests/design/grid-editor.test.mjs`, `page-layout.test.mjs`.

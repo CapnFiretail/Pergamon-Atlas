@@ -785,7 +785,7 @@
       ],
       [
        [
-        "Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook (no page uses it yet)"
+        "Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook and used by the homepage"
        ],
        [
         "Implemented (H5.2c)"
@@ -830,13 +830,31 @@
       ],
       [
        [
-        "Homepage on the Atlas Grid; layout editing in Admin Mode"
+        "Homepage on the Atlas Grid; layout editing in Admin Mode: independent widget instances, scaled Layout Mode workspace, one undo history, schema-2 drafts, publish and rollback"
        ],
        [
-        "Planned"
+        "Complete locally and on staging (H5.3; migration 0014 on staging). Production rollout pending (0013, 0014 and the front end)"
        ],
        [
-        "—"
+        [
+         "code",
+         "scripts/grid/"
+        ],
+        ", ",
+        [
+         "code",
+         "scripts/home.js"
+        ],
+        ", ",
+        [
+         "code",
+         "scripts/cms/layout-mode.js"
+        ],
+        ", ",
+        [
+         "code",
+         "scripts/cms/workspace.js"
+        ]
        ]
       ],
       [

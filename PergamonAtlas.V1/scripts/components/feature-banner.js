@@ -17,8 +17,19 @@
 // Knows nothing about games, the CMS or the page it is on. Styles:
 // styles/components/feature-banner.css. Its height comes from where it is
 // placed; its compact layout applies when the area it sits in (a size
-// container named `upper`) is 640px or narrower: the homepage's upper area,
-// or any page or preview that provides one.
+// container named `upper`: on a grid, the widget's own slot) is 560px or
+// narrower.
+// Long titles: the title's size is fit × card width ÷ its length in
+// characters (styles: --feature-title-fit), at most the type role's size and
+// never below a readable minimum (--feature-title-min). Short titles are drawn
+// at their normal size. Where the minimum needs more room, the card must be
+// larger (its sizing contract) or, sized by its content, it grows. A label
+// too long for a compact card wraps inside its button. Titles over 24
+// characters also darken more of the artwork behind them and, on a compact
+// card that may grow (a page sets --feature-grows: 1), sit below it.
+// Fallback fonts: if the display web font (Roboto Slab) isn't loaded, the
+// page falls back to much wider faces (Rockwell); <html data-display-font=
+// "fallback"> then tightens the cap and lowers the minimum to match.
 (function () {
   'use strict';
   const NS = window.PergamonComponents = window.PergamonComponents || {};
@@ -30,6 +41,19 @@
     return node;
   }
   let idCount = 0;
+  const LONG_TITLE = 24;                    // characters: longer titles get data-title-long (styles)
+
+  // Mark the page when the display web font isn't available, once fonts settle.
+  function checkDisplayFont() {
+    if (!document.fonts) return;
+    let loaded = false;
+    document.fonts.forEach(f => { if (f.family.replace(/["']/g, '') === 'Roboto Slab' && f.status === 'loaded') loaded = true; });
+    document.documentElement.setAttribute('data-display-font', loaded ? 'web' : 'fallback');
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(checkDisplayFont);
+    if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', checkDisplayFont);
+  }
 
   const ART_VARS = ['--feature-focus', '--feature-focus-narrow', '--feature-zoom', '--feature-zoom-narrow',
     '--feature-art-scale', '--feature-art-scale-narrow', '--feature-art-x', '--feature-art-x-narrow',
@@ -112,6 +136,9 @@
 
     function apply(content) {
       h.textContent = content.title;
+      const chars = String(content.title || '').length;
+      section.style.setProperty('--feature-title-chars', String(Math.max(1, chars)));
+      section.toggleAttribute('data-title-long', chars > LONG_TITLE);
       action.href = content.href;
       action.setAttribute('aria-label', `${content.actionLabel}: ${content.title}`);
       label.textContent = content.actionLabel;

@@ -51,7 +51,14 @@
     return out;
   }
 
-  const LIST_LABELS = { 'home.carousel': 'Carousel order', 'home.featured.saved': 'Saved featured cards order', 'home.spotlight.saved': 'Saved spotlight cards order' };
+  const LIST_LABELS = { 'carousel': 'Carousel order', 'feature-hero': 'Saved featured cards order', 'feature-spotlight': 'Saved spotlight cards order' };
+  // The ordered list a component is (a carousel's cards, a widget's saved
+  // cards): its label, naming the widget if it isn't one of today's.
+  function listLabel(id, content, docs) {
+    const o = content.ownerOf(id, ...docs);
+    if (!o || !(o.part === 'saved' || (o.part === '' && o.type === 'carousel'))) return null;
+    return LIST_LABELS[o.type] + (content.ownerOf(id) ? '' : ` (${content.instanceLabel(o.instance, o.type)})`);
+  }
   // Components that aren't cards: site-wide settings stored in this document.
   const OTHER_LABELS = { 'site.sidebar': 'Site Navigation (every page)' };
   // Whether the cards present in both lists are in a different order
@@ -64,19 +71,22 @@
 
   // published / draft: documents (published may be null: nothing live yet);
   // imgs: scripts/cms/images.js when available.
-  // → { cards: [{ id, type, typeLabel, title, changes: [...] }], newImages: [media ids], other: [...], empty }
+  // → { cards: [{ id, type, typeLabel, title, changes: [...] }], newImages: [media ids], other: [...],
+  //     layout: [{ label, changes: [...] }] (widgets added, moved, resized, removed), empty }
   function summarize(published, draft, content, imgs) {
     const pub = (published && published.components) || {};
     const next = (draft && draft.components) || {};
     const ids = Object.keys(next).concat(Object.keys(pub).filter(k => !(k in next)));
-    const cards = [], other = [];
+    const cards = [], other = [], docs = [draft, published];
     ids.forEach(id => {
       if (same(pub[id], next[id])) return;
-      if (LIST_LABELS[id]) { if (reordered(pub[id], next[id])) other.push(LIST_LABELS[id]); return; }
-      const type = content.cardType(id);
+      const list = listLabel(id, content, docs);
+      if (list) { if (reordered(pub[id], next[id])) other.push(list); return; }
+      const type = content.cardType(id, ...docs);
       if (!type) { other.push(OTHER_LABELS[id] || id); return; }
-      const saved = content.isSaved && content.isSaved(id);
-      const typeLabel = (saved ? 'Saved ' + (CARD_TYPES[type] || 'card').toLowerCase() : CARD_TYPES[type]) || 'Card';
+      const saved = content.isSaved(id, ...docs);
+      const owner = content.ownerOf(id, ...docs);
+      const typeLabel = ((saved ? 'Saved ' + (CARD_TYPES[type] || 'card').toLowerCase() : CARD_TYPES[type]) || 'Card') + (content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
       const a = pub[id], b = next[id];
       let changes;
       if (a === undefined) changes = [saved ? 'Added to saved cards' : 'Added'];
@@ -84,9 +94,10 @@
       else {
         // An active card replaced: by one of the saved cards, or by a new
         // card while the previous one was moved to the saved cards.
-        const slot = !saved && content.slotOf && content.slotOf(id) === id;
-        const from = slot ? Object.keys(pub).find(k => content.isSaved(k) && content.slotOf(k) === id && same(pub[k], b)) : null;
-        const kept = slot && !from ? Object.keys(next).find(k => content.isSaved(k) && content.slotOf(k) === id && same(next[k], a)) : null;
+        const slot = !saved && content.slotOf(id, ...docs) === id;
+        const savedHere = k => content.isSaved(k, ...docs) && content.slotOf(k, ...docs) === id;
+        const from = slot ? Object.keys(pub).find(k => savedHere(k) && same(pub[k], b)) : null;
+        const kept = slot && !from ? Object.keys(next).find(k => savedHere(k) && same(next[k], a)) : null;
         if (from) changes = ['Now shows a saved card (was “' + String(a.title || '') + '”)'];
         else if (kept) changes = ['Now shows a new card (“' + String(a.title || '') + '” was saved)'];
         else {
@@ -99,7 +110,8 @@
     });
     const live = content.mediaIds(published || {});
     const newImages = content.mediaIds(draft || {}).filter(id => live.indexOf(id) < 0);
-    return { cards, newImages, other, empty: !cards.length && !other.length };
+    const layout = draft ? content.layoutChanges(published, draft) : [];
+    return { cards, newImages, other, layout, empty: !cards.length && !other.length && !layout.length };
   }
 
   // The sequence. api (all → Promise):

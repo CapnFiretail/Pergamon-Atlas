@@ -1,7 +1,12 @@
 // Atlas Grid: geometry and validation (pure; no DOM). A layout is a list of
-// widget placements on a 20-column grid of square cells with a fixed gutter:
+// widget placements on a 20-column grid with a fixed gutter. Rows are square
+// (as tall as a column is wide) unless the layout fixes their height:
 //
-//   layout  = { widgets: [placement, …] }
+//   layout  = { widgets: [placement, …], rowHeight? }
+//     rowHeight  px: every row this tall at any width (a page that keeps its
+//                proportions as the window changes); omitted: square cells
+//     stack      [id, …]: the order of a stacked presentation (every widget
+//                once); omitted: reading order
 //   placement = { id, type, col, row, cols, rows }
 //     id         stable instance id (letters, digits, - and _; ≤ 64)
 //     type       a registered widget type (scripts/grid/widget-types.js)
@@ -9,9 +14,10 @@
 //     cols, rows span in cells (positive integers)
 //
 // Geometry, for a container of width W, C columns and gutter G:
-//   cell   = (W − (C − 1) × G) / C          (square: rows use the same size)
-//   width  = cols × cell + (cols − 1) × G   height likewise with rows
-//   x      = (col − 1) × (cell + G)         y likewise with row
+//   cell   = (W − (C − 1) × G) / C          column width
+//   row    = rowHeight, or cell (square)
+//   width  = cols × cell + (cols − 1) × G   height = rows × row + (rows − 1) × G
+//   x      = (col − 1) × (cell + G)         y = (row − 1) × (row size + G)
 //   extent = max(row + rows − 1)            the canvas ends after this row
 // No maximum row; empty cells and rows are kept; nothing is compacted.
 //
@@ -27,6 +33,13 @@
 // is not monotonic: a layout can fit at one width and not at a wider one.
 // minFitWidth() gives the narrowest width from which it fits at every wider
 // width; pages present layouts below that width some other way (stacked).
+// With fixed rows a widget's height doesn't change with width, so only its
+// width (and the height floor its width band asks for) decides.
+//
+// A page can have several grids (regions), each its own layout:
+//   page = { regions: [{ id, widgets, rowHeight? , …page fields }] }
+// validatePage() checks every region and that instance ids are unique across
+// the page; widgets stay inside their region.
 //
 // Future editing operations (move, resize from edges and corners, shrinking
 // neighbours within their minimums, undo) build candidate layouts and accept
@@ -39,6 +52,7 @@
   const COLUMNS = 20;
   const GUTTER = 16;           // matches --layout-gutter (styles/layout.css)
   const ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
+  const MIN_ROW = 8, MAX_ROW = 400;            // fixed row heights (px)
   const isPosInt = n => typeof n === 'number' && Number.isInteger(n) && n > 0;
   const isPosNum = n => typeof n === 'number' && Number.isFinite(n) && n > 0;
   const err = (code, widgets, message, detail) => ({ code, widgets, message, detail: detail || {} });
@@ -48,20 +62,25 @@
   const spanSize = (n, cell, gutter = GUTTER) => n * cell + (n - 1) * gutter;
   // The smallest span (in cells) whose size reaches `px`.
   const cellsFor = (px, cell, gutter = GUTTER) => Math.max(1, Math.ceil((px + gutter) / (cell + gutter) - 1e-9));
-  function rect(w, cell, gutter = GUTTER) {
-    return { x: (w.col - 1) * (cell + gutter), y: (w.row - 1) * (cell + gutter), width: spanSize(w.cols, cell, gutter), height: spanSize(w.rows, cell, gutter) };
+  // A layout's row size: its fixed rowHeight, or the column width (square).
+  const rowSize = (layout, cell) => (layout && isPosNum(layout.rowHeight) ? layout.rowHeight : cell);
+  function rect(w, cell, gutter = GUTTER, row = cell) {
+    return { x: (w.col - 1) * (cell + gutter), y: (w.row - 1) * (row + gutter), width: spanSize(w.cols, cell, gutter), height: spanSize(w.rows, row, gutter) };
   }
   const extent = layout => (layout && Array.isArray(layout.widgets) ? layout.widgets : []).reduce((m, w) => Math.max(m, w.row + w.rows - 1), 0);
-  const canvasHeight = (layout, cell, gutter = GUTTER) => { const n = extent(layout); return n ? spanSize(n, cell, gutter) : 0; };
+  const canvasHeight = (layout, cell, gutter = GUTTER) => { const n = extent(layout); return n ? spanSize(n, rowSize(layout, cell), gutter) : 0; };
   // Cells shared by two placements, or null. Touching edges share none.
   function overlap(a, b) {
     const c0 = Math.max(a.col, b.col), c1 = Math.min(a.col + a.cols, b.col + b.cols);
     const r0 = Math.max(a.row, b.row), r1 = Math.min(a.row + a.rows, b.row + b.rows);
     return c0 < c1 && r0 < r1 ? { col: c0, row: r0, cols: c1 - c0, rows: r1 - r0 } : null;
   }
-  // Reading order (top to bottom, then left to right): the order a stacked
-  // presentation shows widgets in. Returns ids; never changes the layout.
+  // Reading order (top to bottom, then left to right). Returns ids; never
+  // changes the layout.
   const readingOrder = layout => layout.widgets.slice().sort((a, b) => a.row - b.row || a.col - b.col).map(w => w.id);
+  // The order a stacked presentation shows widgets in: the layout's own
+  // stack order when it has one, otherwise reading order.
+  const stackOrder = layout => (Array.isArray(layout.stack) ? layout.stack.slice() : readingOrder(layout));
 
   // ── Sizing contracts ────────────────────────────────────────────────────
   //   { minCols, minRows, defaultCols, defaultRows, minWidth, minHeight,
@@ -102,6 +121,17 @@
     const out = [];
     if (!layout || typeof layout !== 'object' || !Array.isArray(layout.widgets)) {
       return [err('invalid-layout', [], 'A layout is an object with a widgets array.')];
+    }
+    if (layout.rowHeight !== undefined && !(isPosNum(layout.rowHeight) && layout.rowHeight >= MIN_ROW && layout.rowHeight <= MAX_ROW)) {
+      return [err('invalid-row-height', [], `rowHeight must be a number of pixels from ${MIN_ROW} to ${MAX_ROW}.`, { rowHeight: layout.rowHeight })];
+    }
+    // A stack order lists every widget exactly once.
+    if (layout.stack !== undefined) {
+      const ids = layout.widgets.map(w => w && w.id);
+      const s = layout.stack;
+      if (!Array.isArray(s) || s.length !== ids.length || new Set(s).size !== s.length || !s.every(id => ids.indexOf(id) >= 0)) {
+        return [err('invalid-stack', [], 'stack must list every widget of the layout exactly once.', { stack: s })];
+      }
     }
     const seen = new Map(), checkedTypes = new Map(), placed = [];
     layout.widgets.forEach((w, index) => {
@@ -145,9 +175,9 @@
     const columns = opts.columns || COLUMNS, gutter = opts.gutter === undefined ? GUTTER : opts.gutter;
     const cell = cellSize(width, columns, gutter);
     if (!(cell > 0)) return [err('grid-too-narrow', [], `A ${columns}-column grid has no room for cells at ${round(width)}px.`, { width, cell })];
-    const out = [];
+    const out = [], row = rowSize(layout, cell);
     for (const w of layout.widgets) {
-      const c = types[w.type].contract, r = rect(w, cell, gutter);
+      const c = types[w.type].contract, r = rect(w, cell, gutter, row);
       if (r.width < c.minWidth - 1e-6) out.push(err('below-min-width', [w.id], `“${w.id}” is ${round(r.width)}px wide at this width; its content needs ${c.minWidth}px.`, { width: r.width, minWidth: c.minWidth, containerWidth: width }));
       const minHeight = minHeightAt(c, r.width);
       if (r.height < minHeight - 1e-6) out.push(err('below-min-height', [w.id], `“${w.id}” is ${round(r.height)}px tall at this width; at ${round(r.width)}px wide its content needs ${minHeight}px.`, { height: r.height, minHeight, width: r.width, containerWidth: width }));
@@ -158,10 +188,14 @@
   // width. Solved per height band in cell units: a band covers the cells at
   // which the widget's width falls inside it; any part of a band where the
   // widget is shorter than the band's floor pushes the threshold above it.
+  // With fixed rows (opts.rowHeight) the height is the same at every width:
+  // a band whose floor it doesn't reach is excluded whole (Infinity if that
+  // is the widest band: the widget never fits).
   function widgetMinFitWidth(w, c, opts = {}) {
     const columns = opts.columns || COLUMNS, gutter = opts.gutter === undefined ? GUTTER : opts.gutter;
     const cellAtWidth = px => (px - (w.cols - 1) * gutter) / w.cols;
-    const cellAtHeight = px => (px - (w.rows - 1) * gutter) / w.rows;
+    const fixed = isPosNum(opts.rowHeight) ? spanSize(w.rows, opts.rowHeight, gutter) : null;
+    const cellAtHeight = px => (fixed === null ? (px - (w.rows - 1) * gutter) / w.rows : (fixed >= px - 1e-6 ? -Infinity : Infinity));
     let need = Math.max(1e-6, cellAtWidth(c.minWidth));
     let lo = -Infinity;
     const segments = (c.minHeightBands || []).map(b => { const s = { lo, hi: cellAtWidth(b.maxWidth), h: b.minHeight }; lo = s.hi; return s; });
@@ -173,10 +207,43 @@
     }
     return columns * need + (columns - 1) * gutter;
   }
-  const minFitWidth = (layout, types, opts = {}) => layout.widgets.reduce((m, w) => Math.max(m, widgetMinFitWidth(w, types[w.type].contract, opts)), 0);
+  const minFitWidth = (layout, types, opts = {}) => {
+    const o = Object.assign({ rowHeight: layout.rowHeight }, opts);
+    return layout.widgets.reduce((m, w) => Math.max(m, widgetMinFitWidth(w, types[w.type].contract, o)), 0);
+  };
+
+  // ── Pages: several grids (regions) ──────────────────────────────────────
+  // Each region is validated as its own layout; instance ids must be unique
+  // across the page (an instance lives in exactly one region). Errors carry
+  // the region's id in detail.region.
+  const REGION_ID = /^[a-z][a-z0-9-]{0,31}$/;
+  function validatePage(page, types, columns = COLUMNS) {
+    if (!page || typeof page !== 'object' || !Array.isArray(page.regions) || !page.regions.length) {
+      return [err('invalid-page', [], 'A page is an object with a non-empty regions array.')];
+    }
+    const out = [], regionIds = new Set(), owner = new Map();
+    page.regions.forEach((region, i) => {
+      const rid = region && region.id;
+      if (typeof rid !== 'string' || !REGION_ID.test(rid)) { out.push(err('invalid-region', [], `Region ${i + 1} has an invalid id.`, { index: i, region: rid })); return; }
+      if (regionIds.has(rid)) { out.push(err('duplicate-region', [], `Two regions share the id “${rid}”.`, { region: rid })); return; }
+      regionIds.add(rid);
+      for (const e of validateLayout(region, types, columns)) out.push(Object.assign({}, e, { detail: Object.assign({}, e.detail, { region: rid }) }));
+      for (const w of (Array.isArray(region.widgets) ? region.widgets : [])) {
+        if (!w || typeof w.id !== 'string') continue;
+        if (owner.has(w.id) && owner.get(w.id) !== rid) out.push(err('duplicate-id', [w.id], `“${w.id}” is in two regions (“${owner.get(w.id)}” and “${rid}”).`, { regions: [owner.get(w.id), rid] }));
+        else owner.set(w.id, rid);
+      }
+    });
+    return out;
+  }
+  // Where an instance lives: { region, widget } or null.
+  function findInstance(page, id) {
+    for (const region of page.regions || []) for (const w of region.widgets || []) if (w.id === id) return { region, widget: w };
+    return null;
+  }
   const round = n => Math.round(n * 10) / 10;
 
-  const api = { COLUMNS, GUTTER, cellSize, spanSize, cellsFor, rect, extent, canvasHeight, overlap, readingOrder, minHeightAt, validateContract, validateLayout, checkFit, minFitWidth, widgetMinFitWidth };
+  const api = { COLUMNS, GUTTER, MIN_ROW, MAX_ROW, cellSize, spanSize, cellsFor, rowSize, rect, extent, canvasHeight, overlap, readingOrder, stackOrder, minHeightAt, validateContract, validateLayout, checkFit, minFitWidth, widgetMinFitWidth, validatePage, findInstance };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PergamonGrid = Object.assign(root.PergamonGrid || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

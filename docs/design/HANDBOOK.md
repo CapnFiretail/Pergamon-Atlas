@@ -29,8 +29,10 @@ vision and lists recommendations for later phases.
 | **Implemented** | Component library: Feature banner (hero, banner), Content Card, Carousel, extracted from the homepage and previewed live in the Handbook | H4 |
 | **Implemented** | Foundations › Colors: colour roles, previews that resolve every role per palette and mode, live contrast checks | H5.2a |
 | | Foundations › Spacing & Surfaces: spacing scale, page frame (insets, widget gutter), radii and elevation tokens | H5.2b |
-| | Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation, read-only renderer; Foundations › Atlas Grid (no page uses it yet) | H5.2c |
-| | Layout Lab: move and resize real widgets on the grid (snapping, collision blocking, content minimums, undo/redo, keyboard and touch); shared editing engine, controller and overlay for the future Admin Mode editor. Nothing is saved | H5.4 |
+| | Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation, read-only renderer; Foundations › Atlas Grid | H5.2c |
+| | Layout Lab: move and resize real widgets on the grid (snapping, collision blocking, content minimums, undo/redo, keyboard and touch); shared editing engine, controller and overlay (also Admin Mode's). Nothing is saved | H5.4 |
+| | Homepage on the Atlas Grid: fixed-height rows and page regions (sidebar frame), schema-2 page document, Atlas Navigation extracted as a library component, long-title typography | H5.3 |
+| | Admin Mode Layout Mode: the homepage's widgets moved, resized, added and removed on a canvas scaled to fit beside an inspector, as independent instances with their own cards; one undo history with content edits; drafts, publish review and rollback. Complete locally and on staging (migration 0014 applied there); not yet released to production | H5.3 |
 | **Long-term** | Element and widget registry with dependencies and automatic where-used | H4+ |
 | | Page model, templates and layout constraints | H5 |
 | | Visual editing: drafts, preview, validation, publish, rollback | H6 |
@@ -50,7 +52,7 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/scripts/handbook/handbook.js` | App shell: the sections (`GROUPS`, shown in the site sidebar), hash routes, breadcrumbs, the Dashboard, group and planned pages, the phone-preview frame mode. |
 | `PergamonAtlas.V1/scripts/handbook/widgets-page.js` | Library › Widgets: the component catalogue, with live previews. |
 | `PergamonAtlas.V1/scripts/handbook/component-examples.js` | Sample inputs for those previews (content only; the components draw them). |
-| `PergamonAtlas.V1/scripts/components/*.js`, `styles/components/*.css` | The component library: `feature-banner`, `content-card`, `carousel`. |
+| `PergamonAtlas.V1/scripts/components/*.js`, `styles/components/*.css` | The component library: `feature-banner`, `content-card`, `carousel`, `atlas-navigation`. |
 | `PergamonAtlas.V1/scripts/layout.js` | The site's header and sidebar. One sidebar renderer for Site Navigation (published, cached or built-in) and a section's own navigation (the Handbook). |
 | `PergamonAtlas.V1/scripts/cms/site-nav.js` | Admin Mode's Site Navigation editor. |
 | `PergamonAtlas.V1/scripts/handbook/typography-page.js` | Foundations › Typography. |
@@ -60,15 +62,17 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/styles/layout.css` | Page frame tokens (`--page-inset-*`, `--layout-gutter`) and their narrow-screen values. |
 | `PergamonAtlas.V1/scripts/design/colors.js`, `scripts/design/surfaces.js` | What each colour, spacing and surface token is for (no values); read by the Handbook. |
 | `tests/design/colors.test.mjs`, `tests/design/surfaces.test.mjs` | Token definitions, documentation and contrast checks. |
-| `PergamonAtlas.V1/scripts/grid/atlas-grid.js` | **Atlas Grid engine:** geometry (square cells, 1-based coordinates, canvas extent) and validation with structured errors. No DOM; also runs in Node. |
+| `PergamonAtlas.V1/scripts/grid/atlas-grid.js` | **Atlas Grid engine:** geometry (square or fixed-height rows, 1-based coordinates, canvas extent), pages of several regions and validation with structured errors. No DOM; also runs in Node. |
 | `PergamonAtlas.V1/scripts/grid/widget-types.js` | **Widget sizing contracts: the source of truth** (minimum and default cells, content minimums in pixels with height floors per the widget’s own width bands, how they were measured). |
 | `PergamonAtlas.V1/scripts/grid/renderer.js`, `styles/grid.css` | Read-only renderer: places widgets with CSS Grid, stacks below a page-set breakpoint, refuses invalid layouts, optional cell overlay. |
 | `PergamonAtlas.V1/scripts/handbook/grid-page.js` | Foundations › Atlas Grid: live demonstrations drawn by the renderer. |
 | `tests/design/grid.test.mjs` | Geometry, contracts, validation and fit (`node --test tests/design/grid.test.mjs`). |
-| `PergamonAtlas.V1/scripts/grid/editor.js` | **Editing engine** (pure; also runs in Node): move and eight-handle resize proposals, gesture transactions, history. Validates at the width its caller gives. |
+| `PergamonAtlas.V1/scripts/grid/editor.js` | **Editing engine** (pure; also runs in Node): move, eight-handle resize, add, remove and stacking-order proposals, gesture transactions, history. Validates at the width its caller gives. |
 | `PergamonAtlas.V1/scripts/grid/interaction.js`, `scripts/grid/overlay.js`, `styles/grid-editor.css` | Pointer, touch and keyboard controller, and the editing decorations (hit areas, selection, handles, previews). Content-neutral; reusable by any editor. |
 | `PergamonAtlas.V1/scripts/handbook/layout-lab.js` | Foundations › Layout Lab: the Handbook wiring and its policy (changes validated at the live grid width and accepted only if the layout fits at every wider width; below the layout’s own fitting width it is shown stacked and read-only). |
+| `PergamonAtlas.V1/scripts/cms/layout-mode.js` | Admin Mode's Layout Mode on the homepage: the same engine, controller and overlay per page region, with the CMS working copy as the document (`docs/cms/ARCHITECTURE.md` §12). |
 | `tests/design/grid-editor.test.mjs` | The editing engine’s proposals, gestures and history. |
+| `tests/cms/layout-editing.test.mjs` | Layout Mode's document: instances, history, conflicts, saving and rollback. |
 | `PergamonAtlas.V1/styles/handbook.css` | Handbook layout (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/design/typography.js` | **Typography registry: the source of truth.** |
 | `tools/build-typography.mjs` | Writes `styles/typography.css` from the registry (`--check` to verify). |
@@ -174,9 +178,9 @@ is on (a test checks the code for that):
 | Carousel (`carousel.js`) | Container | Layout, gliding and arrows (`glide.js`), optional filters and sections, empty state, announcements, responsive widths | sections of `{ key, element, label, facet }` items |
 
 The **homepage** (`scripts/home.js`) owns everything game- and CMS-specific:
-it turns CMS cards and game entries into those inputs (`featureSlot`,
-`gameCard`, `gamesCarousel`), places them, and keeps the API Admin Mode
-uses. Admin Mode marks its controls `data-no-copy`, so the carousel's
+it turns CMS cards and game entries into those inputs (`featureCard`,
+`gameCard`, `gamesCarousel`), draws the document's widget instances in its
+regions with the shared grid renderer, and keeps the API Admin Mode uses. Admin Mode marks its controls `data-no-copy`, so the carousel's
 moving copies leave them out without knowing about Admin Mode.
 
 **Responsiveness**: the Carousel and the Content Card follow their own width
@@ -187,16 +191,15 @@ keep its wide layout there, so that is the page's decision. Its height also
 comes from where it is placed.
 
 **Placing a feature banner on another page.** Put it in a page area that is a
-size container named `upper`, and give the banner its height there (the
-homepage uses rows of 260px for the hero and 140px for the banner, and `auto`
-once compact):
+size container named `upper`, and give the banner its height there (on the
+homepage both come from its slot on the Atlas Grid):
 
 ```css
 .my-area { container: upper / inline-size; display: grid; grid-template-rows: 260px; }
-@container upper (max-width: 640px) { .my-area { grid-template-rows: auto; } }
+@container upper (max-width: 560px) { .my-area { grid-template-rows: auto; } }
 ```
 
-The compact layout then applies when that area is 640px or narrower. Without
+The compact layout then applies when that area is 560px or narrower. Without
 an `upper` area the banner always shows its wide layout. The Handbook's
 previews and Admin Mode's image editor provide such an area the same way.
 
@@ -211,8 +214,8 @@ widgets** (Sidebar Navigation, Atlas Navigation panel). Every preview is drawn
 by the real code: the components with the sample inputs in
 `component-examples.js` (variants, missing artwork, long titles, no action
 icon, filters, an empty collection, and a Wide / Compact width control), the
-sidebar by the site's sidebar code. Only the Atlas Navigation panel, a
-homepage widget that isn't a component yet, is a labelled static preview.
+sidebar by the site's sidebar code. The Atlas Navigation panel is a library
+component since H5.3 (`scripts/components/atlas-navigation.js`).
 Each entry lists its inputs, what it owns, where it is used, what Admin Mode
 can change, its type roles and its source files.
 
@@ -284,6 +287,9 @@ them) can make a style that looks equivalent in the CSS render differently.
   for the games).
 - The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
+- The homepage is the only page on the Atlas Grid and the only one Layout
+  Mode edits; widgets stay in their region, and extra carousels share the
+  "Explore More Games" heading.
 - The book icon appears where Admin Mode lives (the homepage) and on the
   Handbook itself.
 - The Vision page is read-only; the vision is changed in the repository.

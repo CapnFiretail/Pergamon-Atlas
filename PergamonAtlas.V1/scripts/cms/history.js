@@ -78,7 +78,7 @@
       if (!v.previous_version_id) return { lines: ['First published version.'] };
       if (!prev) return { lines: ['Changes compared with older versions aren’t shown.'] };
       const s = env.publish.summarize(prev.content, v.content, env.content, env.images);
-      const lines = s.cards.map(c => `${c.typeLabel} “${c.title}”: ${c.changes.join(', ')}`).concat(s.other.map(o => `${o} changed`));
+      const lines = s.cards.map(c => `${c.typeLabel} “${c.title}”: ${c.changes.join(', ')}`).concat(s.layout.map(c => `Layout, ${c.label}: ${c.changes.join(', ')}`), s.other.map(o => `${o} changed`));
       return { lines: lines.length ? lines : ['No content changes.'] };
     }
 
@@ -136,6 +136,11 @@
 
     function confirm(v) {
       asking = v.id;
+      // A layout saved for other widget sizes wouldn't be shown: never make it live.
+      if (v.content && v.content.schema === env.content.PAGE_SCHEMA && !env.content.validateDocument(v.content)) {
+        return show('failed', 'Not restored', [para(`Version ${v.id}’s layout isn’t valid for this version of the site, so visitors would not see it.`, 'cms-publish-error'), para('Nothing changed: the live homepage is as it was.')],
+          [button('Back to history', 'primary', () => list(v.id)), button('Close', 'ghost', close)]);
+      }
       const live = versions.find(x => x.status === 'published');
       const loaded = env.workspace.isLoaded();
       const unsaved = loaded ? env.workspace.unsavedCards() : [];
@@ -151,6 +156,11 @@
           s.cards.slice(0, 8).forEach(c => {
             const li = el('li');
             li.append(el('strong', '', c.title), el('span', 'cms-publish-type', ` · ${c.typeLabel}`), el('span', 'cms-publish-what', c.changes.join(', ')));
+            ul.append(li);
+          });
+          s.layout.slice(0, 8).forEach(c => {
+            const li = el('li');
+            li.append(el('strong', '', c.label), el('span', 'cms-publish-type', ' · Layout'), el('span', 'cms-publish-what', c.changes.join(', ')));
             ul.append(li);
           });
           nodes.push(para('Compared with the live version:'), ul);

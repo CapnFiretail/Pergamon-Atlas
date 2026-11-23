@@ -176,13 +176,28 @@ test('minFitWidth is exact: the layout fits there and not 1px narrower', () => {
   for (const w of [min, min + 0.5, min + 100, 2560, 5000]) assert.deepEqual(G.checkFit(layout, T, w), [], String(w));
 });
 
+test('stack order: the layout’s own order when given (every widget once), otherwise reading order', () => {
+  const layout = { rowHeight: 20, widgets: [
+    { id: 'a', type: 'box', col: 1, row: 1, cols: 10, rows: 4 },
+    { id: 'b', type: 'box', col: 1, row: 5, cols: 10, rows: 4 },
+    { id: 'c', type: 'box', col: 11, row: 1, cols: 10, rows: 8 }
+  ] };
+  assert.deepEqual(G.stackOrder(layout), ['a', 'c', 'b'], 'reading order');
+  assert.deepEqual(G.stackOrder(Object.assign({}, layout, { stack: ['a', 'b', 'c'] })), ['a', 'b', 'c'], 'authored order');
+  const T = { box: { name: 'Box', placeable: true, contract: { minCols: 1, minRows: 1, defaultCols: 2, defaultRows: 2, minWidth: 10, minHeight: 10 } } };
+  assert.deepEqual(G.validateLayout(Object.assign({}, layout, { stack: ['a', 'b', 'c'] }), T), []);
+  for (const stack of [['a', 'b'], ['a', 'b', 'b'], ['a', 'b', 'x'], 'a', ['a', 'b', 'c', 'a']]) {
+    assert.deepEqual(codes(G.validateLayout(Object.assign({}, layout, { stack }), T)), ['invalid-stack'], JSON.stringify(stack));
+  }
+});
+
 // ── The real widget types ────────────────────────────────────────────────
 test('every widget type has a valid contract', () => {
   for (const [id, t] of Object.entries(TYPES)) {
     assert.deepEqual(G.validateContract(id, t.contract), [], id);
     assert.ok(t.name && t.measured && t.responsive && typeof t.placeable === 'boolean', id);
   }
-  assert.deepEqual(Object.keys(TYPES).filter(id => TYPES[id].placeable).sort(), ['carousel', 'feature-hero', 'feature-spotlight']);
+  assert.deepEqual(Object.keys(TYPES).filter(id => TYPES[id].placeable).sort(), ['atlas-navigation', 'carousel', 'feature-hero', 'feature-spotlight']);
 });
 
 test('at the reference width, each minimum cell count is the smallest span reaching its pixel floor', () => {
@@ -266,4 +281,62 @@ test('fitting is not monotonic in width; minFitWidth is where it holds for every
   for (let w = Math.ceil(f2 * 2) / 2; w <= f2 + 800; w += 0.5) assert.deepEqual(G.checkFit(edge, BANDED, w), [], `fits at ${w}`);
   assert.ok(G.checkFit(edge, BANDED, f2 - 0.05).length > 0);
   assert.ok(G.widgetMinFitWidth(edge.widgets[0], BANDED.band.contract) === f2);
+});
+
+// ── Fixed-height rows and page regions (H5.3) ───────────────────────────────
+const ROW = 23.43;                                               // the homepage's row height
+
+test('fixed rows: heights and y come from rowHeight, widths still from the cell; square stays the default', () => {
+  const fixed = { rowHeight: ROW, widgets: [W('a', 1, 1, 14, 7), W('b', 1, 8, 14, 4)] };
+  for (const width of [1156, 1296, 996]) {
+    const cell = G.cellSize(width), row = G.rowSize(fixed, cell);
+    assert.equal(row, ROW);
+    const a = G.rect(fixed.widgets[0], cell, 16, row), b = G.rect(fixed.widgets[1], cell, 16, row);
+    near(a.height, 7 * ROW + 96, `height at ${width}`);
+    near(b.y - (a.y + a.height), 16, `gutter at ${width}`);
+    near(a.width, 14 * cell + 208, `width at ${width}`);
+  }
+  assert.equal(G.rowSize({ widgets: [] }, 54.4), 54.4, 'square when no rowHeight');
+  near(G.canvasHeight(fixed, 40), 11 * ROW + 160, 'canvas height uses the row height');
+  near(G.canvasHeight({ widgets: [W('a', 1, 1, 2, 3)] }, 40), 3 * 40 + 32, 'square canvas unchanged');
+  assert.deepEqual(codes(G.validateLayout({ rowHeight: 4, widgets: [] }, T)), ['invalid-row-height']);
+  assert.deepEqual(codes(G.validateLayout({ rowHeight: 'tall', widgets: [] }, T)), ['invalid-row-height']);
+  assert.deepEqual(G.validateLayout({ rowHeight: ROW, widgets: [] }, T), []);
+});
+
+test('fixed rows: a widget’s height is the same at every width, so only widths decide fit', () => {
+  const T2 = { hero: { placeable: true, contract: { minCols: 1, minRows: 1, defaultCols: 14, defaultRows: 7, minWidth: 426, minHeight: 260, minHeightBands: [{ maxWidth: 640, minHeight: 320 }] } } };
+  const L = { rowHeight: ROW, widgets: [W('h', 1, 1, 14, 7, 'hero')] };       // 260px tall at any width
+  // Its width passes 640px (the 260px floor applies) from: 14c + 208 > 640.
+  const from = G.minFitWidth(L, T2);
+  near(from, 20 * ((640 - 208) / 14 + 1e-6) + 304, 'threshold is where it leaves the 320px band');
+  for (const w of [from + 0.01, 1156, 1296, 2000, 4000]) assert.deepEqual(G.checkFit(L, T2, w), [], `fits at ${w}`);
+  assert.ok(G.checkFit(L, T2, from - 1).length, 'not below it (compact band needs 320px)');
+  // A fixed-row widget too short for its widest band never fits.
+  assert.equal(G.minFitWidth({ rowHeight: ROW, widgets: [W('h', 1, 1, 14, 6, 'hero')] }, T2), Infinity);
+  // The same span means different things: 14 × 5 is 181px tall in fixed rows (never
+  // enough) but grows with the width as square cells (enough from a 1088px grid).
+  assert.equal(G.minFitWidth({ rowHeight: ROW, widgets: [W('h', 1, 1, 14, 5, 'hero')] }, T2), Infinity);
+  near(G.minFitWidth({ widgets: [W('h', 1, 1, 14, 5, 'hero')] }, T2), 20 * ((260 - 64) / 5) + 304, 'square: 5 rows reach 260px at a 1088px grid');
+});
+
+test('pages: regions are separate grids; ids unique across the page', () => {
+  const pg = { regions: [
+    { id: 'upper', rowHeight: ROW, widgets: [W('a', 1, 1, 14, 7), W('b', 15, 1, 6, 11)] },
+    { id: 'lower', rowHeight: ROW, widgets: [W('c', 1, 1, 20, 10)] }
+  ] };
+  assert.deepEqual(G.validatePage(pg, T), []);
+  assert.equal(G.findInstance(pg, 'c').region.id, 'lower');
+  assert.equal(G.findInstance(pg, 'zz'), null);
+  const dup = structuredClone(pg); dup.regions[1].widgets.push(W('a', 1, 20, 4, 4));
+  const e = G.validatePage(dup, T);
+  assert.deepEqual(codes(e), ['duplicate-id']);
+  assert.deepEqual(e[0].detail.regions, ['upper', 'lower']);
+  const ov = structuredClone(pg); ov.regions[0].widgets[1].col = 14;
+  const o = G.validatePage(ov, T);
+  assert.deepEqual(codes(o), ['overlap']);
+  assert.equal(o[0].detail.region, 'upper', 'errors name their region');
+  assert.deepEqual(codes(G.validatePage({ regions: [{ id: 'Upper', widgets: [] }] }, T)), ['invalid-region']);
+  assert.deepEqual(codes(G.validatePage({ regions: [{ id: 'a', widgets: [] }, { id: 'a', widgets: [] }] }, T)), ['duplicate-region']);
+  assert.deepEqual(codes(G.validatePage({ regions: [] }, T)), ['invalid-page']);
 });

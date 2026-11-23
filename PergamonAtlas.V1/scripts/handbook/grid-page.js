@@ -79,7 +79,7 @@
 
     view.append(ctx.header('Atlas Grid',
       'The layout foundation for Atlas pages: a 20-column grid of square cells that widgets snap to. It is invisible on the site; the cells are drawn here to show how it works.',
-      [chip('Read-only'), chip('Foundation: no page uses it yet', 'muted')]));
+      [chip('Read-only'), chip('Used by the homepage', 'active')]));
 
     const source = el('section', 'hb-note');
     const sp = el('p', 'pa-type-body-small');
@@ -151,7 +151,7 @@
     growthTools.append(toggle);
     toggle.addEventListener('change', () => growth.show(toggle.querySelector('input:checked').value === 'full' ? demos.growth : withoutLowest));
     gr.append(growthTools, growth.frame, growth.status,
-      el('p', 'pa-type-caption hb-muted', 'Rows 4 and 7–13 are empty on purpose. A future editor may offer temporary rows below the canvas while dragging; they never become part of the layout.'));
+      el('p', 'pa-type-caption hb-muted', 'Rows 4 and 7–13 are empty on purpose. While dragging, the editors show temporary rows below the canvas; they never become part of the layout.'));
     view.append(gr);
 
     // ── Stacked presentation ─────────────────────────────────────────────
@@ -225,7 +225,7 @@
     // ── Validation ───────────────────────────────────────────────────────
     const va = el('section', 'hb-section');
     va.append(el('h2', 'pa-type-section-title-large', 'Validation'),
-      el('p', 'pa-type-body-small hb-muted', 'Layouts are checked before anything is drawn, and never corrected: an invalid layout is refused with errors that name the widgets and the rule, so a future editor can explain why a change isn’t allowed. Touching edges and empty cells are fine. Each result below is the engine’s own answer.'));
+      el('p', 'pa-type-body-small hb-muted', 'Layouts are checked before anything is drawn, and never corrected: an invalid layout is refused with errors that name the widgets and the rule, so an editor can explain why a change isn’t allowed. Touching edges and empty cells are fine. Each result below is the engine’s own answer.'));
     const cases = [
       ['Overlapping widgets', { widgets: [W('a', 1, 1, 6, 3), W('b', 5, 2, 4, 3)] }, DEMO_TYPES],
       ['Touching edges (valid)', { widgets: [W('a', 1, 1, 6, 3), W('b', 7, 1, 4, 3), W('c', 1, 4, 6, 1)] }, DEMO_TYPES],
@@ -273,7 +273,7 @@
     const ul = el('ul', 'hbs-later');
     const items = limitations.concat([
       { what: 'Narrow screens', why: 'The 20-column grid has no room at 304px and is impractical well before that; pages show layouts stacked below their breakpoint. Separately authored narrow layouts may come later.' },
-      { what: 'The homepage', why: 'Not on the grid yet. Its fixed banner heights don’t fall on square rows, its 70/30 split differs from 14/6 columns by 0.4 of a gutter (6.4px), and its sidebar keeps its own fixed-width track. Moving it is H5.3.' }
+      { what: 'The homepage', why: 'Uses two grids (regions): one beside the sidebar, which keeps its own fixed-width track, and one full width below. Their rows have a fixed height instead of being square, so the page keeps its proportions at every desktop width. Administrators arrange its widgets in Admin Mode (Layout); a widget stays in its region.' }
     ]);
     items.forEach(n => { const li = el('li', 'pa-type-body-small'); li.append(el('strong', '', n.what + ': '), n.why); ul.append(li); });
     lim.append(ul);

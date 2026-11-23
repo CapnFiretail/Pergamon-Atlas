@@ -157,14 +157,17 @@ function adoptedProblems(r, a, found) {
   const problems = [];
   const decls = Object.assign({}, ...found.map(x => x.decls));
   if (decls.font) problems.push(`${r.id}: ${a.selector} still has a font shorthand`);
+  // A component may set long titles smaller (clamp(minimum, …, var(--role-size)))
+  // but never larger: the role stays the maximum, and there is a minimum.
+  const capped = (v, t) => /^clamp\(\s*var\(--[a-z-]+-min(-narrow)?\)/.test(norm(v)) && norm(v).replace(/\s/g, '').endsWith(`,var(${t}))`);
   for (const [p, css] of Object.entries(CSS_PROPS)) {
-    if (norm(decls[css] || '') !== norm(`var(${typo.token(r.id, p)})`)) problems.push(`${r.id}: ${a.file} ${a.selector} ${css} is "${decls[css] || '(not set)'}", expected var(${typo.token(r.id, p)})`);
+    if (norm(decls[css] || '') !== norm(`var(${typo.token(r.id, p)})`) && !(css === 'font-size' && capped(decls[css] || '', typo.token(r.id, p)))) problems.push(`${r.id}: ${a.file} ${a.selector} ${css} is "${decls[css] || '(not set)'}", expected var(${typo.token(r.id, p)})`);
   }
   const all = rules(a.file).filter(x => x.at && norm(x.selector) === norm(a.selector));
   for (const s of (r.responsive || []).filter(s => s.type === 'container')) {
     const at = norm(`@container ${s.container} ${s.query}`);
     const step = all.find(x => x.at === at && x.decls['font-size']);
-    if (!step || norm(step.decls['font-size']) !== norm(`var(${typo.token(r.id, 'size')}-${s.name})`)) problems.push(`${r.id}: ${a.file} ${at} ${a.selector} should use var(${typo.token(r.id, 'size')}-${s.name})`);
+    if (!step || (norm(step.decls['font-size']) !== norm(`var(${typo.token(r.id, 'size')}-${s.name})`) && !capped(step.decls['font-size'], `${typo.token(r.id, 'size')}-${s.name}`))) problems.push(`${r.id}: ${a.file} ${at} ${a.selector} should use var(${typo.token(r.id, 'size')}-${s.name})`);
   }
   for (const x of all.filter(x => x.at.startsWith('@media'))) {
     for (const css of Object.values(CSS_PROPS).concat('font')) if (x.decls[css] && !/var\(--type-/.test(x.decls[css])) problems.push(`${r.id}: ${a.file} ${x.at} ${a.selector} sets ${css} by hand`);

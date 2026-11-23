@@ -3,7 +3,7 @@
  * unchanged. Text styles come from the type roles (styles/typography.css).
  *
  * Its height comes from where it is placed. Its compact layout applies when
- * the area it sits in, a size container named `upper`, is 640px or narrower
+ * the area it sits in, a size container named `upper`, is 560px or narrower
  * (the homepage upper area, or a preview that provides one): whether to show
  * the compact card is a page decision, since a card can be narrow in a wide
  * two-column page and should still use its wide layout there. */
@@ -13,6 +13,15 @@
 
 /* ── Banners ───────────────────────────────────────────────────────────── */
 .home-banner {
+  /* Long titles (see .home-feature-title): set smaller in proportion to the
+     card's width and the title's length (fit), never below a readable minimum
+     (min: a Spotlight title's usual smallest size; compact: the role's own).
+     The sizing contracts (scripts/grid/widget-types.js) are measured with
+     these. */
+  --feature-title-fit: 1.5;
+  --feature-title-fit-narrow: 2;
+  --feature-title-min: 26px;
+  --feature-title-min-narrow: 30px;
   display: grid;
   align-items: stretch;
   min-width: 0;
@@ -101,7 +110,9 @@
   color: var(--feature-title);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   font-family: var(--type-feature-title-family);
-  font-size: var(--type-feature-title-size);
+  /* Long titles: fit × card width ÷ characters (set by the script), between the
+     readable minimum and the role's size. Short titles: the role's size. */
+  font-size: clamp(var(--feature-title-min), calc(var(--feature-title-fit) * 100cqi / var(--feature-title-chars, 1)), var(--type-feature-title-size));
   font-weight: var(--type-feature-title-weight);
   line-height: var(--type-feature-title-leading);
   letter-spacing: var(--type-feature-title-tracking);
@@ -163,39 +174,74 @@
     0 8px 16px rgba(0, 0, 0, 0.4);
 }
 .home-feature .home-feature-play:focus-visible { outline: 2px solid var(--feature-title); outline-offset: 3px; }
-.home-feature-play-icon { width: 18px; height: 18px; fill: currentColor; }
+.home-feature-play-icon { flex-shrink: 0; width: 18px; height: 18px; fill: currentColor; }
 
 /* Spotlight: the same card at 140px. Title group left, artwork through the
    middle, Play Now on the right; the shade darkens both ends. */
+/* The fallback display font (Rockwell) is much wider, so it reads as large at a
+   smaller size: a tighter cap and smaller minimums for long titles. */
+html[data-display-font="fallback"] .home-banner { --feature-title-fit: 1.05; --feature-title-min: 22px; }
+.home-feature--spotlight { --feature-title-fit: 1; --feature-title-fit-narrow: 1.2; --feature-title-min: 20px; --feature-title-min-narrow: 24px; }
+html[data-display-font="fallback"] .home-feature--spotlight { --feature-title-fit: 1; --feature-title-min: 18px; }
 .home-feature--spotlight { justify-content: space-between; gap: 16px; padding-right: clamp(18px, 3cqi, 30px); }
 .home-feature--spotlight .home-feature-shade {
   background: linear-gradient(90deg, rgba(3, 7, 16, 0.78) 0%, rgba(3, 7, 16, 0.5) 28%, rgba(3, 7, 16, 0.08) 46%, rgba(3, 7, 16, 0) 60%, rgba(3, 7, 16, 0.3) 82%, rgba(3, 7, 16, 0.55) 100%);
 }
+.home-feature--spotlight[data-title-long] .home-feature-shade {
+  background: linear-gradient(90deg, rgba(3, 7, 16, 0.88) 0%, rgba(3, 7, 16, 0.8) 32%, rgba(3, 7, 16, 0.6) 46%, rgba(3, 7, 16, 0) 60%, rgba(3, 7, 16, 0.3) 82%, rgba(3, 7, 16, 0.55) 100%);
+}
 .home-feature--spotlight .home-feature-copy { max-width: 48%; padding: 0 0 0 clamp(20px, 4cqi, 40px); }
 .home-feature--spotlight .home-feature-lockup { gap: 5px; }
-.home-feature--spotlight .home-feature-title { font-family: var(--type-spotlight-title-family); font-size: var(--type-spotlight-title-size); font-weight: var(--type-spotlight-title-weight); line-height: var(--type-spotlight-title-leading); letter-spacing: var(--type-spotlight-title-tracking); text-transform: var(--type-spotlight-title-transform); }
+.home-feature--spotlight .home-feature-title { font-family: var(--type-spotlight-title-family); font-size: clamp(var(--feature-title-min), calc(var(--feature-title-fit) * 100cqi / var(--feature-title-chars, 1)), var(--type-spotlight-title-size)); font-weight: var(--type-spotlight-title-weight); line-height: var(--type-spotlight-title-leading); letter-spacing: var(--type-spotlight-title-tracking); text-transform: var(--type-spotlight-title-transform); }
 .home-feature--spotlight .home-feature-rule i { width: 8px; height: 8px; }
 .home-feature--spotlight .home-feature-play { flex-shrink: 0; gap: 10px; height: 44px; padding: 0 26px 0 22px; font-family: var(--type-spotlight-cta-family); font-size: var(--type-spotlight-cta-size); font-weight: var(--type-spotlight-cta-weight); line-height: var(--type-spotlight-cta-leading); letter-spacing: var(--type-spotlight-cta-tracking); text-transform: var(--type-spotlight-cta-transform); }
 .home-feature--spotlight .home-feature-play-icon { width: 15px; height: 15px; }
 
-@container upper (max-width: 640px) {
+/* A long label beside the title wraps in its button rather than squeezing the
+   title into broken words. */
+@container upper (max-width: 660px) {
+  .home-feature--spotlight .home-feature-play { height: auto; min-height: 44px; max-width: 44%; padding-block: 6px; white-space: normal; }
+}
+
+@container upper (max-width: 560px) {
   /* Featured card: taller, copy at the bottom, the knight above it. */
   .home-feature { align-items: flex-end; min-height: 320px; }
   .home-feature-art { object-position: var(--feature-focus-narrow, var(--feature-focus, 75% 25%)); }
   .home-feature-shade { background: linear-gradient(0deg, rgba(5, 7, 10, 0.9) 0%, rgba(5, 7, 10, 0.72) 38%, rgba(5, 7, 10, 0.15) 70%, rgba(5, 7, 10, 0) 100%); }
   .home-feature-copy { max-width: 100%; gap: 18px; padding: 20px; }
-  .home-feature-title { font-size: var(--type-feature-title-size-narrow); }
-  .home-feature .home-feature-play { height: 48px; }
+  .home-feature-title { font-size: clamp(var(--feature-title-min-narrow), calc(var(--feature-title-fit-narrow) * 100cqi / var(--feature-title-chars, 1)), var(--type-feature-title-size-narrow)); }
+  /* A label too long for a narrow card wraps inside its button. */
+  .home-feature .home-feature-play { height: auto; min-height: 48px; max-width: 100%; padding-block: 8px; white-space: normal; }
   /* Spotlight: title above the button, both left; the board shows on the right. */
   .home-feature--spotlight { flex-direction: column; align-items: flex-start; justify-content: center; gap: 16px; min-height: 0; padding: 20px; }
   .home-feature--spotlight .home-feature-shade { background: linear-gradient(90deg, rgba(3, 7, 16, 0.85) 0%, rgba(3, 7, 16, 0.6) 45%, rgba(3, 7, 16, 0.1) 80%, rgba(3, 7, 16, 0) 100%); }
   .home-feature--spotlight .home-feature-copy { max-width: 100%; padding: 0; }
-  .home-feature--spotlight .home-feature-title { font-size: var(--type-spotlight-title-size-narrow); }
-  .home-feature--spotlight .home-feature-play { height: 44px; }
+  .home-feature--spotlight .home-feature-title { font-size: clamp(var(--feature-title-min-narrow), calc(var(--feature-title-fit-narrow) * 100cqi / var(--feature-title-chars, 1)), var(--type-spotlight-title-size-narrow)); }
+  .home-feature--spotlight .home-feature-play { min-height: 44px; max-width: 100%; }
+  /* Long titles: more shade behind the copy; and on a card that may grow
+     (--feature-grows: 1), the artwork keeps the top and the copy sits below. */
+  .home-feature[data-title-long] { --feature-art-height: 210px; --feature-art-fade: 80px; --feature-art-room: 172px; }
+  .home-feature--spotlight[data-title-long] { --feature-art-height: 130px; --feature-art-fade: 50px; --feature-art-room: 112px; }
+  .home-feature[data-title-long] .home-feature-shade { background: linear-gradient(0deg, rgba(5, 7, 10, 0.92) 0%, rgba(5, 7, 10, 0.78) 50%, rgba(5, 7, 10, 0.3) 85%, rgba(5, 7, 10, 0.1) 100%); }
+  .home-feature[data-title-long] .home-feature-copy { padding-top: max(20px, calc(var(--feature-grows, 0) * var(--feature-art-room))); }
+  .home-feature--spotlight[data-title-long] .home-feature-copy { padding-top: calc(var(--feature-grows, 0) * (var(--feature-art-room) - 20px)); }
+  .home-feature[data-title-long] .home-feature-art {
+    height: calc((1 - var(--feature-grows, 0)) * 100% + var(--feature-grows, 0) * var(--feature-art-height));
+    -webkit-mask-image: linear-gradient(#000 calc(100% - var(--feature-grows, 0) * var(--feature-art-fade)), transparent calc(100% + (1 - var(--feature-grows, 0)) * 1px));
+    mask-image: linear-gradient(#000 calc(100% - var(--feature-grows, 0) * var(--feature-art-fade)), transparent calc(100% + (1 - var(--feature-grows, 0)) * 1px));
+  }
   .home-feature[data-art-fit="height"] .home-feature-art {
     left: var(--feature-art-x-narrow, var(--feature-art-x, 50%));
     height: calc(var(--feature-art-scale-narrow, var(--feature-art-scale, 1)) * 100%);
     transform: translate(-50%, calc(-1 * var(--feature-art-y-narrow, var(--feature-art-y, 50%))));
+  }
+  .home-feature[data-title-long][data-art-fit="height"] .home-feature-art {
+    top: calc((1 - var(--feature-grows, 0)) * 50% + var(--feature-grows, 0) * var(--feature-art-height) / 2);
+    height: calc(var(--feature-art-scale-narrow, var(--feature-art-scale, 1)) * ((1 - var(--feature-grows, 0)) * 100% + var(--feature-grows, 0) * var(--feature-art-height)));
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(#000 calc(100% - var(--feature-grows, 0) * var(--feature-art-fade)), transparent calc(100% + (1 - var(--feature-grows, 0)) * 1px));
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(#000 calc(100% - var(--feature-grows, 0) * var(--feature-art-fade)), transparent calc(100% + (1 - var(--feature-grows, 0)) * 1px));
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
   .home-feature[data-art-zoom] .home-feature-art {
     transform: scale(var(--feature-zoom-narrow, var(--feature-zoom, 1)));

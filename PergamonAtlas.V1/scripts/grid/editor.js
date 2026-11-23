@@ -1,8 +1,8 @@
 // Atlas Grid editing engine (pure; no DOM, no events, no fixed width).
-// Moves and resizes widgets in a layout (scripts/grid/atlas-grid.js) by
-// proposing a candidate layout and validating it; nothing is ever repaired.
-// Pointer and keyboard controllers, the Handbook's Layout Lab and a future
-// Admin Mode editor all edit through this file.
+// Moves, resizes, adds and removes widgets in a layout
+// (scripts/grid/atlas-grid.js) by proposing a candidate layout and validating
+// it; nothing is ever repaired. Pointer and keyboard controllers, the
+// Handbook's Layout Lab and Admin Mode's Layout Mode all edit through this file.
 //
 //   env = { types, width, gutter?, columns? }
 //     width  the container width the caller validates at (pixel content
@@ -11,6 +11,13 @@
 // Proposals (never change their input):
 //   proposeMove(layout, id, { col, row }, env)
 //   proposeResize(layout, id, handle, edges, env)
+//   proposeAdd(layout, { id, type }, env)   the type's default size (more rows
+//     where its content needs them) in the first free place in reading order,
+//     below everything else if there is none; existing widgets never move.
+//     null when the type has no usable size at this width
+//   proposeRemove(layout, id, env)
+//   proposeStack(layout, id, step, env)     earlier (−1) or later (+1) in the
+//     stacked presentation; nothing on the grid changes
 //     handle  'left' 'right' 'top' 'bottom' 'top-left' 'top-right'
 //             'bottom-left' 'bottom-right': which edges may move; the others
 //             stay anchored
@@ -37,6 +44,8 @@
 //
 // History (in memory): h = createHistory(initial, { limit = 100 })
 //   h.present() h.commit(layout) h.undo() h.redo() h.reset()
+//   h.amend(layout)   replace the present without a new step (typing in one
+//   field, say); amending back to the previous entry drops the step
 //   h.canUndo() h.canRedo()   unchanged layouts are never recorded; reset
 //   is one undoable step; a new commit clears redo.
 // Extents: editingExtent(committed, proposal, { pointerRow, spare }) — rows
@@ -51,13 +60,16 @@
     'bottom-left': ['bottom', 'left'], 'bottom-right': ['bottom', 'right']
   };
 
-  const freezeLayout = layout => Object.freeze({ widgets: Object.freeze(layout.widgets.map(w => Object.freeze(Object.assign({}, w)))) });
+  // A frozen copy; the layout's own fields (a region's id, rowHeight, …) are kept.
+  const freezeLayout = layout => Object.freeze(Object.assign({}, layout, { widgets: Object.freeze(layout.widgets.map(w => Object.freeze(Object.assign({}, w)))) }));
   const same = (a, b) => a.col === b.col && a.row === b.row && a.cols === b.cols && a.rows === b.rows;
-  const sameLayout = (a, b) => a.widgets.length === b.widgets.length && a.widgets.every((w, i) => {
+  const sameLayout = (a, b) => a.rowHeight === b.rowHeight && a.widgets.length === b.widgets.length && a.widgets.every((w, i) => {
     const v = b.widgets[i];
     return v && w.id === v.id && w.type === v.type && same(w, v);
   });
-  const opts = env => ({ columns: env.columns || G.COLUMNS, gutter: env.gutter === undefined ? G.GUTTER : env.gutter });
+  const opts = env => ({ columns: env.columns || G.COLUMNS, gutter: env.gutter === undefined ? G.GUTTER : env.gutter, rowHeight: env.rowHeight });
+  // The environment for one layout: its fixed row height, if it has one.
+  const forLayout = (env, layout) => (layout && layout.rowHeight ? Object.assign({}, env, { rowHeight: layout.rowHeight }) : env);
 
   // The smallest size a widget may have at env.width: its contract's cells,
   // or more where the pixel floors need them. The height floor depends on
@@ -69,15 +81,26 @@
     if (!(cell > 0)) return null;
     const minCols = Math.max(contract.minCols, G.cellsFor(contract.minWidth, cell, gutter));
     const width = G.spanSize(cols || minCols, cell, gutter);
-    return { cols: minCols, rows: Math.max(contract.minRows, G.cellsFor(G.minHeightAt(contract, width), cell, gutter)) };
+    const row = env.rowHeight || cell;                     // fixed rows, or square
+    return { cols: minCols, rows: Math.max(contract.minRows, G.cellsFor(G.minHeightAt(contract, width), row, gutter)) };
   }
 
   // Build, validate and describe a candidate with one widget replaced.
   function propose(layout, index, next, env, clamped) {
+    env = forLayout(env, layout);
     const current = layout.widgets[index];
     const widgets = layout.widgets.slice();
     widgets[index] = Object.assign({}, current, next);
-    const candidate = freezeLayout({ widgets });
+    const candidate = freezeLayout(Object.assign({}, layout, { widgets }));
+    const errors = check(candidate, env);
+    const affected = [...new Set([current.id].concat(...errors.map(e => e.widgets)))];
+    return Object.freeze({
+      valid: errors.length === 0, layout: candidate, widget: candidate.widgets[index], errors, affected,
+      clamped: Object.freeze(clamped), changed: !same(current, candidate.widgets[index]), extent: G.extent(candidate)
+    });
+  }
+  // Everything wrong with a candidate at env.width.
+  function check(candidate, env) {
     let errors = G.validateLayout(candidate, env.types, opts(env).columns);
     if (!errors.length) errors = G.checkFit(candidate, env.types, env.width, opts(env));
     // It must keep fitting at every wider width too (height floors can rise
@@ -85,11 +108,7 @@
     if (!errors.length) errors = candidate.widgets.map(w => [w, G.widgetMinFitWidth(w, env.types[w.type].contract, opts(env))])
       .filter(([, from]) => from > env.width + 1e-6)
       .map(([w, from]) => ({ code: 'unfit-when-wider', widgets: [w.id], message: `“${w.id}” fits at this width but not at every wider one (it fits from ${Math.ceil(from)}px).`, detail: { width: env.width, fitsFrom: from } }));
-    const affected = [...new Set([current.id].concat(...errors.map(e => e.widgets)))];
-    return Object.freeze({
-      valid: errors.length === 0, layout: candidate, widget: candidate.widgets[index], errors, affected,
-      clamped: Object.freeze(clamped), changed: !same(current, candidate.widgets[index]), extent: G.extent(candidate)
-    });
+    return errors;
   }
 
   function find(layout, id) {
@@ -112,6 +131,7 @@
   function proposeResize(layout, id, handle, edges, env) {
     const moving = HANDLES[handle];
     if (!moving) throw new Error(`Unknown resize handle “${handle}”.`);
+    env = forLayout(env, layout);
     const i = find(layout, id), w = layout.widgets[i], { columns } = opts(env);
     const min = Object.assign({}, minCells(env.types[w.type].contract, env) || { cols: 1, rows: 1 });
     let left = w.col, right = w.col + w.cols, top = w.row, bottom = w.row + w.rows;
@@ -149,6 +169,69 @@
     return proposeResize(layout, id, handle, { right: w.col + w.cols + dCols, bottom: w.row + w.rows + dRows }, env);
   };
 
+  // ── Adding, removing, stacking order ──────────────────────────────────────
+  // A change to the widget list, described like any proposal.
+  function proposeList(layout, id, next, env) {
+    env = forLayout(env, layout);
+    const candidate = freezeLayout(Object.assign({}, layout, next));
+    const errors = check(candidate, env);
+    return Object.freeze({
+      valid: errors.length === 0, layout: candidate, widget: candidate.widgets.find(w => w.id === id) || null, errors,
+      affected: [...new Set([id].concat(...errors.map(e => e.widgets)))], clamped: Object.freeze({}), changed: true, extent: G.extent(candidate)
+    });
+  }
+  // A new widget's size: the contract's defaults, at least what its content
+  // needs at env.width and at every wider width.
+  function defaultSize(type, env) {
+    const t = env.types[type];
+    const { columns } = opts(env), min = t && minCells(t.contract, env);
+    if (!min) return null;
+    const cols = Math.max(t.contract.defaultCols, min.cols);
+    if (cols > columns) return null;
+    const first = Math.max(t.contract.defaultRows, minCells(t.contract, env, cols).rows);
+    for (let rows = first; rows <= first + 60; rows++) {
+      if (G.widgetMinFitWidth({ cols, rows }, t.contract, opts(env)) <= env.width + 1e-6) return { cols, rows };
+    }
+    return null;
+  }
+  function proposeAdd(layout, w, env) {
+    env = forLayout(env, layout);
+    if (layout.widgets.some(x => x.id === w.id)) throw new Error(`“${w.id}” is already in this layout.`);
+    const size = defaultSize(w.type, env), { columns } = opts(env);
+    if (!size) return null;
+    const bottom = G.extent(layout) + 1;
+    let spot = null;
+    for (let row = 1; row <= bottom && !spot; row++) {
+      for (let col = 1; col + size.cols - 1 <= columns && !spot; col++) {
+        const at = Object.assign({ col, row }, size);
+        if (!layout.widgets.some(x => G.overlap(x, at))) spot = at;
+      }
+    }
+    const widget = Object.assign({ id: w.id, type: w.type }, spot);
+    const next = { widgets: layout.widgets.concat(widget) };
+    // Stacked, it follows the widget it follows on the grid.
+    if (Array.isArray(layout.stack)) {
+      const order = G.readingOrder(next), before = order[order.indexOf(w.id) - 1];
+      next.stack = layout.stack.slice();
+      next.stack.splice(before ? next.stack.indexOf(before) + 1 : 0, 0, w.id);
+    }
+    return proposeList(layout, w.id, next, env);
+  }
+  function proposeRemove(layout, id, env) {
+    find(layout, id);
+    const next = { widgets: layout.widgets.filter(w => w.id !== id) };
+    if (Array.isArray(layout.stack)) next.stack = layout.stack.filter(x => x !== id);
+    return proposeList(layout, id, next, env);
+  }
+  function proposeStack(layout, id, step, env) {
+    find(layout, id);
+    const stack = G.stackOrder(layout), from = stack.indexOf(id);
+    const to = Math.max(0, Math.min(stack.length - 1, from + int(step, 'step')));
+    stack.splice(to, 0, stack.splice(from, 1)[0]);
+    const p = proposeList(layout, id, { widgets: layout.widgets, stack }, env);
+    return Object.freeze(Object.assign({}, p, { changed: to !== from }));
+  }
+
   // ── Gestures ──────────────────────────────────────────────────────────────
   function beginGesture(committed, o) {
     const { kind, id, handle, env } = o;
@@ -182,22 +265,33 @@
   }
 
   // ── History ───────────────────────────────────────────────────────────────
+  // o.same / o.freeze: how entries are compared and frozen (default: layouts;
+  // a page editor passes its own for whole documents).
   function createHistory(initial, o = {}) {
     const limit = o.limit || 100;
-    const original = freezeLayout(initial);
+    const isSame = o.same || sameLayout, freeze = o.freeze || freezeLayout;
+    const original = freeze(initial);
     let past = [], present = original, future = [];
     function commit(layout) {
-      if (!layout || sameLayout(layout, present)) return false;
+      if (!layout || isSame(layout, present)) return false;
       past.push(present);
       if (past.length > limit) past = past.slice(past.length - limit);
-      present = freezeLayout(layout);
+      present = freeze(layout);
       future = [];
+      return true;
+    }
+    function amend(layout) {
+      if (!past.length) return commit(layout);
+      if (!layout || isSame(layout, present)) return false;
+      present = freeze(layout);
+      future = [];
+      if (isSame(present, past[past.length - 1])) present = past.pop();
       return true;
     }
     return {
       present: () => present,
       original: () => original,
-      commit,
+      commit, amend,
       undo() { if (!past.length) return null; future.push(present); present = past.pop(); return present; },
       redo() { if (!future.length) return null; past.push(present); present = future.pop(); return present; },
       reset() { return commit(original); },
@@ -209,7 +303,7 @@
   // Commit a proposal (keyboard steps): only a valid change is recorded.
   const commitProposal = (history, proposal) => !!(proposal && proposal.valid && proposal.changed) && history.commit(proposal.layout);
 
-  const api = { HANDLES, minCells, proposeMove, proposeResize, nudge, grow, beginGesture, editingExtent, createHistory, commitProposal, sameLayout, freezeLayout };
+  const api = { HANDLES, minCells, proposeMove, proposeResize, proposeAdd, proposeRemove, proposeStack, defaultSize, nudge, grow, beginGesture, editingExtent, createHistory, commitProposal, sameLayout, freezeLayout };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else { root.PergamonGrid = root.PergamonGrid || {}; root.PergamonGrid.editor = api; }
 })(typeof window !== 'undefined' ? window : globalThis);

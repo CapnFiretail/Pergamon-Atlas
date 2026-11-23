@@ -1,5 +1,5 @@
-// "Manage cards" (Admin Mode): the saved Featured / Spotlight cards of a slot,
-// or the carousel's cards. Every change goes into the working copy
+// "Manage cards" (Admin Mode): the saved cards of one Featured / Spotlight
+// widget, or one carousel's cards. Every change goes into the working copy
 // (workspace.js), so it is a draft change like any card edit: Save Draft,
 // then Publish Changes. Nothing here deletes images or games: deleting a
 // card removes it from the document only (older versions keep it, so
@@ -14,7 +14,8 @@
 //
 // Created by admin.js: manage.create({ workspace, content, home, games,
 //   cardLabel(id), openEditor(id), onChanged(), returnFocus() })
-//   → { open(list), addCarouselCard(), isOpen(), refresh(), destroy() }
+//   → { open(widget), addCarouselCard(widget), isOpen(), refresh(), destroy() }
+//   widget: its content id ('home.featured', 'home.carousel-2', …)
 (function () {
   'use strict';
   const cms = window.PergamonCMS = window.PergamonCMS || {};
@@ -36,10 +37,11 @@
   function create(env) {
     const { workspace, content } = env;
     const NAMES = {
-      'home.featured': { title: 'Featured cards', one: 'featured card' },
-      'home.spotlight': { title: 'Spotlight cards', one: 'spotlight card' },
-      'home.carousel': { title: 'Carousel cards', one: 'carousel card' }
+      'feature-hero': { title: 'Featured cards', one: 'featured card' },
+      'feature-spotlight': { title: 'Spotlight cards', one: 'spotlight card' },
+      'carousel': { title: 'Carousel cards', one: 'carousel card' }
     };
+    const ownerOf = which => { const o = content.ownerOf(which, workspace.working()); return o && o.part === '' && NAMES[o.type] ? o : null; };
 
     const overlay = el('div', 'cms-publish cms-manage');
     overlay.hidden = true;
@@ -64,14 +66,16 @@
     overlay.append(dialog);
     document.body.append(overlay);
 
-    let target = null;            // 'home.featured' | 'home.spotlight' | 'home.carousel'
+    let target = null;            // the widget's content id ('home.featured', …)
+    let kind = null;              // its type
     let confirming = null;        // card id waiting for delete confirmation
     let undo = null;              // { id, label } of the last deletion
 
-    const listId = () => (target === content.CAROUSEL ? content.CAROUSEL : content.savedList(target));
+    const isCarousel = () => kind === 'carousel';
+    const listId = () => (isCarousel() ? target : content.savedList(target));
     const keys = () => workspace.order(listId());
-    const idOf = key => (target === content.CAROUSEL ? content.CAROUSEL + '.' + key : content.savedId(target, key));
-    const limit = () => (target === content.CAROUSEL ? content.LIMITS.carousel : content.LIMITS.saved);
+    const idOf = key => listId() + '.' + key;
+    const limit = () => (isCarousel() ? content.LIMITS.carousel : content.LIMITS.saved);
 
     function setStatus(text, extra) {
       status.replaceChildren(text || '');
@@ -124,7 +128,7 @@
       if (opts.active) {
         const chip = el('span', 'cms-manage-active', 'Active');
         meta.append(chip, ' Shown on the homepage');
-      } else if (target === content.CAROUSEL) {
+      } else if (isCarousel()) {
         const game = env.games.find(g => g.path === c.href);
         meta.append(`${c.category || ''}${game ? ` · ${game.name}` : ''}`);
       } else {
@@ -164,7 +168,7 @@
         li.prepend(el('span', 'cms-manage-grip is-empty'));
       }
       if (opts.saved) {
-        const make = button('Make active', 'cms-drawer-secondary', () => activate(id), `Make “${label}” the active ${NAMES[target].one}`);
+        const make = button('Make active', 'cms-drawer-secondary', () => activate(id), `Make “${label}” the active ${NAMES[kind].one}`);
         make.dataset.action = 'activate';
         tools.append(make);
       }
@@ -183,20 +187,21 @@
     // Redraw the list; focus goes back to `focusId`'s `what` control.
     function draw(focusId, what) {
       if (!target) return;
-      const names = NAMES[target];
-      title.textContent = names.title;
+      const names = NAMES[kind];
+      const o = ownerOf(target);
+      title.textContent = names.title + (o && !content.ownerOf(target) ? ` · ${content.instanceLabel(o.instance, o.type)}` : '');
       const n = keys().length;
-      if (target === content.CAROUSEL) {
+      if (isCarousel()) {
         intro.textContent = 'The cards visitors see in the Explore More Games carousel, in this order (each category shows its cards in the same order). Changes are part of the draft until you publish.';
         count.textContent = `${n} of ${limit()} cards`;
       } else {
-        intro.textContent = `One ${names.one} is shown on the homepage at a time. Saved cards keep their own title, button, link and image, so you can switch back at any time. Changes are part of the draft until you publish.`;
+        intro.textContent = `This widget shows one ${names.one} at a time. Saved cards keep their own title, button, link and image, so you can switch back at any time. Changes are part of the draft until you publish.`;
         count.textContent = `${plural(n, 'saved card', 'saved cards')} (up to ${limit()})`;
       }
       list.replaceChildren();
-      if (target !== content.CAROUSEL) list.append(row(target, { active: true, index: -1 }));
-      keys().forEach((key, index) => list.append(row(idOf(key), { saved: target !== content.CAROUSEL, movable: n > 1, index })));
-      if (!n) list.append(el('li', 'cms-manage-empty', target === content.CAROUSEL ? 'No cards: the carousel shows its empty message. Add a card to start.' : 'No saved cards yet.'));
+      if (!isCarousel()) list.append(row(target, { active: true, index: -1 }));
+      keys().forEach((key, index) => list.append(row(idOf(key), { saved: !isCarousel(), movable: n > 1, index })));
+      if (!n) list.append(el('li', 'cms-manage-empty', isCarousel() ? 'No cards: the carousel shows its empty message. Add a card to start.' : 'No saved cards yet.'));
       const full = n >= limit();
       const add = button('Add card', 'cms-drawer-primary', addCard);
       add.dataset.action = 'add';
@@ -239,7 +244,7 @@
       if (!workspace.activate(id, outKey)) { setStatus('Couldn’t switch cards. Try again.'); return; }
       env.onChanged();
       draw(target, 'edit');
-      setStatus(`“${label}” is now the active ${NAMES[target].one} in your draft; “${live.title}” was saved. Visitors see the change after you save and publish.`);
+      setStatus(`“${label}” is now the active ${NAMES[kind].one} in your draft; “${live.title}” was saved. Visitors see the change after you save and publish.`);
     }
     function remove(id) {
       const label = env.cardLabel(id);
@@ -264,12 +269,12 @@
     }
     function addCard() {
       const taken = keys();
-      if (taken.length >= limit()) { setStatus(`You can have up to ${limit()} ${target === content.CAROUSEL ? 'carousel cards' : 'saved cards'}. Delete one to add another.`); return; }
+      if (taken.length >= limit()) { setStatus(`You can have up to ${limit()} ${isCarousel() ? 'carousel cards' : 'saved cards'}. Delete one to add another.`); return; }
       let id;
-      if (target === content.CAROUSEL) id = newCarouselCard();
+      if (isCarousel()) id = newCarouselCard(target);
       else {
         const live = workspace.component(target) || {};
-        const name = target === 'home.spotlight' ? 'New spotlight card' : 'New featured card';
+        const name = kind === 'feature-spotlight' ? 'New spotlight card' : 'New featured card';
         id = workspace.addCard(content.savedList(target), content.newKey(name, taken), { title: name, cta: live.cta || 'Play Now', href: live.href || (env.games[0] && env.games[0].path) });
       }
       if (!id) { setStatus('Couldn’t add a card. Try again.'); return; }
@@ -277,16 +282,17 @@
       close(false);
       env.openEditor(id);
     }
-    // A new carousel card at the end: the current category (or Arcade), and
-    // the first live game not in the carousel yet.
-    function newCarouselCard() {
-      const taken = workspace.order(content.CAROUSEL);
-      if (taken.length >= content.LIMITS.carousel) return null;
-      const used = taken.map(k => (workspace.component(content.CAROUSEL + '.' + k) || {}).href);
+    // A new card at the end of a carousel: its current category (or Arcade),
+    // and the first live game not in that carousel yet.
+    function newCarouselCard(which) {
+      const o = ownerOf(which);
+      const taken = workspace.order(which);
+      if (!o || taken.length >= content.LIMITS.carousel) return null;
+      const used = taken.map(k => (workspace.component(which + '.' + k) || {}).href);
       const game = env.games.find(g => used.indexOf(g.path) < 0) || env.games[0];
       if (!game) return null;
-      const category = env.home.carouselCategory() || 'Arcade';
-      return workspace.addCard(content.CAROUSEL, content.newKey(game.name, taken), { title: game.name.slice(0, 40), category: content.CATEGORIES.indexOf(category) >= 0 ? category : 'Arcade', href: game.path });
+      const category = env.home.carouselCategory(o.instance) || 'Arcade';
+      return workspace.addCard(which, content.newKey(game.name, taken), { title: game.name.slice(0, 40), category: content.CATEGORIES.indexOf(category) >= 0 ? category : 'Arcade', href: game.path });
     }
 
     // ── Drag to reorder (the handle; keyboard users have Move up / down) ──
@@ -334,9 +340,11 @@
     // ── Open / close, keyboard ───────────────────────────────────────────
     let opener = null;
     function open(which, from) {
-      if (!NAMES[which]) return;
-      target = which;
+      const o = ownerOf(which);
+      if (!o) return;
+      target = which; kind = o.type;
       overlay.dataset.list = which;
+      overlay.dataset.kind = kind;
       confirming = null; undo = null;
       opener = from || null;
       overlay.hidden = false;
@@ -347,7 +355,7 @@
     function close(returnFocus) {
       if (overlay.hidden) return;
       overlay.hidden = true;
-      target = null; confirming = null; undo = null;
+      target = null; kind = null; confirming = null; undo = null;
       document.documentElement.classList.remove('cms-publish-open');
       if (returnFocus) { if (opener && opener.isConnected) opener.focus(); else env.returnFocus(); }
     }
@@ -368,14 +376,15 @@
 
     return {
       open,
-      // The carousel's "Add card" tile: add at the end and open the editor.
-      addCarouselCard() {
-        const id = newCarouselCard();
+      // A carousel's "Add card" tile: add at the end and open the editor.
+      addCarouselCard(which) {
+        const id = newCarouselCard(which);
         if (id) { env.onChanged(); env.openEditor(id); }
         return id;
       },
       isOpen: () => !overlay.hidden,
-      refresh: () => { if (!overlay.hidden && !drag) draw(...focused()); },
+      // (Undo may have removed the widget being managed.)
+      refresh: () => { if (overlay.hidden || drag) return; if (!ownerOf(target)) close(true); else draw(...focused()); },
       destroy() { overlay.remove(); document.documentElement.classList.remove('cms-publish-open'); }
     };
   }

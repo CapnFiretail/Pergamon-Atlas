@@ -21,7 +21,8 @@
 //   grid.setStackBelow(px)  change the stacking breakpoint (e.g. to
 //                        minFitWidth() of the layout being shown)
 //   grid.slot(id)        a widget's slot element (for editors)
-//   grid.geometry()      { width, cell, gutter, columns } at the current width
+//   grid.geometry()      { width, cell, row, gutter, columns } at the current
+//                        width (row: the layout's fixed rowHeight, or cell)
 //
 // Presentation never changes the layout: stacking only reorders the view.
 // An invalid layout is never corrected or partly shown: it is refused
@@ -62,12 +63,11 @@
       s.setProperty('--atlas-cols', w.cols);
       s.setProperty('--atlas-rows', w.rows);
       s.setProperty('--atlas-order', order);
-      s.setProperty('--atlas-min-height', types[w.type].contract.minHeight + 'px');
     }
 
     function reconcile() {
       const keep = new Set();
-      const order = new Map(G.readingOrder(layout).map((id, i) => [id, i]));
+      const order = new Map(G.stackOrder(layout).map((id, i) => [id, i]));
       for (const w of layout.widgets) {
         keep.add(w.id);
         let entry = slots.get(w.id);
@@ -93,6 +93,9 @@
     // Rows: the layout's extent, or more while an editor asks for room.
     function sizeCanvas() {
       const rows = Math.max(G.extent(layout), minExtent);
+      // Fixed rows (layout.rowHeight) or square ones (the CSS default).
+      if (layout.rowHeight) canvas.style.setProperty('--atlas-row-height', layout.rowHeight + 'px');
+      else canvas.style.removeProperty('--atlas-row-height');
       canvas.style.setProperty('--atlas-extent', Math.max(rows, 1));
       canvas.toggleAttribute('data-atlas-empty', rows === 0);
     }
@@ -110,7 +113,23 @@
       if (changed) onState(next, errs);
     }
     // Choose the presentation for the current width.
+    // Stacked, every widget is the container's width: its height floor is
+    // the one for that width (its own breakpoints). With fixed rows a
+    // widget's authored height is a real size, so it is at least that and
+    // grows with its content, not to the floor (which is for the longest
+    // content) — unless its type follows its content when stacked
+    // (type.stack === 'content').
+    function stackHeights() {
+      for (const w of (layout && Array.isArray(layout.widgets) ? layout.widgets : [])) {
+        const e = slots.get(w.id), t = types[w.type];
+        if (!e || !t) continue;
+        let h = G.minHeightAt(t.contract, width);
+        if (layout.rowHeight && t.stack !== 'content') h = G.spanSize(w.rows, layout.rowHeight, gutter());
+        e.slot.style.setProperty('--atlas-min-height', h + 'px');
+      }
+    }
     function present() {
+      stackHeights();
       const structural = G.validateLayout(layout, types);
       if (structural.length) return setState('invalid', structural);
       if (width < stackBelow) return setState('stack', []);
@@ -150,7 +169,8 @@
       slot: id => (slots.get(id) || {}).slot || null,
       geometry() {
         const w = contentWidth(), g = gutter();
-        return { width: w, cell: G.cellSize(w, G.COLUMNS, g), gutter: g, columns: G.COLUMNS };
+        const cell = G.cellSize(w, G.COLUMNS, g);
+        return { width: w, cell, row: G.rowSize(layout, cell), gutter: g, columns: G.COLUMNS };
       },
       destroy() {
         ro.disconnect();

@@ -17,7 +17,8 @@
 //                                             'reject' | 'cancel', id, proposal?, reason? }
 //   });
 //   ctl.refresh()   after every render: hit areas and inert content
-//   ctl.select(id), ctl.selected(), ctl.cancel(), ctl.active(), ctl.destroy()
+//   ctl.select(id), ctl.selected(), ctl.cancel(), ctl.active()
+//   ctl.destroy()   stop editing: widget content can be used again
 //
 // Mouse and pen: pressing a widget selects it and dragging (past a few
 // pixels) moves it. Touch: tap to select (a touch released without moving),
@@ -55,7 +56,7 @@
       const r = canvas.getBoundingClientRect();
       const scale = canvas.offsetWidth ? r.width / canvas.offsetWidth : 1;
       const g = grid.geometry();
-      return { x: (clientX - r.left) / scale, y: (clientY - r.top) / scale, pitch: g.cell + g.gutter, gutter: g.gutter };
+      return { x: (clientX - r.left) / scale, y: (clientY - r.top) / scale, pitch: g.cell + g.gutter, rowPitch: (g.row || g.cell) + g.gutter, gutter: g.gutter };
     }
     // Snap a position (in cells from the grid's start) to a whole cell,
     // holding the previous one until the pointer is well past the midpoint.
@@ -77,8 +78,8 @@
     // p: where the gesture started, in canvas coordinates (from local()).
     function begin(kind, id, handle, e, p) {
       const w = widget(id);
-      const g = { pitch: p.pitch, gutter: p.gutter };
-      const edges = { left: (w.col - 1) * g.pitch, right: (w.col + w.cols - 1) * g.pitch - g.gutter, top: (w.row - 1) * g.pitch, bottom: (w.row + w.rows - 1) * g.pitch - g.gutter };
+      const g = { pitch: p.pitch, rowPitch: p.rowPitch, gutter: p.gutter };
+      const edges = { left: (w.col - 1) * g.pitch, right: (w.col + w.cols - 1) * g.pitch - g.gutter, top: (w.row - 1) * g.rowPitch, bottom: (w.row + w.rows - 1) * g.rowPitch - g.gutter };
       gesture = {
         kind, id, handle, tx: E.beginGesture(o.layout(), { kind, id, handle, env: o.env() }),
         // Where the pointer held the widget (move) or each edge (resize).
@@ -96,14 +97,15 @@
       let target;
       if (gs.kind === 'move') {
         gs.snapped.col = snap((p.x - gs.grab.x) / p.pitch, gs.snapped.col);
-        gs.snapped.row = snap((p.y - gs.grab.y) / p.pitch, gs.snapped.row);
+        gs.snapped.row = snap((p.y - gs.grab.y) / p.rowPitch, gs.snapped.row);
         target = { col: gs.snapped.col + 1, row: gs.snapped.row + 1 };
       } else {
         target = {};
         for (const edge of E.HANDLES[gs.handle]) {
-          const px = p[edge === 'left' || edge === 'right' ? 'x' : 'y'] - gs.grab[edge];
+          const across = edge === 'left' || edge === 'right', pitch = across ? p.pitch : p.rowPitch;
+          const px = p[across ? 'x' : 'y'] - gs.grab[edge];
           // Start edges sit on a cell's start; end edges one gutter before the next.
-          const f = edge === 'left' || edge === 'top' ? px / p.pitch : (px + p.gutter) / p.pitch;
+          const f = edge === 'left' || edge === 'top' ? px / pitch : (px + p.gutter) / pitch;
           gs.snapped[edge] = snap(f, gs.snapped[edge]);
           target[edge] = gs.snapped[edge] + 1;
         }
@@ -112,7 +114,7 @@
       gs.proposal = proposal;
       const minimum = Object.values(proposal.clamped).includes('minimum');
       overlay.preview(proposal.widget, !proposal.valid ? 'invalid' : minimum ? 'minimum' : 'valid');
-      const pointerRow = Math.floor(Math.max(0, p.y) / p.pitch) + 1;
+      const pointerRow = Math.floor(Math.max(0, p.y) / p.rowPitch) + 1;
       grid.setExtent(E.editingExtent(o.layout(), proposal, { pointerRow, spare: SPARE_ROWS }));
       emit({ type: 'preview', id: gs.id, proposal });
     }
@@ -261,6 +263,7 @@
         canvas.removeEventListener('click', onClick, true);
         canvas.removeEventListener('focusin', onFocus);
         document.removeEventListener('keydown', onKey);
+        for (const slot of canvas.querySelectorAll('.atlas-grid-slot')) for (const c of slot.children) c.inert = false;
       }
     };
   }

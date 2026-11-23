@@ -130,17 +130,34 @@
           ], [button('Close', 'secondary', close)]);
         }
         saveFirst.disabled = without.disabled = false;
-        setStatus(r.error && r.error.code === 'PT422' ? `The server didn’t accept the draft: ${r.error.message}` : 'Couldn’t save the draft. Your changes are still here; try again.', 'error');
+        setStatus(r.error && r.error.code === 'layout' ? r.error.message : r.error && r.error.code === 'PT422' ? `The server didn’t accept the draft: ${r.error.message}` : 'Couldn’t save the draft. Your changes are still here; try again.', 'error');
       });
       const without = button('Publish saved draft only', 'secondary', () => review(true));
       show('unsaved', 'You have unsaved changes', [
-        para(`These ${plural(unsaved.length, 'card has', 'cards have')} changes that aren’t in the saved draft, so they would not be published:`),
+        para(`These ${unsaved.every(id => content.cardType(id, ...workspace.docs())) ? plural(unsaved.length, 'card has', 'cards have') : plural(unsaved.length, 'item has', 'items have')} changes that aren’t in the saved draft, so they would not be published:`),
         list,
         para('Save them into the draft first, or publish the saved draft without them (they stay here, unsaved).')
       ], [saveFirst, without, button('Cancel', 'ghost', close)]);
     }
 
+    function layoutList(layout) {
+      const list = el('ul', 'cms-publish-list cms-publish-changes cms-publish-layout');
+      layout.forEach(c => {
+        const li = el('li');
+        li.append(el('strong', '', c.label), el('span', 'cms-publish-type', ''), el('span', 'cms-publish-what', c.changes.join(', ')));
+        list.append(li);
+      });
+      return list;
+    }
+
     function review(excluding) {
+      // The server checks structure; the sizes widgets need are checked here.
+      if (!content.validateDocument(server.draft.content)) {
+        return show('invalid', 'This draft can’t be published', [
+          para('The saved draft’s layout or content isn’t valid for this version of the site, so it would not be shown to visitors.', 'cms-publish-error'),
+          para('Nothing was published. Correct it in Admin Mode, save the draft again, and publish.')
+        ], [button('Close', 'secondary', close)]);
+      }
       const summary = env.publish.summarize(server.published && server.published.content, server.draft.content, content, cms.images);
       const nodes = [para(`The draft saved at ${time(server.draft.created_at)} will replace the live homepage${server.published ? ` (version ${server.published.id})` : ''}. Guests and signed-in visitors see it right away.`)];
       if (summary.empty) nodes.push(para('The saved draft matches what is live: there is nothing to publish.', 'cms-publish-note'));
@@ -153,6 +170,7 @@
         });
         nodes.push(list);
       }
+      if (summary.layout.length) nodes.push(para('Layout:'), layoutList(summary.layout));
       summary.other.forEach(o => nodes.push(para(o + ' changed.')));
       if (summary.newImages.length) nodes.push(para(`${plural(summary.newImages.length, 'uploaded image', 'uploaded images')} will become public. Images that aren’t in the draft stay private.`, 'cms-publish-note'));
       if (excluding) nodes.push(para(`Your unsaved changes (${plural(workspace.unsavedCards().length, 'card', 'cards')}) are not included and stay in this browser.`, 'cms-publish-note'));

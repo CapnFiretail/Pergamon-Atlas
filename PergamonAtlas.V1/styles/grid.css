@@ -1,7 +1,8 @@
 /* Atlas Grid (scripts/grid/renderer.js; geometry in scripts/grid/atlas-grid.js).
- * Twenty columns of square cells separated by the layout gutter. The cell
- * size comes from the container's own width (container query units), so the
- * rows match the columns at any width without measuring:
+ * Twenty columns separated by the layout gutter. The cell size comes from
+ * the container's own width (container query units), so square rows match
+ * the columns at any width without measuring (a layout may instead fix its
+ * row height: --atlas-row-height):
  *   cell = (100cqi − 19 × gap) / 20
  * Widgets are placed by their 1-based cell coordinates; the canvas has as
  * many rows as its lowest widget reaches, and empty cells stay empty.
@@ -20,7 +21,9 @@
   /* The canvas height is set once from the formula and its rows share it,
      like the columns share the width: each row is exactly one cell, with no
      rounding building up down a long canvas. */
-  height: calc(var(--atlas-extent) * var(--atlas-cell) + (var(--atlas-extent) - 1) * var(--atlas-gap));
+  /* Rows: square (the cell) unless the layout fixes their height. */
+  --atlas-row: var(--atlas-row-height, var(--atlas-cell));
+  height: calc(var(--atlas-extent) * var(--atlas-row) + (var(--atlas-extent) - 1) * var(--atlas-gap));
   grid-template-rows: repeat(var(--atlas-extent), minmax(0, 1fr));
   gap: var(--atlas-gap);
 }
@@ -38,7 +41,10 @@
      neighbouring widget or anything drawn over the grid. */
   isolation: isolate;
 }
-.atlas-grid-slot > * { min-width: 0; min-height: 0; }
+.atlas-grid-slot > * { min-width: 0; }
+/* On the grid a widget is exactly its rectangle; stacked, it keeps any minimum
+   height of its own. */
+:where(.atlas-grid:not([data-atlas-state="stack"])) .atlas-grid-slot > * { min-height: 0; }
 
 /* An empty layout has no rows at all. */
 .atlas-grid-canvas[data-atlas-empty] { height: 0; grid-template-rows: none; }
@@ -68,11 +74,11 @@
   z-index: -1;
   pointer-events: none;
   background: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  -webkit-mask-image: linear-gradient(to right, #000 var(--atlas-cell), transparent 0), linear-gradient(to bottom, #000 var(--atlas-cell), transparent 0);
-  -webkit-mask-size: calc(var(--atlas-cell) + var(--atlas-gap)) 100%, 100% calc(var(--atlas-cell) + var(--atlas-gap));
+  -webkit-mask-image: linear-gradient(to right, #000 var(--atlas-cell), transparent 0), linear-gradient(to bottom, #000 var(--atlas-row), transparent 0);
+  -webkit-mask-size: calc(var(--atlas-cell) + var(--atlas-gap)) 100%, 100% calc(var(--atlas-row) + var(--atlas-gap));
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, #000 var(--atlas-cell), transparent 0), linear-gradient(to bottom, #000 var(--atlas-cell), transparent 0);
-  mask-size: calc(var(--atlas-cell) + var(--atlas-gap)) 100%, 100% calc(var(--atlas-cell) + var(--atlas-gap));
+  mask-image: linear-gradient(to right, #000 var(--atlas-cell), transparent 0), linear-gradient(to bottom, #000 var(--atlas-row), transparent 0);
+  mask-size: calc(var(--atlas-cell) + var(--atlas-gap)) 100%, 100% calc(var(--atlas-row) + var(--atlas-gap));
   mask-composite: intersect;
 }
 .atlas-grid[data-atlas-debug][data-atlas-state="stack"] .atlas-grid-canvas::before,

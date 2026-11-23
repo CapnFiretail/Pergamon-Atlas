@@ -91,7 +91,9 @@
       const shown = fixed ? items.concat(extras) : items;
       strip.replaceChildren(...shown);
       const gap = parseFloat(getComputedStyle(strip).columnGap) || 0;
-      step = shown.length ? shown[0].getBoundingClientRect().width + gap : 0;
+      // (Layout px: a page drawn scaled, as in an editor, says so in --atlas-scale.)
+      const scale = parseFloat(getComputedStyle(strip).getPropertyValue('--atlas-scale')) || 1;
+      step = shown.length ? shown[0].getBoundingClientRect().width / scale + gap : 0;
       setWidth = items.length * step;
       const view = viewport.clientWidth;
       looping = !fixed && items.length > 1 && step > 0 && (setWidth - gap > view + 1 || items.length >= MIN_LOOP);

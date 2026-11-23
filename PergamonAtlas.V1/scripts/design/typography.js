@@ -106,7 +106,7 @@
       responsive: [],
       preview: { text: 'Atlas Navigation' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-context-title', status: 'adopted', note: 'Atlas Navigation panel heading.' },
+        { file: 'styles/components/atlas-navigation.css', selector: '.home-context-title', status: 'adopted', note: 'Atlas Navigation panel heading.' },
         { file: 'operation/styles/footer.css', selector: '.footer-brand h3', status: 'adopted', note: 'Footer brand name. It probably shouldn’t be a heading (a separate accessibility item).' },
         { file: 'styles/settings.css', selector: '.settings-heading', status: 'pending', current: { leading: '1.3' } },
         { file: 'styles/account.css', selector: '.account-heading', status: 'pending', current: { size: '23px', leading: '1.3' } },
@@ -146,7 +146,7 @@
       responsive: [],
       preview: { text: 'Login / Sign Up' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-context-label', status: 'adopted', note: 'Atlas Navigation rows.' },
+        { file: 'styles/components/atlas-navigation.css', selector: '.home-context-label', status: 'adopted', note: 'Atlas Navigation rows.' },
         { file: 'styles/settings.css', selector: '.palette-name', status: 'adopted', note: 'Settings palette names.' },
         { file: 'styles/cms-admin.css', selector: '.cms-manage-name', status: 'pending', current: { weight: 400 }, note: 'Inherits weight 400.' }
       ]
@@ -189,7 +189,7 @@
       responsive: [],
       preview: { text: 'Sign in or create an account' },
       adoption: [
-        { file: 'styles/home.css', selector: '.home-context-desc', status: 'adopted', note: 'Atlas Navigation row descriptions.' },
+        { file: 'styles/components/atlas-navigation.css', selector: '.home-context-desc', status: 'adopted', note: 'Atlas Navigation row descriptions.' },
         { file: 'styles/settings.css', selector: '.settings-storage', status: 'adopted', note: 'Settings: where choices are stored.' },
         { file: 'styles/account.css', selector: '.account-member dt', status: 'adopted', note: 'Account: member detail labels.' },
         { file: 'styles/components/content-card.css', selector: '.home-tile-category', status: 'pending', current: { weight: 500 } }
@@ -309,7 +309,10 @@
       use: 'The title on the homepage’s Featured card.',
       restrictions: ['Featured card only: always on dark artwork, in fixed ivory with a shadow (home.css).'],
       family: 'display', size: 'clamp(38px, 5.6cqi, 50px)', weight: 800, leading: '1', tracking: '0.005em', transform: 'none',
-      responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(30px, 10cqi, 40px)', name: 'narrow' }],
+      responsive: [
+        { type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 560px)', size: 'clamp(30px, 10cqi, 40px)', name: 'narrow' },
+        { type: 'note', text: 'Long titles are set smaller than the role: 1.5 × the card’s width ÷ the title’s length (2 × when compact; 1.05 × with the fallback fonts), never below 26px (compact 30px; fallback fonts 22px). Titles of today’s length are unaffected.' }
+      ],
       preview: { text: 'Chess Forge', container: FEATURE_CONTAINER, width: 700, surface: 'feature' },
       adoption: [{ file: 'styles/components/feature-banner.css', selector: '.home-feature-title', status: 'adopted', note: 'Featured card.' }]
     },
@@ -318,7 +321,10 @@
       use: 'The title on the homepage’s Spotlight card.',
       restrictions: ['Spotlight card only.'],
       size: 'clamp(26px, 3.6cqi, 32px)',
-      responsive: [{ type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 640px)', size: 'clamp(24px, 7.5cqi, 30px)', name: 'narrow' }],
+      responsive: [
+        { type: 'container', container: FEATURE_CONTAINER, query: '(max-width: 560px)', size: 'clamp(24px, 7.5cqi, 30px)', name: 'narrow' },
+        { type: 'note', text: 'Long titles are set smaller: 1 × the card’s width ÷ the title’s length (1.2 × when compact), never below 20px (compact 24px; fallback fonts 18px).' }
+      ],
       preview: { text: 'Connect Four', container: FEATURE_CONTAINER, width: 700, surface: 'feature' },
       adoption: [{ file: 'styles/components/feature-banner.css', selector: '.home-feature--spotlight .home-feature-title', status: 'adopted', note: 'Spotlight card.' }]
     },

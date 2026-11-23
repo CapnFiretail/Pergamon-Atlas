@@ -116,8 +116,12 @@
 
     const label = id => env.cardLabel(id);
     const typeLabel = id => {
-      const t = ({ feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' })[content.cardType(id)] || 'Card';
-      return content.isSaved && content.isSaved(id) ? `Saved ${t.toLowerCase()} (not active)` : t;
+      const docs = workspace.docs();
+      const t = ({ feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' })[content.cardType(id, ...docs)] || 'Card';
+      const name = content.isSaved(id, ...docs) ? `Saved ${t.toLowerCase()} (not active)` : t;
+      // A widget added to the page: say which one.
+      const o = content.ownerOf(id, ...docs);
+      return o && !content.ownerOf(id) ? `${name} · ${content.instanceLabel(o.instance, o.type)}` : name;
     };
 
     function setFeedback(text, kind) {
@@ -131,7 +135,7 @@
       form.replaceChildren();
       fields = []; errors = {};
       const component = workspace.component(id) || {};
-      content.cardFields(id, component).forEach(field => {
+      content.cardFields(id, component, ...workspace.docs()).forEach(field => {
         if (field.type === 'image') {
           // The image slot has its own editor (scripts/cms/image-editor.js).
           if (!cms.imageEditor || !env.images) return;
@@ -313,7 +317,7 @@
       if (!err) return 'Something went wrong. Your changes are still here.';
       if (err.code === 'PT403') return 'Your account can no longer save drafts. Your changes are still here in this browser.';
       if (err.code === 'PT422') return `The server didn’t accept this: ${err.message}`;
-      if (err.code === 'invalid') return err.message;
+      if (err.code === 'invalid' || err.code === 'layout') return err.message;
       return 'Couldn’t reach the server. Your changes are still here; try again.';
     }
 

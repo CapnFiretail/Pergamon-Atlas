@@ -183,5 +183,5 @@
 .pa-type-spotlight-cta { font-family: var(--type-spotlight-cta-family); font-size: var(--type-spotlight-cta-size); font-weight: var(--type-spotlight-cta-weight); line-height: var(--type-spotlight-cta-leading); letter-spacing: var(--type-spotlight-cta-tracking); text-transform: var(--type-spotlight-cta-transform); }
 
 @container carousel (max-width: 640px) { .pa-type-section-title-large { --type-section-title-large-size: var(--type-section-title-large-size-narrow); } }
-@container upper (max-width: 640px) { .pa-type-feature-title { --type-feature-title-size: var(--type-feature-title-size-narrow); } }
-@container upper (max-width: 640px) { .pa-type-spotlight-title { --type-spotlight-title-size: var(--type-spotlight-title-size-narrow); } }
+@container upper (max-width: 560px) { .pa-type-feature-title { --type-feature-title-size: var(--type-feature-title-size-narrow); } }
+@container upper (max-width: 560px) { .pa-type-spotlight-title { --type-spotlight-title-size: var(--type-spotlight-title-size-narrow); } }

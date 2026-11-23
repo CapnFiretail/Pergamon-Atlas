@@ -341,3 +341,99 @@ test('a change that fits here but not at a wider width is refused', () => {
   assert.ok(r.errors[0].detail.fitsFrom > 600);
   assert.equal(E.proposeMove(L, 'a', { col: 2, row: 1 }, { types: T, width: r.errors[0].detail.fitsFrom + 1 }).valid, true, 'from its threshold up it is fine');
 });
+
+// ── Fixed-height rows (H5.3) ───────────────────────────────────────────────
+const ROW = 23.43;
+const FIXED = E.freezeLayout({ id: 'upper', frame: 'sidebar', rowHeight: ROW, widgets: [W('c', 1, 1, 6, 10, 'floor'), W('a', 9, 1, 4, 3)] });
+
+test('fixed rows: minimum rows count fixed rows; region fields survive every proposal', () => {
+  const env = { types: TYPES, width: 1392 };
+  // floor: 300 × 200px. 200px in 23.43px rows (+16 gutters) needs 6 rows; square cells would need 4.
+  assert.equal(E.minCells(TYPES.floor.contract, Object.assign({ rowHeight: ROW }, env), 6).rows, 6);
+  assert.equal(E.minCells(TYPES.floor.contract, env, 6).rows, 4);
+  const r = E.proposeResize(FIXED, 'c', 'bottom', { bottom: 2 }, env);
+  assert.deepEqual(pos(r, 'c'), [1, 1, 6, 6]);
+  assert.equal(r.clamped.bottom, 'minimum');
+  assert.equal(r.layout.rowHeight, ROW);
+  assert.equal(r.layout.id, 'upper');
+  assert.equal(r.layout.frame, 'sidebar');
+  const m = E.proposeMove(FIXED, 'a', { col: 9, row: 20 }, env);
+  assert.equal(m.valid, true);
+  assert.equal(m.layout.rowHeight, ROW);
+  // Collisions block in fixed rows exactly as in square ones.
+  assert.equal(E.proposeMove(FIXED, 'a', { col: 5, row: 1 }, env).valid, false);
+});
+
+test('fixed rows: fit is checked with the fixed height, not the cell', () => {
+  // 6 columns × 6 fixed rows: 6 × 23.43 + 80 = 220.6px ≥ 200 at any width; as square cells at 1000px it would be 6 × 34.8 + 80.
+  const L = E.freezeLayout({ rowHeight: ROW, widgets: [W('c', 1, 1, 7, 6, 'floor')] });
+  for (const width of [1000, 1392, 2000]) assert.equal(E.proposeMove(L, 'c', { col: 2, row: 1 }, { types: TYPES, width }).valid, true, `at ${width}`);
+  const short = E.freezeLayout({ rowHeight: ROW, widgets: [W('c', 1, 1, 7, 7, 'floor')] });
+  const r = E.proposeResize(short, 'c', 'bottom', { bottom: 6 }, { types: TYPES, width: 1392 });   // 5 rows = 181.2px < 200
+  assert.deepEqual(pos(r, 'c'), [1, 1, 7, 6], 'stops at 6 rows');
+});
+
+test('history can hold whole documents (layout plus content)', () => {
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const h = E.createHistory({ regions: [], components: { x: 1 } }, { same, freeze: d => Object.freeze(structuredClone(d)) });
+  assert.equal(h.commit({ regions: [], components: { x: 1 } }), false, 'unchanged');
+  assert.equal(h.commit({ regions: [], components: { x: 2 } }), true);
+  assert.equal(h.undo().components.x, 1);
+  assert.equal(h.redo().components.x, 2);
+  assert.ok(Object.isFrozen(h.present()));
+});
+
+// ── Adding, removing, stacking order, amending (H5.3 Checkpoint D) ─────────
+test('a new widget takes its default size in the first free place in reading order; nothing else moves', () => {
+  const r = E.proposeAdd(BASE, { id: 'n', type: 'box' }, ENV);
+  assert.equal(r.valid, true);
+  assert.deepEqual(pos(r, 'n'), [5, 1, 4, 3], 'between a and b');
+  assert.equal(others(r, 'n'), othersOf(BASE, 'n'));
+  // No gap wide enough above: below everything.
+  const full = E.freezeLayout({ widgets: [W('a', 1, 1, 18, 3), W('b', 1, 4, 18, 3)] });
+  assert.deepEqual(pos(E.proposeAdd(full, { id: 'n', type: 'box' }, ENV), 'n'), [1, 7, 4, 3]);
+  assert.deepEqual(pos(E.proposeAdd({ widgets: [] }, { id: 'n', type: 'box' }, ENV), 'n'), [1, 1, 4, 3]);
+  assert.throws(() => E.proposeAdd(BASE, { id: 'a', type: 'box' }, ENV), /already/);
+});
+
+test('a new widget is as tall as its content needs, at the width and at every wider one', () => {
+  const r = E.proposeAdd(FIXED, { id: 'n', type: 'floor' }, { types: TYPES, width: 1392 });
+  assert.deepEqual(pos(r, 'n').slice(2), [6, 6], 'the default 5 rows are too short in 23.43px rows');
+  assert.equal(r.layout.rowHeight, ROW);
+  const T = { band: { placeable: true, contract: { minCols: 4, minRows: 2, defaultCols: 8, defaultRows: 2, minWidth: 100, minHeight: 300, minHeightBands: [{ maxWidth: 400, minHeight: 100 }] } } };
+  const b = E.proposeAdd({ rowHeight: ROW, widgets: [] }, { id: 'n', type: 'band' }, { types: T, width: 900 });   // 350px wide here, over 400 in wider windows
+  assert.equal(b.valid, true);
+  assert.deepEqual(pos(b, 'n').slice(2), [8, 9], 'tall enough for the wider floor');
+  assert.equal(E.proposeAdd({ widgets: [] }, { id: 'n', type: 'floor' }, { types: TYPES, width: 290 }), null, 'no usable size');
+});
+
+test('adding and removing keep a stack order complete; a new widget follows its neighbour', () => {
+  const L = E.freezeLayout({ stack: ['b', 'a'], widgets: [W('a', 1, 1, 4, 3), W('b', 9, 1, 4, 3)] });
+  const r = E.proposeAdd(L, { id: 'n', type: 'box' }, ENV);
+  assert.equal(r.valid, true);
+  assert.deepEqual(r.layout.stack, ['b', 'a', 'n'], 'placed between a and b, so after a');
+  const x = E.proposeRemove(r.layout, 'b', ENV);
+  assert.equal(x.valid, true);
+  assert.deepEqual(x.layout.stack, ['a', 'n']);
+  assert.deepEqual(x.layout.widgets.map(w => w.id), ['a', 'n']);
+  assert.equal(E.proposeRemove(E.freezeLayout({ widgets: [W('a', 1, 1, 4, 3)] }), 'a', ENV).valid, true, 'the last one too');
+});
+
+test('the stacked order changes by steps and stops at the ends; the grid stays as it is', () => {
+  const r = E.proposeStack(BASE, 'c', -1, ENV);
+  assert.deepEqual(r.layout.stack, ['a', 'c', 'b', 'd'], 'from reading order');
+  assert.deepEqual(r.layout.widgets, BASE.widgets);
+  assert.equal(E.proposeStack(BASE, 'a', -1, ENV).changed, false);
+  assert.equal(E.proposeStack(r.layout, 'd', 1, ENV).changed, false);
+});
+
+test('amending replaces the present step; back at the start it disappears', () => {
+  const h = E.createHistory(1, { same: (a, b) => a === b, freeze: v => v });
+  assert.equal(h.amend(2), true, 'nothing to amend yet: a step');
+  h.amend(3);
+  assert.deepEqual([h.present(), h.size().past], [3, 1]);
+  assert.equal(h.undo(), 1);
+  h.commit(4);
+  assert.equal(h.amend(1), true);
+  assert.deepEqual([h.present(), h.canUndo(), h.canRedo()], [1, false, false]);
+});

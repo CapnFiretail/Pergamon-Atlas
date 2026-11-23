@@ -5,9 +5,9 @@
 //                     (scripts/cms/images.js); the phone follows the desktop
 //                     framing until it is given its own.
 //   stage             a copy of the real card, drawn by the homepage's own
-//                     code and styles (PergamonHome.sample) at that layout's
-//                     size, with the whole picture faded around it and the
-//                     crop outlined. Drag (or arrow keys) to move the
+//                     code and styles (PergamonHome.sample) at the size its
+//                     widget is drawn at (PergamonHome.cardSize), with the
+//                     whole picture faded around it and the crop outlined. Drag (or arrow keys) to move the
 //                     picture; the zoom slider scales it.
 //   file              upload or replace (a private draft image), revert to
 //                     the saved image; the slot's own fields (description,
@@ -22,13 +22,18 @@
   'use strict';
   const cms = window.PergamonCMS = window.PergamonCMS || {};
 
-  // The sizes the stage draws a card at: the homepage's areas on a
-  // 1440-pixel desktop screen and on a 390-pixel phone (styles/home.css
-  // decides everything else, including which layout applies).
+  // Carousel cards have one size per layout (the carousel's area on a
+  // 1440-pixel screen and on a 390-pixel phone); Featured and Spotlight cards
+  // take their own widget's.
   const LAYOUTS = {
-    desktop: { label: 'Desktop', upper: 896, lower: 1392, tile: 200, note: 'Desktop card, as on a 1440-pixel screen' },
-    phone: { label: 'Phone', upper: 358, lower: 358, tile: 160, note: 'Phone card, as on a 390-pixel screen' }
+    desktop: { label: 'Desktop', lower: 1392, tile: 200, note: 'Desktop card, as on a 1440-pixel screen' },
+    phone: { label: 'Phone', lower: 358, tile: 160, note: 'Phone card, as on a 390-pixel screen' }
   };
+  // Px the docked drawer takes from the page's width (styles/cms-admin.css).
+  function dockedRoom() {
+    const page = document.querySelector('.pa-page');
+    return page ? parseFloat(getComputedStyle(page).marginRight) || 0 : 0;
+  }
   const ICONS = {
     upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 15v4h14v-4"/>',
     undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
@@ -56,13 +61,17 @@
 
   function create(env) {
     const { field, cardId, workspace, content, images, store, home } = env;
-    const type = content.cardType(cardId);
+    const type = content.cardType(cardId, ...workspace.docs());
     const isTile = type === 'tile';
     // First time: the layout visitors get on this screen. The homepage switches
     // at 640px of content, which is a screen up to 672px wide (16px gutters);
     // measured from the screen, since the docked drawer narrows the page.
     if (!lastLayout) lastLayout = document.documentElement.clientWidth <= 672 ? 'phone' : 'desktop';
     let layout = lastLayout;
+    // A widget this narrow shows the compact card on every screen: there is
+    // no desktop framing to set, only the phone's.
+    const sizeOf = l => (isTile || !home.cardSize ? null : home.cardSize(cardId, l, dockedRoom()));
+    const compactOnly = () => { const s = sizeOf('desktop'); return !!s && s.compact; };
     let dead = false;
     let uploading = false;
     let built = null;              // the stage's card copy and its geometry
@@ -101,7 +110,7 @@
     tabs.addEventListener('keydown', e => {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
       e.preventDefault();
-      const next = layout === 'desktop' ? 'phone' : 'desktop';
+      const next = layout === 'desktop' || compactOnly() ? 'phone' : 'desktop';
       setLayout(next);
       tabButtons[next].focus();
     });
@@ -165,9 +174,11 @@
 
     // ── Stage: the card copy, the faded picture, the crop ─────────────────
     function build() {
+      if (layout === 'desktop' && compactOnly()) layout = 'phone';
       const a = art();
       const m = a ? home.artModel(a) : null;
-      const key = layout + '|' + (m && m.src ? m.src : a ? 'missing' : 'none');
+      const size = sizeOf(layout);
+      const key = [layout, size ? Math.round(size.width) + '×' + Math.round(size.height || size.minHeight) + (size.frame || '') : '', m && m.src ? m.src : a ? 'missing' : 'none'].join('|');
       if (built && built.key === key) return;
       built = null;
       canvas.replaceChildren();
@@ -182,25 +193,31 @@
       shell.inert = true;
       shell.setAttribute('aria-hidden', 'true');
       const L = LAYOUTS[layout];
-      const area = el('div', isTile ? 'home-lower' : 'home-upper');
-      area.style.width = (isTile ? L.lower : L.upper) + 'px';
-      let host = area;
-      if (isTile) card.style.width = L.tile + 'px';
-      else { host = el('div', 'home-banners'); area.append(host); }
-      host.append(card);
+      let area;
+      if (size) {
+        // The widget's own slot, as the grid (or the stacked page) draws it:
+        // styles/grid.css and home.css decide the rest.
+        area = el('div', 'home-region atlas-grid ' + (size.frame === 'sidebar' ? 'home-upper' : 'home-lower'));
+        area.dataset.atlasState = size.stacked ? 'stack' : 'grid';
+        area.style.width = size.width + 'px';
+        const slot = el('div', 'atlas-grid-slot');
+        slot.style.containerName = 'upper';
+        if (size.height) slot.style.height = size.height + 'px';
+        else slot.style.setProperty('--atlas-min-height', size.minHeight + 'px');
+        slot.append(card);
+        area.append(slot);
+      } else {
+        area = el('div', 'home-lower');
+        area.style.width = L.lower + 'px';
+        card.style.width = L.tile + 'px';
+        area.append(card);
+      }
       shell.append(area);
       canvas.append(ghost, shell, frame);
-      if (!isTile) {
-        // Desktop banners are fixed-height rows; phone cards size to their content.
-        const rows = getComputedStyle(host).gridTemplateRows.split(/\s+/).map(parseFloat);
-        host.style.gridTemplateRows = 'auto';
-        const h = rows[cardId === 'home.spotlight' ? 1 : 0];
-        if (layout === 'desktop' && h > 0) card.style.height = h + 'px';
-      }
       const boxEl = isTile ? card.querySelector('.home-art') : card;
       const s = shell.getBoundingClientRect(), c = card.getBoundingClientRect(), b = boxEl.getBoundingClientRect();
       built = {
-        key, sample, shell,
+        key, sample, shell, size,
         card: { x: c.left - s.left, y: c.top - s.top, width: c.width, height: c.height },
         box: { x: b.left - s.left, y: b.top - s.top, width: b.width, height: b.height },
         natural: m && m.width && m.height ? { width: m.width, height: m.height } : null,
@@ -489,20 +506,24 @@
       const ok = canFrame();
       const f = current();
       const range = images.ZOOM[fit()];
+      const compact = compactOnly();
       Object.keys(tabButtons).forEach(key => {
         const on = key === layout;
         tabButtons[key].setAttribute('aria-selected', String(on));
         tabButtons[key].tabIndex = on ? 0 : -1;
-        tabButtons[key].disabled = !a;
+        tabButtons[key].disabled = !a || (key === 'desktop' && compact);
       });
       stage.setAttribute('aria-labelledby', `${headingId} ${tabButtons[layout].id}`);
       stage.setAttribute('aria-disabled', String(!ok));
       stage.classList.toggle('can-frame', ok);
       empty.textContent = !a ? 'No image yet' : built && built.failed ? 'This image couldn’t be loaded' : built && built.src && !built.natural ? 'Loading image…' : !built || !built.src ? 'This image couldn’t be found' : '';
       empty.hidden = !empty.textContent || !!(a && built && built.src && built.natural && !built.failed);
+      const s = built && built.size;
+      const dims = s ? ` (${Math.round(s.width)} × ${Math.round(s.height || built.card.height)})` : '';
+      const note = (s && layout === 'desktop' ? (document.documentElement.dataset.cmsMode === 'layout' && s.here ? 'Desktop card, at its size on the canvas' : s.here ? 'Desktop card, at its size in this window' : 'Desktop card, at its size in a wider window') : LAYOUTS[layout].note) + dims;
       caption.textContent = a
-        ? `${LAYOUTS[layout].note}. Drag the picture, or use the arrow keys, to choose what shows inside the outline.`
-        : `${LAYOUTS[layout].note}. Upload an image to replace the placeholder.`;
+        ? `${note}. Drag the picture, or use the arrow keys, to choose what shows inside the outline.`
+        : `${note}. Upload an image to replace the placeholder.`;
       zoom.min = String(range.min); zoom.max = String(range.max);
       if (!live) zoom.value = String(Math.min(range.max, Math.max(range.min, f.zoom)));
       zoom.disabled = zoomIn.disabled = zoomOut.disabled = !ok;
@@ -512,7 +533,7 @@
       const phoneOwn = layout === 'phone' && !!a && !images.follows(a);
       matchButton.hidden = !phoneOwn;
       matchButton.disabled = !ok;
-      followNote.textContent = !a ? '' : layout === 'desktop'
+      followNote.textContent = !a ? '' : compact ? 'This widget is narrow enough to show the compact card on every screen, so only the phone framing is used.' : layout === 'desktop'
         ? (images.follows(a) ? 'The phone uses this framing too.' : 'The phone has its own framing.')
         : (images.follows(a) ? 'Following the desktop framing. Move or zoom to give the phone its own.' : 'The phone has its own framing.');
       uploadButton.querySelector('span').textContent = uploading ? 'Uploading…' : a ? 'Replace image' : 'Upload image';

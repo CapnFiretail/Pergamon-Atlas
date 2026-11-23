@@ -5,12 +5,10 @@
 //   Content components  Featured Content (hero), Spotlight (banner), Content
 //                       Card: own their content's presentation
 //   Navigation & page   Sidebar Navigation (site shell), Atlas Navigation
-//                       panel (a homepage widget, not yet a component)
 //
 // Live previews are drawn by the real components (scripts/components/,
 // styles/components/) with the sample inputs in component-examples.js; the
-// sidebar previews by the site's own sidebar code. Only the Atlas Navigation
-// panel is a static, labelled preview.
+// sidebar previews by the site's own sidebar code.
 (function () {
   'use strict';
   const ns = window.PergamonHandbook = window.PergamonHandbook || {};
@@ -164,7 +162,7 @@
       art.append(facts([
         ['Inputs', [{ code: '{ title, actionLabel, href, art }' }, 'plus', { code: 'actionIcon' }, '(play, or none). Artwork: cover with focus and zoom, or height-fitted with an edge colour; separate phone values.']],
         ['Layout', [variant === 'hero' ? 'Tall; the action sits under the title.' : 'Wide and short; the action on the right.', 'Its height comes from where it is placed; its compact layout from the page area it sits in.']],
-        ['Placement', ['Put it inside a page area that is a size container named', { code: 'upper' }, 'and give it its height there. The compact layout applies when that area is 640px or narrower; above that it keeps its wide layout even if the card itself is narrower (for example, in a two-column row). Without such an area it always shows its wide layout. On the homepage that area is', { code: '.home-upper' }, '. For another page:', { code: '.area { container: upper / inline-size; display: grid; grid-template-rows: ' + (variant === 'hero' ? '260px' : '140px') + '; }' }, { code: '@container upper (max-width: 640px) { .area { grid-template-rows: auto; } }' }]],
+        ['Placement', ['Put it inside a page area that is a size container named', { code: 'upper' }, 'and give it its height there. The compact layout applies when that area is 560px or narrower; above that it keeps its wide layout even if the card itself is narrower (for example, in a two-column row). Without such an area it always shows its wide layout. On the homepage that area is', { code: '.home-upper' }, '. For another page:', { code: '.area { container: upper / inline-size; display: grid; grid-template-rows: ' + (variant === 'hero' ? '260px' : '140px') + '; }' }, { code: '@container upper (max-width: 560px) { .area { grid-template-rows: auto; } }' }]],
         ['Used on', used],
         ['Admin Mode', admin],
         ['Type roles', roles(variant)],
@@ -246,23 +244,25 @@
       ]));
     }
     {
-      const art = entry(navs, 'atlas-navigation', 'Atlas Navigation panel', [chip('Homepage widget', 'muted'), chip('Defined in code', 'muted')],
-        'The homepage panel beside the Featured card, listing destinations with a short description each. A separate widget from the Sidebar Navigation, with its own content; not yet a library component.');
-      const s = stage('Static preview with the widget’s real type roles. See it live on the homepage.', false);
-      const demo = el('div', 'hb-demo-panel');
-      demo.append(el('p', 'pa-type-section-title', 'Atlas Navigation'));
-      [['Account', 'Your profile and sign-in details'], ['Settings', 'Display mode and colour palette'], ['Update Log', 'What’s new on PergamonAtlas']].forEach(([t, d]) => {
-        const r = el('div', 'hb-demo-row');
-        const txt = el('span', 'hb-demo-row-text');
-        txt.append(el('span', 'pa-type-item-title', t), el('span', 'pa-type-caption hb-muted', d));
-        r.append(el('span', 'hb-demo-row-icon'), txt, el('span', 'hb-demo-row-go', '›'));
-        demo.append(r);
-      });
-      s.body.append(demo);
+      const art = entry(navs, 'atlas-navigation', 'Atlas Navigation panel', [chip('Library component', 'muted'), chip('Defined in code', 'muted')],
+        'A panel of destinations, each with an icon and a short description; on the homepage, beside the Featured card. A separate widget from the Sidebar Navigation, with its own content. Its rows share the panel’s height; stacked, each row is its natural height.');
+      const s = stage('Live preview, drawn by the component with the homepage’s destinations.', false);
+      const C = window.PergamonComponents;
+      if (C && C.atlasNavigation) {
+        const demo = el('div', 'hb-nav-preview');
+        demo.append(C.atlasNavigation({ title: 'Atlas Navigation', links: [
+          { label: 'Login / Sign Up', description: 'Sign in or create an account', href: '/account/', icon: 'account' },
+          { label: 'Settings', description: 'Display mode and colour palette', href: '/settings/', icon: 'settings' },
+          { label: 'Update Log', description: 'What’s new on PergamonAtlas', href: '/updates/', icon: 'updates' },
+          { label: 'Suggestions', description: 'Share an idea with us', href: '/suggestions/', icon: 'suggestions' }
+        ] }).element);
+        s.body.append(demo);
+      }
       art.append(s.fig, facts([
-        ['Configuration', ['Not editable yet: its destinations are set in the homepage’s code.']],
+        ['Configuration', ['Not editable yet: the homepage’s destinations are set in', { code: 'data/home-content.js' }, '(', { code: 'context' }, '); every instance shows the same links.']],
+        ['Grid', ['Widget type', { code: 'atlas-navigation' }, '; at least 242px wide (much narrower and the longest label is cut off).']],
         ['Type roles', roles('atlas')],
-        ['Source', [{ code: 'scripts/home.js' }, { code: 'styles/home.css' }]]
+        ['Source', [{ code: 'scripts/components/atlas-navigation.js' }, { code: 'styles/components/atlas-navigation.css' }]]
       ]));
     }
   }

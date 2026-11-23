@@ -13,10 +13,12 @@
 //                        escaping (measured; see `measured`). Checked at the
 //                        actual container width, since cells change size.
 //     minHeightBands     [{ maxWidth, minHeight }]: a different height floor
-//                        while the widget is at most maxWidth wide, at the
+//                        while the widget is at most maxWidth wide: at the
 //                        breakpoints the component's own CSS already uses;
 //                        minHeight is the floor above the last band.
 //   placeable  false: documented, not yet placeable (validation refuses it)
+//   stack      'content': stacked (narrow screens), its height follows its
+//              content rather than its authored height
 //
 // Reference grid: the standard desktop container, 1392px (a 1440px window
 // minus the widget-page insets), cells 54.4px. At that width every minimum
@@ -32,17 +34,17 @@
       name: 'Feature banner, hero',
       component: 'featureBanner({ variant: "hero" })',
       placeable: true,
-      contract: { minCols: 7, minRows: 5, defaultCols: 12, defaultRows: 6, minWidth: 426, minHeight: 356, minHeightBands: [{ maxWidth: 640, minHeight: 320 }] },
-      measured: 'Title 60 characters and button 24 (the CMS maximums). Below 426px the button escapes the card. Up to 640px wide (compact) it needs 320px of height; wider, up to 356px (just above the switch, where the title wraps most).',
-      responsive: 'Compact layout (copy stacked over the artwork, fixed 320px minimum height) when its container is 640px or narrower.'
+      contract: { minCols: 7, minRows: 5, defaultCols: 12, defaultRows: 6, minWidth: 456, minHeight: 256, minHeightBands: [{ maxWidth: 560, minHeight: 320 }] },
+      measured: 'Titles up to 60 characters with a 24-character button, in the site’s fonts and in the fallback fonts. Long titles are set smaller, but never below 26px (22px in the wider fallback font; compact, 30px): 256px of height when wider than 560px; compact, 320px (its fixed minimum). Below 456px a long button label no longer fits on one line; stacked, the label wraps and the card grows.',
+      responsive: 'Compact layout (copy stacked over the artwork, fixed 320px minimum height) when its container is 560px or narrower.'
     },
     'feature-spotlight': {
       name: 'Feature banner, spotlight',
       component: 'featureBanner({ variant: "banner" })',
       placeable: true,
-      contract: { minCols: 6, minRows: 4, defaultCols: 12, defaultRows: 4, minWidth: 358, minHeight: 153, minHeightBands: [{ maxWidth: 640, minHeight: 204 }] },
-      measured: 'Title 60 characters and button 24. Below 358px the button escapes. Up to 640px wide (compact: the button under the title) it needs 204px of height; wider, 153px.',
-      responsive: 'Compact layout (button under the title) when its container is 640px or narrower.'
+      contract: { minCols: 6, minRows: 3, defaultCols: 12, defaultRows: 4, minWidth: 384, minHeight: 121, minHeightBands: [{ maxWidth: 560, minHeight: 185 }] },
+      measured: 'Titles up to 60 characters with a 24-character button, site and fallback fonts; long titles are set smaller, never below 20px (18px in the fallback font; compact, 24px). Compact (the button under the title) it needs 185px of height; wider, 121px. Below 384px a long button label no longer fits on one line; stacked, the label wraps and the card grows.',
+      responsive: 'Compact layout (button under the title) when its container is 560px or narrower; up to 660px a long button label wraps.'
     },
     'carousel': {
       name: 'Carousel',
@@ -62,11 +64,12 @@
     },
     'atlas-navigation': {
       name: 'Atlas Navigation',
-      component: 'built by the homepage (scripts/home.js)',
-      placeable: false,
-      contract: { minCols: 4, minRows: 6, defaultCols: 6, defaultRows: 6, minWidth: 256, minHeight: 342 },
-      measured: 'Four entries. Narrowest working width on the homepage today 256px; stacked, its content needs 342px of height.',
-      responsive: 'Entries stack at their natural height when the homepage’s upper area is 860px or narrower. Not placeable until it is extracted into the component library.'
+      component: 'atlasNavigation({ title, links })',
+      placeable: true,
+      stack: 'content',
+      contract: { minCols: 4, minRows: 6, defaultCols: 6, defaultRows: 11, minWidth: 242, minHeight: 342 },
+      measured: 'Four entries. Below 234px the longest label (“Suggestions”) is cut off; 242px leaves a little room. Its content needs 342px of height with stacked rows; on a grid its rows share any extra height.',
+      responsive: 'Rows stretch to fill its rectangle; stacked, it is as tall as its content.'
     }
   };
 
@@ -84,7 +87,7 @@
   const limitations = [
     { what: 'Measured with realistic text at the CMS maximums', why: 'Floors come from ordinary 60-character titles and 24-character buttons. Text made of unusually wide characters (a title of capital Ms and Ws, for example) needs more room than any floor allows; widgets must handle it safely by wrapping, truncating or validating content, rather than every minimum growing to fit it.' },
     { what: 'Minimums and defaults are provisional', why: 'Minimums are the smallest safe size; defaults are a design preference for a newly added widget and can change freely. Both are starting values, to be revisited as widgets and pages evolve.' },
-    { what: 'Today’s homepage is below some floors', why: 'Its fixed 260px and 140px banner rows are shorter than the Hero’s and Spotlight’s floors for maximum-length content. Documented, not changed; the homepage moves to the grid in H5.3.' }
+    { what: 'The fallback font can split a long word', why: 'When the display font can’t load, its replacement is about a quarter wider: a 12 or 13 letter word can break across lines in a Hero under 616px wide. Everything stays inside the card.' }
   ];
 
   const api = { reference, types, frameRegions, limitations };

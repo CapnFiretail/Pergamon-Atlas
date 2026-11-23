@@ -116,6 +116,44 @@ test('validateDocument: rejects anything unsafe or malformed (defence in depth b
   for (const v of [null, undefined, 'x', 42, [], {}]) assert.equal(cms.validateDocument(v), false, String(v));
 });
 
+test('both schemas draw the same page: schema 1 is today’s two regions, its content unchanged', () => {
+  const v1 = cms.toModel(clone(home.document), ctx);
+  const v2 = cms.toModel(cms.upgradeDocument(clone(home.document)), ctx);
+  assert.deepEqual(v2, v1, 'schema 1 and its upgrade give the same model');
+  assert.deepEqual(v1.regions, cms.homeRegions(), 'schema 1 is drawn with the approved regions');
+  assert.deepEqual(Object.keys(v1.instances).sort(), ['carousel', 'featured', 'navigation', 'spotlight']);
+  assert.equal(v1.instances.featured.card, v1.featured, 'legacy fields are the instances’ content');
+  assert.equal(v1.instances.carousel.cards, v1.carousel);
+  assert.equal(v1.featured.type, 'feature');
+  assert.equal(v1.spotlight.type, 'spotlight');
+  assert.ok(v1.carousel.every(c => c.type === 'tile'));
+  assert.deepEqual(v1.instances.navigation, { type: 'atlas-navigation' });
+  // The stored document is never changed by drawing it.
+  const doc = clone(home.document), before = JSON.stringify(doc);
+  cms.toModel(doc, ctx);
+  assert.equal(JSON.stringify(doc), before);
+});
+
+test('validateDocument reads both schemas; a broken schema-2 page is refused whole', () => {
+  // Structural checks only until the grid scripts are on the page (as on the
+  // homepage, where they always are): then the layout rules too.
+  const broken0 = cms.upgradeDocument(clone(home.document));
+  broken0.regions[0].widgets[1].row = 3;
+  assert.equal(cms.validateDocument(broken0), true, 'no grid loaded: structure only');
+  globalThis.PergamonGrid = Object.assign({}, require('../../PergamonAtlas.V1/scripts/grid/atlas-grid.js'), { widgetTypes: require('../../PergamonAtlas.V1/scripts/grid/widget-types.js') });
+  try {
+  assert.equal(cms.validateDocument(clone(home.document)), true, 'schema 1');
+  assert.equal(cms.validateDocument(cms.upgradeDocument(clone(home.document))), true, 'schema 2');
+  const broken = cms.upgradeDocument(clone(home.document));
+  broken.regions[0].widgets[1].row = 3;                     // spotlight overlaps featured
+  assert.equal(cms.validateDocument(broken), false, 'overlap');
+  const orphan = cms.upgradeDocument(clone(home.document));
+  orphan.components['home.ghost'] = { title: 'x', cta: 'x', href: '/games/chess-forge/' };
+  assert.equal(cms.validateDocument(orphan), false, 'orphan content');
+  assert.equal(cms.validateDocument({ schema: 3, regions: [], components: {} }), false, 'unknown schema');
+  } finally { delete globalThis.PergamonGrid; }
+});
+
 test('wrong schema or shape -> null (caller keeps its fallback); missing cards are simply absent', () => {
   assert.equal(cms.toModel(null, ctx), null);
   assert.equal(cms.toModel({ schema: 2, components: {} }, ctx), null);

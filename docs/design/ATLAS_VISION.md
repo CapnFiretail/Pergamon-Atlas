@@ -155,9 +155,9 @@ As of 2026-11-22 (after the H4 component library). This section is maintained wi
 | Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
 | Colors & Themes: colour roles documented, previews resolve every role per palette and mode, live contrast checks | Implemented (H5.2a) | `styles/theme.css`, `scripts/design/colors.js`, Handbook › Colors |
 | Spacing & Surfaces: spacing scale, page frame tokens (two inset families, 16px widget gutter), radii and elevation, documented live | Implemented (H5.2b) | `styles/theme.css`, `styles/layout.css`, `scripts/design/surfaces.js`, Handbook › Spacing & Surfaces |
-| Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook (no page uses it yet) | Implemented (H5.2c) | `scripts/grid/`, `styles/grid.css`, Handbook › Atlas Grid |
+| Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook and used by the homepage | Implemented (H5.2c) | `scripts/grid/`, `styles/grid.css`, Handbook › Atlas Grid |
 | Layout Lab: direct editing of real widgets on the grid (move, resize from eight handles, collision blocking, content minimums, undo/redo, keyboard and touch), on a shared editing engine | Implemented (H5.4) | `scripts/grid/editor.js`, `interaction.js`, `overlay.js`, Handbook › Layout Lab |
-| Homepage on the Atlas Grid; layout editing in Admin Mode | Planned | — |
+| Homepage on the Atlas Grid; layout editing in Admin Mode: independent widget instances, scaled Layout Mode workspace, one undo history, schema-2 drafts, publish and rollback | Complete locally and on staging (H5.3; migration 0014 on staging). Production rollout pending (0013, 0014 and the front end) | `scripts/grid/`, `scripts/home.js`, `scripts/cms/layout-mode.js`, `scripts/cms/workspace.js` |
 | Motion, Responsive, Accessibility | Planned (H5) | Shown as Planned in the Handbook |
 | Component library: Feature banner (hero / banner), Content Card, Carousel, previewed live in the Handbook | Implemented (H4) | `scripts/components/`, `styles/components/` |
 | Element and widget registry with dependencies and automatic where-used | Long-term (H4+) | — |

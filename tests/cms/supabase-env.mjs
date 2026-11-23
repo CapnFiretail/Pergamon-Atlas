@@ -77,6 +77,14 @@ export async function createEnv({ extra = [], without = [] } = {}) {
   await db.exec(sql('supabase/proposed/0011_shared_public_media.sql'));
   if (!without.includes('0012')) await db.exec(sql('supabase/proposed/0012_saved_cards.sql'));
   for (const f of extra) await db.exec(sql(`supabase/proposed/${f}.sql`));
+  // CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout runs every suite
+  // on a later database too (proving a new migration changes nothing the
+  // earlier suites check). Suites that test an older state (`without`) keep it.
+  if (!without.length) {
+    for (const f of (process.env.CMS_EXTRA_MIGRATIONS || '').split(',').filter(Boolean)) {
+      if (!extra.includes(f)) await db.exec(sql(`supabase/proposed/${f}.sql`));
+    }
+  }
 
   // Run fn as a request: role + JWT claims, in a transaction that commits on
   // success. Errors come back as { error: { code, message } } like PostgREST.
