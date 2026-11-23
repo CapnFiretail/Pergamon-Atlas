@@ -22,8 +22,11 @@
 //                                       overlaps (independent of width)
 //   checkFit(layout, types, width)      pixel content floors at one
 //                                       container width (cells shrink with it)
-// A size only grows with the container, so a layout that fits at a width
-// fits at every wider one; minFitWidth() gives the narrowest.
+// A widget's height floor can depend on its own rendered width (a component
+// may stack or unstack at its breakpoints: see minHeightBands), so fitting
+// is not monotonic: a layout can fit at one width and not at a wider one.
+// minFitWidth() gives the narrowest width from which it fits at every wider
+// width; pages present layouts below that width some other way (stacked).
 //
 // Future editing operations (move, resize from edges and corners, shrinking
 // neighbours within their minimums, undo) build candidate layouts and accept
@@ -61,10 +64,18 @@
   const readingOrder = layout => layout.widgets.slice().sort((a, b) => a.row - b.row || a.col - b.col).map(w => w.id);
 
   // ── Sizing contracts ────────────────────────────────────────────────────
-  //   { minCols, minRows, defaultCols, defaultRows, minWidth, minHeight }
+  //   { minCols, minRows, defaultCols, defaultRows, minWidth, minHeight,
+  //     minHeightBands? }
   // Cells: positive integers, defaults ≥ minimums, at most the grid's width.
   // minWidth/minHeight: the smallest pixel size at which the widget's
   // largest permitted content fits without clipping.
+  // minHeightBands: [{ maxWidth, minHeight }, …] in ascending maxWidth: the
+  // height floor while the widget itself is at most maxWidth wide (its own
+  // responsive layouts); minHeight applies above the last band.
+  function minHeightAt(c, widgetWidth) {
+    for (const b of c.minHeightBands || []) if (widgetWidth <= b.maxWidth + 1e-9) return b.minHeight;
+    return c.minHeight;
+  }
   function validateContract(type, c, columns = COLUMNS) {
     const out = [];
     const bad = (field, message) => out.push(err('invalid-contract', [], `${type}: ${message}`, { type, field }));
@@ -75,6 +86,13 @@
     if (isPosInt(c.minRows) && isPosInt(c.defaultRows) && c.defaultRows < c.minRows) bad('defaultRows', 'defaultRows is smaller than minRows');
     if (isPosInt(c.minCols) && c.minCols > columns) bad('minCols', `minCols is wider than the ${columns}-column grid`);
     if (isPosInt(c.defaultCols) && c.defaultCols > columns) bad('defaultCols', `defaultCols is wider than the ${columns}-column grid`);
+    if (c.minHeightBands !== undefined) {
+      if (!Array.isArray(c.minHeightBands)) bad('minHeightBands', 'minHeightBands must be a list');
+      else c.minHeightBands.forEach((b, i) => {
+        if (!b || !isPosNum(b.maxWidth) || !isPosNum(b.minHeight)) bad('minHeightBands', `band ${i + 1} needs a positive maxWidth and minHeight`);
+        else if (i && !(b.maxWidth > c.minHeightBands[i - 1].maxWidth)) bad('minHeightBands', 'bands must be in ascending maxWidth');
+      });
+    }
     return out;
   }
 
@@ -131,23 +149,34 @@
     for (const w of layout.widgets) {
       const c = types[w.type].contract, r = rect(w, cell, gutter);
       if (r.width < c.minWidth - 1e-6) out.push(err('below-min-width', [w.id], `“${w.id}” is ${round(r.width)}px wide at this width; its content needs ${c.minWidth}px.`, { width: r.width, minWidth: c.minWidth, containerWidth: width }));
-      if (r.height < c.minHeight - 1e-6) out.push(err('below-min-height', [w.id], `“${w.id}” is ${round(r.height)}px tall at this width; its content needs ${c.minHeight}px.`, { height: r.height, minHeight: c.minHeight, containerWidth: width }));
+      const minHeight = minHeightAt(c, r.width);
+      if (r.height < minHeight - 1e-6) out.push(err('below-min-height', [w.id], `“${w.id}” is ${round(r.height)}px tall at this width; at ${round(r.width)}px wide its content needs ${minHeight}px.`, { height: r.height, minHeight, width: r.width, containerWidth: width }));
     }
     return out;
   }
-  // The narrowest container width at which checkFit passes (cells > 0).
-  function minFitWidth(layout, types, opts = {}) {
+  // The narrowest container width from which one widget fits at every wider
+  // width. Solved per height band in cell units: a band covers the cells at
+  // which the widget's width falls inside it; any part of a band where the
+  // widget is shorter than the band's floor pushes the threshold above it.
+  function widgetMinFitWidth(w, c, opts = {}) {
     const columns = opts.columns || COLUMNS, gutter = opts.gutter === undefined ? GUTTER : opts.gutter;
-    let cell = 0;
-    for (const w of layout.widgets) {
-      const c = types[w.type].contract;
-      cell = Math.max(cell, (c.minWidth - (w.cols - 1) * gutter) / w.cols, (c.minHeight - (w.rows - 1) * gutter) / w.rows);
+    const cellAtWidth = px => (px - (w.cols - 1) * gutter) / w.cols;
+    const cellAtHeight = px => (px - (w.rows - 1) * gutter) / w.rows;
+    let need = Math.max(1e-6, cellAtWidth(c.minWidth));
+    let lo = -Infinity;
+    const segments = (c.minHeightBands || []).map(b => { const s = { lo, hi: cellAtWidth(b.maxWidth), h: b.minHeight }; lo = s.hi; return s; });
+    segments.push({ lo, hi: Infinity, h: c.minHeight });
+    for (const s of segments) {
+      const req = cellAtHeight(s.h);
+      if (req <= s.lo) continue;                                      // tall enough throughout this band
+      need = Math.max(need, req <= s.hi ? req : s.hi + 1e-6);         // short until req, or for the whole band
     }
-    return columns * Math.max(cell, 0) + (columns - 1) * gutter;
+    return columns * need + (columns - 1) * gutter;
   }
+  const minFitWidth = (layout, types, opts = {}) => layout.widgets.reduce((m, w) => Math.max(m, widgetMinFitWidth(w, types[w.type].contract, opts)), 0);
   const round = n => Math.round(n * 10) / 10;
 
-  const api = { COLUMNS, GUTTER, cellSize, spanSize, cellsFor, rect, extent, canvasHeight, overlap, readingOrder, validateContract, validateLayout, checkFit, minFitWidth };
+  const api = { COLUMNS, GUTTER, cellSize, spanSize, cellsFor, rect, extent, canvasHeight, overlap, readingOrder, minHeightAt, validateContract, validateLayout, checkFit, minFitWidth, widgetMinFitWidth };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PergamonGrid = Object.assign(root.PergamonGrid || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

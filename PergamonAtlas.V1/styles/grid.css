@@ -34,6 +34,9 @@
   /* A size container (named by the page's draw config when a component's
      CSS expects one), so components can respond to their own rectangle. */
   container-type: inline-size;
+  /* Its own stacking context: nothing inside a widget can paint above a
+     neighbouring widget or anything drawn over the grid. */
+  isolation: isolate;
 }
 .atlas-grid-slot > * { min-width: 0; min-height: 0; }
 

@@ -15,6 +15,13 @@
 //   grid.render(layout)  validate and show; widgets keep their elements
 //                        across renders (matched by id and type)
 //   grid.state(), grid.errors(), grid.destroy()
+//   grid.setExtent(rows | null)  while editing: show at least this many rows
+//                        (temporary; never part of the layout)
+//   grid.setDebug(on)    show or hide the cells
+//   grid.setStackBelow(px)  change the stacking breakpoint (e.g. to
+//                        minFitWidth() of the layout being shown)
+//   grid.slot(id)        a widget's slot element (for editors)
+//   grid.geometry()      { width, cell, gutter, columns } at the current width
 //
 // Presentation never changes the layout: stacking only reorders the view.
 // An invalid layout is never corrected or partly shown: it is refused
@@ -31,7 +38,7 @@
     opts = opts || {};
     const types = opts.types || {};
     const draw = opts.draw || {};
-    const stackBelow = opts.stackBelow || 0;
+    let stackBelow = opts.stackBelow || 0;
     const onState = typeof opts.onState === 'function' ? opts.onState : () => {};
 
     container.classList.add('atlas-grid');
@@ -41,7 +48,7 @@
     container.append(canvas);
 
     const slots = new Map();          // id → { type, slot, instance }
-    let layout = { widgets: [] }, errors = [], state = null, width = -1;
+    let layout = { widgets: [] }, errors = [], state = null, width = -1, minExtent = 0;
 
     const gutter = () => {
       const v = parseFloat(getComputedStyle(container).getPropertyValue('--atlas-gap'));
@@ -81,7 +88,11 @@
         place(entry.slot, w, order.get(w.id));
       }
       for (const id of [...slots.keys()]) if (!keep.has(id)) remove(id);
-      const rows = G.extent(layout);
+      sizeCanvas();
+    }
+    // Rows: the layout's extent, or more while an editor asks for room.
+    function sizeCanvas() {
+      const rows = Math.max(G.extent(layout), minExtent);
       canvas.style.setProperty('--atlas-extent', Math.max(rows, 1));
       canvas.toggleAttribute('data-atlas-empty', rows === 0);
     }
@@ -133,6 +144,14 @@
       state: () => state,
       errors: () => errors.slice(),
       element: () => canvas,
+      setStackBelow(px) { stackBelow = px > 0 ? px : 0; if (width >= 0) present(); },
+      setExtent(rows) { minExtent = rows > 0 ? Math.floor(rows) : 0; sizeCanvas(); },
+      setDebug(on) { container.toggleAttribute('data-atlas-debug', !!on); },
+      slot: id => (slots.get(id) || {}).slot || null,
+      geometry() {
+        const w = contentWidth(), g = gutter();
+        return { width: w, cell: G.cellSize(w, G.COLUMNS, g), gutter: g, columns: G.COLUMNS };
+      },
       destroy() {
         ro.disconnect();
         for (const id of [...slots.keys()]) remove(id);

@@ -1,0 +1,107 @@
+/* Atlas Grid editing (scripts/grid/overlay.js, scripts/grid/interaction.js).
+ * Decorations are grid items on the same lines as the widgets
+ * (--atlas-col/-row/-cols/-rows), drawn above them; they never change a
+ * widget's geometry. Colours are theme roles only.
+ * Touch: an unselected widget keeps normal page scrolling; a selected one and
+ * its handles don't (touch-action is set by state, before any gesture). */
+.atlas-edit-item {
+  grid-column: var(--atlas-col) / span var(--atlas-cols);
+  grid-row: var(--atlas-row) / span var(--atlas-rows);
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--radius-panel);
+}
+.atlas-edit-item[hidden] { display: none; }
+
+/* A widget's hit area: hover, focus and selection without touching it. */
+.atlas-edit-hit {
+  z-index: 2;
+  cursor: pointer;
+  touch-action: auto;
+  outline: none;
+  transition: box-shadow 0.12s ease, background-color 0.12s ease;
+}
+.atlas-edit-hit:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 55%, transparent); }
+.atlas-edit-hit:focus-visible { box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-focus); }
+.atlas-edit-hit.is-selected { cursor: grab; touch-action: none; }
+.atlas-edit-hit.is-source { background: color-mix(in srgb, var(--color-background) 40%, transparent); }
+
+/* The selected widget: outline, size badge, eight handles. */
+.atlas-edit-selection {
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+.atlas-edit-selection.is-editing { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 50%, transparent); }
+.atlas-edit-badge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  max-width: calc(100% - var(--space-4));
+  padding: 2px var(--space-2);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: 600 12px/1.4 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.atlas-edit-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  pointer-events: auto;
+  touch-action: none;
+}
+.atlas-edit-handle::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 2px solid var(--color-accent);
+  border-radius: 3px;
+  background: var(--color-surface);
+}
+.atlas-edit-handle:hover::before { background: var(--color-accent); }
+.atlas-edit-handle[data-handle="top-left"] { left: 0; top: 0; cursor: nwse-resize; }
+.atlas-edit-handle[data-handle="top"] { left: 50%; top: 0; cursor: ns-resize; }
+.atlas-edit-handle[data-handle="top-right"] { left: 100%; top: 0; cursor: nesw-resize; }
+.atlas-edit-handle[data-handle="right"] { left: 100%; top: 50%; cursor: ew-resize; }
+.atlas-edit-handle[data-handle="bottom-right"] { left: 100%; top: 100%; cursor: nwse-resize; }
+.atlas-edit-handle[data-handle="bottom"] { left: 50%; top: 100%; cursor: ns-resize; }
+.atlas-edit-handle[data-handle="bottom-left"] { left: 0; top: 100%; cursor: nesw-resize; }
+.atlas-edit-handle[data-handle="left"] { left: 0; top: 50%; cursor: ew-resize; }
+.atlas-edit-selection.is-editing .atlas-edit-handle { visibility: hidden; }
+
+/* The proposed rectangle while dragging or resizing. */
+.atlas-edit-preview {
+  z-index: 4;
+  pointer-events: none;
+  border: 2px dashed var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+.atlas-edit-preview[data-state="minimum"] { border-style: solid; }
+.atlas-edit-preview[data-state="invalid"] {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+}
+.atlas-edit-preview[data-state="invalid"] .atlas-edit-badge { border-color: var(--color-danger); color: var(--color-danger); }
+
+/* During a gesture: no text selection, and the matching cursor everywhere. */
+.atlas-grid-canvas.is-editing { user-select: none; -webkit-user-select: none; }
+.atlas-grid-canvas.is-moving, .atlas-grid-canvas.is-moving * { cursor: grabbing !important; }
+.atlas-grid-canvas.is-resizing[data-handle="left"] *, .atlas-grid-canvas.is-resizing[data-handle="right"] * { cursor: ew-resize !important; }
+.atlas-grid-canvas.is-resizing[data-handle="top"] *, .atlas-grid-canvas.is-resizing[data-handle="bottom"] * { cursor: ns-resize !important; }
+.atlas-grid-canvas.is-resizing[data-handle="top-left"] *, .atlas-grid-canvas.is-resizing[data-handle="bottom-right"] * { cursor: nwse-resize !important; }
+.atlas-grid-canvas.is-resizing[data-handle="top-right"] *, .atlas-grid-canvas.is-resizing[data-handle="bottom-left"] * { cursor: nesw-resize !important; }
+
+/* Editing applies to the grid presentation only. */
+.atlas-grid:not([data-atlas-state="grid"]) .atlas-edit-item { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-edit-hit { transition: none; }
+}

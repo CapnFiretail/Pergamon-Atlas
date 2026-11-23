@@ -5,17 +5,23 @@
 // renderer (scripts/grid/renderer.js), including any container a component
 // needs around it.
 //
-//   contract   { minCols, minRows, defaultCols, defaultRows, minWidth, minHeight }
+//   contract   { minCols, minRows, defaultCols, defaultRows, minWidth, minHeight,
+//                minHeightBands? }
 //     min/default cells  at the reference grid (below); defaults ≥ minimums
 //     minWidth/Height    pixels: the smallest size at which the CMS's largest
 //                        permitted content fits with nothing clipped or
 //                        escaping (measured; see `measured`). Checked at the
 //                        actual container width, since cells change size.
+//     minHeightBands     [{ maxWidth, minHeight }]: a different height floor
+//                        while the widget is at most maxWidth wide, at the
+//                        breakpoints the component's own CSS already uses;
+//                        minHeight is the floor above the last band.
 //   placeable  false: documented, not yet placeable (validation refuses it)
 //
 // Reference grid: the standard desktop container, 1392px (a 1440px window
 // minus the widget-page insets), cells 54.4px. At that width every minimum
-// cell count below is the smallest span reaching its pixel floor.
+// cell count below is the smallest span reaching its pixel floor (the floor
+// for the width that span gives the widget).
 (function (root) {
   'use strict';
 
@@ -26,24 +32,24 @@
       name: 'Feature banner, hero',
       component: 'featureBanner({ variant: "hero" })',
       placeable: true,
-      contract: { minCols: 7, minRows: 6, defaultCols: 12, defaultRows: 6, minWidth: 426, minHeight: 356 },
-      measured: 'Title 60 characters and button 24 (the CMS maximums). Below 426px the button escapes the card; the tallest height needed at any wider size is 356px (just above the 640px compact switch, where the title wraps most).',
+      contract: { minCols: 7, minRows: 5, defaultCols: 12, defaultRows: 6, minWidth: 426, minHeight: 356, minHeightBands: [{ maxWidth: 640, minHeight: 320 }] },
+      measured: 'Title 60 characters and button 24 (the CMS maximums). Below 426px the button escapes the card. Up to 640px wide (compact) it needs 320px of height; wider, up to 356px (just above the switch, where the title wraps most).',
       responsive: 'Compact layout (copy stacked over the artwork, fixed 320px minimum height) when its container is 640px or narrower.'
     },
     'feature-spotlight': {
       name: 'Feature banner, spotlight',
       component: 'featureBanner({ variant: "banner" })',
       placeable: true,
-      contract: { minCols: 6, minRows: 4, defaultCols: 12, defaultRows: 4, minWidth: 358, minHeight: 204 },
-      measured: 'Title 60 characters and button 24. Below 358px the button escapes; at its narrowest the content needs 204px of height (much less when wider).',
+      contract: { minCols: 6, minRows: 4, defaultCols: 12, defaultRows: 4, minWidth: 358, minHeight: 153, minHeightBands: [{ maxWidth: 640, minHeight: 204 }] },
+      measured: 'Title 60 characters and button 24. Below 358px the button escapes. Up to 640px wide (compact: the button under the title) it needs 204px of height; wider, 153px.',
       responsive: 'Compact layout (button under the title) when its container is 640px or narrower.'
     },
     'carousel': {
       name: 'Carousel',
       component: 'carousel({ sections })',
       placeable: true,
-      contract: { minCols: 4, minRows: 6, defaultCols: 20, defaultRows: 6, minWidth: 260, minHeight: 392 },
-      measured: 'Five filter tabs, 40-character card titles. Below 260px the tabs wrap onto a third line; its natural height is 341–392px depending on width (the tabs move to their own row at 900px and narrower).',
+      contract: { minCols: 4, minRows: 6, defaultCols: 20, defaultRows: 6, minWidth: 260, minHeight: 356, minHeightBands: [{ maxWidth: 640, minHeight: 384 }, { maxWidth: 900, minHeight: 392 }] },
+      measured: 'Five filter tabs, 40-character card titles. Below 260px the tabs wrap onto a third line. Its height is set by its content, not its slot: up to 384px when 640px wide or less, 392px from 641 to 900px (tabs on their own row), 356px wider.',
       responsive: 'Its own size container: compact at 640px and narrower, tabs on their own row at 900px and narrower.'
     },
     'content-card': {

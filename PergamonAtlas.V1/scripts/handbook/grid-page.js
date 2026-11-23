@@ -43,6 +43,35 @@
 
   const px = n => `${Math.round(n * 10) / 10}px`;
 
+  // A contract's content minimums in words: the width, and the height floor
+  // for each of the widget's own width bands.
+  function floors(c) {
+    const bands = c.minHeightBands || [];
+    if (!bands.length) return `${c.minWidth}px wide · ${c.minHeight}px tall`;
+    let prev = 0;
+    const parts = bands.map(b => { const t = `${b.minHeight}px tall ${prev ? `from ${prev + 1} ` : 'up '}to ${b.maxWidth}px wide`; prev = b.maxWidth; return t; });
+    return `${c.minWidth}px wide · ${parts.join(', ')}, ${c.minHeight}px wider`;
+  }
+
+  // How the Handbook draws the real widget types on a grid (the renderer's
+  // draw config), with the component library's sample content. Shared with
+  // the Layout Lab. `car.current` receives the carousel, which its page
+  // starts (and holds still) once it is in the page.
+  function componentDraw(car) {
+    const ex = ns.componentExamples || {};
+    if (!C || !ex.hero) return null;
+    return {
+      'feature-hero': { container: 'upper', render: () => { const b = C.featureBanner({ variant: 'hero' }); b.apply(ex.hero[0].content); return { element: b.element }; } },
+      'feature-spotlight': { container: 'upper', render: () => { const b = C.featureBanner({ variant: 'banner' }); b.apply(ex.banner[0].content); return { element: b.element }; } },
+      'carousel': { render: () => {
+        const items = ex.cards.map((d, i) => ({ key: 'c' + i, label: d.title, facet: d.facet, element: C.contentCard(d).element }));
+        const c = C.carousel({ sections: [Object.assign({}, ex.carousel, { items })] });
+        car.current = c;
+        return { element: c.element };
+      } }
+    };
+  }
+
   function render(view, ctx) {
     const { el, chip } = ctx;
     const cleanups = [];
@@ -128,7 +157,7 @@
     // ── Stacked presentation ─────────────────────────────────────────────
     const st = el('section', 'hb-section');
     st.append(el('h2', 'pa-type-section-title-large', 'Narrow screens: stacked'),
-      el('p', 'pa-type-body-small hb-muted', `Twenty columns stop working well on narrow screens (at 304px they have no room at all). Below a breakpoint each page sets (${STACK_BELOW}px here) the same layout is shown one widget per row, top to bottom and left to right. Only the presentation changes; the authored positions are kept for wider screens.`));
+      el('p', 'pa-type-body-small hb-muted', `Twenty columns stop working well on narrow screens (at 304px they have no room at all). Because height floors change at widgets' breakpoints, a layout can fit at one width and not at a slightly wider one; minFitWidth() gives the width from which it fits at every wider width, and pages stack below it (the Layout Lab does exactly that). Below a breakpoint each page sets (${STACK_BELOW}px here) the same layout is shown one widget per row, top to bottom and left to right. Only the presentation changes; the authored positions are kept for wider screens.`));
     const stacked = demo(demos.spans, { narrow: true });
     st.append(stacked.frame, stacked.status,
       el('p', 'pa-type-caption hb-muted', 'Above the breakpoint a layout that doesn’t fit the width is refused, never quietly stacked: see Validation.'));
@@ -137,7 +166,7 @@
     // ── Widget sizes ─────────────────────────────────────────────────────
     const sz = el('section', 'hb-section');
     sz.append(el('h2', 'pa-type-section-title-large', 'Widget sizes'),
-      el('p', 'pa-type-body-small hb-muted', `Every widget type has a sizing contract: a minimum and a default size in cells, and a content minimum in pixels. Cells change size with the container, so the pixel minimum is checked at the actual width as well. Minimum cells are set on the reference grid (${reference.width}px: ${reference.note.toLowerCase()}). Defaults are only the starting size of a newly added widget.`));
+      el('p', 'pa-type-body-small hb-muted', `Every widget type has a sizing contract: a minimum and a default size in cells, and a content minimum in pixels. The height a widget's content needs can change at the widget's own breakpoints (a carousel whose tabs move onto their own row is taller), so the height floor is given for each of those width ranges and checked for the width the widget actually has. Cells change size with the container, so the pixel minimum is checked at the actual width as well. Minimum cells are set on the reference grid (${reference.width}px: ${reference.note.toLowerCase()}). Defaults are only the starting size of a newly added widget.`));
     const wrap = el('div', 'hb-table-wrap'); wrap.tabIndex = 0;
     const table = el('table', 'hb-table hbg-contracts');
     const hr = el('tr');
@@ -151,7 +180,7 @@
       name.append(el('span', 'pa-type-item-title', t.name), el('code', 'hb-code', id), chip(t.placeable ? 'Placeable' : 'Not placeable yet', t.placeable ? 'active' : 'muted'));
       th.append(name, el('p', 'pa-type-caption hb-muted', t.measured), el('p', 'pa-type-caption hb-muted', t.responsive));
       tr.append(th, el('td', 'pa-type-body-small hbg-num', `${c.minCols} × ${c.minRows}`), el('td', 'pa-type-body-small hbg-num', `${c.defaultCols} × ${c.defaultRows}`),
-        el('td', 'pa-type-body-small hbg-num', `${c.minWidth} × ${c.minHeight}px`), el('td', 'pa-type-body-small hbg-num hbg-now', ''));
+        el('td', 'pa-type-body-small hbg-floors', floors(c)), el('td', 'pa-type-body-small hbg-num hbg-now', ''));
       tbody.append(tr);
     });
     table.append(thead, tbody); wrap.append(table);
@@ -168,18 +197,8 @@
     const refBox = el('div', 'hbg-reference');
     refBox.style.width = reference.width + 'px';
     scaleBox.append(refBox);
-    const ex = ns.componentExamples || {};
     const car = { current: null };
-    const realDraw = C && ex.hero ? {
-      'feature-hero': { container: 'upper', render: () => { const b = C.featureBanner({ variant: 'hero' }); b.apply(ex.hero[0].content); return { element: b.element }; } },
-      'feature-spotlight': { container: 'upper', render: () => { const b = C.featureBanner({ variant: 'banner' }); b.apply(ex.banner[0].content); return { element: b.element }; } },
-      'carousel': { render: () => {
-        const items = ex.cards.map((d, i) => ({ key: 'c' + i, label: d.title, facet: d.facet, element: C.contentCard(d).element }));
-        const c = C.carousel({ sections: [Object.assign({}, ex.carousel, { items })] });
-        car.current = c;
-        return { element: c.element };
-      } }
-    } : null;
+    const realDraw = componentDraw(car);
     const realStatus = el('p', 'pa-type-caption hb-muted hbg-status');
     if (realDraw) {
       const realGrid = G.renderer(refBox, { types: TYPES, draw: realDraw, debug: true });
@@ -269,7 +288,7 @@
       const w = spans.frame.querySelector('.hbg-host').clientWidth, cell = G.cellSize(w);
       tbody.querySelectorAll('tr').forEach(tr => {
         const c = TYPES[tr.dataset.type].contract;
-        const cols = Math.max(c.minCols, G.cellsFor(c.minWidth, cell)), rows = Math.max(c.minRows, G.cellsFor(c.minHeight, cell));
+        const cols = Math.max(c.minCols, G.cellsFor(c.minWidth, cell)), rows = Math.max(c.minRows, G.cellsFor(G.minHeightAt(c, G.spanSize(cols, cell)), cell));
         tr.querySelector('.hbg-now').textContent = cell <= 0 ? '—' : cols > G.COLUMNS ? `Doesn’t fit (${px(w)} grid)` : `${cols} × ${rows}`;
       });
     }
@@ -279,5 +298,5 @@
   }
 
   app.register('foundations/grid', { render });
-  ns.gridPage = { render, demos, withoutLowest };
+  ns.gridPage = { render, demos, withoutLowest, componentDraw };
 })();

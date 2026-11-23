@@ -3,7 +3,7 @@
 An internal, read-only design-system catalogue for administrators, at
 `/handbook/`, inside the normal site (header, footer, themes). Its sections
 are **Overview** (Dashboard, Vision), **Foundations** (Typography, Colors,
-Spacing & Surfaces, Atlas Grid; Motion planned) and **Library** (Widgets; Elements and Layouts
+Spacing & Surfaces, Atlas Grid, Layout Lab; Motion planned) and **Library** (Widgets; Elements and Layouts
 planned).
 
 **The long-term architecture is defined in [`ATLAS_VISION.md`](ATLAS_VISION.md)**,
@@ -30,6 +30,7 @@ vision and lists recommendations for later phases.
 | **Implemented** | Foundations › Colors: colour roles, previews that resolve every role per palette and mode, live contrast checks | H5.2a |
 | | Foundations › Spacing & Surfaces: spacing scale, page frame (insets, widget gutter), radii and elevation tokens | H5.2b |
 | | Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation, read-only renderer; Foundations › Atlas Grid (no page uses it yet) | H5.2c |
+| | Layout Lab: move and resize real widgets on the grid (snapping, collision blocking, content minimums, undo/redo, keyboard and touch); shared editing engine, controller and overlay for the future Admin Mode editor. Nothing is saved | H5.4 |
 | **Long-term** | Element and widget registry with dependencies and automatic where-used | H4+ |
 | | Page model, templates and layout constraints | H5 |
 | | Visual editing: drafts, preview, validation, publish, rollback | H6 |
@@ -60,10 +61,14 @@ sequencing intentions, not commitments. The same status table closes
 | `PergamonAtlas.V1/scripts/design/colors.js`, `scripts/design/surfaces.js` | What each colour, spacing and surface token is for (no values); read by the Handbook. |
 | `tests/design/colors.test.mjs`, `tests/design/surfaces.test.mjs` | Token definitions, documentation and contrast checks. |
 | `PergamonAtlas.V1/scripts/grid/atlas-grid.js` | **Atlas Grid engine:** geometry (square cells, 1-based coordinates, canvas extent) and validation with structured errors. No DOM; also runs in Node. |
-| `PergamonAtlas.V1/scripts/grid/widget-types.js` | **Widget sizing contracts: the source of truth** (minimum and default cells, content minimums in pixels, how they were measured). |
+| `PergamonAtlas.V1/scripts/grid/widget-types.js` | **Widget sizing contracts: the source of truth** (minimum and default cells, content minimums in pixels with height floors per the widget’s own width bands, how they were measured). |
 | `PergamonAtlas.V1/scripts/grid/renderer.js`, `styles/grid.css` | Read-only renderer: places widgets with CSS Grid, stacks below a page-set breakpoint, refuses invalid layouts, optional cell overlay. |
 | `PergamonAtlas.V1/scripts/handbook/grid-page.js` | Foundations › Atlas Grid: live demonstrations drawn by the renderer. |
 | `tests/design/grid.test.mjs` | Geometry, contracts, validation and fit (`node --test tests/design/grid.test.mjs`). |
+| `PergamonAtlas.V1/scripts/grid/editor.js` | **Editing engine** (pure; also runs in Node): move and eight-handle resize proposals, gesture transactions, history. Validates at the width its caller gives. |
+| `PergamonAtlas.V1/scripts/grid/interaction.js`, `scripts/grid/overlay.js`, `styles/grid-editor.css` | Pointer, touch and keyboard controller, and the editing decorations (hit areas, selection, handles, previews). Content-neutral; reusable by any editor. |
+| `PergamonAtlas.V1/scripts/handbook/layout-lab.js` | Foundations › Layout Lab: the Handbook wiring and its policy (changes validated at the live grid width and accepted only if the layout fits at every wider width; below the layout’s own fitting width it is shown stacked and read-only). |
+| `tests/design/grid-editor.test.mjs` | The editing engine’s proposals, gestures and history. |
 | `PergamonAtlas.V1/styles/handbook.css` | Handbook layout (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/design/typography.js` | **Typography registry: the source of truth.** |
 | `tools/build-typography.mjs` | Writes `styles/typography.css` from the registry (`--check` to verify). |

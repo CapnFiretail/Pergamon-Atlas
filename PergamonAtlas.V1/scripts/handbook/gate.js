@@ -36,7 +36,13 @@
     { js: '/scripts/components/carousel.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.carousel) },
     { js: '/scripts/handbook/component-examples.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.componentExamples) },
     { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) },
-    { js: '/scripts/handbook/grid-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.gridPage) }
+    { js: '/scripts/handbook/grid-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.gridPage) },
+    // Layout Lab: the editing engine, its controller and decorations.
+    { css: '/styles/grid-editor.css' },
+    { js: '/scripts/grid/editor.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.editor) },
+    { js: '/scripts/grid/overlay.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.overlay) },
+    { js: '/scripts/grid/interaction.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.interaction) },
+    { js: '/scripts/handbook/layout-lab.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.layoutLab) }
   ];
   let loading = null;
   let shown = null;                    // 'handbook' | 'denied'

@@ -805,10 +805,35 @@
       ],
       [
        [
-        "Homepage on the Atlas Grid; Layout Lab; layout editing in Admin Mode"
+        "Layout Lab: direct editing of real widgets on the grid (move, resize from eight handles, collision blocking, content minimums, undo/redo, keyboard and touch), on a shared editing engine"
        ],
        [
-        "Planned (H5.3+)"
+        "Implemented (H5.4)"
+       ],
+       [
+        [
+         "code",
+         "scripts/grid/editor.js"
+        ],
+        ", ",
+        [
+         "code",
+         "interaction.js"
+        ],
+        ", ",
+        [
+         "code",
+         "overlay.js"
+        ],
+        ", Handbook › Layout Lab"
+       ]
+      ],
+      [
+       [
+        "Homepage on the Atlas Grid; layout editing in Admin Mode"
+       ],
+       [
+        "Planned"
        ],
        [
         "—"
