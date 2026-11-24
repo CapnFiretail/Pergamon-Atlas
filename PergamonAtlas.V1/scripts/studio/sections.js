@@ -13,6 +13,7 @@
     studio: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
     overview: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
     connections: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="9" r="2.5"/><circle cx="9" cy="18" r="2.5"/><path d="m8.4 6.6 7.2 1.8M6.6 8.4l1.8 7.2M16.3 10.8l-5.5 5.4"/>',
+    ideas: '<path d="M9 18h6M10 21h4M8.5 14.5A6 6 0 1 1 15.5 14.5c-.6.5-1 1.2-1 2v1.5h-5v-1.5c0-.8-.4-1.5-1-2z"/>',
     environments: '<rect x="3" y="4" width="13" height="10" rx="1.5"/><path d="M8 17v1.5A1.5 1.5 0 0 0 9.5 20h10a1.5 1.5 0 0 0 1.5-1.5V10a1.5 1.5 0 0 0-1.5-1.5H19M3 8h13"/>',
     local: '<rect x="4" y="5" width="16" height="10" rx="1.5"/><path d="M2 19h20"/>',
     staging: '<circle cx="6" cy="5.5" r="2.5"/><circle cx="6" cy="18.5" r="2.5"/><circle cx="18" cy="8.5" r="2.5"/><path d="M6 8v8M18 11c0 4-12 1-12 5"/>',
@@ -28,7 +29,8 @@
   const GROUPS = [
     { id: 'workspace', label: 'Workspace', items: [
       { path: 'workspace/overview', label: 'Overview', icon: 'overview', text: 'A summary of the Atlas workspace.' },
-      { path: 'workspace/connections', label: 'Connections', icon: 'connections', text: 'How the parts of Atlas and the services behind it connect.' }
+      { path: 'workspace/connections', label: 'Connections', icon: 'connections', text: 'How the parts of Atlas and the services behind it connect.' },
+      { path: 'workspace/ideas', label: 'Ideas', icon: 'ideas', text: 'Visions, feature ideas and deferred improvements.' }
     ] },
     { id: 'development', label: 'Development', items: [
       { path: 'development/environments', label: 'Environments', icon: 'environments', text: 'Local, staging and production, one click away.' },

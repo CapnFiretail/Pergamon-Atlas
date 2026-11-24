@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { area, createServer } from './studio-server.mjs';
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../PergamonAtlas.V1');
 const require = createRequire(import.meta.url);
@@ -14,17 +15,14 @@ const load = p => require(path.join(SITE, 'scripts', p));
 const G = load('canvas/geometry.js');
 const { registry, NODE_FIELDS, CONNECTION_FIELDS } = load('studio/connections/registry.js');
 const D = load('studio/connections/document.js');
-const { local, KEY } = load('studio/connections/storage.js');
-const { create } = load('studio/connections/store.js');
+const { KEY } = D;
+const { server } = load('studio/storage.js');
+const { create } = load('studio/store.js');
 const { seed } = load('studio/connections/seed.js');
 const { createHistory } = load('grid/editor.js');
 
 const example = () => D.parse(seed()).document;
 const frozen = doc => D.freeze(JSON.parse(JSON.stringify(doc)));
-function area() {
-  const m = new Map();
-  return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), m };
-}
 
 // ── Geometry ────────────────────────────────────────────────────────────────
 test('zooming keeps the point under the pointer, within limits', () => {
@@ -150,21 +148,19 @@ test('parse drops unknown properties and fills missing ones', () => {
 });
 
 // ── Storage and store ───────────────────────────────────────────────────────
-function setup(stored = area(), session = area()) {
-  globalThis.addEventListener = globalThis.addEventListener || (() => {});
-  globalThis.removeEventListener = globalThis.removeEventListener || (() => {});
-  const storage = local({ storage: stored, session, now: () => '2026-01-01T00:00:00Z' });
-  return { stored, session, storage, store: create({ storage, createHistory, seed }) };
+function setup(db = createServer(), session = area()) {
+  const storage = server({ kind: 'connections', key: KEY, client: db.client, session, name: 'staging' });
+  return { db, session, storage, store: create({ model: D, storage, createHistory, seed }) };
 }
 const nudge = (store, id = 'github') => store.commit(D.moveNode(store.document(), id, { x: 600, y: 600 }));
 
 test('first use shows the example and stores nothing until Save', async () => {
-  const { store, stored } = setup();
+  const { store, db } = setup();
   assert.equal((await store.load()).state, 'example');
-  assert.ok(store.isExample() && !store.dirty() && stored.m.size === 0);
+  assert.ok(store.isExample() && !store.dirty() && !db.saved.connections);
   assert.ok((await store.save()).ok);
-  assert.ok(!store.isExample() && JSON.parse(stored.getItem(KEY)).revision === 1);
-  const again = setup(stored);
+  assert.ok(!store.isExample() && db.saved.connections.revision === 1);
+  const again = setup(db);
   assert.equal((await again.store.load()).state, 'saved');
   assert.ok(D.same(again.store.document(), store.document()));
 });
@@ -185,12 +181,12 @@ test('undo, redo, typing as one step, discard', async () => {
 });
 test('a newer saved copy is never overwritten silently', async () => {
   const a = setup(); await a.store.load(); await a.store.save();
-  const b = setup(a.stored); await b.store.load();
+  const b = setup(a.db); await b.store.load();
   nudge(b.store); assert.ok((await b.store.save()).ok);
   nudge(a.store, 'vercel');
-  const before = a.stored.getItem(KEY);
-  assert.deepEqual(await a.store.save(), { ok: false, code: 'conflict' });
-  assert.ok(a.stored.getItem(KEY) === before && a.store.dirty() && a.store.newer());
+  const before = a.db.saved.connections;
+  assert.equal((await a.store.save()).code, 'conflict');
+  assert.ok(a.db.saved.connections === before && a.store.dirty() && a.store.newer());
   assert.ok((await a.store.save({ force: true })).ok && !a.store.dirty());
   nudge(b.store, 'vercel'); await b.store.save(); await b.store.reload();
   assert.ok(!b.store.dirty() && D.same(b.store.document(), a.store.document()));
@@ -198,38 +194,30 @@ test('a newer saved copy is never overwritten silently', async () => {
 test('unsaved changes are kept for the tab, and restored once', async () => {
   const a = setup(); await a.store.load(); await a.store.save();
   nudge(a.store); a.store.keep();
-  const b = setup(a.stored, a.session);
+  const b = setup(a.db, a.session);
   assert.equal((await b.store.load()).state, 'restored');
   assert.ok(b.store.dirty() && D.same(b.store.document(), a.store.document()) && a.session.m.size === 0);
   b.store.undo(); assert.ok(!b.store.dirty());
   b.store.redo(); b.store.keep(); b.store.discard(); assert.equal(a.session.m.size, 0, 'discarded work isn’t kept');
 });
 test('an unreadable copy is reported and left alone until a save', async () => {
-  for (const raw of ['{broken', JSON.stringify({ revision: 4, document: { format: 'pergamon-atlas.connections', version: 99, nodes: [], connections: [] } })]) {
-    const s = area(); s.setItem(KEY, raw);
-    const { store } = setup(s);
-    assert.equal((await store.load()).state, 'unreadable');
-    assert.deepEqual(await store.save(), { ok: false, code: 'blocked' });
-    store.keep(); store.reset();
-    assert.equal(s.getItem(KEY), raw);
-    assert.ok((await store.save()).ok && D.parse(JSON.parse(s.getItem(KEY)).document).document);
-  }
-});
-test('storage that is full or blocked says so and keeps the changes', async () => {
-  const s = area(), { store } = setup(s);
-  await store.load(); nudge(store);
-  s.setItem = () => { const e = new Error('x'); e.name = 'QuotaExceededError'; throw e; };
-  assert.equal((await store.save()).code, 'full');
-  s.getItem = () => { throw new Error('denied'); };
-  assert.equal((await store.save()).code, 'unavailable');
-  assert.ok(store.dirty());
+  const db = createServer(), kept = { revision: 4, document: { ...D.empty(), version: 99 }, saved_at: null };
+  db.saved.connections = kept;
+  const { store } = setup(db);
+  assert.equal((await store.load()).state, 'unreadable');
+  assert.deepEqual(await store.save(), { ok: false, code: 'blocked' });
+  assert.equal(JSON.parse(store.blocked().raw).version, 99);
+  store.keep(); store.reset();
+  assert.equal(db.saved.connections, kept);
+  assert.ok((await store.save()).ok && db.saved.connections.revision === 5 && D.parse(db.saved.connections.document).document);
 });
 
 // ── Boundaries ──────────────────────────────────────────────────────────────
-test('the canvas knows nothing about Studio or the CMS, and nothing calls a server', () => {
+test('the copies browsers saved are looked for where they are', () => assert.equal(KEY, 'pa-studio-connections'));
+test('the canvas knows nothing about Studio or the CMS, and only storage.js reaches the database', () => {
   const read = f => readFileSync(path.join(SITE, f), 'utf8').replace(/^\s*\/\/.*$/gm, '');
   ['geometry', 'renderer', 'interaction'].forEach(f => assert.doesNotMatch(read(`scripts/canvas/${f}.js`), /PergamonStudio|PergamonCMS|PergamonHandbook|localStorage/, f));
-  ['registry', 'document', 'storage', 'store', 'seed', 'library', 'inspector', 'page'].forEach(f => assert.doesNotMatch(read(`scripts/studio/connections/${f}.js`), /\bfetch\(|XMLHttpRequest|Supabase\.|PergamonSupabaseClient|WebSocket/, f));
+  ['store', 'document-flow', ...['registry', 'document', 'seed', 'library', 'inspector', 'page'].map(f => 'connections/' + f), ...['document', 'seed', 'page'].map(f => 'ideas/' + f)].forEach(f => assert.doesNotMatch(read(`scripts/studio/${f}.js`), /\bfetch\(|XMLHttpRequest|Supabase\.|PergamonSupabaseClient|WebSocket/, f));
 });
 test('the Handbook’s Node Canvas sources exist', () => {
   const src = readFileSync(path.join(SITE, 'scripts/handbook/canvas-page.js'), 'utf8');

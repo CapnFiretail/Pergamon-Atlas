@@ -11,6 +11,7 @@
 //
 // Connections describe a relationship; nothing is connected to anything.
 //
+//   KEY         where a browser kept it before it was shared (storage.js)
 //   parse(value) → { document } | { errors: [text] }   JSON text or an object:
 //     checked completely, unknown properties dropped, older versions migrated
 //   serialize(doc)               the JSON that is stored and exported
@@ -30,7 +31,7 @@
   const R = inNode ? require('./registry.js') : root.PergamonStudio.connections;
   const { registry, NODE_FIELDS, CONNECTION_FIELDS } = R;
 
-  const FORMAT = 'pergamon-atlas.connections', VERSION = 1;
+  const FORMAT = 'pergamon-atlas.connections', VERSION = 1, KEY = 'pa-studio-connections';
   const LIMITS = Object.freeze({ nodes: 200, connections: 600, reach: 100000 });
   const DIRECTIONS = ['forward', 'backward', 'both', 'none'];
   const ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
@@ -214,7 +215,7 @@
   const updateConnection = (doc, id, patch) => replace(doc, 'connections', id, c => patched(CONNECTION_FIELDS, c, patch));
   const removeConnection = (doc, id) => (doc.connections.some(c => c.id === id) ? Object.assign({}, doc, { connections: doc.connections.filter(c => c.id !== id) }) : doc);
 
-  const api = { FORMAT, VERSION, LIMITS, DIRECTIONS, empty, freeze, same, serialize, parse, checkField, checkConnection, addNode, moveNode, updateNode, removeNode, connect, reconnect, updateConnection, removeConnection, connectionsOf, freeSpot };
+  const api = { FORMAT, VERSION, KEY, LIMITS, DIRECTIONS, empty, freeze, same, serialize, parse, checkField, checkConnection, addNode, moveNode, updateNode, removeNode, connect, reconnect, updateConnection, removeConnection, connectionsOf, freeSpot };
   if (inNode) module.exports = api;
   else root.PergamonStudio.connections.document = api;
 })(typeof window !== 'undefined' ? window : globalThis);

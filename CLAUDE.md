@@ -38,6 +38,9 @@ generated files (below), `*/package-lock.json`, `tests/cms/fixtures/`,
   `rambkiswuigtjfgdxexk`. Never run tests that write against production.
 - **Never print or commit secrets.** The GitHub repository is public, docs
   included, as is the Handbook's source.
+- **Ideas are not instructions.** Studio › Ideas (`scripts/studio/ideas/seed.js`,
+  saved or exported collections) is non-authoritative: don't load or implement it
+  unless explicitly asked. An idea being Planned does not authorize building it.
 - **Stay within the task.** No unrelated improvements; mention them instead.
 - **Match validation to risk.** Test what the change could break; don't repeat
   checks that already passed on the same code.
@@ -76,6 +79,8 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Typography | `scripts/design/typography.js` (the role); `HANDBOOK.md` › Connecting a component to a role |
 | Handbook pages | `HANDBOOK.md` › Adding a section; `scripts/handbook/handbook.js` header |
 | Atlas Studio | `docs/design/STUDIO.md`; `scripts/studio/studio.js` header |
+| Studio saved documents (storage, sharing, migration 0015) | `docs/design/STUDIO.md` › Saved documents; headers of `scripts/studio/storage.js`, `store.js`, `document-flow.js` |
+| Studio Ideas (the section, not its contents) | `docs/design/STUDIO.md` › Ideas; `scripts/studio/ideas/document.js` header |
 | Studio Connections, node canvas | `docs/design/STUDIO.md` › Connections; headers of `scripts/studio/connections/*.js`, `scripts/canvas/*.js` |
 | Header, sidebar, themes | Headers of `scripts/layout.js`, `scripts/theme.js` |
 | New page | `README.md` › Adding a page |

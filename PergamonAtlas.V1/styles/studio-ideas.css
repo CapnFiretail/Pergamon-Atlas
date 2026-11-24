@@ -1,0 +1,56 @@
+/* Atlas Studio › Ideas (scripts/studio/ideas/). Toolbar, state and buttons:
+ * styles/canvas-kit.css; shared Studio controls: styles/studio.css. */
+
+.sti { display: grid; gap: var(--space-4); min-width: 0; }
+.sti [hidden] { display: none; }
+.sti-found, .sti-none { margin: 0; color: var(--color-text-secondary); }
+.sti-none { padding: var(--space-8) var(--space-4); border: 1px dashed var(--color-border); border-radius: var(--radius-panel); text-align: center; }
+.sti-notice { display: grid; justify-items: center; gap: var(--space-3); padding: var(--space-8) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-panel); text-align: center; }
+.sti-notice > * { margin: 0; max-width: 60ch; }
+.sti-notice .ck-group { justify-content: center; margin-top: var(--space-2); }
+
+/* ── Toolbar, search and filters ───────────────────────────────────────── */
+.sti-tools { border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); overflow: hidden; }
+.sti-filters { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); padding: 10px 12px; }
+.sti-filters .ck-button { min-height: 42px; }
+@media (min-width: 901px) {
+  .sti-tools { position: sticky; top: calc(var(--pa-header-h) + var(--space-2)); z-index: 2; box-shadow: var(--shadow-raised); }
+  .sti-idea { scroll-margin-top: calc(var(--pa-header-h) + 150px); }
+}
+
+/* ── The collection ────────────────────────────────────────────────────── */
+.sti-list { display: grid; gap: var(--space-8); }
+.sti-group { display: grid; gap: var(--space-3); }
+.sti-group-title { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; }
+.sti-count { color: var(--color-text-secondary); }
+.sti-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+.sti-cards > .is-open { grid-column: 1 / -1; }
+.sti-idea { display: grid; grid-template-rows: auto 1fr; align-content: start; gap: var(--space-2); height: 100%; padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); overflow-wrap: anywhere; }
+.sti-idea > :last-child { align-self: end; }
+.sti-idea-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+.sti-idea-title { margin: 0; min-width: 0; }
+.sti-text { margin: 0; color: var(--color-text-secondary); white-space: pre-line; }
+.sti-notes { display: grid; gap: var(--space-1); padding-top: var(--space-2); border-top: 1px solid var(--color-border); }
+.sti-notes-label { margin: 0; color: var(--color-text-secondary); }
+.sti-idea-foot { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text-secondary); }
+.sti-idea-foot > :first-child { margin-right: auto; }
+.sti .st-chip[data-status="exploring"], .sti .st-chip[data-status="planned"] { border-color: var(--color-accent); color: var(--color-accent-text); }
+.sti .st-chip[data-status="planned"] { background: var(--color-accent-soft); }
+.sti .st-chip[data-status="completed"] { border-color: var(--color-success); color: var(--color-success); }
+
+/* ── The open idea ─────────────────────────────────────────────────────── */
+.sti-editor { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; gap: var(--space-4); border-color: var(--color-accent); }
+.sti-field--title, .sti-field--description, .sti-field--notes, .sti-editor .sti-idea-foot { grid-column: 1 / -1; }
+
+.sti-say { position: fixed; left: 50%; bottom: var(--space-4); z-index: 5; max-width: min(520px, calc(100% - 24px)); margin: 0; padding: 7px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--shadow-raised); text-align: center; translate: -50% 0; pointer-events: none; }
+.sti-say:empty { padding: 0; border: 0; box-shadow: none; }
+
+/* ── Small screens ─────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .sti-bar { padding: 8px; }
+  .sti-bar .ck-button--tool .ck-button-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sti-state { order: 1; flex-basis: 100%; }
+  .sti-filters { grid-template-columns: minmax(0, 1fr) auto; }
+  .sti-filters .st-search, .sti-filters select[aria-label="Category"] { grid-column: 1 / -1; }
+  .sti-editor { grid-template-columns: minmax(0, 1fr); }
+}

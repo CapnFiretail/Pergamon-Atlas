@@ -117,6 +117,18 @@ textarea.st-input { resize: vertical; }
 .st-field-error { color: var(--color-danger); font-weight: 600; }
 .st-field-error[hidden] { display: none; }
 
+.st-search { position: relative; display: block; min-width: 0; }
+.st-search .ck-icon { position: absolute; left: 12px; top: 12px; color: var(--color-text-secondary); }
+.st-search .st-input { padding-left: 38px; }
+
+/* A copy this browser saved before documents were shared (document-flow.js). */
+.st-earlier { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border)); border-radius: var(--radius-panel); background: var(--color-surface); }
+.st-earlier[hidden] { display: none; }
+.st-earlier-text { display: grid; gap: 2px; flex: 1 1 320px; min-width: 0; }
+.st-earlier-text > * { margin: 0; }
+.st-earlier-text > :last-child { color: var(--color-text-secondary); }
+.st-earlier .ck-group { flex-wrap: wrap; }
+
 .st-dialog {
   width: min(520px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
@@ -133,4 +145,5 @@ textarea.st-input { resize: vertical; }
 .st-dialog-box { display: grid; gap: 14px; padding: 24px; }
 .st-dialog-title, .st-dialog-text { margin: 0; }
 .st-dialog-text { color: var(--color-text-secondary); }
+.st-dialog-list { display: grid; gap: 4px; max-height: 200px; margin: 0; padding: 10px 12px 10px 28px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-background); }
 .st-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }

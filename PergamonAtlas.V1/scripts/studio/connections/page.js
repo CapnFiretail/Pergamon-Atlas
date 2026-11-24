@@ -1,6 +1,7 @@
 // Atlas Studio › Workspace › Connections: the page. Wiring only: the canvas
-// (scripts/canvas/), the document and its state (document.js, store.js), where
-// it is kept (storage.js), the panel and the Node Library.
+// (scripts/canvas/), the document (document.js) and its state, storage and actions
+// (the Studio's store.js, storage.js, document-flow.js), the panel and the Node
+// Library.
 //
 // View looks around and reads; Edit changes the working copy. Nothing is stored
 // until Save. Leaving with unsaved changes asks first (a section change, leaving
@@ -11,11 +12,10 @@
   const { el, button, segmented, dialog } = ns.ui;
   const C = ns.connections, D = C.document, CV = window.PergamonCanvas;
   const PATH = 'workspace/connections';
-  const MAX_IMPORT = 2 * 1024 * 1024;
   const NARROW = '(max-width: 900px)';
 
   function render(view, ctx) {
-    let mode = 'view', selection = null, panelOpen = false, sayTimer = 0, busy = false, alive = true;
+    let mode = 'view', selection = null, panelOpen = false, sayTimer = 0, alive = true;
 
     const head = ctx.header('Connections', 'How the parts of Atlas and its services relate. Descriptive only: nothing is linked to a live service.');
     const frame = el('section', 'stc-frame ck-frame');
@@ -25,7 +25,9 @@
     bar.setAttribute('aria-label', 'Connections');
     const stage = el('div', 'stc-stage ck-stage');
     const host = el('div', 'stc-canvas');
-    frame.append(bar, stage);
+    const earlier = el('div', 'st-earlier stc-earlier');
+    earlier.hidden = true;
+    frame.append(bar, earlier, stage);
     view.append(head, frame);
 
     // ── Toolbar ───────────────────────────────────────────────────────────
@@ -37,15 +39,11 @@
     const exportButton = button({ label: 'Export', icon: 'export', title: 'Export as a JSON file' });
     const discard = button({ label: 'Discard', kind: 'secondary' });
     const save = button({ label: 'Save', kind: 'primary' });
-    const file = el('input');
-    file.type = 'file';
-    file.accept = '.json,application/json';
-    file.hidden = true;
     const editTools = el('div', 'ck-group'), saveTools = el('div', 'ck-group'), files = el('div', 'ck-group');
     editTools.append(add, undo, redo);
     files.append(importButton, exportButton);
     saveTools.append(discard, save);
-    bar.append(modes.element, editTools, el('span', 'ck-spacer'), status, files, saveTools, file);
+    bar.append(modes.element, editTools, el('span', 'ck-spacer'), status, files, saveTools);
 
     // ── Canvas, view controls, panel ──────────────────────────────────────
     const zoomOut = button({ label: 'Zoom out', icon: 'minus', iconOnly: true }), zoomIn = button({ label: 'Zoom in', icon: 'add', iconOnly: true });
@@ -64,7 +62,14 @@
     const emptyNote = el('p', 'stc-empty pa-type-body-small');
     emptyNote.hidden = true;
 
-    const store = C.store.create({ storage: C.storage.local(), createHistory: window.PergamonGrid.editor.createHistory, seed: C.seed });
+    const storage = ns.storage.server({ kind: 'connections', key: D.KEY });
+    const store = ns.store.create({ model: D, storage, browser: ns.storage.browser({ key: D.KEY }), createHistory: window.PergamonGrid.editor.createHistory, seed: C.seed });
+    const flow = ns.documentFlow({
+      host: frame, store, model: D, place: storage.name, noun: 'map', seedName: 'example', fileName: 'atlas-connections', replaces: 'what is on the canvas',
+      describe: d => `${d.nodes.length} ${d.nodes.length === 1 ? 'node' : 'nodes'} and ${d.connections.length} ${d.connections.length === 1 ? 'connection' : 'connections'}`,
+      ready: () => !fixFirst(), alive: () => alive, refresh, say
+    });
+    bar.append(flow.file);
     const doc = () => store.document();
     const nodeOf = id => doc().nodes.find(n => n.id === id);
     const edgeOf = id => doc().connections.find(c => c.id === id);
@@ -128,29 +133,16 @@
       editTools.hidden = saveTools.hidden = importButton.hidden = !on;
       undo.disabled = !store.canUndo();
       redo.disabled = !store.canRedo();
-      save.disabled = busy || (!dirty && !store.isExample());
-      discard.disabled = busy || !dirty;
+      save.disabled = flow.busy() || (!dirty && !store.isExample());
+      discard.disabled = flow.busy() || !dirty;
       exportButton.disabled = !!store.blocked();
-      status.dataset.state = dirty ? 'unsaved' : store.isExample() ? 'example' : 'saved';
-      const t = store.savedAt() ? new Date(store.savedAt()) : null;
-      const when = t && !isNaN(t) ? t.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '';
-      status.textContent = store.blocked() ? '' : dirty ? 'Unsaved changes' : store.isExample() ? 'Example, not saved yet' : `Saved in this browser${when ? ', ' + when : ''}`;
+      const stands = flow.status();
+      status.dataset.state = stands.state;
+      status.textContent = stands.text;
       emptyNote.hidden = !!store.blocked() || d.nodes.length > 0;
       emptyNote.textContent = on ? 'Nothing here yet. Add Node starts the map.' : 'Nothing here yet. Choose Edit to start the map.';
-      drawNotice();
-    }
-    function drawNotice() {
-      const b = store.blocked();
-      notice.hidden = !b;
-      if (!b || notice.childElementCount) { if (!b) notice.replaceChildren(); return; }
-      const copy = button({ label: 'Download the stored copy', kind: 'secondary' }), again = button({ label: 'Start again from the example', kind: 'primary' });
-      copy.hidden = !b.raw;
-      copy.addEventListener('click', () => download(b.raw, 'atlas-connections-stored.json'));
-      again.addEventListener('click', () => { store.reset(); refresh(); fitView(); });
-      const row = el('div', 'ck-group');
-      row.append(copy, again);
-      notice.append(el('h2', 'pa-type-section-title', 'The saved map can’t be opened'), el('p', 'pa-type-body-small', b.errors.join(' ')),
-        el('p', 'pa-type-body-small', 'It is left as it is. Starting again replaces it only when you save.'), row);
+      flow.notice(notice, fitView);
+      flow.earlier(earlier);
     }
     function say(text) {
       clearTimeout(sayTimer);
@@ -185,10 +177,10 @@
       return true;
     }
     async function setMode(next) {
-      if (next === mode || busy) return;
+      if (next === mode || flow.busy()) return;
       ctl.cancel();
       if (next === 'view' && (store.dirty() || panel.invalid())) {
-        if (!await askUnsaved('Leave Edit?')) { refresh(); return; }
+        if (!await flow.askUnsaved('Leave Edit?')) { refresh(); return; }
         if (!alive) return;
       }
       mode = next;
@@ -197,44 +189,9 @@
       refresh();
       say(next === 'edit' ? 'Editing. Select a node or connection to change it.' : 'Viewing.');
     }
-    // Save, discard or stay. → true when nothing unsaved is left.
-    async function askUnsaved(title) {
-      const choice = await dialog(frame, {
-        title, text: 'The map has unsaved changes.',
-        actions: [{ label: 'Keep editing', value: null }, { label: 'Discard changes', value: 'discard', kind: 'danger' }, { label: 'Save', value: 'save', kind: 'primary' }]
-      });
-      if (!alive || !choice) return false;
-      if (choice === 'save') return saveNow();
-      store.discard();
-      return true;
-    }
-
-    // ── Saving ────────────────────────────────────────────────────────────
-    async function saveNow() {
-      if (busy || fixFirst()) return false;
-      busy = true; refresh();
-      let r = await store.save();
-      if (r.code === 'conflict' && alive) {
-        const choice = await dialog(frame, {
-          title: 'A newer copy was saved', text: 'Another tab saved this map after you opened it. Replace that copy with yours, or use it and drop your changes?',
-          actions: [{ label: 'Cancel', value: null }, { label: 'Use the newer copy', value: 'theirs' }, { label: 'Replace it with mine', value: 'mine', kind: 'danger' }]
-        });
-        if (choice === 'mine') r = await store.save({ force: true });
-        else if (choice === 'theirs') { await store.reload(); r = { ok: true, theirs: true }; }
-      }
-      busy = false;
-      if (!alive) return false;
-      refresh();
-      say(r.ok ? (r.theirs ? 'Showing the newer copy.' : 'Saved in this browser.')
-        : r.code === 'conflict' ? 'Not saved. Your changes are still here.'
-        : r.code === 'full' ? 'Not saved: this browser’s storage is full. Export the map to keep it.'
-        : 'Not saved: this browser doesn’t allow it. Export the map to keep it.');
-      return !!r.ok;
-    }
-    save.addEventListener('click', saveNow);
+    save.addEventListener('click', flow.save);
     discard.addEventListener('click', async () => {
-      const yes = await dialog(frame, { title: 'Discard changes?', text: store.isExample() ? 'The map goes back to the example. Undo brings your changes back while this page is open.' : 'The map goes back to the saved copy. Undo brings your changes back while this page is open.', actions: [{ label: 'Cancel', value: null }, { label: 'Discard changes', value: true, kind: 'danger' }] });
-      if (!yes || !alive) return;
+      if (!await flow.confirmDiscard()) return;
       panelOpen = false;
       panel.hide();
       store.discard();
@@ -270,7 +227,7 @@
       if (!n) return;
       ctl.cancel();
       const cs = D.connectionsOf(doc(), n.id);
-      const list = el('ul', 'stc-removing pa-type-body-small');
+      const list = el('ul', 'st-dialog-list pa-type-body-small');
       cs.forEach(c => list.append(el('li', '', edgeLabel(c))));
       const yes = await dialog(frame, {
         title: `Delete ${n.name}?`,
@@ -290,43 +247,8 @@
     redo.addEventListener('click', () => step(store.redo));
 
     // ── Files ─────────────────────────────────────────────────────────────
-    function download(text, name) {
-      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-      const a = el('a');
-      a.href = url; a.download = name;
-      frame.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-    exportButton.addEventListener('click', () => {
-      const d = new Date(), day = [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-');
-      download(D.serialize(doc()), `atlas-connections-${day}.json`);
-      say(store.dirty() ? 'Exported, with the unsaved changes.' : 'Exported.');
-    });
-    importButton.addEventListener('click', () => file.click());
-    file.addEventListener('change', async () => {
-      const f = file.files[0];
-      file.value = '';
-      if (!f) return;
-      let r;
-      try { r = f.size > MAX_IMPORT ? { errors: ['The file is larger than 2 MB.'] } : D.parse(await f.text()); } catch (e) { r = { errors: ['The file couldn’t be read.'] }; }
-      if (!alive) return;
-      if (r.errors) {
-        const list = el('ul', 'stc-removing pa-type-body-small');
-        r.errors.forEach(t => list.append(el('li', '', t)));
-        await dialog(frame, { title: 'Not imported', text: 'Nothing changed.', content: list, actions: [{ label: 'Close', value: null, kind: 'primary' }] });
-        return;
-      }
-      const n = r.document;
-      const yes = await dialog(frame, {
-        title: 'Replace the map?', text: `“${f.name}” has ${n.nodes.length} ${n.nodes.length === 1 ? 'node' : 'nodes'} and ${n.connections.length} ${n.connections.length === 1 ? 'connection' : 'connections'}. It replaces what is on the canvas; nothing is saved until you choose Save, and Undo goes back.`,
-        actions: [{ label: 'Cancel', value: null }, { label: 'Replace', value: true, kind: 'primary' }]
-      });
-      if (!yes || !alive) return;
-      select(null);
-      store.commit(n);
-      fitView();
-      say('Imported. Save to keep it.');
-    });
+    exportButton.addEventListener('click', flow.export);
+    importButton.addEventListener('click', () => flow.import({ before: () => select(null), after: fitView }));
 
     // ── View controls, keyboard ───────────────────────────────────────────
     zoomIn.addEventListener('click', () => cv.zoom(1.25));
@@ -340,26 +262,20 @@
     function onKey(e) {
       if (!(e.ctrlKey || e.metaKey) || e.altKey || !editing() || frame.querySelector('dialog[open]')) return;
       const k = e.key.toLowerCase();
-      if (k === 's') { e.preventDefault(); if (!save.disabled) saveNow(); }
+      if (k === 's') { e.preventDefault(); if (!save.disabled) flow.save(); }
       else if ((k === 'z' || k === 'y') && !typing(e.target)) { e.preventDefault(); step(k === 'y' || e.shiftKey ? store.redo : store.undo); }
     }
     panel.element.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); panelOpen = false; const s = selection; if (!editing()) selection = null; refresh(); cv.focus(s); } });
 
     // ── Leaving with unsaved changes ──────────────────────────────────────
     const unsaved = () => editing() && (store.dirty() || !!panel.invalid());
-    const onUnload = e => { if (unsaved()) { e.preventDefault(); e.returnValue = ''; } };
-    const onHide = () => store.keep();
+    const unguard = flow.guard(ctx, { unsaved, title: 'Leave Connections?' });
     document.addEventListener('keydown', onKey);
-    window.addEventListener('beforeunload', onUnload);
-    window.addEventListener('pagehide', onHide);
-    ctx.onLeave({ blocked: unsaved, ask: () => askUnsaved('Leave Connections?') });
     ctx.onCleanup(() => {
       alive = false;
       clearTimeout(sayTimer);
-      store.keep();                            // losing access mid-edit loses nothing
+      unguard();
       document.removeEventListener('keydown', onKey);
-      window.removeEventListener('beforeunload', onUnload);
-      window.removeEventListener('pagehide', onHide);
       if (ro) ro.disconnect();
       ctl.destroy(); cv.destroy(); store.destroy();
       C.current = null;

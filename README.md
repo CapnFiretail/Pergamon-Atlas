@@ -27,7 +27,7 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 │   ├── design/            design registries (typography, colours, surfaces)
 │   ├── cms/               homepage CMS and Admin Mode
 │   ├── handbook/          Handbook pages
-│   └── studio/            Studio shell and sections (connections/, environments.js)
+│   └── studio/            Studio shell and sections (connections/, ideas/, …)
 ├── styles/                theme.css (tokens), typography.css (generated), …
 ├── data/                  entries.js (games catalog), home-content.js (static fallback)
 ├── operation/             shared legacy layer: Supabase auth, footer, main.css

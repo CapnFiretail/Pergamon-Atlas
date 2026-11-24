@@ -12,6 +12,7 @@
   if (!root) return;
 
   const conn = key => () => !!(ns.connections && ns.connections[key]);
+  const idea = key => () => !!(ns.ideas && ns.ideas[key]);
   // In order: the sections, the shell, then any section's own files.
   const ASSETS = [
     { css: '/styles/studio.css' },
@@ -21,22 +22,29 @@
     { css: '/styles/canvas-kit.css' },
     { js: '/scripts/design/canvas-kit.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.canvasKit) },
     { js: '/scripts/studio/ui.js', ready: () => !!ns.ui },
-    // Connections: the node canvas, the grid editor's history, the section.
+    // Saved documents: the grid editor's history, storage, the shared actions.
+    { js: '/scripts/grid/atlas-grid.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.validateLayout) },
+    { js: '/scripts/grid/editor.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.editor) },
+    { js: '/scripts/studio/storage.js', ready: () => !!ns.storage },
+    { js: '/scripts/studio/store.js', ready: () => !!ns.store },
+    { js: '/scripts/studio/document-flow.js', ready: () => !!ns.documentFlow },
+    // Connections: the node canvas, the section.
     { css: '/styles/canvas.css' },
     { css: '/styles/studio-connections.css' },
     { js: '/scripts/canvas/geometry.js', ready: () => !!(window.PergamonCanvas && window.PergamonCanvas.geometry) },
     { js: '/scripts/canvas/renderer.js', ready: () => !!(window.PergamonCanvas && window.PergamonCanvas.renderer) },
     { js: '/scripts/canvas/interaction.js', ready: () => !!(window.PergamonCanvas && window.PergamonCanvas.interaction) },
-    { js: '/scripts/grid/atlas-grid.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.validateLayout) },
-    { js: '/scripts/grid/editor.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.editor) },
     { js: '/scripts/studio/connections/registry.js', ready: conn('registry') },
     { js: '/scripts/studio/connections/document.js', ready: conn('document') },
-    { js: '/scripts/studio/connections/storage.js', ready: conn('storage') },
-    { js: '/scripts/studio/connections/store.js', ready: conn('store') },
     { js: '/scripts/studio/connections/seed.js', ready: conn('seed') },
     { js: '/scripts/studio/connections/library.js', ready: conn('library') },
     { js: '/scripts/studio/connections/inspector.js', ready: conn('inspector') },
-    { js: '/scripts/studio/connections/page.js', ready: conn('page') }
+    { js: '/scripts/studio/connections/page.js', ready: conn('page') },
+    // Ideas.
+    { css: '/styles/studio-ideas.css' },
+    { js: '/scripts/studio/ideas/document.js', ready: idea('document') },
+    { js: '/scripts/studio/ideas/seed.js', ready: idea('seed') },
+    { js: '/scripts/studio/ideas/page.js', ready: idea('page') }
   ];
   let loading = null;
   let shown = null;                    // 'studio' | 'denied'

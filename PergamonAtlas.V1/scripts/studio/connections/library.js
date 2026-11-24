@@ -12,7 +12,7 @@
       title: 'Add a node', wide: true, focus: 'input', actions: [{ label: 'Cancel', value: null }],
       content(close) {
         const box = el('div', 'stc-library');
-        const field = el('label', 'stc-search');
+        const field = el('label', 'st-search');
         const input = el('input', 'st-input');
         input.type = 'search';
         input.placeholder = 'Search services';

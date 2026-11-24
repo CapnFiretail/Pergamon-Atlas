@@ -18,7 +18,7 @@ const items = GROUPS.flatMap(g => g.items.map(i => ({ ...i, group: g.id })));
 
 test('the sections, in order, landing on Connections', () => {
   assert.equal(GROUPS.map(g => g.label + ': ' + g.items.map(i => i.label).join(', ')).join('; '),
-    'Workspace: Overview, Connections; Development: Environments, Releases, Workflows, Analytics; Infrastructure: Services, Monitoring');
+    'Workspace: Overview, Connections, Ideas; Development: Environments, Releases, Workflows, Analytics; Infrastructure: Services, Monitoring');
   assert.equal(items.find(i => i.path === DEFAULT).label, 'Connections');
 });
 

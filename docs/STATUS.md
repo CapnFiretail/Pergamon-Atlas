@@ -5,7 +5,7 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by S5.
 - **Production:** `e1155fa` (S4: local development server, Studio › Environments),
   released 2026-11-24 (Vercel `7zNFJvbBqQxjTNaH9C3T4SpWwdgS`) and verified the same
   day as a guest and by comparing every published site file with the commit; later
@@ -16,8 +16,13 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   (Studio › Connections and Environments, Layout Mode, Layout Lab, Handbook):
   not done, the user's to do. S4's staging review was done by the user.
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
-  not confirmed.
-- **Active milestone:** none. Starting the local server at sign-in is not installed
+  not confirmed. **0015: staging only** (2026-11-24, run by the user; all 8 rows of
+  `verify_0015.sql` true, user-reported).
+- **Active milestone:** S5, Studio › Ideas, and Connections and Ideas saved in
+  Supabase (`design/STUDIO.md` › Ideas, Saved documents): local review approved by
+  the user 2026-11-24, on development; not released. Production needs 0015 (and
+  `verify_0015.sql`) **before** `main`.
+- **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
 

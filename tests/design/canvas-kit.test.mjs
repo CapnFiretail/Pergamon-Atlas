@@ -55,7 +55,7 @@ test('no page loads it for visitors', () => {
 
 test('every class the code uses is defined', () => {
   const css = code('styles/canvas-kit.css');
-  const used = new Set(['scripts/design/canvas-kit.js', 'scripts/canvas/renderer.js', 'scripts/grid/overlay.js', 'scripts/studio/connections/page.js', 'scripts/cms/layout-mode.js', 'scripts/handbook/layout-lab.js', 'scripts/handbook/canvas-page.js']
+  const used = new Set(['scripts/design/canvas-kit.js', 'scripts/canvas/renderer.js', 'scripts/grid/overlay.js', 'scripts/studio/connections/page.js', 'scripts/studio/document-flow.js', 'scripts/cms/layout-mode.js', 'scripts/handbook/layout-lab.js', 'scripts/handbook/canvas-page.js']
     .flatMap(f => [...code(f).matchAll(/(?<![\w-])ck-[a-z]+(?:--[a-z]+)?(?![\w$-])/g)].map(m => m[0])));
   // Names only: ck-dot and the like are the variables; a tool button is the plain one.
   ['ck-dot', 'ck-dx', 'ck-dy', 'ck-scale', 'ck-button--tool'].forEach(n => used.delete(n));
