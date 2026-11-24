@@ -2,7 +2,8 @@
 // the Atlas Grid. Everything here is Handbook wiring: the grid is drawn by
 // scripts/grid/renderer.js, input handled by scripts/grid/interaction.js,
 // decorations by scripts/grid/overlay.js, and every change proposed,
-// validated and recorded by scripts/grid/editor.js. Nothing is saved:
+// validated and recorded by scripts/grid/editor.js. The look of the canvas is
+// the shared canvas design (styles/canvas-kit.css). Nothing is saved:
 // reloading restores the starting layout.
 //
 // Lab policy (not the engine's): changes are validated at the grid's live
@@ -16,6 +17,8 @@
   const app = ns.app;
   const G = window.PergamonGrid;
   if (!app || !G || !G.renderer || !G.editor || !G.overlay || !G.interaction || !G.widgetTypes) return;
+  const kit = window.PergamonDesign && window.PergamonDesign.canvasKit;
+  if (!kit) return;
   const E = G.editor;
   const { types: TYPES } = G.widgetTypes;
 
@@ -46,25 +49,35 @@
     view.append(help);
 
     // ── Toolbar ──────────────────────────────────────────────────────────
-    const toolbar = el('div', 'hb-toolbar hbl-toolbar');
+    const toolbar = el('div', 'ck-bar');
     toolbar.setAttribute('role', 'toolbar');
     toolbar.setAttribute('aria-label', 'Layout Lab');
-    const group = (...nodes) => { const g = el('div', 'hb-segmented'); g.append(...nodes); return g; };
-    const button = (text, label) => { const b = el('button', 'hbl-tool pa-type-tab', text); b.type = 'button'; if (label) b.setAttribute('aria-label', label); return b; };
-    const undo = button('Undo', 'Undo the last change');
-    const redo = button('Redo', 'Redo the change');
-    const reset = button('Reset', 'Reset to the starting layout');
-    const gridToggle = button('Grid', 'Show the grid cells');
+    const group = (...nodes) => { const g = el('div', 'ck-group'); g.append(...nodes); return g; };
+    const button = (text, icon, label) => { const b = kit.button({ label: text, icon }); b.setAttribute('aria-label', label); return b; };
+    const undo = button('Undo', 'undo', 'Undo the last change');
+    const redo = button('Redo', 'redo', 'Redo the change');
+    const reset = button('Reset', 'reset', 'Reset to the starting layout');
+    const stateNote = el('p', 'ck-state pa-type-caption');
+    toolbar.append(group(undo, redo, reset), el('span', 'ck-spacer'), stateNote);
+    const gridToggle = kit.button({ label: 'Grid', icon: 'grid', iconOnly: true, title: 'Show the grid cells' });
+    gridToggle.setAttribute('aria-label', 'Show the grid cells');
     gridToggle.setAttribute('aria-pressed', 'true');
-    toolbar.append(group(undo, redo, reset), group(gridToggle));
+    const widthNote = el('span', 'ck-readout hbl-width pa-type-button-small');
+    const float = el('div', 'ck-float');
+    float.setAttribute('role', 'group');
+    float.setAttribute('aria-label', 'Canvas');
+    float.append(gridToggle, widthNote);
 
     // ── Workspace ────────────────────────────────────────────────────────
-    const frame = el('div', 'hbl-workspace');
+    const frame = el('div', 'hbl-workspace ck-frame');
+    frame.dataset.mode = 'edit';
+    const stage = el('div', 'hbl-stage ck-stage ck-scope ck-surface');
     const host = el('div', 'hbl-host');
     const notice = el('p', 'pa-type-body-small hbl-notice');
     notice.hidden = true;
 
-    frame.append(notice, host);
+    stage.append(notice, host, float);
+    frame.append(toolbar, stage);
 
     // ── Inspector ────────────────────────────────────────────────────────
     const inspector = el('dl', 'hbl-inspector');
@@ -73,7 +86,8 @@
     const status = el('p', 'pa-type-caption hb-muted hbl-status');
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
-    view.append(toolbar, frame, inspector, status);
+    frame.append(inspector, status);
+    view.append(frame);
 
     // ── Wiring ───────────────────────────────────────────────────────────
     const history = E.createHistory(INITIAL);
@@ -106,6 +120,8 @@
       undo.disabled = !history.canUndo();
       redo.disabled = !history.canRedo();
       reset.disabled = E.sameLayout(history.present(), history.original());
+      stateNote.dataset.state = reset.disabled ? 'example' : 'unsaved';
+      stateNote.textContent = reset.disabled ? 'Starting layout' : 'Changed, not saved';
       refreshInspector();
     }
     function describeNotice() {
@@ -114,6 +130,7 @@
     function refreshInspector(preview) {
       const g = grid.geometry();
       const layout = history.present();
+      widthNote.textContent = px(g.width);
       const active = ctl && ctl.active();
       const rows = Math.max(G.extent(layout), Number(getComputedStyle(grid.element()).getPropertyValue('--atlas-extent')) || 0);
       gridDd.textContent = `${px(g.width)} wide · cells ${Math.round(g.cell * 10) / 10}px · ${G.COLUMNS} columns · ${G.extent(layout)} rows` + (active ? ` (showing ${rows} while editing)` : '') + ` · this layout fits from ${Math.ceil(fitsFrom(layout))}px`;

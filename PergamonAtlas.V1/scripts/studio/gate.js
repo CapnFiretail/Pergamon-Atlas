@@ -17,6 +17,8 @@
     { css: '/styles/studio.css' },
     { js: '/scripts/studio/sections.js', ready: () => !!ns.sections },
     { js: '/scripts/studio/studio.js', ready: () => !!ns.app },
+    { css: '/styles/canvas-kit.css' },
+    { js: '/scripts/design/canvas-kit.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.canvasKit) },
     { js: '/scripts/studio/ui.js', ready: () => !!ns.ui },
     // Connections: the node canvas, the grid editor's history, the section.
     { css: '/styles/canvas.css' },

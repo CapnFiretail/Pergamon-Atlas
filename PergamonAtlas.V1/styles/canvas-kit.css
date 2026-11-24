@@ -1,0 +1,152 @@
+/* Canvas design: what every Atlas editing canvas looks like. Shared by the
+ * node canvas (styles/canvas.css), the Atlas Grid's editing decorations
+ * (styles/grid-editor.css) and the pages around them: Atlas Studio ›
+ * Connections, Admin Mode's Layout Mode, the Handbook's Layout Lab. Load it
+ * before them. Appearance only: it knows neither engine, and neither engine
+ * knows the other. Colours are theme roles only. Elements that need building:
+ * scripts/design/canvas-kit.js.
+ *
+ *   .ck-scope    the values below, for an element and everything in it. Set
+ *                --ck-scale when the content is drawn scaled, so controls keep
+ *                their on-screen size (--ck-px: one pixel on screen).
+ *   .ck-surface  the dotted canvas (with .ck-scope). --ck-dot is the distance
+ *                between dots, --ck-dx / --ck-dy where they start.
+ *   .ck-frame, .ck-bar, .ck-stage   a canvas in a page: its border, its toolbar
+ *                and the area the canvas fills. data-mode="edit" on the frame.
+ *   .ck-float    controls floating over the canvas
+ *   .ck-button, .ck-icon   tool, primary, secondary and danger buttons
+ *   .ck-action   the round pencil and delete on a selected item
+ *   .ck-handle   something to drag on a selected item (--square: reconnect)
+ *   .ck-tag      a small label on the canvas
+ */
+.ck-scope {
+  --ck-px: calc(1px / var(--ck-scale, 1));
+  --ck-dots: radial-gradient(circle, color-mix(in srgb, var(--color-text-secondary) 38%, transparent) calc(1.2 * var(--ck-dot-px, 1px)), transparent calc(1.6 * var(--ck-dot-px, 1px)));
+  /* Rings: selected, focused, both. */
+  --ck-ring: 0 0 0 calc(2 * var(--ck-px)) var(--color-accent);
+  --ck-ring-focus: 0 0 0 calc(2 * var(--ck-px)) var(--color-background), 0 0 0 calc(4 * var(--ck-px)) var(--color-focus);
+  --ck-ring-both: var(--ck-ring), 0 0 0 calc(4 * var(--ck-px)) var(--color-background), 0 0 0 calc(6 * var(--ck-px)) var(--color-focus);
+  --ck-outline-hover: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+}
+.ck-surface {
+  background-color: var(--color-background);
+  background-image: var(--ck-dots);
+  background-position: var(--ck-dx, 0) var(--ck-dy, 0);
+  background-size: var(--ck-dot, 24px) var(--ck-dot, 24px);
+}
+
+/* ── A canvas in a page ────────────────────────────────────────────────── */
+.ck-frame, .ck-bar, .ck-stage, .ck-float, .ck-button, .ck-action, .ck-handle, .ck-handle::before, .ck-tag { box-sizing: border-box; }
+.ck-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-background);
+}
+.ck-frame[data-mode="edit"] { border-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-border)); }
+.ck-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
+.ck-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.ck-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ck-bar [hidden], .ck-stage [hidden] { display: none; }
+.ck-spacer { flex: 1; }
+/* Where the work stands: saved, unsaved, the example. */
+.ck-state { display: inline-flex; align-items: center; gap: 7px; margin: 0 4px; color: var(--color-text-secondary); }
+.ck-state:empty { display: none; }
+.ck-state::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); }
+.ck-state[data-state="example"]::before { background: var(--color-text-secondary); }
+.ck-state[data-state="unsaved"] { color: var(--color-text-primary); }
+.ck-state[data-state="unsaved"]::before { background: var(--color-accent); }
+
+/* ── Floating controls ─────────────────────────────────────────────────── */
+.ck-float { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-raised); }
+.ck-readout { min-width: 58px; font-variant-numeric: tabular-nums; }
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.ck-icon { display: block; flex: none; width: 18px; height: 18px; }
+.ck-icon svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ck-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.ck-float .ck-button { border-color: transparent; background: transparent; }
+.ck-button:hover:not(:disabled) { border-color: var(--color-accent); }
+.ck-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.ck-button:disabled { opacity: 0.45; cursor: default; }
+.ck-button[aria-pressed="true"], .ck-float .ck-button[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-accent-soft); color: var(--color-accent-text); }
+.ck-button--primary { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-on-accent); }
+.ck-button--primary:hover:not(:disabled) { border-color: var(--color-accent-hover); background: var(--color-accent-hover); }
+.ck-button--danger { background: transparent; color: var(--color-danger); }
+.ck-button--danger:hover:not(:disabled) { border-color: var(--color-danger); }
+
+/* ── On a selected item ────────────────────────────────────────────────── */
+/* The same control as Admin Mode's pencils. */
+.ck-action {
+  display: grid;
+  place-items: center;
+  width: calc(32 * var(--ck-px));
+  height: calc(32 * var(--ck-px));
+  padding: 0;
+  border: calc(1.5 * var(--ck-px)) solid var(--color-accent);
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: 0 calc(2 * var(--ck-px)) calc(8 * var(--ck-px)) rgb(0 0 0 / 0.35);
+  color: var(--color-accent-text);
+  cursor: pointer;
+}
+.ck-action svg { width: 50%; height: 50%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ck-action:hover { background: var(--color-accent); color: var(--color-on-accent); }
+.ck-action--remove { border-color: var(--color-danger); color: var(--color-danger); }
+.ck-action--remove:hover { background: var(--color-danger); color: var(--color-background); }
+.ck-action:focus-visible { outline: calc(2 * var(--ck-px)) solid var(--color-focus); outline-offset: calc(2 * var(--ck-px)); }
+/* A press area (--ck-hit) around a smaller knob, inset by --ck-inset. */
+.ck-handle {
+  --ck-hit: 28;
+  --ck-inset: 8;
+  position: absolute;
+  width: calc(var(--ck-hit) * var(--ck-px));
+  height: calc(var(--ck-hit) * var(--ck-px));
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.ck-handle::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ck-inset) * var(--ck-px));
+  border: calc(2 * var(--ck-px)) solid var(--color-accent);
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+.ck-handle--square { --ck-inset: 7; }
+.ck-handle--square::before { border-radius: calc(4 * var(--ck-px)); }
+.ck-handle:hover::before { background: var(--color-accent); }
+.ck-handle:focus-visible { outline: calc(2 * var(--ck-px)) solid var(--color-focus); outline-offset: calc(-2 * var(--ck-px)); border-radius: 50%; }
+.ck-tag {
+  padding: 2px 9px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  font: 600 12px/1.5 var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ck-tag.is-selected { border-color: var(--color-accent); color: var(--color-accent-text); }
+@media (pointer: coarse) {
+  .ck-action { width: calc(40 * var(--ck-px)); height: calc(40 * var(--ck-px)); }
+}

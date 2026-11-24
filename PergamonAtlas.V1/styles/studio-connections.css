@@ -1,45 +1,19 @@
-/* Atlas Studio › Connections (scripts/studio/connections/): the toolbar, the
- * view controls, the panel and the Node Library. The canvas itself is
- * styles/canvas.css; shared Studio controls are in styles/studio.css. */
+/* Atlas Studio › Connections (scripts/studio/connections/): the panel and the
+ * Node Library. The canvas itself is styles/canvas.css; its frame, toolbar,
+ * buttons and floating controls styles/canvas-kit.css; shared Studio controls
+ * styles/studio.css. */
 
 .stc-muted { color: var(--color-text-secondary); }
-.stc-frame {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 480px;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-background);
-}
-.stc-frame[data-mode="edit"] { border-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-border)); }
-
-/* ── Toolbar ───────────────────────────────────────────────────────────── */
-.stc-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
-.stc-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.stc-bar [hidden], .stc-stage [hidden] { display: none; }
-.stc-spacer { flex: 1; }
-.stc-state { display: inline-flex; align-items: center; gap: 7px; margin: 0 4px; color: var(--color-text-secondary); }
-.stc-state:empty { display: none; }
-.stc-state::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); }
-.stc-state[data-state="example"]::before { background: var(--color-text-secondary); }
-.stc-state[data-state="unsaved"] { color: var(--color-text-primary); }
-.stc-state[data-state="unsaved"]::before { background: var(--color-accent); }
+.stc-frame { min-height: 480px; }
 
 /* ── Stage ─────────────────────────────────────────────────────────────── */
-.stc-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 .stc-canvas { position: absolute; inset: 0; }
-.stc-zoom { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-raised); }
-.stc-zoom .st-button { border-color: transparent; background: transparent; }
-.stc-zoom-level { min-width: 58px; font-variant-numeric: tabular-nums; }
 .stc-say { position: absolute; left: 50%; top: 12px; z-index: 3; max-width: min(520px, calc(100% - 24px)); margin: 0; padding: 7px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--shadow-raised); color: var(--color-text-primary); text-align: center; translate: -50% 0; pointer-events: none; }
 .stc-say:empty { padding: 0; border: 0; box-shadow: none; }
 .stc-empty { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; color: var(--color-text-secondary); text-align: center; pointer-events: none; }
 .stc-notice { position: absolute; inset: 0; z-index: 5; display: grid; align-content: center; justify-items: center; gap: 12px; padding: 24px; background: var(--color-background); text-align: center; }
 .stc-notice > * { margin: 0; max-width: 60ch; }
-.stc-notice .stc-group { justify-content: center; margin-top: 8px; }
+.stc-notice .ck-group { justify-content: center; margin-top: 8px; }
 
 /* ── Panel ─────────────────────────────────────────────────────────────── */
 .stc-panel {
@@ -61,7 +35,7 @@
 .stc-logo { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; color: var(--color-text-primary); }
 .stc-logo svg, .stc-logo img { display: block; width: 28px; height: 28px; object-fit: contain; }
 .stc-panel-body { display: grid; gap: 22px; padding: 18px; }
-.stc-panel-body > .st-button { justify-self: start; }
+.stc-panel-body > .ck-button { justify-self: start; }
 .stc-form { display: grid; gap: 16px; }
 .stc-ends { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 8px; }
 .stc-details { display: grid; gap: 4px; margin: 0; }
@@ -69,7 +43,7 @@
 .stc-details dt[hidden], .stc-details dd[hidden] { display: none; }
 .stc-details dd { margin: 0 0 14px; overflow-wrap: anywhere; white-space: pre-line; }
 .stc-link { display: inline-flex; align-items: center; gap: 6px; color: var(--color-accent-text); }
-.stc-link .st-tool-icon { width: 14px; height: 14px; }
+.stc-link .ck-icon { width: 14px; height: 14px; }
 .stc-related { display: grid; gap: 8px; }
 .stc-related h3 { margin: 0; }
 .stc-related ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
@@ -79,7 +53,7 @@
 /* ── Node Library, confirmations ───────────────────────────────────────── */
 .stc-library { display: grid; gap: 14px; min-width: 0; }
 .stc-search { position: relative; display: block; }
-.stc-search .st-tool-icon { position: absolute; left: 12px; top: 12px; color: var(--color-text-secondary); }
+.stc-search .ck-icon { position: absolute; left: 12px; top: 12px; color: var(--color-text-secondary); }
 .stc-search .st-input { padding-left: 38px; }
 .stc-library-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: min(420px, 50vh); margin: 0; padding: 3px; overflow-y: auto; list-style: none; }
 .stc-library-list li[hidden], .stc-library-none[hidden] { display: none; }
@@ -97,7 +71,7 @@
 }
 @media (max-width: 700px) {
   .stc-bar { padding: 8px; }
-  .stc-bar .st-button--tool .st-button-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .stc-bar .ck-button--tool .ck-button-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .stc-state { order: 1; flex-basis: 100%; }
 }
 @media (max-width: 480px) {

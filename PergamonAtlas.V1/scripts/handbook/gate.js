@@ -39,6 +39,9 @@
     { js: '/scripts/handbook/component-examples.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.componentExamples) },
     { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) },
     { js: '/scripts/handbook/grid-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.gridPage) },
+    // Canvas design: shared by the Layout Lab and the Node Canvas.
+    { css: '/styles/canvas-kit.css' },
+    { js: '/scripts/design/canvas-kit.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.canvasKit) },
     // Layout Lab: the editing engine, its controller and decorations.
     { css: '/styles/grid-editor.css' },
     { js: '/scripts/grid/editor.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.editor) },

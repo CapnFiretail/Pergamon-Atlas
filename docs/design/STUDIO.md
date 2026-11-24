@@ -14,10 +14,11 @@ placeholder.
 | `PergamonAtlas.V1/scripts/studio/gate.js` | Shows the Studio (and only then loads its code) or the generic access-denied notice. |
 | `PergamonAtlas.V1/scripts/studio/sections.js` | **The sections: the source of truth** (groups, icons, the default section). |
 | `PergamonAtlas.V1/scripts/studio/studio.js` | The shell: routes, the site sidebar's destinations, breadcrumbs, placeholders, section renderers. |
-| `PergamonAtlas.V1/scripts/studio/ui.js` | Controls shared by sections: buttons, View / Edit control, modal dialog. |
-| `PergamonAtlas.V1/styles/studio.css` | Layout and those controls (colours from theme tokens, text from type roles). |
+| `PergamonAtlas.V1/scripts/studio/ui.js` | Controls shared by sections: buttons and icons (from the canvas design), View / Edit control, modal dialog. |
+| `PergamonAtlas.V1/styles/studio.css` | Layout and those controls except buttons (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/studio/connections/` | The Connections section, below. |
-| `PergamonAtlas.V1/styles/studio-connections.css` | Its toolbar, panel and Node Library. |
+| `PergamonAtlas.V1/styles/studio-connections.css` | Its panel and Node Library. |
+| `PergamonAtlas.V1/styles/canvas-kit.css`, `scripts/design/canvas-kit.js` | The canvas design Connections shares with the Atlas Grid's editors: frame, toolbar, buttons, floating controls, selection (`HANDBOOK.md` › Files). |
 | `tests/design/studio.test.mjs` | Sections, and which pages load Studio files. |
 | `tests/design/connections.test.mjs` | Connections without a browser: geometry, registry, document, storage, store. |
 
@@ -99,6 +100,9 @@ choosing a curve's route; a minimap; controls that thin out on very small nodes
   - each environment's status
   - deployment metadata
   - visual comparisons between environments
+- **Claude Code Analytics** (planned, not started): its scope, data source and
+  place in the navigation are not decided. Separate from the Development ›
+  Analytics placeholder, which is about how the site and its games are used.
 
 ## Adding a section
 

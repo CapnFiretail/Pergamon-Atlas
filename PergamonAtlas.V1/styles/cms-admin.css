@@ -752,7 +752,8 @@ select.cms-field-input { cursor: pointer; }
    right with the inspector and, over it, the card editor (one column, one
    width: opening the editor doesn't move the canvas). Narrower: the inspector
    is a strip at the bottom that only says the page can't be arranged there.
-   Decorations: styles/grid-editor.css. */
+   Canvas, buttons and floating controls: styles/canvas-kit.css; decorations:
+   styles/grid-editor.css. */
 .cms-layout-bar, .cms-layout-bar * { box-sizing: border-box; }
 .cms-layout-bar {
   position: fixed;
@@ -767,31 +768,27 @@ select.cms-field-input { cursor: pointer; }
 }
 .cms-layout-bar[hidden], .cms-layout-bar [hidden] { display: none; }
 .cms-layout-section { display: grid; gap: 8px; min-width: 0; }
+.cms-layout-section[data-section="add"], .cms-layout-section[data-section="draft"] { padding-top: 18px; border-top: 1px solid var(--color-border); }
+.cms-layout-section[data-section="widget"] .cms-admin-label { color: var(--color-accent-text); }
 .cms-layout-section .cms-admin-label { margin: 0; }
 .cms-layout-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .cms-layout-info { display: grid; gap: 2px; min-height: 54px; min-width: 0; margin: 0; align-content: start; }
-.cms-layout-name { font-size: 16px; font-weight: 800; }
+.cms-layout-name { font-family: var(--type-section-title-family); font-size: var(--type-section-title-size); font-weight: var(--type-section-title-weight); line-height: var(--type-section-title-leading); }
 .cms-layout-details { color: var(--color-text-secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
 .cms-layout-tool, .cms-layout-select {
   min-width: 0;
   min-height: 36px;
   padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-background);
-  color: var(--color-text-primary);
   font: 600 13px/1.1 var(--font-ui);
-  cursor: pointer;
 }
-.cms-layout-tool:hover:not(:disabled), .cms-layout-select:hover { border-color: var(--color-accent); }
-.cms-layout-tool:disabled { opacity: 0.45; cursor: default; }
-.cms-layout-tool[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-accent-soft); color: var(--color-accent-text); }
-.cms-layout-remove { grid-column: 1 / -1; color: var(--color-danger); }
+.cms-layout-select { border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: var(--color-background); color: var(--color-text-primary); cursor: pointer; }
+.cms-layout-select:hover { border-color: var(--color-accent); }
+.cms-layout-remove { grid-column: 1 / -1; }
 .cms-layout-label { align-self: center; color: var(--color-text-secondary); font-size: 13px; font-weight: 700; }
 [data-section="add"] .cms-layout-group { grid-template-columns: auto minmax(0, 1fr); }
 [data-section="add"] .cms-layout-tool { grid-column: 1 / -1; }
-[data-section="canvas"] .cms-layout-group { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; }
-.cms-layout-zoom { min-width: 40px; color: var(--color-text-secondary); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.cms-layout-bar .ck-float { position: static; justify-self: start; }
+.cms-layout-zoom { color: var(--color-text-secondary); text-align: center; }
 .cms-layout-zoom:empty { display: none; }
 .cms-layout-save .cms-drawer-primary, .cms-layout-save .cms-drawer-secondary { min-height: 40px; }
 .cms-layout-save > .cms-layout-tool { grid-column: 1 / -1; }
@@ -815,13 +812,22 @@ select.cms-field-input { cursor: pointer; }
     bottom: 0;
     width: var(--cms-drawer-w);
     padding: 20px;
-    border-left: 1px solid color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+    border-left: 1px solid var(--color-border);
+    box-shadow: var(--shadow-raised);
   }
+  /* Floating over the canvas, at its bottom left. */
+  :root[data-cms-mode="layout"] .cms-layout-bar .ck-float { position: fixed; left: 24px; bottom: 16px; }
+  :root[data-cms-mode="layout"]:has(.atlas-edit-canvas.is-editing) .cms-layout-bar .ck-float { opacity: 0.2; }
+  :root[data-cms-mode="layout"] .cms-layout-section[data-section="canvas"] { display: contents; }
+  :root[data-cms-mode="layout"] .cms-layout-section[data-section="canvas"] .cms-admin-label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
   /* The card editor in the same column, under the header; the page doesn't narrow. */
   :root[data-cms-mode="layout"] .cms-drawer { top: var(--cms-layout-top, 88px); box-shadow: none; }
   :root[data-cms-mode="layout"][data-cms-drawer="open"] .pa-page { margin-right: 0; }
   :root[data-cms-mode="layout"][data-cms-drawer="open"] .cms-admin-panel { right: 24px; }
-  :root[data-cms-mode="layout"] .pa-main.home-page, :root[data-cms-mode="layout"] #footer-placeholder { margin-right: var(--cms-drawer-w); }
+  /* The canvas fills the window beside the column, with room below the page for
+     the floating controls (layout-mode.js allows for it). */
+  :root[data-cms-mode="layout"] .pa-main.home-page { box-sizing: border-box; min-height: calc(100vh - var(--cms-layout-top, 88px)); margin-right: var(--cms-drawer-w); padding-bottom: 72px; }
+  :root[data-cms-mode="layout"] #footer-placeholder { display: none; }
   :root[data-cms-mode="layout"] #home {
     width: var(--cms-canvas-width, auto);
     margin: 0 0 var(--cms-canvas-below, 0) var(--cms-canvas-left, 0);

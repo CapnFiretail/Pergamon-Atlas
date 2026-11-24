@@ -65,6 +65,7 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Database, access, media | `docs/cms/ARCHITECTURE.md` §2–4; the one migration in `supabase/proposed/` |
 | Staging | `docs/cms/STAGING.md` › Keeping production isolated |
 | Colours, spacing, surfaces | `styles/theme.css` (values); `scripts/design/colors.js`, `surfaces.js` (uses) |
+| Look of an editing canvas (either engine) | Header of `styles/canvas-kit.css`; `HANDBOOK.md` › Files |
 | Typography | `scripts/design/typography.js` (the role); `HANDBOOK.md` › Connecting a component to a role |
 | Handbook pages | `HANDBOOK.md` › Adding a section; `scripts/handbook/handbook.js` header |
 | Atlas Studio | `docs/design/STUDIO.md`; `scripts/studio/studio.js` header |

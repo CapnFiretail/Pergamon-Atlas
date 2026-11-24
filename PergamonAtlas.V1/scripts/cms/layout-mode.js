@@ -20,6 +20,9 @@
 // set here, rules in styles/cms-admin.css): the renderers lay out as always
 // and the controllers already work in screen coordinates. Long pages shrink
 // to MIN_SCALE, then scroll. At 900px and narrower nothing is editable.
+// The canvas's look (dots behind the page, floating controls at the bottom
+// left, round actions on the selected widget) is the shared canvas design,
+// styles/canvas-kit.css; what the actions do is the inspector's own commands.
 //
 // Which widths a layout must fit: the engine accepts a change only if it
 // fits at env.width and at every wider width. Here env.width is the region's
@@ -37,12 +40,15 @@
   const cms = window.PergamonCMS = window.PergamonCMS || {};
   const G = window.PergamonGrid;
   if (!G || !G.editor || !G.overlay || !G.interaction || !G.widgetTypes) return;
+  const kit = window.PergamonDesign && window.PergamonDesign.canvasKit;
+  if (!kit) return;
   const E = G.editor, TYPES = G.widgetTypes.types;
 
   // The content width of a 1280px window: less its scrollbar and the page's
   // insets; beside the expanded sidebar, less that and the gutter.
   const FULL = 1280 - 15 - 48, BESIDE = FULL - 220 - G.GUTTER;
   const INSET = 24;                   // around the canvas (--page-inset-widgets)
+  const FLOAT = 48;                   // the floating controls' room below the page
   const MIN_PAGE = 1280 - 2 * INSET;  // the narrowest page drawn on the canvas
   const MIN_SCALE = 0.6;              // a tall page scrolls rather than shrink further
 
@@ -69,8 +75,13 @@
     bar.setAttribute('aria-label', 'Layout Mode');
     bar.hidden = true;
     function button(text, onClick, cls) {
-      const b = el('button', cls || 'cms-layout-tool', text);
+      const b = el('button', cls || 'cms-layout-tool ck-button', text);
       b.type = 'button';
+      b.addEventListener('click', onClick);
+      return b;
+    }
+    function iconButton(text, icon, onClick, title) {
+      const b = kit.button({ label: text, icon, iconOnly: true, title });
       b.addEventListener('click', onClick);
       return b;
     }
@@ -95,14 +106,14 @@
     const manageButton = button('Manage cards', () => { if (selected) env.openManager(content.instanceKey(selected.id), manageButton); });
     const earlier = button('Earlier on phones', () => restack(-1));
     const later = button('Later on phones', () => restack(1));
-    const removeButton = button('Remove widget', remove, 'cms-layout-tool cms-layout-remove');
+    const removeButton = button('Remove widget', remove, 'cms-layout-tool cms-layout-remove ck-button ck-button--danger');
     const [typeLabel, typeSelect] = select('Type', 'cms-layout-type');
     content.WIDGET_TYPES.forEach(t => { const o = el('option', '', content.WIDGET_NAMES[t]); o.value = t; typeSelect.append(o); });
     const [regionLabel, regionSelect] = select('Area', 'cms-layout-region');
     const addButton = button('Add widget', add);
-    const undoButton = button('Undo', () => env.undo());
-    const redoButton = button('Redo', () => env.redo());
-    const cellsButton = button('Grid', () => { showCells = !showCells; bound.forEach(b => b.grid.setDebug(showCells)); update(); });
+    const undoButton = iconButton('Undo', 'undo', () => env.undo());
+    const redoButton = iconButton('Redo', 'redo', () => env.redo());
+    const cellsButton = iconButton('Grid', 'grid', () => { showCells = !showCells; bound.forEach(b => b.grid.setDebug(showCells)); update(); }, 'Show the grid cells');
     cellsButton.setAttribute('aria-label', 'Show the grid cells');
     const discardButton = button('Discard layout changes', () => {
       if (!workspace.discardLayout()) return;
@@ -118,8 +129,8 @@
     addGroup.append(typeLabel, typeSelect, regionLabel, regionSelect, addButton);
     const widgetGroup = el('div', 'cms-layout-group');
     widgetGroup.append(editButton, manageButton, earlier, later, removeButton);
-    const historyGroup = el('div', 'cms-layout-group');
-    const zoom = el('span', 'cms-layout-zoom');
+    const historyGroup = el('div', 'cms-layout-float ck-float');
+    const zoom = el('span', 'cms-layout-zoom ck-readout pa-type-button-small');
     historyGroup.append(undoButton, redoButton, cellsButton, zoom);
     const saveGroup = el('div', 'cms-layout-group cms-layout-save');
     saveGroup.append(discardButton, theirsButton, keepButton, saveButton, doneButton);
@@ -142,6 +153,13 @@
     const short = r => content.regionLabel(r).split(',')[0];
     const widgetOf = s => { const r = s && workspace.region(s.region); return (r && r.widgets.find(w => w.id === s.id)) || null; };
 
+    // On the selected widget: the inspector's commands, at hand.
+    const hasCard = w => w.type === 'feature-hero' || w.type === 'feature-spotlight', hasCards = w => w.type !== 'atlas-navigation';
+    const actions = [
+      { kind: 'edit', label: w => (hasCard(w) ? 'Edit card' : 'Manage cards'), shown: hasCards, run: w => (hasCard(w) ? editButton : manageButton).click() },
+      { kind: 'remove', label: () => 'Remove widget', shown: () => true, run: () => removeButton.click() }
+    ];
+
     // ── The grids ────────────────────────────────────────────────────────
     function envFor(id) {
       const b = bound.get(id), layout = workspace.region(id);
@@ -152,7 +170,7 @@
     const editable = id => { const b = bound.get(id); return on && wide() && !!b && b.grid.state() === 'grid'; };
 
     // ── The workspace ────────────────────────────────────────────────────
-    const page = document.getElementById('home'), html = document.documentElement;
+    const page = document.getElementById('home'), html = document.documentElement, stage = page.closest('.pa-main');
     const wide = () => window.innerWidth > 900;
     const dragging = () => [...bound.values()].some(b => !!b.ctl.active());
     let scale = 1;
@@ -167,16 +185,24 @@
       const height = page.offsetHeight;
       const across = room - bar.offsetWidth - 2 * INSET;
       // Never rescaled under the pointer: the drop does that.
-      if (!dragging()) scale = Math.min(1, across / width, Math.max(MIN_SCALE, (window.innerHeight - top - 2 * INSET) / height));
+      if (!dragging()) scale = Math.min(1, across / width, Math.max(MIN_SCALE, (window.innerHeight - top - 2 * INSET - FLOAT) / height));
       page.style.setProperty('--atlas-scale', scale);
-      page.style.setProperty('--cms-canvas-left', Math.max(0, (across - width * scale) / 2) + 'px');
+      const left = Math.max(0, (across - width * scale) / 2), dot = 24 * scale;
+      page.style.setProperty('--cms-canvas-left', left + 'px');
       page.style.setProperty('--cms-canvas-below', (scale - 1) * height + 'px');
       zoom.textContent = `${Math.round(scale * 100)}%`;
+      // The dots scale with the page, with one on its corner.
+      stage.classList.add('ck-scope', 'ck-surface');
+      stage.style.setProperty('--ck-dot', dot + 'px');
+      stage.style.setProperty('--ck-dx', INSET + left - dot / 2 + 'px');
+      stage.style.setProperty('--ck-dy', INSET - dot / 2 + 'px');
     }
     function unfit() {
       scale = 1;
       html.style.removeProperty('--cms-layout-top');
       ['--cms-canvas-width', '--atlas-scale', '--cms-canvas-left', '--cms-canvas-below'].forEach(p => page.style.removeProperty(p));
+      stage.classList.remove('ck-scope', 'ck-surface');
+      ['--ck-dot', '--ck-dx', '--ck-dy'].forEach(p => stage.style.removeProperty(p));
       zoom.textContent = '';
     }
     function bind() {
@@ -185,7 +211,7 @@
       now.forEach(region => {
         if (bound.has(region.id)) return;
         const id = region.id, grid = region.grid;
-        const overlay = G.overlay(grid.element(), { label });
+        const overlay = G.overlay(grid.element(), { label, actions });
         const b = { region, grid, overlay, ctl: null };
         bound.set(id, b);
         b.ctl = G.interaction({
@@ -348,8 +374,8 @@
       } else details.textContent = 'Click a widget, or Tab to it. Arrows move it, Shift + arrows resize it.';
       const region = w && regions.find(r => r.id === selected.region);
       const order = region ? G.stackOrder(region) : [];
-      editButton.disabled = !w || (w.type !== 'feature-hero' && w.type !== 'feature-spotlight');
-      manageButton.disabled = !w || w.type === 'atlas-navigation';
+      editButton.disabled = !w || !hasCard(w);
+      manageButton.disabled = !w || !hasCards(w);
       earlier.disabled = !ready || order.indexOf(w.id) === 0;
       later.disabled = !ready || order.indexOf(w.id) === order.length - 1;
       removeButton.disabled = !ready;

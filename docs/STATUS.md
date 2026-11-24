@@ -6,19 +6,18 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 ## Now
 
 - **Branch:** `development/v1-admin-infrastructure`, ahead of `origin/main` by
-  Atlas Studio (S1.1 and S2), which is not merged or in production.
+  Atlas Studio and S3 (S1.1, S2, S3), approved by the user for release.
 - **Production:** `fd03796` (through the copyable source paths in Handbook ›
   Library › Widgets), verified 2026-11-24 against the live files and as a guest;
   later commits on `main` so far are this file only. Homepage version 52,
   schema 1, no draft (as of H5.3, 2026-11-24).
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
   not confirmed.
-- **Active milestone:** none. Atlas Studio S1.1 (foundation) and S2 (Connections
-  editor), `design/STUDIO.md`, are done: visual review approved by the user
-  2026-11-24. Other Studio sections are placeholders. Connections are stored in
-  the browser only. Browser checks ran locally in Chromium with a stand-in for
-  Supabase. H5.3 is released and Gate 7 closed early (record:
-  `cms/PRODUCTION-ROLLOUT.md` › H5.3 release).
+- **Active milestone:** releasing S1–S3. Atlas Studio S1.1 (foundation) and S2
+  (Connections editor, stored in the browser only), `design/STUDIO.md`: approved.
+  S3, Unified Canvas Design: functionally approved 2026-11-24; its visual design is
+  acceptable for now and provisional (Next). Other Studio sections are placeholders.
+  Browser checks ran locally in Chromium with the real migrations in PGlite.
 
 ## Risks
 
@@ -33,10 +32,10 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Next
 
-- **S3, Unified Canvas Design** (not started): bring the Connections canvas
-  appearance (`styles/canvas.css`; Handbook › Foundations › Node Canvas) to the
-  existing Layout Editor, keeping its underlying grid logic as it is.
-- Merging Studio to `main` deploys it to production: the user decides when.
+- Deferred design refinement: revisit the visual design of the editing canvases
+  (Layout Mode, Layout Lab). S3 is not finished visual polish.
+- Claude Code Analytics, planned for Studio, not started: `design/STUDIO.md` ›
+  Planned sections.
 - Deferred from S2: `design/STUDIO.md` › Connections.
 - Workflow candidates: split `docs/cms/ARCHITECTURE.md`; tidy Claude's memory.
 - Planned and deferred work: `design/HANDBOOK.md` › Built and planned.

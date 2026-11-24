@@ -1,4 +1,5 @@
-// Atlas Studio controls shared by its sections. Styles: styles/studio.css.
+// Atlas Studio controls shared by its sections. Styles: styles/studio.css; the
+// icons and buttons are the canvas design's (scripts/design/canvas-kit.js).
 //
 //   PergamonStudio.ui.el(tag, className, text)
 //   ui.icon(name)                       a 24px-grid stroked icon
@@ -14,37 +15,12 @@
 (function () {
   'use strict';
   const ns = window.PergamonStudio = window.PergamonStudio || {};
-  const ICONS = {
-    add: '<path d="M12 5v14M5 12h14"/>',
-    minus: '<path d="M5 12h14"/>',
-    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
-    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
-    fit: '<path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/>',
-    import: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M4 20h16"/>',
-    export: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4 20h16"/>',
-    close: '<path d="M6 6l12 12M18 6 6 18"/>',
-    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
-    link: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
-  };
+  const { icon, button } = window.PergamonDesign.canvasKit;
   function el(tag, className, text) {
     const n = document.createElement(tag);
     if (className) n.className = className;
     if (text !== undefined) n.textContent = text;
     return n;
-  }
-  function icon(name) {
-    const s = el('span', 'st-tool-icon');
-    s.setAttribute('aria-hidden', 'true');
-    s.innerHTML = `<svg viewBox="0 0 24 24" focusable="false">${ICONS[name] || ''}</svg>`;
-    return s;
-  }
-  function button(o) {
-    const b = el('button', `st-button st-button--${o.kind || 'tool'} pa-type-button-small`);
-    b.type = 'button';
-    if (o.icon) b.append(icon(o.icon));
-    b.append(el('span', o.iconOnly ? 'pa-visually-hidden' : 'st-button-label', o.label));
-    if (o.iconOnly || o.title) b.title = o.title || o.label;
-    return b;
   }
   function segmented(label, options, onChoose) {
     const g = el('div', 'st-segmented');

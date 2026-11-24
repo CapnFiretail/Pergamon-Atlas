@@ -267,6 +267,23 @@
     va.append(vwrap, el('p', 'pa-type-body-small hb-muted', 'The renderer given the overlapping layout: it is refused, and nothing is drawn rather than something wrong.'), refused.frame, refused.status);
     view.append(va);
 
+    // ── Editing ──────────────────────────────────────────────────────────
+    const ed = el('section', 'hb-section');
+    const edFacts = el('dl', 'hbg-facts');
+    const code = t => el('code', 'hb-code', t);
+    const link = el('a', '', 'Node Canvas');
+    link.href = '#/foundations/canvas';
+    [['Where', ['Admin Mode’s Layout Mode and the Layout Lab, over the same engine (', code('scripts/grid/editor.js'), '), controller (', code('scripts/grid/interaction.js'), ') and decorations (', code('scripts/grid/overlay.js'), ', ', code('styles/grid-editor.css'), ').']],
+      ['Appearance', ['The canvas design (', code('styles/canvas-kit.css'), '), shared with the node canvas and described at ', link, '.']],
+      ['Region', 'A bordered part of the dotted canvas, with a dot where four cells meet. With Grid off, the canvas runs on underneath.'],
+      ['Selected widget', 'The selection outline, its size and place, eight handles (24px to press) and, in Layout Mode, the pencil and delete.'],
+      ['Moving and resizing', 'The widget dims where it was; the dashed preview shows where it would go: solid at its minimum size, in the danger colour where it isn’t allowed.'],
+      ['Touch', 'Tap to select, then drag. An unselected widget scrolls the page.'],
+      ['Keyboard', 'Arrows move, Shift + arrows resize, Escape cancels or deselects.']]
+      .forEach(([k, v]) => { const dd = el('dd', 'pa-type-body-small'); dd.append(...[].concat(v)); edFacts.append(el('dt', 'pa-type-label', k), dd); });
+    ed.append(el('h2', 'pa-type-section-title-large', 'Editing'), edFacts);
+    view.append(ed);
+
     // ── Limits ───────────────────────────────────────────────────────────
     const lim = el('section', 'hb-note');
     lim.append(el('h2', 'pa-type-item-title', 'Known limits'));

@@ -18,19 +18,17 @@
 //   cv.focus(selection), cv.destroy()
 //
 // What the pointer is over is marked with data-cv: node, port, edge, edge-end,
-// edit, remove. Controls keep their on-screen size at every zoom (--cv-px).
-// Styles: styles/canvas.css.
+// edit, remove. Controls keep their on-screen size at every zoom (--ck-px).
+// Styles: styles/canvas.css, over the design all editing canvases share
+// (styles/canvas-kit.css, scripts/design/canvas-kit.js).
 (function () {
   'use strict';
   const NS = window.PergamonCanvas = window.PergamonCanvas || {};
   const G = NS.geometry;
-  if (!G) return;
+  const kit = window.PergamonDesign && window.PergamonDesign.canvasKit;
+  if (!G || !kit) return;
 
   const SVG = 'http://www.w3.org/2000/svg';
-  const ICONS = {
-    edit: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
-    remove: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
-  };
   const PORT_NAMES = { top: 'top', right: 'right', bottom: 'bottom', left: 'left' };
   function el(tag, cls, data) {
     const n = document.createElement(tag);
@@ -46,8 +44,8 @@
     return n;
   }
   function action(kind, data) {
-    const b = el('button', 'cv-action cv-action--' + kind, Object.assign({ cv: kind }, data));
-    b.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[kind]}</svg>`;
+    const b = kit.action(kind);
+    Object.assign(b.dataset, { cv: kind }, data);
     return b;
   }
   const place = (n, x, y) => { n.style.transform = `translate(${x}px, ${y}px)`; };
@@ -55,7 +53,7 @@
   function renderer(host, o = {}) {
     const nodeLabel = o.nodeLabel || (n => n.name);
     const edgeLabel = o.edgeLabel || (e => e.name || 'Connection');
-    const box = el('div', 'cv');
+    const box = el('div', 'cv ck-scope ck-surface');
     box.setAttribute('role', 'group');
     box.setAttribute('aria-label', o.label || 'Canvas');
     box.tabIndex = 0;
@@ -82,7 +80,7 @@
     const edgeTools = el('div', 'cv-edge-tools');
     const edgeEdit = action('edit'), edgeRemove = action('remove');
     edgeTools.append(edgeEdit, edgeRemove);
-    const ends = { source: el('button', 'cv-end', { cv: 'edge-end', end: 'source' }), target: el('button', 'cv-end', { cv: 'edge-end', end: 'target' }) };
+    const ends = { source: el('button', 'cv-end ck-handle ck-handle--square', { cv: 'edge-end', end: 'source' }), target: el('button', 'cv-end ck-handle ck-handle--square', { cv: 'edge-end', end: 'target' }) };
     tools.append(ends.source, ends.target, edgeTools);
 
     function makeNode(id) {
@@ -95,7 +93,7 @@
       const acts = el('div', 'cv-node-actions');
       const edit = action('edit', { id }), remove = action('remove', { id });
       acts.append(edit, remove);
-      const ports = G.PORTS.map(p => el('button', 'cv-port', { cv: 'port', id, port: p }));
+      const ports = G.PORTS.map(p => el('button', 'cv-port ck-handle', { cv: 'port', id, port: p }));
       n.append(body, ...ports, acts);
       cards.append(n);
       return { root: n, body, logo, name, edit, remove, ports, markup: null };
@@ -109,7 +107,7 @@
       hit.setAttribute('role', 'button');
       g.append(line, ...heads, hit);
       lines.append(g);
-      const label = el('span', 'cv-edge-label', { cv: 'edge', id });
+      const label = el('span', 'cv-edge-label ck-tag', { cv: 'edge', id });
       label.setAttribute('aria-hidden', 'true');
       labels.append(label);
       return { root: g, line, heads, hit, label };
@@ -228,10 +226,10 @@
       view = { x: v.x, y: v.y, z: v.z };
       world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.z})`;
       const s = box.style, dot = G.DOT * view.z * (view.z < 0.5 ? 2 : 1);       // dots never crowd
-      s.setProperty('--cv-scale', view.z);
-      s.setProperty('--cv-dot', dot + 'px');
-      s.setProperty('--cv-dx', view.x - dot / 2 + 'px');                        // a dot on the origin
-      s.setProperty('--cv-dy', view.y - dot / 2 + 'px');
+      s.setProperty('--ck-scale', view.z);
+      s.setProperty('--ck-dot', dot + 'px');
+      s.setProperty('--ck-dx', view.x - dot / 2 + 'px');                        // a dot on the origin
+      s.setProperty('--ck-dy', view.y - dot / 2 + 'px');
       viewers.forEach(fn => fn(view));
     }
     const zoom = (factor, p) => { const z = size(); setView(G.zoomAt(view, view.z * factor, p || { x: z.w / 2, y: z.h / 2 })); };

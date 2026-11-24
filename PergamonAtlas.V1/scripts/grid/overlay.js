@@ -4,15 +4,19 @@
 // changes a widget's geometry. It only draws; scripts/grid/interaction.js
 // decides what is selected and what is previewed.
 //
-//   const ov = PergamonGrid.overlay(canvas, { label })
+//   const ov = PergamonGrid.overlay(canvas, { label, actions })
 //     canvas  the renderer's canvas (grid.element())
 //     label   (placement) → accessible name for a widget, e.g. "Hero"
+//     actions [{ kind: 'edit' | 'remove', label(placement), shown(placement), run(placement) }]
+//             round controls on the selected widget (pointer only: the page
+//             offers the same commands to the keyboard; none by default)
 //   ov.sync(layout)               a focusable hit area over every widget
 //   ov.select(id | null)          outline, eight handles and a size badge
 //   ov.preview(placement | null, state)   'valid' | 'invalid' | 'minimum'
 //   ov.source(id | null)          mark the widget being edited
 //   ov.hit(id), ov.selected(), ov.destroy()
-// Styles: styles/grid-editor.css.
+// Styles: styles/grid-editor.css, over the design all editing canvases share
+// (styles/canvas-kit.css, scripts/design/canvas-kit.js).
 (function () {
   'use strict';
   const NS = window.PergamonGrid = window.PergamonGrid || {};
@@ -36,6 +40,7 @@
   function overlay(canvas, opts) {
     opts = opts || {};
     const label = typeof opts.label === 'function' ? opts.label : w => w.type;
+    const kit = window.PergamonDesign && window.PergamonDesign.canvasKit;
     const hits = new Map();
     let layout = { widgets: [] }, selectedId = null;
 
@@ -43,24 +48,38 @@
     selection.className = 'atlas-edit-item atlas-edit-selection';
     selection.hidden = true;
     const badge = document.createElement('span');
-    badge.className = 'atlas-edit-badge';
+    badge.className = 'atlas-edit-badge ck-tag';
     selection.append(badge);
     for (const [name, text] of HANDLES) {
       const h = document.createElement('span');
-      h.className = 'atlas-edit-handle';
+      h.className = 'atlas-edit-handle ck-handle';
       h.dataset.handle = name;
       h.setAttribute('role', 'img');
       h.setAttribute('aria-label', text);
       h.title = text;
       selection.append(h);
     }
+    const tools = document.createElement('div');
+    tools.className = 'atlas-edit-actions';
+    // A press here is never a press on the canvas, and focus stays on the widget.
+    tools.addEventListener('pointerdown', e => e.stopPropagation());
+    tools.addEventListener('mousedown', e => e.preventDefault());
+    const actions = (kit && opts.actions || []).map(a => {
+      const b = kit.action(a.kind);
+      b.tabIndex = -1;
+      b.addEventListener('click', () => { const w = layout.widgets.find(x => x.id === selectedId); if (w) a.run(w); });
+      tools.append(b);
+      return { a, b };
+    });
+    selection.append(tools);
     const preview = document.createElement('div');
     preview.className = 'atlas-edit-item atlas-edit-preview';
     preview.hidden = true;
     const previewLabel = document.createElement('span');
-    previewLabel.className = 'atlas-edit-badge';
+    previewLabel.className = 'atlas-edit-badge ck-tag';
     preview.append(previewLabel);
     canvas.append(selection, preview);
+    canvas.classList.add('atlas-edit-canvas', 'ck-scope');
 
     function describe(w) {
       return `${label(w)}, ${where(w)}, ${w.cols} by ${w.rows}${w.id === selectedId ? ', selected' : ''}`;
@@ -71,6 +90,11 @@
       if (!w) return;
       place(selection, w);
       badge.textContent = `${size(w)} · col ${w.col}, row ${w.row}`;
+      for (const { a, b } of actions) {
+        b.hidden = !a.shown(w);
+        b.title = a.label(w);
+        b.setAttribute('aria-label', b.title);
+      }
     }
 
     return {
@@ -117,7 +141,7 @@
       source(id) { for (const [hid, hit] of hits) hit.classList.toggle('is-source', hid === id); selection.classList.toggle('is-editing', !!id); },
       hit: id => hits.get(id) || null,
       selected: () => selectedId,
-      destroy() { for (const hit of hits.values()) hit.remove(); hits.clear(); selection.remove(); preview.remove(); }
+      destroy() { for (const hit of hits.values()) hit.remove(); hits.clear(); selection.remove(); preview.remove(); canvas.classList.remove('atlas-edit-canvas', 'ck-scope'); }
     };
   }
 

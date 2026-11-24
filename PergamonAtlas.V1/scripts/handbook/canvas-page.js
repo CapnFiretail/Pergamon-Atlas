@@ -1,13 +1,15 @@
 // Atlas Handbook › Foundations › Node Canvas: the canvas conventions, with an
 // example drawn and edited by the real code (scripts/canvas/). Nothing is saved,
 // and the sample nodes belong to this page: what Atlas Studio puts on a canvas
-// is documented in docs/design/STUDIO.md.
+// is documented in docs/design/STUDIO.md. It also documents the canvas design,
+// which every editing canvas shares (styles/canvas-kit.css).
 (function () {
   'use strict';
   const ns = window.PergamonHandbook = window.PergamonHandbook || {};
   const app = ns.app;
   const CV = window.PergamonCanvas;
-  if (!app || !CV || !CV.renderer || !CV.interaction) return;
+  const kit = window.PergamonDesign && window.PergamonDesign.canvasKit;
+  if (!app || !kit || !CV || !CV.renderer || !CV.interaction) return;
   const G = CV.geometry;
 
   const SITE_DIR = 'PergamonAtlas.V1/';     // the site's folder in the repository
@@ -25,17 +27,30 @@
     ]
   });
 
-  // [part, how it looks and behaves, where it is]
+  // The canvas design, shared by every editing canvas, then the node canvas's own
+  // parts: [part, how it looks and behaves, where it is]
+  const KIT = 'styles/canvas-kit.css', KIT_JS = 'scripts/design/canvas-kit.js';
+  const SHARED = [
+    ['Surface', 'Page background with a dot every 24 units, scaled with the view. On the Atlas Grid the dots inside a region sit where four cells meet, and the cells themselves show faintly, more while something is dragged.', [KIT, 'styles/grid-editor.css']],
+    ['Item', 'A panel on the canvas, lifted by the raised shadow. A widget being edited keeps its own appearance: the shadow belongs to the editor.', ['styles/canvas.css', 'styles/grid-editor.css']],
+    ['Hover, selected, focused', 'Hover: the border takes 55% of the accent. Selected: an accent border with a 2px accent ring. Keyboard focus: a 2px focus ring, 2px clear of the item. Their width on screen is the same at every zoom.', [KIT]],
+    ['Handles', 'A 12px round knob on the edge, in a larger press area: ports and resize handles. Square knobs reconnect.', [KIT]],
+    ['Round actions', 'Admin Mode’s round pencil and, in the danger colour, delete, on the selected item.', [KIT, KIT_JS]],
+    ['Labels', 'A pill: a connection’s name, a widget’s size and place.', [KIT]],
+    ['Preview', 'Dashed accent while something is dragged; the danger colour where it isn’t allowed. Nothing changes until release, and Escape cancels.', ['styles/canvas.css', 'styles/grid-editor.css']],
+    ['Frame, toolbar, floating controls', 'A panel with a toolbar on the surface colour; in Edit its border takes the accent. View controls float at the canvas’s bottom left. Layout Mode’s canvas is the window itself, beside its inspector.', [KIT, 'styles/cms-admin.css']],
+    ['Buttons', 'Pills with an icon: tool, primary, secondary, danger. A pressed toggle uses the soft accent.', [KIT, KIT_JS]]
+  ];
   const PARTS = [
-    ['Canvas', `Page background with a dot every ${G.DOT} units; nodes snap to half of that (${G.STEP}). Dots never crowd: they thin out below 50%.`, ['styles/canvas.css', 'scripts/canvas/renderer.js']],
+    ['Canvas', `Page background with a dot every ${G.DOT} units; nodes snap to half of that (${G.STEP}). Dots never crowd: they thin out below 50%.`, [KIT, 'scripts/canvas/renderer.js']],
     ['Node', `A ${G.NODE.w} × ${G.NODE.h} panel (surface, 1px border, panel radius, raised shadow): a 28px logo and the name in the Item title role, up to two lines. A logo may bring its own colour.`, ['styles/canvas.css', 'scripts/canvas/renderer.js']],
     ['Connection', 'A 2px curve that leaves each port square to its edge, with an arrowhead per direction and its name in a pill at the middle. Selected: the accent, 3px.', ['scripts/canvas/geometry.js', 'styles/canvas.css']],
     ['Ports', 'Four per node, at the middle of each edge. Shown on the selected node while editing, and on every node while a connection is being made.', ['scripts/canvas/renderer.js']],
-    ['Pencil and delete', 'Admin Mode’s round pencil and, in the danger colour, delete: above a selected node, and at the middle of a selected connection. They keep their size on screen at every zoom.', ['styles/canvas.css']],
+    ['Pencil and delete', 'Admin Mode’s round pencil and, in the danger colour, delete: above a selected node, and at the middle of a selected connection. They keep their size on screen at every zoom.', [KIT_JS, 'styles/canvas.css']],
     ['Reconnect handles', 'Square handles just outside the ports of a selected connection; drag one to another node or port.', ['scripts/canvas/interaction.js']],
     ['Feedback', 'Accent dashes while connecting, solid when caught by a port; the danger colour when the ends can’t be joined. Nothing changes until release, and Escape cancels.', ['scripts/canvas/interaction.js']],
     ['Undo and redo', 'The Atlas Grid editor’s generic history; each gesture is one step, and typing in one field is one step.', ['scripts/grid/editor.js']],
-    ['Toolbar, dialogs, fields', 'Buttons, the View / Edit control, inputs and the modal dialog (surface, dialog radius and shadow, above the overlay). Used by Atlas Studio; candidates for the Elements page.', ['scripts/studio/ui.js', 'styles/studio.css']]
+    ['Dialogs, fields', 'The View / Edit control, inputs and the modal dialog (surface, dialog radius and shadow, above the overlay). Used by Atlas Studio; candidates for the Elements page.', ['scripts/studio/ui.js', 'styles/studio.css']]
   ];
   const CONTROLS = [
     ['Pan', 'Drag empty canvas, the middle button, a wheel or trackpad scroll; one finger by touch; arrow keys when nothing is selected.'],
@@ -54,18 +69,20 @@
       [chip('Interactive'), chip('Nothing is saved', 'muted'), chip('Used by Atlas Studio', 'active')]));
 
     // ── Example ──────────────────────────────────────────────────────────
-    const toolbar = el('div', 'hb-toolbar hbl-toolbar');
+    const toolbar = el('div', 'ck-bar');
     toolbar.setAttribute('role', 'toolbar');
     toolbar.setAttribute('aria-label', 'Example canvas');
     const tool = (text, label) => { const b = el('button', 'hbl-tool pa-type-tab', text); b.type = 'button'; if (label) b.setAttribute('aria-label', label); return b; };
     const group = (...nodes) => { const g = el('div', 'hb-segmented'); g.append(...nodes); return g; };
-    const viewMode = tool('View'), editMode = tool('Edit'), fit = tool('Fit', 'Fit to view'), reset = tool('Reset', 'Reset the example');
-    toolbar.append(group(viewMode, editMode), group(fit, reset));
+    const viewMode = tool('View'), editMode = tool('Edit'), fit = kit.button({ label: 'Fit', icon: 'fit', title: 'Fit to view' }), reset = kit.button({ label: 'Reset', icon: 'reset', title: 'Reset the example' });
+    toolbar.append(group(viewMode, editMode), el('span', 'ck-spacer'), fit, reset);
+    const frame = el('div', 'ck-frame');
     const host = el('div', 'hbc-canvas');
     const status = el('p', 'pa-type-caption hb-muted hbl-status');
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
-    view.append(toolbar, host, status);
+    frame.append(toolbar, host);
+    view.append(frame, status);
 
     let doc = SAMPLE(), selection = null, editing = true, count = 0;
     const nameOf = id => (doc.nodes.find(n => n.id === id) || {}).name;
@@ -77,6 +94,7 @@
       cv.render(doc, { selection, editing });
       viewMode.setAttribute('aria-pressed', String(!editing));
       editMode.setAttribute('aria-pressed', String(editing));
+      frame.dataset.mode = editing ? 'edit' : 'view';
     }
     const ctl = CV.interaction({
       canvas: cv,
@@ -123,13 +141,15 @@
       sec.append(el('h2', 'pa-type-section-title', title), dl);
       view.append(sec);
     }
+    facts('The canvas design, shared by every editing canvas', SHARED);
     facts('Elements and their source', PARTS);
     facts('Controls', CONTROLS);
     facts('Using it', [
       ['Renderer', 'Draws a model and a view; knows nothing about what the nodes are. Its header is the API.', ['scripts/canvas/renderer.js']],
       ['Interaction', 'Turns input into the page’s callbacks; changes only the view and the preview.', ['scripts/canvas/interaction.js']],
       ['Geometry', 'Ports, curves, fitting and zoom as plain functions; also runs in Node.', ['scripts/canvas/geometry.js']],
-      ['Where used', 'Atlas Studio › Connections (docs/design/STUDIO.md).', ['scripts/studio/connections/page.js']]
+      ['Where used', 'Atlas Studio › Connections (docs/design/STUDIO.md).', ['scripts/studio/connections/page.js']],
+      ['The canvas design is used by', 'This canvas and, on the Atlas Grid, Layout Mode and the Layout Lab. The two editing engines don’t know each other; they share only its appearance.', ['scripts/canvas/renderer.js', 'scripts/grid/overlay.js', 'scripts/cms/layout-mode.js', 'scripts/handbook/layout-lab.js']]
     ]);
   }
 

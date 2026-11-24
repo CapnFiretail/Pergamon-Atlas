@@ -146,8 +146,10 @@
     verified = true;
     state = readState();
     Promise.all([
+      loadStyles('/styles/canvas-kit.css'),
       loadStyles('/styles/cms-admin.css'),
       loadStyles('/styles/grid-editor.css'),
+      loadScript('/scripts/design/canvas-kit.js', () => !!(window.PergamonDesign && window.PergamonDesign.canvasKit)),
       loadScript('/scripts/grid/editor.js', () => !!(grid() && grid().editor)),
       loadScript('/scripts/grid/overlay.js', () => !!(grid() && grid().overlay)),
       loadScript('/scripts/grid/interaction.js', () => !!(grid() && grid().interaction)),

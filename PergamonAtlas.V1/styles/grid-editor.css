@@ -1,4 +1,6 @@
 /* Atlas Grid editing (scripts/grid/overlay.js, scripts/grid/interaction.js).
+ * What it shares with the other editing canvases (dots, rings, handles, round
+ * actions, labels) is styles/canvas-kit.css; this is the grid's own part.
  * Decorations are grid items on the same lines as the widgets
  * (--atlas-col/-row/-cols/-rows), drawn above them; they never change a
  * widget's geometry. Colours are theme roles only.
@@ -6,8 +8,31 @@
  * are drawn larger by as much, so they keep their size on screen.
  * Touch: an unselected widget keeps normal page scrolling; a selected one and
  * its handles don't (touch-action is set by state, before any gesture). */
+.atlas-edit-canvas { --ck-scale: var(--atlas-scale, 1); --ck-dot-px: var(--ck-px); }
+
+/* The cells while editing: the canvas's dots, one where four cells meet, and
+   the cells themselves faintly (more while something is dragged). The canvas
+   continues outside the region, which its border marks. */
+.atlas-grid[data-atlas-debug] .atlas-edit-canvas { outline: 0; }
+.atlas-grid[data-atlas-debug] .atlas-edit-canvas::before { background: color-mix(in srgb, var(--color-text-secondary) 4%, transparent); transition: background-color 0.12s ease; }
+.atlas-grid[data-atlas-debug] .atlas-edit-canvas.is-editing::before { background: color-mix(in srgb, var(--color-accent) 13%, transparent); }
+.atlas-grid[data-atlas-debug][data-atlas-state="grid"] .atlas-edit-canvas:not([data-atlas-empty])::after {
+  content: "";
+  position: absolute;
+  inset: calc(var(--atlas-gap) / -2);
+  z-index: -2;
+  pointer-events: none;
+  padding: calc(2 * var(--ck-px));
+  border-radius: calc(var(--radius-panel) + var(--atlas-gap) / 2);
+  background-color: var(--color-background);
+  background-image: var(--ck-dots);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  background-position: calc((var(--atlas-cell) + var(--atlas-gap)) / -2) calc((var(--atlas-row) + var(--atlas-gap)) / -2);
+  background-size: calc(var(--atlas-cell) + var(--atlas-gap)) calc(var(--atlas-row) + var(--atlas-gap));
+  box-shadow: 0 0 0 var(--ck-px) var(--color-border);
+}
 .atlas-edit-item {
-  --edit-px: calc(1px / var(--atlas-scale, 1));
   grid-column: var(--atlas-col) / span var(--atlas-cols);
   grid-row: var(--atlas-row) / span var(--atlas-rows);
   position: relative;
@@ -17,59 +42,61 @@
 }
 .atlas-edit-item[hidden] { display: none; }
 
+/* The region with the selection is above its neighbours: its handles and
+   outline reach into their gutters. */
+.atlas-grid:has(> .atlas-edit-canvas > .atlas-edit-selection:not([hidden])) { z-index: 1; }
+
 /* A widget's hit area: hover, focus and selection without touching it. */
 .atlas-edit-hit {
   z-index: 2;
   cursor: pointer;
   touch-action: auto;
   outline: none;
+  box-shadow: var(--shadow-raised);
   transition: box-shadow 0.12s ease, background-color 0.12s ease;
 }
-.atlas-edit-hit:hover { box-shadow: inset 0 0 0 var(--edit-px) color-mix(in srgb, var(--color-accent) 55%, transparent); }
-.atlas-edit-hit:focus-visible { box-shadow: 0 0 0 calc(2 * var(--edit-px)) var(--color-background), 0 0 0 calc(4 * var(--edit-px)) var(--color-focus); }
+.atlas-edit-hit:hover { box-shadow: inset 0 0 0 var(--ck-px) var(--ck-outline-hover), var(--shadow-raised); }
+.atlas-edit-hit:focus-visible { box-shadow: var(--ck-ring-focus); }
+/* Focusing a widget selects it: the selection's own outline shows both. */
+.atlas-edit-hit.is-selected:focus-visible { box-shadow: var(--shadow-raised); }
 .atlas-edit-hit.is-selected { cursor: grab; touch-action: none; }
 .atlas-edit-hit.is-source { background: color-mix(in srgb, var(--color-background) 40%, transparent); }
 
-/* The selected widget: outline, size badge, eight handles. */
+/* The selected widget: outline, size badge, eight handles, actions. */
 .atlas-edit-selection {
   z-index: 3;
   pointer-events: none;
-  box-shadow: 0 0 0 calc(2 * var(--edit-px)) var(--color-accent);
+  box-shadow: inset 0 0 0 var(--ck-px) var(--color-accent), var(--ck-ring);
 }
-.atlas-edit-selection.is-editing { box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 50%, transparent); }
+.atlas-edit-selection.is-editing { box-shadow: 0 0 0 var(--ck-px) color-mix(in srgb, var(--color-accent) 50%, transparent); }
 .atlas-edit-badge {
   position: absolute;
-  top: calc(8 * var(--edit-px));
-  left: calc(8 * var(--edit-px));
-  max-width: calc(100% - 16 * var(--edit-px));
-  padding: calc(2 * var(--edit-px)) calc(8 * var(--edit-px));
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  top: calc(12 * var(--ck-px));
+  left: calc(12 * var(--ck-px));
+  max-width: calc(100% - 24 * var(--ck-px));
+  padding: calc(2 * var(--ck-px)) calc(9 * var(--ck-px));
+  border-width: var(--ck-px);
   color: var(--color-text-primary);
-  font: 600 calc(12 * var(--edit-px))/1.4 var(--font-ui);
+  font-size: calc(12 * var(--ck-px));
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
-.atlas-edit-handle {
+.atlas-edit-actions {
   position: absolute;
-  width: calc(24 * var(--edit-px));
-  height: calc(24 * var(--edit-px));
-  margin: calc(-12 * var(--edit-px)) 0 0 calc(-12 * var(--edit-px));
+  top: calc(12 * var(--ck-px));
+  right: calc(12 * var(--ck-px));
+  display: flex;
+  gap: calc(6 * var(--ck-px));
+  pointer-events: auto;
+}
+.atlas-edit-actions [hidden] { display: none; }
+.atlas-edit-selection.is-editing .atlas-edit-actions { visibility: hidden; }
+.atlas-edit-handle {
+  --ck-hit: 24;
+  --ck-inset: 6;
+  margin: calc(-12 * var(--ck-px)) 0 0 calc(-12 * var(--ck-px));
   pointer-events: auto;
   touch-action: none;
 }
-.atlas-edit-handle::before {
-  content: "";
-  position: absolute;
-  inset: calc(7 * var(--edit-px));
-  border: calc(2 * var(--edit-px)) solid var(--color-accent);
-  border-radius: calc(3 * var(--edit-px));
-  background: var(--color-surface);
-}
-.atlas-edit-handle:hover::before { background: var(--color-accent); }
 .atlas-edit-handle[data-handle="top-left"] { left: 0; top: 0; cursor: nwse-resize; }
 .atlas-edit-handle[data-handle="top"] { left: 50%; top: 0; cursor: ns-resize; }
 .atlas-edit-handle[data-handle="top-right"] { left: 100%; top: 0; cursor: nesw-resize; }
@@ -84,7 +111,7 @@
 .atlas-edit-preview {
   z-index: 4;
   pointer-events: none;
-  border: 2px dashed var(--color-accent);
+  border: calc(2 * var(--ck-px)) dashed var(--color-accent);
   background: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 .atlas-edit-preview[data-state="minimum"] { border-style: solid; }
@@ -106,5 +133,5 @@
 .atlas-grid:not([data-atlas-state="grid"]) .atlas-edit-item { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .atlas-edit-hit { transition: none; }
+  .atlas-edit-hit, .atlas-grid[data-atlas-debug] .atlas-edit-canvas::before { transition: none; }
 }

@@ -18,12 +18,12 @@
     let mode = 'view', selection = null, panelOpen = false, sayTimer = 0, busy = false, alive = true;
 
     const head = ctx.header('Connections', 'How the parts of Atlas and its services relate. Descriptive only: nothing is linked to a live service.');
-    const frame = el('section', 'stc-frame');
+    const frame = el('section', 'stc-frame ck-frame');
     frame.setAttribute('aria-label', 'Connections map');
-    const bar = el('div', 'stc-bar');
+    const bar = el('div', 'stc-bar ck-bar');
     bar.setAttribute('role', 'toolbar');
     bar.setAttribute('aria-label', 'Connections');
-    const stage = el('div', 'stc-stage');
+    const stage = el('div', 'stc-stage ck-stage');
     const host = el('div', 'stc-canvas');
     frame.append(bar, stage);
     view.append(head, frame);
@@ -32,7 +32,7 @@
     const modes = segmented('Mode', [{ value: 'view', label: 'View' }, { value: 'edit', label: 'Edit' }], v => setMode(v));
     const add = button({ label: 'Add Node', icon: 'add', kind: 'primary' });
     const undo = button({ label: 'Undo', icon: 'undo' }), redo = button({ label: 'Redo', icon: 'redo' });
-    const status = el('p', 'stc-state pa-type-caption');
+    const status = el('p', 'stc-state ck-state pa-type-caption');
     const importButton = button({ label: 'Import', icon: 'import', title: 'Import a JSON file' });
     const exportButton = button({ label: 'Export', icon: 'export', title: 'Export as a JSON file' });
     const discard = button({ label: 'Discard', kind: 'secondary' });
@@ -41,18 +41,18 @@
     file.type = 'file';
     file.accept = '.json,application/json';
     file.hidden = true;
-    const editTools = el('div', 'stc-group'), saveTools = el('div', 'stc-group'), files = el('div', 'stc-group');
+    const editTools = el('div', 'ck-group'), saveTools = el('div', 'ck-group'), files = el('div', 'ck-group');
     editTools.append(add, undo, redo);
     files.append(importButton, exportButton);
     saveTools.append(discard, save);
-    bar.append(modes.element, editTools, el('span', 'stc-spacer'), status, files, saveTools, file);
+    bar.append(modes.element, editTools, el('span', 'ck-spacer'), status, files, saveTools, file);
 
     // ── Canvas, view controls, panel ──────────────────────────────────────
     const zoomOut = button({ label: 'Zoom out', icon: 'minus', iconOnly: true }), zoomIn = button({ label: 'Zoom in', icon: 'add', iconOnly: true });
-    const zoomLevel = el('button', 'st-button st-button--tool stc-zoom-level pa-type-button-small');
+    const zoomLevel = el('button', 'ck-button ck-button--tool ck-readout pa-type-button-small');
     zoomLevel.type = 'button';
     const fit = button({ label: 'Fit to view', icon: 'fit', iconOnly: true });
-    const zoomBar = el('div', 'stc-zoom');
+    const zoomBar = el('div', 'stc-zoom ck-float');
     zoomBar.setAttribute('role', 'group');
     zoomBar.setAttribute('aria-label', 'View');
     zoomBar.append(zoomOut, zoomLevel, zoomIn, fit);
@@ -147,7 +147,7 @@
       copy.hidden = !b.raw;
       copy.addEventListener('click', () => download(b.raw, 'atlas-connections-stored.json'));
       again.addEventListener('click', () => { store.reset(); refresh(); fitView(); });
-      const row = el('div', 'stc-group');
+      const row = el('div', 'ck-group');
       row.append(copy, again);
       notice.append(el('h2', 'pa-type-section-title', 'The saved map can’t be opened'), el('p', 'pa-type-body-small', b.errors.join(' ')),
         el('p', 'pa-type-body-small', 'It is left as it is. Starting again replaces it only when you save.'), row);

@@ -672,7 +672,12 @@ resized, added and removed on the page.
   (`--cms-canvas-*`, `--atlas-scale`) and removes them on leaving;
   `cms-admin.css` has the rules. The renderer, engine and controller are
   unchanged: they measure layout pixels, and the controller reads positions
-  from the screen. `--atlas-scale` is also read by `grid-editor.css` (handles
+  from the screen. The look is the shared canvas design
+  (`styles/canvas-kit.css`): the dotted canvas fills the window beside the
+  column (the footer is left out while arranging), Undo, Redo, Grid and the
+  zoom float at its bottom left over 48px kept free below the page, and the
+  selected widget has the round pencil and delete, which press the inspector's
+  own buttons (the overlay's `actions`). `--atlas-scale` is also read by `grid-editor.css` (handles
   and outlines keep their on-screen size) and `glide.js` (a card's layout
   width); without it both are as before. At 900px and narrower nothing can be
   arranged, the page shows as it does there, and the inspector says so.

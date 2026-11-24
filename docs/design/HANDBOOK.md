@@ -24,7 +24,8 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Colours, spacing and surfaces, Atlas Grid (H5.2); Layout Lab (H5.4) | Built |
 | Homepage on the grid, Layout Mode (H5.3) | Built |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
-| Unified canvas design: the Connections canvas appearance in the Layout Editor, its grid logic unchanged (S3) | Next |
+| Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
+| Canvas design refinement: revisit the visual design of Layout Mode and the Layout Lab (the S3 result is acceptable for now, not finished polish) | Deferred |
 | Remaining typography differences, Admin Mode and game typography | Deferred on purpose |
 | Motion, Responsive, Accessibility; Elements and Layouts pages | Planned |
 | Widget registry with where-used; page templates; page builder | Long-term |
@@ -57,9 +58,11 @@ the roadmap in `ATLAS_VISION.md` §11.
 | `tests/design/grid.test.mjs` | Geometry, contracts, validation and fit (`node --test tests/design/grid.test.mjs`). |
 | `PergamonAtlas.V1/scripts/grid/editor.js` | **Editing engine** (pure; also runs in Node): move, eight-handle resize, add, remove and stacking-order proposals, gesture transactions, history. Validates at the width its caller gives. |
 | `PergamonAtlas.V1/scripts/grid/interaction.js`, `scripts/grid/overlay.js`, `styles/grid-editor.css` | Pointer, touch and keyboard controller, and the editing decorations (hit areas, selection, handles, previews). Content-neutral; reusable by any editor. |
+| `PergamonAtlas.V1/styles/canvas-kit.css`, `scripts/design/canvas-kit.js` | **Canvas design:** what every editing canvas looks like (dotted surface, rings, handles, round actions, labels, frame, toolbar, floating controls, buttons). Used by both engines' decorations and their pages; the engines stay independent of each other. Shown at Foundations › Node Canvas. |
+| `tests/design/canvas-kit.test.mjs` | That independence, the order the design loads in, theme roles only, and that visitors get none of it. |
 | `PergamonAtlas.V1/scripts/handbook/layout-lab.js` | Foundations › Layout Lab: the Handbook wiring and its policy (changes validated at the live grid width and accepted only if the layout fits at every wider width; below the layout’s own fitting width it is shown stacked and read-only). |
 | `PergamonAtlas.V1/scripts/canvas/*.js`, `styles/canvas.css` | **Node canvas:** geometry (pure), renderer and interaction. Content-neutral; Atlas Studio uses it (`STUDIO.md`). |
-| `PergamonAtlas.V1/scripts/handbook/canvas-page.js` | Foundations › Node Canvas: a live example, its elements with their source, and the canvas conventions. |
+| `PergamonAtlas.V1/scripts/handbook/canvas-page.js` | Foundations › Node Canvas: a live example, the canvas design, its elements with their source, and the canvas conventions. |
 | `PergamonAtlas.V1/scripts/cms/layout-mode.js` | Admin Mode's Layout Mode on the homepage: the same engine, controller and overlay per page region, with the CMS working copy as the document (`docs/cms/ARCHITECTURE.md` §12). |
 | `tests/design/grid-editor.test.mjs` | The editing engine’s proposals, gestures and history. |
 | `tests/cms/layout-editing.test.mjs` | Layout Mode's document: instances, history, conflicts, saving and rollback. |
