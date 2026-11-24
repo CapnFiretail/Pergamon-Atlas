@@ -25,6 +25,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Homepage on the grid, Layout Mode (H5.3) | Built |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
+| Atlas Studio's Environments cards: the Panel surface (S4) | Built |
 | Canvas design refinement: revisit the visual design of Layout Mode and the Layout Lab (the S3 result is acceptable for now, not finished polish) | Deferred |
 | Remaining typography differences, Admin Mode and game typography | Deferred on purpose |
 | Motion, Responsive, Accessibility; Elements and Layouts pages | Planned |

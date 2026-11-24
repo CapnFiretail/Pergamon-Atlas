@@ -8,7 +8,8 @@ up; for daily work read only *Keeping production isolated*.
 |---|---|
 | Production (pergamonatlas.com) | production `rddijjezqrcjrnwskenb` |
 | Vercel previews | staging `rambkiswuigtjfgdxexk` |
-| Local development / tests | staging, or the in-process emulation in `tests/cms` |
+| Local development ([`../DEVELOPMENT.md`](../DEVELOPMENT.md)) | staging, enforced by the server |
+| Tests | staging, or the in-process emulation in `tests/cms` |
 
 ## Steps that need you (Supabase / Vercel owner)
 

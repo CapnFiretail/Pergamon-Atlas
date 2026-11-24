@@ -27,6 +27,12 @@ generated files (below), `*/package-lock.json`, `tests/cms/fixtures/`,
 - **Ask before each** commit, push, merge, deployment, database change, admin
   write or publish. Approval covers that step only. Stop when asked to stop.
 - **A push to `main` deploys to production.** Work on a development branch.
+- **Local → staging → production**, stopping for approval between them: build and
+  review on the local server (http://localhost:4173) before committing, then
+  staging, then `main`. Procedure: `docs/DEVELOPMENT.md` › Workflow.
+- **No temporary review servers** while the persistent one is available.
+- **Never extract credentials or bypass authentication** to verify anything; what
+  needs a sign-in is the user's to check.
 - **Production writes** (SQL, Admin Mode saves and publishes) are done by the
   user. Check the project first: production `rddijjezqrcjrnwskenb`, staging
   `rambkiswuigtjfgdxexk`. Never run tests that write against production.
@@ -64,6 +70,7 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Admin Mode | `docs/cms/ARCHITECTURE.md`: §5a mode, §5b cards, §5c images, §5d publishing, §5e collections and history, §5f navigation, §12 Layout Mode |
 | Database, access, media | `docs/cms/ARCHITECTURE.md` §2–4; the one migration in `supabase/proposed/` |
 | Staging | `docs/cms/STAGING.md` › Keeping production isolated |
+| Workflow, environments, local development server | `docs/DEVELOPMENT.md`; header of `tools/dev-server.mjs` |
 | Colours, spacing, surfaces | `styles/theme.css` (values); `scripts/design/colors.js`, `surfaces.js` (uses) |
 | Look of an editing canvas (either engine) | Header of `styles/canvas-kit.css`; `HANDBOOK.md` › Files |
 | Typography | `scripts/design/typography.js` (the role); `HANDBOOK.md` › Connecting a component to a role |

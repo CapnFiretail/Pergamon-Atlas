@@ -5,7 +5,7 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by S4.
 - **Production:** `81e4731` (Atlas Studio S1.1 and S2, unified canvas design S3),
   released 2026-11-24 (Vercel `BJQ5GSPfDejBr2tLb4wWSjnQ4wWh`) and verified the same
   day against the live files and as a guest, 25/25; later commits on `main` so far
@@ -18,8 +18,12 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
     Handbook), without saving: not done, the user's to do.
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
   not confirmed.
-- **Active milestone:** none. S3 is functionally approved; its visual design is
-  acceptable for now and provisional (Next). Other Studio sections are placeholders.
+- **Active milestone:** S4, Persistent Development Environments (`DEVELOPMENT.md`,
+  `design/STUDIO.md` › Environments): locally approved, on the development branch
+  and its staging deployment, not released. Checked by tests and in a browser with
+  a stand-in for sign-in; not by Claude with a real account. Starting the server
+  at sign-in is not installed (`tools\dev-server install`). Other Studio sections
+  are placeholders; S3's visual design is provisional (Next).
 
 ## Risks
 

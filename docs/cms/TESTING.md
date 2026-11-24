@@ -6,7 +6,7 @@
 |---|---|
 | CMS code, migrations, functions, build config | `cd tests/cms`, then `npm test` (first time: `npm install`) |
 | Any migration 0013 onward, or schema 2 | Also the same with `CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout` |
-| Design registries, styles, grid, the Widgets catalogue, the Studio and its Connections, a page's `<head>`, the vision | `node --test "tests/design/*.test.mjs"` |
+| Design registries, styles, grid, the Widgets catalogue, the Studio, the local development server, a page's `<head>`, the vision | `node --test "tests/design/*.test.mjs"` |
 | `scripts/design/typography.js` | `node tools/build-typography.mjs` (`--check` to verify) |
 | `docs/design/ATLAS_VISION.md` | `node tools/build-vision.mjs` (`--check` to verify) |
 | Documentation only | The check for its generated copy, if any; links and paths exist |

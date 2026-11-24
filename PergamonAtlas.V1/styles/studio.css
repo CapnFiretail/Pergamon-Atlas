@@ -66,6 +66,31 @@
 .st-empty-icon { width: 48px; height: 48px; margin-bottom: 4px; color: var(--color-accent-text); }
 .st-empty p { max-width: 52ch; text-wrap: balance; color: var(--color-text-secondary); }
 
+/* Cards that open something. */
+.st-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+.st-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.st-card:hover, .st-card:focus-visible { border-color: var(--color-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.st-card-head { display: flex; align-items: center; gap: var(--space-3); }
+.st-card-icon { flex: none; color: var(--color-accent-text); }
+.st-card-name { flex: 1; min-width: 0; }
+.st-card-open { flex: none; width: 18px; height: 18px; color: var(--color-text-secondary); }
+.st-card:hover .st-card-open, .st-card:focus-visible .st-card-open { color: var(--color-accent-text); }
+.st-card-text, .st-card-address { color: var(--color-text-secondary); }
+.st-card-address { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .st-card { transition: none; } }
+
 /* ── Controls (scripts/studio/ui.js; buttons: styles/canvas-kit.css) ───── */
 .st-segmented { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-background); }
 .st-segment { min-height: 30px; padding: 0 14px; border: 0; border-radius: var(--radius-item); background: transparent; color: var(--color-text-secondary); cursor: pointer; }

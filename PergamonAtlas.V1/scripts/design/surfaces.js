@@ -49,7 +49,7 @@
   ];
 
   const surfaces = [
-    { id: 'panel', name: 'Panel', radius: '--radius-panel', use: 'Surface background, 1px border, panel radius. Padding 16–24px (32px when standalone).', where: 'Sidebar, Atlas Navigation, carousel, Settings cards, placeholders' },
+    { id: 'panel', name: 'Panel', radius: '--radius-panel', use: 'Surface background, 1px border, panel radius. Padding 16–24px (32px when standalone).', where: 'Sidebar, Atlas Navigation, carousel, Settings cards, placeholders, Studio environment cards' },
     { id: 'card', name: 'Card', radius: '--radius-card', use: 'Inside a panel: surface or page background, 1px border, card radius.', where: 'Game tiles, palette options, the empty carousel track' },
     { id: 'item', name: 'Item', radius: '--radius-item', use: 'A row or option inside a panel; hover uses the hover surface, selected the soft accent.', where: 'Sidebar links, mode options, palette previews, fields' },
     { id: 'control', name: 'Control', radius: '--radius-md', use: 'Buttons: an accent fill (primary) or a 1px border (secondary); pills use the pill radius.', where: 'Menu button, carousel buttons, placeholder actions' },

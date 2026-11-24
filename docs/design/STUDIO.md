@@ -2,8 +2,8 @@
 
 An internal workspace for administrators, at `/studio/`, inside the normal
 site (header, footer, themes). Built so far: the page, its access check and its
-navigation (S1.1), and the Connections editor (S2). Every other section is a
-placeholder.
+navigation (S1.1), the Connections editor (S2) and Environments (S4). Every other
+section is a placeholder.
 
 ## Files
 
@@ -14,8 +14,9 @@ placeholder.
 | `PergamonAtlas.V1/scripts/studio/gate.js` | Shows the Studio (and only then loads its code) or the generic access-denied notice. |
 | `PergamonAtlas.V1/scripts/studio/sections.js` | **The sections: the source of truth** (groups, icons, the default section). |
 | `PergamonAtlas.V1/scripts/studio/studio.js` | The shell: routes, the site sidebar's destinations, breadcrumbs, placeholders, section renderers. |
+| `PergamonAtlas.V1/scripts/studio/environments.js` | Development › Environments, below. |
 | `PergamonAtlas.V1/scripts/studio/ui.js` | Controls shared by sections: buttons and icons (from the canvas design), View / Edit control, modal dialog. |
-| `PergamonAtlas.V1/styles/studio.css` | Layout and those controls except buttons (colours from theme tokens, text from type roles). |
+| `PergamonAtlas.V1/styles/studio.css` | Layout, the cards and those controls except buttons (colours from theme tokens, text from type roles). |
 | `PergamonAtlas.V1/scripts/studio/connections/` | The Connections section, below. |
 | `PergamonAtlas.V1/styles/studio-connections.css` | Its panel and Node Library. |
 | `PergamonAtlas.V1/styles/canvas-kit.css`, `scripts/design/canvas-kit.js` | The canvas design Connections shares with the Atlas Grid's editors: frame, toolbar, buttons, floating controls, selection (`HANDBOOK.md` › Files). |
@@ -93,10 +94,18 @@ selecting several nodes, copy and paste, alignment; groups and several maps;
 choosing a curve's route; a minimap; controls that thin out on very small nodes
 (on a phone, zoom in to edit).
 
+## Environments
+
+Three cards at `/studio/#/development/environments`: Local, Staging and
+Production, each opening in a new tab. Links only: nothing is fetched, embedded
+or controlled. The addresses are in `environments.js`; what each environment is,
+and how the local one runs: [`../DEVELOPMENT.md`](../DEVELOPMENT.md). Staging's
+address belongs to the development branch by name: working on a differently
+named branch means changing it.
+
 ## Planned sections
 
-- **Development › Environments** (placeholder only, no integrations yet):
-  - one-click access to the local, staging and production previews
+- **Development › Environments**, beyond the cards (no integrations yet):
   - each environment's status
   - deployment metadata
   - visual comparisons between environments

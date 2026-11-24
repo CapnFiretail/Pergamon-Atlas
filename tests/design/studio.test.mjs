@@ -42,6 +42,19 @@ test('pages load only the entry script (and /studio/ its gate)', () => {
   assert.match(read('studio/index.html'), /name="robots" content="noindex, nofollow"/);
 });
 
+test('Environments: local, staging and production, in order, as links that open a new tab', () => {
+  const w = { PergamonStudio: { app: { register: (path, r) => { w.registered = [path, r]; } } } };
+  vm.runInNewContext(read('scripts/studio/environments.js'), { window: w, URL });
+  assert.equal(w.registered[0], 'development/environments');
+  const list = w.PergamonStudio.environments.ENVIRONMENTS;
+  assert.equal(list.map(e => e.name).join(', '), 'Local, Staging, Production');
+  assert.equal(list[0].url, 'http://localhost:4173/');
+  list.slice(1).forEach(e => assert.equal(new URL(e.url).protocol, 'https:'));
+  list.forEach(e => { assert.ok(ICONS[e.icon], e.icon); assert.equal(new URL(e.url).search + new URL(e.url).username, ''); });
+  assert.match(read('scripts/studio/environments.js'), /target = '_blank';\s*a\.rel = 'noopener noreferrer'/);
+  assert.doesNotMatch(read('scripts/studio/environments.js'), /fetch\(|XMLHttpRequest|iframe/);
+});
+
 test('every file the gate loads exists', () => {
   const assets = [...read('scripts/studio/gate.js').matchAll(/(?:css|js): '([^']+)'/g)].map(m => m[1]);
   assert.ok(assets.length >= 3);

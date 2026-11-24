@@ -17,6 +17,7 @@
     { css: '/styles/studio.css' },
     { js: '/scripts/studio/sections.js', ready: () => !!ns.sections },
     { js: '/scripts/studio/studio.js', ready: () => !!ns.app },
+    { js: '/scripts/studio/environments.js', ready: () => !!ns.environments },
     { css: '/styles/canvas-kit.css' },
     { js: '/scripts/design/canvas-kit.js', ready: () => !!(window.PergamonDesign && window.PergamonDesign.canvasKit) },
     { js: '/scripts/studio/ui.js', ready: () => !!ns.ui },

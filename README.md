@@ -27,7 +27,7 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 │   ├── design/            design registries (typography, colours, surfaces)
 │   ├── cms/               homepage CMS and Admin Mode
 │   ├── handbook/          Handbook pages
-│   └── studio/            Studio shell and sections (connections/)
+│   └── studio/            Studio shell and sections (connections/, environments.js)
 ├── styles/                theme.css (tokens), typography.css (generated), …
 ├── data/                  entries.js (games catalog), home-content.js (static fallback)
 ├── operation/             shared legacy layer: Supabase auth, footer, main.css
@@ -38,10 +38,12 @@ artwork/source/            original artwork files (not deployed)
 supabase/migrations/       legacy schema history, 0001–0006
 supabase/proposed/         migrations 0007 onward (applied state: docs/STATUS.md)
 supabase/functions/        Edge Functions (publish-media)
+docs/DEVELOPMENT.md        environments and the local development server
 docs/design/               Handbook and Studio guides, vision
 docs/cms/                  CMS architecture, staging, tests
 tests/                     cms/ and design/ (node --test)
-tools/                     build helpers: Supabase config, typography, vision
+tools/                     build helpers: Supabase config, typography, vision;
+                           the local development server (dev-server.*)
 vercel.json                output directory, redirects, headers
 ```
 
@@ -70,7 +72,8 @@ Copy an existing page (such as `settings/`) for the auth and footer scripts.
 
 `main` deploys to production on every push. Other branches get Vercel preview
 deployments. `tools/write-supabase-config.mjs` writes each build's Supabase
-configuration; the committed copy is for local development (staging).
+configuration; the committed copy is for local development (staging), at
+http://localhost:4173 ([`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)).
 
 ## History
 
