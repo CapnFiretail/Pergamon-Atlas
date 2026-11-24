@@ -101,7 +101,7 @@
     sidebar: {
       name: 'Sidebar (floating navigation)',
       width: 'var(--pa-sidebar-w): 220px expanded, 80px collapsed (styles/layout.css)',
-      behaviour: 'A rounded, limited-height panel beside the content on wide screens; a slide-in drawer at 900px and narrower. Site-wide navigation, managed by Site Navigation, not by page layouts. Its fixed widths do not fall on whole grid columns, so a page that uses the grid keeps the sidebar in its own track beside it (decided with the homepage migration).'
+      behaviour: 'A rounded panel of fixed height (--pa-sidebar-panel-h) at the top of the page, beside the content on wide screens; a slide-in drawer at 900px and narrower. Site-wide navigation, managed by Site Navigation, not by page layouts. Its fixed widths do not fall on whole grid columns, so a page that uses the grid keeps the sidebar in its own track beside it (decided with the homepage migration).'
     }
   };
 

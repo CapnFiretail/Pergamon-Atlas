@@ -23,8 +23,9 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Handbook catalogue, Site Navigation (H3); component library (H4) | Built |
 | Colours, spacing and surfaces, Atlas Grid (H5.2); Layout Lab (H5.4) | Built |
 | Homepage on the grid, Layout Mode (H5.3) | Built |
-| Shared pages: page and widget registries, page renderer, editing for any registered page (P1, phase 1) | Built; the homepage is the only registered page so far |
-| Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built; on no page yet, not storable until migration 0016 |
+| Shared pages: page and widget registries, page renderer, editing for any registered page (P1, phase 1) | Built |
+| Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built; on the Games page, not storable until migration 0016 |
+| Games page: an ordinary page of registered widgets; the floating sidebar as a panel of fixed height on every standard page (P1, phase 3) | Built; not edited or published until migration 0016 |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
 | Atlas Studio's Environments cards: the Panel surface (S4) | Built |
@@ -288,13 +289,16 @@ shown in full.
 
 1. **Registry.** An entry in `scripts/cms/pages.js` (its header says what each field
    is): schema 2 only, `siteNavigation: false`, its own prefix, and a built-in layout.
-2. **Built-in content.** A document for that layout, as `data/home-content.js` has:
+2. **Built-in content.** A document for that layout, as `data/games-content.js` has
+   (games are referred to by their record, `data/entries.js`, never described again):
    shown until something is published, and whenever the database can't be read.
 3. **HTML.** As `index.html`: `data-layout="inline"` on `.pa-page`; one
    `<div class="home" data-atlas-page="<id>">`; the same scripts in the same order,
    with the page's own file in place of `home.js`; `handbook/entry.js`,
    `studio/entry.js` and `cms/admin.js` last. No inline scripts or styles.
-4. **Page file.** A call to `PergamonPages.mount` (`scripts/home.js` is the example).
+4. **Page file.** A call to `PergamonPages.mount` (`scripts/games.js` is the example).
+   A page that isn't edited yet leaves out `cms/loader.js`, `cms/admin.js` and the two
+   `entry.js`; it needs nothing from step 5.
 5. **Server.** A migration: a row in `site_pages` whose `schema_version` is the entry's
    `schemaVersion`, and `validate_content` accepting the page and its prefix. Until it
    is applied the page shows its built-in content; saving is refused.
@@ -374,7 +378,8 @@ them) can make a style that looks equivalent in the CSS render differently.
 - The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
 - Nothing can be placed under a growing widget (Widgets that grow).
-- The homepage is the only registered page so far; widgets stay in their region, and extra carousels share the
+- The homepage and the Games page are the registered pages; only the homepage is edited
+  (the database accepts no other page until migration 0016); widgets stay in their region, and extra carousels share the
   "Explore More Games" heading.
 - The book icon appears where Admin Mode lives (the homepage) and on the
   Handbook itself.

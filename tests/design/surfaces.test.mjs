@@ -79,7 +79,7 @@ test('page frame: two inset families and the 16px gutter, with narrow-screen val
   assert.equal(decl(L, ':root', '--page-inset-inline', narrow), 'var(--space-4)');
   assert.equal(decl(L, ':root', '--page-inset-widgets', narrow), 'var(--space-4)');
   assert.notEqual(decl(L, ':root', '--page-inset-widgets'), decl(L, ':root', '--page-inset-inline'), 'widget pages keep their own, tighter inset');
-  assert.deepEqual(meta.frame.map(f => f.token).sort(), ['--layout-gutter', '--page-inset-block', '--page-inset-inline', '--page-inset-widgets']);
+  assert.deepEqual(meta.frame.map(f => f.token).sort(), ['--layout-gutter', '--pa-sidebar-panel-h', '--page-inset-block', '--page-inset-inline', '--page-inset-widgets']);
 });
 
 test('the frame tokens are used by the page frame and the widget pages', () => {

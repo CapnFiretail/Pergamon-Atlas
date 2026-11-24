@@ -42,10 +42,11 @@ a time.
 |---|---|
 | `snapshot.mjs` | What visitors see of the homepage, before and after a change that must not alter it: markup, geometry, styles, pictures, requests (43 views). |
 | `admin.mjs` | Admin Mode end to end, before and after: what an administrator sees and what the database holds at each step. Two transcripts must be the same. |
+| `games.mjs` | The Games page: games, destinations, artwork, availability and stored overrides, the shared frame, every width, palette and mode, the sidebar, keyboard, the ad tag. |
 | `widgets.mjs` | Page Heading and Card Grid, and widgets that grow: drawing at every width, palette and mode, and editing them in both modes on a made-up page. |
 | `second-page.mjs` | A made-up second page on the shared code: its own content, cache, draft and ids; Site Navigation from the homepage. |
 
-Not covered by a committed suite: games, account pages and redirects.
+Not covered by a committed suite: the games themselves, account pages and redirects.
 
 ## What the emulation can't prove (run on staging)
 

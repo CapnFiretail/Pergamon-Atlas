@@ -29,6 +29,7 @@
     { token: '--page-inset-block', use: 'Space above and below the content of an ordinary page (Settings, placeholders, games).' },
     { token: '--page-inset-inline', use: 'Space either side of the content of an ordinary page.' },
     { token: '--page-inset-widgets', use: 'Space around a widget page (homepage, Handbook). Deliberately tighter than ordinary pages: the panels already frame their content.' },
+    { token: '--pa-sidebar-panel-h', use: 'The height of the floating sidebar on a widget page: a panel at the top, whatever is beside it. Taller only if its links need it.' },
     { token: '--layout-gutter', use: 'The default space between widgets on a widget page: sidebar and content, the 70/30 columns, stacked banners. Not a rule for spacing inside a widget, which uses the spacing scale.' }
   ];
 

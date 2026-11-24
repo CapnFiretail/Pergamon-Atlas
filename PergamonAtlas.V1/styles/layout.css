@@ -9,6 +9,8 @@
 /* Page frame tokens. Two inset families, deliberately different:
    --page-inset-*   ordinary pages (Settings, placeholders, games)
    --page-inset-widgets  widget pages built from panels (homepage, Handbook)
+   --pa-sidebar-panel-h  the floating sidebar's height on a widget page (eleven
+                    of the homepage's rows: 418px)
    --layout-gutter  the default space between widgets on a widget page (not
                     for spacing inside a widget: use the --space-* scale)
    Narrow screens (≤ 900px) use the smaller values below. */
@@ -17,6 +19,7 @@
   --page-inset-inline: var(--space-8);
   --page-inset-widgets: var(--space-6);
   --layout-gutter: var(--space-4);
+  --pa-sidebar-panel-h: calc(11 * 23.43px + 10 * 16px);
 }
 
 /* ── Page frame ────────────────────────────────────────────────────────── */

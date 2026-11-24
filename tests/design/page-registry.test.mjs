@@ -6,7 +6,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -126,6 +127,46 @@ test('editing another page: cards, saved cards, widgets, undo and saving use its
   assert.ok(sample.validateDocument(saves[0][1]) && Object.keys(saves[0][1].components).every(k => k.startsWith('sample.')));
   assert.ok(ws.removeInstance(E.proposeRemove(ws.region('main'), 'carousel', { types: gridTypes, width: 1217 }).layout, 'carousel'));
   assert.ok(!Object.keys(ws.working().components).some(k => k.startsWith('sample.carousel')));
+});
+
+// ── Game records (P1) ───────────────────────────────────────────────────────
+function records(change) {
+  const box = { window: {} };
+  vm.runInNewContext(change ? change(read('data/entries.js')) : read('data/entries.js'), box);
+  return JSON.parse(JSON.stringify(box.window));
+}
+test('game records: complete, each destination a page, each image a file; the older form agrees', () => {
+  const { PergamonGameLibrary: lib, atlasEntries } = records();
+  assert.deepEqual(sorted(lib.order), sorted(Object.keys(lib.games)));
+  lib.order.forEach((id, i) => {
+    const g = lib.games[id];
+    assert.ok(g.id === id && g.name && content.CATEGORIES.includes(g.category) && ['available', 'coming-soon', 'hidden', 'archived'].includes(g.availability), id);
+    assert.ok(existsSync(path.join(V1, g.destination, 'index.html')), g.destination);
+    const art = content.artModel(g.artwork.square, {});
+    assert.ok(art && existsSync(path.join(V1, art.src)), id + ' artwork');
+    assert.deepEqual([atlasEntries.games[i].path + '/', atlasEntries.games[i].name], [g.destination, g.name]);
+  });
+  assert.deepEqual(atlasEntries.games.filter(e => e.status === 'coming-soon').map(e => e.path), ['/games/tic-tac-toe']);
+  const hidden = records(s => s.replace("availability: 'coming-soon'", "availability: 'archived'")).atlasEntries.games.find(e => e.path === '/games/tic-tac-toe');
+  assert.deepEqual([hidden.visibility, hidden.archived], ['admin', true]);
+});
+
+test('the Games page is widgets that refer to records and hold nothing of a game’s own', () => {
+  const box = { window: { PergamonCMS: { pages } } };
+  vm.runInNewContext(read('data/games-content.js'), box);
+  const doc = JSON.parse(JSON.stringify(box.window.PergamonGamesContent.document)), games = records().PergamonGameLibrary.games;
+  const api = content.forPage('games'), m = api.toModel(doc, { games });
+  assert.deepEqual(m.instances.grid.cards.map(c => [c.title, c.href, c.category]), doc.components['games.grid'].order.map(k => [games[k].name, games[k].destination, games[k].category]));
+  Object.keys(doc.components).filter(k => k.startsWith('games.grid.')).forEach(k => assert.deepEqual(Object.keys(doc.components[k]), ['game'], k));
+  assert.equal(m.instances.heading.card.count, 'cards');
+  // A record that changes changes the card; one that is gone leaves the rest.
+  const changed = JSON.parse(JSON.stringify(games));
+  changed.snake.name = 'Serpent'; delete changed.pong;
+  const n = api.toModel(doc, { games: changed }).instances.grid.cards;
+  assert.ok(n.some(c => c.title === 'Serpent') && n.length === 7);
+  assert.equal(api.toModel(doc, {}).instances.grid.cards.length, 0);
+  doc.components['games.grid.snake'] = { game: 'constructor' };
+  assert.equal(api.toModel(doc, { games }).instances.grid.cards.length, 7, 'only a record’s own id');
 });
 
 // ── Page Heading and Card Grid (P1) ─────────────────────────────────────────

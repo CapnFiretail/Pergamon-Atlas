@@ -77,7 +77,7 @@
       weights: [400, 700],
       loading: 'Not loaded: the device’s Georgia (often missing on Android and Linux).',
       status: 'legacy',
-      note: 'Used by the game pages and the games catalogue today. Documented so game titles can be described; no new styling may use it.'
+      note: 'Used by the game pages today. Documented so game titles can be described; no new styling may use it.'
     }
   };
 
@@ -145,8 +145,7 @@
       responsive: [],
       preview: { text: 'Connect Four' },
       adoption: [
-        { file: 'styles/components/content-card.css', selector: '.home-tile-title', status: 'adopted', note: 'Games carousel cards.' },
-        { file: 'games/index.html', selector: '.feat-name', status: 'legacy', current: { size: '15px' }, note: 'Games catalogue cards: Georgia 15px (inherited family).' }
+        { file: 'styles/components/content-card.css', selector: '.home-tile-title', status: 'adopted', note: 'Game cards, in the carousel and the Card Grid.' }
       ]
     },
     {
@@ -299,13 +298,13 @@
     },
     {
       id: 'game-title', name: 'Game title', kind: 'role', status: 'legacy',
-      use: 'The title in a game page’s header and the games catalogue header.',
+      use: 'The title in a game page’s header.',
       restrictions: ['Describes the current game header; migration to the Atlas fonts awaits approval.', 'Do not use on new pages.'],
       family: 'legacy-serif', size: 'clamp(32px, 9cqi, 68px)', weight: 700, leading: '1', tracking: '0.01em', transform: 'none',
       responsive: [
         { type: 'media', query: '(max-width: 1200px)', size: 'clamp(22px, 9cqi, 46px)' },
         { type: 'media', query: '(max-width: 560px)', size: 'clamp(16px, 9cqi, 30px)' },
-        { type: 'note', text: 'Sizes follow the title area’s width (cqi). Snake, Tic-Tac-Toe and the catalogue add a 1300px step and drop to 21px at 390px; the other games don’t, so phones show 24.5px or 21px.' }
+        { type: 'note', text: 'Sizes follow the title area’s width (cqi). Snake and Tic-Tac-Toe add a 1300px step and drop to 21px at 390px; the other games don’t, so phones show 24.5px or 21px.' }
       ],
       preview: { text: 'Connect Four', container: 'inline', width: 520, surface: 'game' },
       adoption: [

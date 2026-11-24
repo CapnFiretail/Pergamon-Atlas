@@ -36,6 +36,11 @@
 .home.cms-pending .home-track { opacity: 0; }
 
 .home > .pa-sidebar { grid-column: 1; grid-row: 1; }
+/* The floating sidebar is a panel of its own height at the top of the page,
+   whatever is beside it; taller only if its links need it. */
+@media (min-width: 901px) {
+  .home > .pa-sidebar.is-inline { align-self: start; min-height: var(--pa-sidebar-panel-h); }
+}
 /* The region beside the sidebar. */
 .home-upper { container: upper / inline-size; grid-column: 2; grid-row: 1; min-width: 0; }
 .home-lower { grid-column: 1 / -1; min-width: 0; }

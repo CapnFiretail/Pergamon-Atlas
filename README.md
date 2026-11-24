@@ -13,7 +13,7 @@ and [`docs/STATUS.md`](docs/STATUS.md) (what is released, active and open).
 ```text
 PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page build)
 ├── index.html             Home
-├── games/                 Games catalog + one folder per game
+├── games/                 Games page + one folder per game
 ├── account/               Sign in / register / profile / password recovery
 ├── settings/              Appearance settings (display mode, colour palette)
 ├── handbook/              Atlas Handbook (administrators)
@@ -21,7 +21,7 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 ├── suggestions/  achievements/  leaderboards/  updates/  …   placeholders
 ├── scripts/
 │   ├── theme.js  layout.js  account.js  …   site and page scripts
-│   ├── page.js  page-widgets.js   the page renderer; home.js: the homepage's own part
+│   ├── page.js  page-widgets.js   the page renderer; home.js, games.js: a page's own part
 │   ├── components/        component library (widgets)
 │   ├── grid/              Atlas Grid: engine, widget sizing, renderer, editor
 │   ├── canvas/            node canvas: geometry, renderer, interaction
@@ -30,7 +30,8 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 │   ├── handbook/          Handbook pages
 │   └── studio/            Studio shell and sections (connections/, ideas/, …)
 ├── styles/                theme.css (tokens), typography.css (generated), …
-├── data/                  entries.js (games catalog), home-content.js (static fallback)
+├── data/                  entries.js (game records), home-content.js and games-content.js
+│                          (built-in page content)
 ├── operation/             shared legacy layer: Supabase auth, footer, main.css
 ├── images/                logo; featured/ holds web copies of featured artwork
 ├── vendor/                pinned third-party scripts (see its README)
@@ -48,7 +49,7 @@ tools/                     build helpers: Supabase config, typography, vision;
 vercel.json                output directory, redirects, headers
 ```
 
-Game pages and the Games catalog still draw their content area with the legacy
+Game pages still draw their content area with the legacy
 `operation/styles/main.css`; only their header, sidebar and footer follow the theme.
 
 ## Adding a page

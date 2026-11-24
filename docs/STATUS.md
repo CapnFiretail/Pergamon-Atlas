@@ -22,13 +22,15 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 - **Migrations, production and staging:** 0001–0006, 0008–0015. 0007 (optional)
   not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
   both (user-reported).
-- **Active milestone:** P1, Games catalog on the shared page architecture. Phase 1
-  (page and widget registries, page renderer, Site Navigation on any page): approved by
-  the user 2026-11-24, committed locally as `2e51a75`. Phase 2 (Page Heading, Card
-  Grid, widgets that grow): approved and committed locally after it. Neither is pushed.
-  No database change; the homepage is unchanged. Next: phase 3, the Games page. Migration 0016's scope is still to be approved; until it is applied
-  Layout Mode offers the new widgets on the local server only, and can't save them.
-  Agreed for the game library: `cms/ARCHITECTURE.md` §13.
+- **Active milestone:** P1, Games catalog on the shared page architecture. Phases 1
+  (`2e51a75`, shared pages) and 2 (`11a750a`, Page Heading, Card Grid, widgets that
+  grow): approved by the user 2026-11-24, committed locally, not pushed. Phase 3 (the
+  Games page as an ordinary page of widgets over built-in game records; the floating
+  sidebar as a fixed-height panel): approved and committed locally after them. No
+  database change. Next: phase 4, migration 0016 (scope still to be
+  approved, with the server's growing-widget check), the Game Library and editing the
+  Games page; its proposal is being prepared, nothing of it is built. Agreed: verified
+  administrators get no ad scripts, everyone else as before.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
@@ -39,6 +41,9 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   the first one: check there is no leftover draft, close older admin tabs and note
   the live version. If it goes wrong, restore that version before any frontend
   rollback (rollback deployment `DZcxwUDrU2Qkup2aeG63UFLCZxzH`, `41d691b`).
+- **Ads on an edited page.** The Games page loads AdSense; the homepage doesn't. Before
+  it is edited (P1 phase 4): automatic ads may insert themselves into the page being
+  arranged, and ad code would run on a page where administrators publish.
 - Local `main` may be behind `origin/main`; compare with `origin/main`.
 - Untracked and deliberately left: `supabase/proposed/production-h53/` (release
   SQL kit), 0012 diagnostics, `review/`, `PergamonAtlas.Legacy/`, `-w`.

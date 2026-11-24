@@ -9,6 +9,8 @@
 //     document      its built-in content: shown until something is published,
 //                   and whenever the published content can't be read
 //     staticImages  details of the images under /images/featured/ it may use
+//     visibility()  a promise of listed(entry): which games may be listed for this
+//                   visitor, when that isn't the records' say alone
 //     settings      configuration of its widgets that isn't CMS content
 //                   (scripts/page-widgets.js)
 //   })  → window.PergamonPage, or null where the page can't be drawn
@@ -38,6 +40,8 @@
     return node;
   }
 
+  const STACK_BELOW = 600;
+
   function mount(opts) {
     const content = cms.content;
     const here = cms.pages && cms.pages.current();
@@ -49,7 +53,8 @@
     // ── Data ─────────────────────────────────────────────────
     const entries = (window.atlasEntries && window.atlasEntries.games) || [];
     const norm = path => String(path || '').replace(/\/+$/, '');
-    const listedGame = path => entries.find(e => norm(e.path) === norm(path) && !e.archived && e.visibility === 'public') || null;
+    let listed = e => !e.archived && e.visibility === 'public';
+    const listedGame = path => entries.find(e => norm(e.path) === norm(path) && listed(e)) || null;
     const liveGame = path => { const e = listedGame(path); return e && e.status !== 'coming-soon' ? e : null; };
     const adapters = window.PergamonPageWidgets.create({
       liveGame,
@@ -65,7 +70,8 @@
     // whole, never half-drawn.
     const usable = m => (m && Array.isArray(m.regions) && !G.validatePage({ regions: m.regions }, TYPES).length ? m : null);
     const loader = cms.loader;
-    const staticCtx = { staticImages: opts.staticImages || {} };
+    const library = window.PergamonGameLibrary;
+    const staticCtx = { staticImages: opts.staticImages || {}, games: library && library.games };
     const cached = loader && loader.initial();
     const cachedModel = cached ? usable(content.toModel(cached.doc, Object.assign({}, staticCtx, { media: cached.media }))) : null;
     let model = cachedModel || usable(content.toModel(opts.document, staticCtx));
@@ -147,11 +153,12 @@
       });
       signature = regionSignature(model);
     }
-    // Each region shows its grid from its own fitting width up, stacked below.
+    // Each region shows its grid from its own fitting width up (and never in less
+    // than STACK_BELOW, where twenty columns are no use), stacked below.
     function drawRegions() {
       model.regions.forEach(r => {
         const region = regions.find(x => x.id === r.id);
-        region.grid.setStackBelow(G.minFitWidth(r, TYPES));
+        region.grid.setStackBelow(Math.max(STACK_BELOW, G.minFitWidth(r, TYPES)));
         region.grid.render(r);
       });
     }
@@ -189,6 +196,10 @@
     }
     const cardsOf = id => (model.instances[id] && model.instances[id].cards) || [];
     const listCard = key => root.querySelector(`.home-tile[data-cms-id="${CSS.escape(key)}"]`);
+    function drawLists() {
+      listWidgets().forEach(id => { if (model.instances[id]) instances[id].widget.setCards(cardsOf(id)); });
+      relate();
+    }
     const widgetOf = id => (instances[id] && instances[id].widget) || null;
     page = {
       root,
@@ -207,8 +218,7 @@
         }
         drawRegions();
         cardWidgets().forEach(drawCard);
-        listWidgets().forEach(id => { if (model.instances[id]) instances[id].widget.setCards(cardsOf(id)); });
-        relate();
+        drawLists();
         startWidgets();
         return true;
       },
@@ -300,6 +310,7 @@
       }
     };
     window.PergamonPage = page;
+    if (opts.visibility) opts.visibility().then(fn => { if (fn) { listed = fn; drawLists(); } }, () => {});
 
     if (loader) loader.attach(page, root, cachedModel ? cached.version : null, opts.document);
     // Widgets with an account row follow the sign-in state theme.js shows.

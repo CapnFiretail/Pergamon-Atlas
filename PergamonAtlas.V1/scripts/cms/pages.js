@@ -45,6 +45,22 @@
           { id: 'carousel', type: 'carousel', col: 1, row: 1, cols: 20, rows: 10 }
         ] }
       ]
+    },
+    // One region beside the sidebar: the heading, and every game.
+    games: {
+      id: 'games',
+      name: 'Games page',
+      noun: 'Games page',
+      prefix: 'games',
+      schemas: [2],
+      schemaVersion: 2,
+      siteNavigation: false,
+      regions: () => [
+        { id: 'main', frame: 'sidebar', rowHeight: HOME_ROW, widgets: [
+          { id: 'heading', type: 'page-heading', col: 1, row: 1, cols: 20, rows: 6 },
+          { id: 'grid', type: 'card-grid', col: 1, row: 7, cols: 20, rows: 7 }
+        ] }
+      ]
     }
   };
 

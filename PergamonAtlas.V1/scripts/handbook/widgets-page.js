@@ -211,7 +211,7 @@
         ['Inputs', ['Items', { code: '{ key, element, label }' }, ', an accessible label and an empty message.']],
         ['Owns', ['Columns and gaps, the empty state, screen-reader announcements. Cards are at least 190px wide, 128px when the grid is 640px wide or less.']],
         ['Height', ['Its content’s, or its rectangle’s if that is taller. On the grid, the row it ends on takes the extra height, so nothing can be placed below it for now (Foundations › Atlas Grid › Widgets that grow).']],
-        ['Used on', ['No page yet; planned for the Games page.']],
+        ['Used on', ['The Games page.']],
         ['Widget type', [{ code: 'card-grid' }, 'An ordered list of cards. Offered in Layout Mode on the local server only until its migration is applied.']],
         ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile. Games that are coming soon are shown too; games that are hidden or archived are not.']],
         ['Type roles', roles('grid')],
@@ -302,7 +302,7 @@
         ['Layout', ['Follows its own width: the count moves under the title at 760px; at 480px and narrower the subtitle and the count are left out, and at 330px the divider. Long titles are set smaller, then wrap. It fills its rectangle’s height.']],
         ['Count', ['Derived, never stored: the widget asks for what to count (the cards this page’s lists show) and the page counts as it draws.']],
         ['Heading level', ['The page decides. The first one on a page without a heading of its own is its <h1>; others are <h2>.']],
-        ['Used on', ['No page yet; planned for the Games page.']],
+        ['Used on', ['The Games page.']],
         ['Widget type', [{ code: 'page-heading' }, 'One set of fields. Offered in Layout Mode on the local server only until its migration is applied.']],
         ['Admin Mode', ['Title, subtitle, emblem, what to count and the count’s label.']],
         ['Type roles', roles('heading')],
@@ -344,6 +344,7 @@
       s.body.append(pair);
       art.append(s.fig, facts([
         ['Site Navigation', ['Edited in Admin Mode on the homepage: Admin Mode › Site Navigation. Up to 16 links in up to 4 groups: label, icon, destination (the site’s pages or a game) and visibility, in any order.']],
+        ['Height', ['On a standard page, a panel of fixed height at the top', { code: '--pa-sidebar-panel-h' }, ', whatever is beside it; taller only if its links need it. Here and in the Studio it is as tall as its links and stays in view.']],
         ['Publishing', ['Stored as', { code: 'site.sidebar' }, 'in the homepage’s content and published with the homepage’s Publish Changes; Version History and Restore include it. The server checks every link and icon.']],
         ['Handbook navigation', ['Defined in', { code: 'scripts/handbook/handbook.js' }, '; not editable.']],
         ['Type roles', roles('sidebar')],

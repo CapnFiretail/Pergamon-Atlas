@@ -707,7 +707,14 @@ resized, added and removed on the page.
   instances, conflicts, draft → publish → rollback against 0014 in PGlite, and
   without it), `tests/design/grid-editor.test.mjs`, `page-layout.test.mjs`.
 
-## 13. Game library (agreed direction, not built)
+## 13. Game library (agreed direction; built-in records only)
+
+**Built so far (P1, phase 3):** built-in records in that shape (`data/entries.js`,
+`PergamonGameLibrary`), from which the older `atlasEntries` is derived, and drawing a
+list card that refers to one (`{ game: id }`, `content.toModel` with `ctx.games`). The
+Games page's cards are such references; a reference whose record is gone is left out.
+Nothing validates, edits or stores references yet, the homepage's cards still hold their
+own details, and stored visibility overrides still apply to the Games page.
 
 Games get canonical records in one more versioned CMS document, `library`, in the
 existing tables (drafts, publishing, history and image checks as for a page). Agreed

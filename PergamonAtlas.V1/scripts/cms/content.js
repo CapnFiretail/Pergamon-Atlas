@@ -8,7 +8,9 @@
 //   '<prefix>.<instance>'               a card or fields, or an ordered list ('list')
 //   '<prefix>.<instance>.saved'         a card widget's saved cards, in order
 //   '<prefix>.<instance>.saved.<key>'   one of them
-//   '<prefix>.<instance>.<key>'         a list widget's card
+//   '<prefix>.<instance>.<key>'         a list widget's card: its own details, or
+//                                       { game: id }, a game record (drawn with
+//                                       ctx.games; not editable or storable yet)
 // What an id means depends on the document's instances, so the functions that
 // answer about an id also take the documents to look in (the first that knows
 // it answers; without any, the page's built-in layout). Which types there are
@@ -323,6 +325,13 @@
     function cardModel(id, c, ctx, kind) {
       if (!c || typeof c !== 'object') return null;
       const type = kind || cardType(id);
+      // A card that refers to a game record shows what the record says; one whose
+      // record is gone is left out.
+      if (c.game !== undefined) {
+        const games = (ctx && ctx.games) || {};
+        const g = Object.prototype.hasOwnProperty.call(games, c.game) ? games[c.game] : null;
+        return g ? { id: id, type: type, game: g.id, title: g.name, href: g.destination, category: g.category, art: artModel(g.artwork && g.artwork.square, ctx) } : null;
+      }
       if (type === 'heading') return Object.assign({}, c, { id: id, type: type, title: String(c.title || '') });
       const model = { id: id, type: type, title: String(c.title || ''), href: String(c.href || ''), art: artModel(c.art, ctx) };
       if (type === 'tile') model.category = String(c.category || '');

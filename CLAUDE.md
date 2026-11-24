@@ -72,6 +72,7 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Grid, sizing, renderer, editing engine | Headers of `scripts/grid/*.js` |
 | Page drawing (every editable page) | Headers of `scripts/page.js`, `page-widgets.js`; `docs/cms/ARCHITECTURE.md` §11 |
 | Make a page editable; page and widget registries | `docs/design/HANDBOOK.md` › Making a page editable; headers of `scripts/cms/pages.js`, `widgets.js` |
+| Game records | Header of `data/entries.js`; `docs/cms/ARCHITECTURE.md` §13 |
 | Content document and fields | `docs/cms/ARCHITECTURE.md` §3 (schema 1), §11 (schema 2); `scripts/cms/content.js` |
 | Admin Mode | `docs/cms/ARCHITECTURE.md`: §5a mode, §5b cards, §5c images, §5d publishing, §5e collections and history, §5f navigation, §12 Layout Mode |
 | Database, access, media | `docs/cms/ARCHITECTURE.md` §2–4; the one migration in `supabase/proposed/` |
