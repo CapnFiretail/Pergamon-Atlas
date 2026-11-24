@@ -5,11 +5,11 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branch:** `development/v1-admin-infrastructure`, ahead of `main` by
-  documentation, configuration and copyable source paths in Handbook › Library ›
-  Widgets (`2fe663f`, pushed, visually reviewed, not released).
-- **Production:** `d6c2cee` on `origin/main` (through H5.3). Homepage version 52,
-  schema 1, no draft (verified 2026-11-24).
+- **Branch:** `development/v1-admin-infrastructure`, level with `origin/main`.
+- **Production:** `fd03796` (through the copyable source paths in Handbook ›
+  Library › Widgets), verified 2026-11-24 against the live files and as a guest;
+  later commits on `main` so far are this file only. Homepage version 52,
+  schema 1, no draft (as of H5.3, 2026-11-24).
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
   not confirmed.
 - **Active milestone:** none. H5.3 is released and Gate 7 closed early
