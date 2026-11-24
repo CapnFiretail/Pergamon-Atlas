@@ -1,4 +1,4 @@
-// Homepage content. /scripts/home.js renders it; nothing here affects layout.
+// Homepage content. /scripts/home.js passes it to the page renderer; nothing here affects layout.
 //
 // - document: the editable cards, in the CMS content format (schema v1, the
 //   same shape the CMS stores and publishes; see docs/cms/ARCHITECTURE.md).

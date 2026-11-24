@@ -1,4 +1,4 @@
-// Version History (Admin Mode): the homepage's published versions, newest
+// Version History (Admin Mode): the page's published versions, newest
 // first, with what each one changed, and Restore for earlier ones.
 //
 // Restoring uses the server's rollback (rpc rollback, 0008): the chosen
@@ -14,7 +14,6 @@
 (function () {
   'use strict';
   const cms = window.PergamonCMS = window.PergamonCMS || {};
-  const PAGE = 'home';
   const LIMIT = 20;
   function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -27,6 +26,7 @@
   const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
   function create(env) {
+    const PAGE = env.content.page;
     const overlay = el('div', 'cms-publish cms-history');
     overlay.hidden = true;
     const dialog = el('div', 'cms-publish-dialog cms-history-dialog');
@@ -86,7 +86,7 @@
       busy = true;
       show('loading', 'Version History', [para('Loading published versions…')], [button('Close', 'ghost', close)]);
       let res;
-      try { res = await env.api.list(PAGE, LIMIT); } catch (e) { res = { error: { message: String(e && e.message) } }; }
+      try { res = await env.api.list(PAGE.id, LIMIT); } catch (e) { res = { error: { message: String(e && e.message) } }; }
       busy = false;
       if (step !== 'loading') return;
       if (res.error) {
@@ -100,7 +100,7 @@
 
     function list(focusId) {
       if (!versions.length) {
-        return show('list', 'Version History', [para('Nothing has been published yet: visitors see the built-in homepage.')], [button('Close', 'secondary', close)]);
+        return show('list', 'Version History', [para(`Nothing has been published yet: visitors see the built-in ${PAGE.noun}.`)], [button('Close', 'secondary', close)]);
       }
       const ul = el('ul', 'cms-history-list');
       let focus = null;
@@ -138,7 +138,7 @@
       asking = v.id;
       // A layout saved for other widget sizes wouldn't be shown: never make it live.
       if (v.content && v.content.schema === env.content.PAGE_SCHEMA && !env.content.validateDocument(v.content)) {
-        return show('failed', 'Not restored', [para(`Version ${v.id}’s layout isn’t valid for this version of the site, so visitors would not see it.`, 'cms-publish-error'), para('Nothing changed: the live homepage is as it was.')],
+        return show('failed', 'Not restored', [para(`Version ${v.id}’s layout isn’t valid for this version of the site, so visitors would not see it.`, 'cms-publish-error'), para(`Nothing changed: the live ${PAGE.noun} is as it was.`)],
           [button('Back to history', 'primary', () => list(v.id)), button('Close', 'ghost', close)]);
       }
       const live = versions.find(x => x.status === 'published');
@@ -186,7 +186,7 @@
       dialog.setAttribute('aria-busy', 'true');
       setStatus('Restoring…', 'busy');
       let res;
-      try { res = await env.api.restore(PAGE, v.id, live ? live.id : null); } catch (e) { res = { error: { message: String(e && e.message) } }; }
+      try { res = await env.api.restore(PAGE.id, v.id, live ? live.id : null); } catch (e) { res = { error: { message: String(e && e.message) } }; }
       busy = false;
       dialog.removeAttribute('aria-busy');
       if (res.error) {
@@ -196,7 +196,7 @@
           return show('stale', 'Not restored: something changed', [para('Another administrator published or restored a version in the meantime. Nothing was restored.'), para('Review the latest history and try again.')],
             [button('Review again', 'primary', load), button('Close', 'ghost', close)]);
         }
-        return show('failed', 'Not restored', [para(code === 'PT422' ? `The server didn’t accept version ${v.id}: ${res.error.message}` : `Restoring failed: ${res.error.message || 'the server didn’t answer'}.`, 'cms-publish-error'), para('Nothing changed: the live homepage is as it was.')],
+        return show('failed', 'Not restored', [para(code === 'PT422' ? `The server didn’t accept version ${v.id}: ${res.error.message}` : `Restoring failed: ${res.error.message || 'the server didn’t answer'}.`, 'cms-publish-error'), para(`Nothing changed: the live ${PAGE.noun} is as it was.`)],
           [button('Back to history', 'primary', () => list(v.id)), button('Close', 'ghost', close)]);
       }
       const r = res.data || {};

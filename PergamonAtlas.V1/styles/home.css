@@ -1,13 +1,14 @@
-/* Homepage structure. Colours and fonts come from /styles/theme.css; text
+/* Page structure, for every page drawn by scripts/page.js (named after the
+ * homepage, the first one). Colours and fonts come from /styles/theme.css; text
  * styles from the Handbook's type roles (--type-<role>-* tokens in
  * /styles/typography.css), so changing a role restyles these widgets.
  *
  * The widgets are placed by the Atlas Grid (scripts/grid/, styles/grid.css)
- * from the page document's regions (scripts/home.js): this file only places
+ * from the page document's regions (scripts/page.js): this file only places
  * the regions themselves.
  *
  * Shell (desktop): .home is a two-column grid. Row 1 holds the sidebar
- * (mounted here by home.js; its column follows --pa-sidebar-w, 220/80px)
+ * (mounted here by page.js; its column follows --pa-sidebar-w, 220/80px)
  * and .home-upper, the region beside it; the other regions (.home-lower)
  * span both columns below, so the carousel runs beneath the sidebar. At
  * 900px and below the sidebar is the slide-out drawer and the shell is one

@@ -1,4 +1,4 @@
-// Publishing the homepage draft (CMS milestone M6). No DOM here: works in
+// Publishing a page's draft (CMS milestone M6). No DOM here: works in
 // the browser (window.PergamonCMS.publish) and in Node (module.exports).
 //
 //   summarize(published, draft)   what the saved draft would change, per card
@@ -9,14 +9,13 @@
 //     2. publish(page, draft id, expected live version): one transaction on
 //        the server, refused (PT409) if the draft or the live version changed,
 //        and refused if any image isn't prepared
-//   A failure at any step publishes nothing: the live homepage and the saved
+//   A failure at any step publishes nothing: the live page and the saved
 //   draft stay as they were, and the sequence can simply be run again
 //   (prepared images are recognised and skipped).
 (function (root) {
   'use strict';
 
   const FIELD_LABELS = { title: 'Title', description: 'Description', cta: 'Button label', href: 'Destination link', category: 'Category' };
-  const CARD_TYPES = { feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' };
   const DESKTOP_ART = ['fit', 'focus', 'scale', 'anchor'];
   const PHONE_ART = ['focusNarrow', 'scaleNarrow', 'anchorNarrow'];
 
@@ -51,13 +50,12 @@
     return out;
   }
 
-  const LIST_LABELS = { 'carousel': 'Carousel order', 'feature-hero': 'Saved featured cards order', 'feature-spotlight': 'Saved spotlight cards order' };
-  // The ordered list a component is (a carousel's cards, a widget's saved
-  // cards): its label, naming the widget if it isn't one of today's.
+  // The ordered list a component is (a list widget's cards, a card widget's
+  // saved cards): its label, naming the widget if it isn't a built-in one.
   function listLabel(id, content, docs) {
     const o = content.ownerOf(id, ...docs);
-    if (!o || !(o.part === 'saved' || (o.part === '' && o.type === 'carousel'))) return null;
-    return LIST_LABELS[o.type] + (content.ownerOf(id) ? '' : ` (${content.instanceLabel(o.instance, o.type)})`);
+    if (!o || !(o.part === 'saved' || (o.part === '' && content.widgets.isList(o.type)))) return null;
+    return content.widgets.get(o.type).order + (content.ownerOf(id) ? '' : ` (${content.instanceLabel(o.instance, o.type)})`);
   }
   // Components that aren't cards: site-wide settings stored in this document.
   const OTHER_LABELS = { 'site.sidebar': 'Site Navigation (every page)' };
@@ -86,7 +84,7 @@
       if (!type) { other.push(OTHER_LABELS[id] || id); return; }
       const saved = content.isSaved(id, ...docs);
       const owner = content.ownerOf(id, ...docs);
-      const typeLabel = ((saved ? 'Saved ' + (CARD_TYPES[type] || 'card').toLowerCase() : CARD_TYPES[type]) || 'Card') + (content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
+      const typeLabel = (saved ? 'Saved ' + content.widgets.cardLabel(type).toLowerCase() : content.widgets.cardLabel(type)) + (content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
       const a = pub[id], b = next[id];
       let changes;
       if (a === undefined) changes = [saved ? 'Added to saved cards' : 'Added'];

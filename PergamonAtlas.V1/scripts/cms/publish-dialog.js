@@ -27,10 +27,10 @@
   }
   const time = iso => { const d = iso ? new Date(iso) : new Date(); return isNaN(d) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); };
   const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-  const PAGE = 'home';
 
   function create(env) {
     const { workspace, content } = env;
+    const PAGE = content.page;
 
     const overlay = el('div', 'cms-publish');
     overlay.hidden = true;
@@ -80,12 +80,12 @@
       busy = true;
       show('checking', 'Publish Changes', [para('Checking the saved draft…')], [button('Cancel', 'ghost', close)]);
       let res;
-      try { res = await env.api.getDraft(PAGE); } catch (e) { res = { error: { message: String(e && e.message) } }; }
+      try { res = await env.api.getDraft(PAGE.id); } catch (e) { res = { error: { message: String(e && e.message) } }; }
       busy = false;
       if (step !== 'checking') return;
       if (res.error) {
         if (res.error.code === 'PT403') env.onForbidden();
-        return failed('Couldn’t read the saved draft.', ['The live homepage hasn’t changed. Check your connection and try again.']);
+        return failed('Couldn’t read the saved draft.', [`The live ${PAGE.noun} hasn’t changed. Check your connection and try again.`]);
       }
       const d = res.data || {};
       server = { draft: d.draft || null, published: d.published || null };
@@ -159,7 +159,7 @@
         ], [button('Close', 'secondary', close)]);
       }
       const summary = env.publish.summarize(server.published && server.published.content, server.draft.content, content, cms.images);
-      const nodes = [para(`The draft saved at ${time(server.draft.created_at)} will replace the live homepage${server.published ? ` (version ${server.published.id})` : ''}. Guests and signed-in visitors see it right away.`)];
+      const nodes = [para(`The draft saved at ${time(server.draft.created_at)} will replace the live ${PAGE.noun}${server.published ? ` (version ${server.published.id})` : ''}. Guests and signed-in visitors see it right away.`)];
       if (summary.empty) nodes.push(para('The saved draft matches what is live: there is nothing to publish.', 'cms-publish-note'));
       if (summary.cards.length) {
         const list = el('ul', 'cms-publish-list cms-publish-changes');
@@ -203,7 +203,7 @@
       let result;
       try {
         result = await env.publish.run({
-          api: env.api, page: PAGE, draftId,
+          api: env.api, page: PAGE.id, draftId,
           expectedPublishedId: server.published ? server.published.id : null,
           mediaIds: content.mediaIds(server.draft.content),
           onStep: s => setStatus(s.step === 'images' ? `Preparing image ${s.done + 1} of ${s.total}…` : 'Publishing…', 'busy')
@@ -234,7 +234,7 @@
       const what = e.stage === 'images'
         ? `An image couldn’t be prepared for publishing (${e.prepared} of ${e.total} ready): ${e.message}`
         : `Publishing failed: ${e.message}`;
-      failed(what, ['Nothing was published: the live homepage is unchanged and your saved draft is kept. Try again; images that are already prepared are skipped.', 'If it keeps failing, keep the draft and try later, or replace the image.']);
+      failed(what, [`Nothing was published: the live ${PAGE.noun} is unchanged and your saved draft is kept. Try again; images that are already prepared are skipped.`, 'If it keeps failing, keep the draft and try later, or replace the image.']);
     }
 
     // Try again starts over from the server's current state.

@@ -1,9 +1,9 @@
-// Layout Mode (Admin Mode, H5.3): the homepage's widgets selected, moved,
+// Layout Mode (Admin Mode, H5.3): a page's widgets selected, moved,
 // resized, added and removed on the page itself. Everything about the grid is
 // the shared editing code the Handbook's Layout Lab uses: proposals and
 // checks (scripts/grid/editor.js), pointer and keyboard (interaction.js) and
-// decorations (overlay.js), one of each per region, over the homepage's own
-// renderers (PergamonHome.regions()). Everything about the document is the
+// decorations (overlay.js), one of each per region, over the page's own
+// renderers (PergamonPage.regions()). Everything about the document is the
 // workspace's (scripts/cms/workspace.js): every change goes into the working
 // copy as one undoable step, shared with content edits, and becomes a draft
 // with Save Draft like them. Content is edited with the same drawer and
@@ -16,7 +16,7 @@
 // window's own width, at least that of a 1280px window) and drawn scaled to
 // fit beside a column on the right, which holds the inspector and, over it,
 // the card editor: nothing covers a widget and opening the editor never
-// restacks the page. Only a transform and a fixed width on #home (variables
+// restacks the page. Only a transform and a fixed width on the page's element (variables
 // set here, rules in styles/cms-admin.css): the renderers lay out as always
 // and the controllers already work in screen coordinates. Long pages shrink
 // to MIN_SCALE, then scroll. At 900px and narrower nothing is editable.
@@ -32,7 +32,7 @@
 // show the region stacked, in its stack order ("Order on phones").
 //
 // Created by admin.js (after is_admin): layoutMode.create({ workspace,
-//   content, home, games, openEditor(id), openManager(widget, from),
+//   content, view, games, openEditor(id), openManager(widget, from),
 //   undo(), redo(), done(), onChanged(), onForbidden() })
 //   → { start(), stop(), refresh(), focus(instance), isOn(), dragging(), destroy() }
 (function () {
@@ -62,7 +62,8 @@
   const uid = p => `${p}-${++uidCount}`;
 
   function create(env) {
-    const { workspace, content, home } = env;
+    const { workspace, content, view } = env;
+    const WIDGETS = content.widgets;
     const bound = new Map();          // region id → { region, grid, overlay, ctl }
     let on = false;
     let selected = null;              // { region, id }
@@ -154,7 +155,7 @@
     const widgetOf = s => { const r = s && workspace.region(s.region); return (r && r.widgets.find(w => w.id === s.id)) || null; };
 
     // On the selected widget: the inspector's commands, at hand.
-    const hasCard = w => w.type === 'feature-hero' || w.type === 'feature-spotlight', hasCards = w => w.type !== 'atlas-navigation';
+    const hasCard = w => WIDGETS.hasCard(w.type), hasCards = w => WIDGETS.hasContent(w.type);
     const actions = [
       { kind: 'edit', label: w => (hasCard(w) ? 'Edit card' : 'Manage cards'), shown: hasCards, run: w => (hasCard(w) ? editButton : manageButton).click() },
       { kind: 'remove', label: () => 'Remove widget', shown: () => true, run: () => removeButton.click() }
@@ -170,7 +171,7 @@
     const editable = id => { const b = bound.get(id); return on && wide() && !!b && b.grid.state() === 'grid'; };
 
     // ── The workspace ────────────────────────────────────────────────────
-    const page = document.getElementById('home'), html = document.documentElement, stage = page.closest('.pa-main');
+    const page = view.root, html = document.documentElement, stage = page.closest('.pa-main');
     const wide = () => window.innerWidth > 900;
     const dragging = () => [...bound.values()].some(b => !!b.ctl.active());
     let scale = 1;
@@ -206,7 +207,7 @@
       zoom.textContent = '';
     }
     function bind() {
-      const now = home.regions();
+      const now = view.regions();
       for (const [id, b] of bound) if (!now.some(r => r.id === id && r.grid === b.grid)) unbind(id);
       now.forEach(region => {
         if (bound.has(region.id)) return;
@@ -284,7 +285,7 @@
       }
       env.onChanged();
       pick(region.id, id);
-      say(`Added ${label({ id, type })} to the ${short(region).toLowerCase()}, column ${p.widget.col}, row ${p.widget.row}. ${type === 'carousel' ? 'Use Manage cards to fill it.' : type === 'atlas-navigation' ? '' : 'Use Edit card to set what it shows.'}`);
+      say(`Added ${label({ id, type })} to the ${short(region).toLowerCase()}, column ${p.widget.col}, row ${p.widget.row}. ${WIDGETS.isList(type) ? WIDGETS.get(type).hint : !WIDGETS.hasCard(type) ? '' : 'Use Edit card to set what it shows.'}`);
     }
     // Removing is one undoable step, so it needs no confirmation.
     function remove() {
@@ -294,7 +295,7 @@
       const p = E.proposeRemove(region, w.id, envFor(region.id));
       if (!workspace.removeInstance(p.layout, w.id)) { say(`${label(w)} couldn’t be removed.`, 'error'); return; }
       env.onChanged();
-      say(`Removed ${label(w)}${w.type === 'atlas-navigation' ? '' : ' and its cards'} from your draft. Undo brings it back.`);
+      say(`Removed ${label(w)}${hasCards(w) ? ' and its cards' : ''} from your draft. Undo brings it back.`);
       undoButton.focus();
     }
     // Earlier or later in the region's order on narrow screens.
@@ -424,7 +425,7 @@
       say('');
       sizes.observe(page);
       window.addEventListener('resize', resized);
-      home.onRegionState = region => {
+      view.onRegionState = region => {
         const b = bound.get(region.id);
         if (b && b.grid.state() !== 'grid') b.ctl.cancel();
         update();
@@ -434,7 +435,7 @@
     function stop() {
       if (!on) return;
       on = false;
-      home.onRegionState = null;
+      view.onRegionState = null;
       [...bound.keys()].forEach(unbind);
       sizes.unobserve(page);
       window.removeEventListener('resize', resized);

@@ -201,7 +201,7 @@ web-sized images.
 ## 5. Homepage loading (implemented in M2: `scripts/cms/loader.js`)
 
 As built: `supabase-config.js`, `cms/content.js` and `cms/loader.js` load
-before `home.js`, so the `get_published_content('home')` request (publishable
+before `page.js`, so the `get_published_content('home')` request (publishable
 key only, no session) is in flight while the page parses. Repeat visits draw
 the last published version this browser received (re-validated)
 immediately; first visits keep card frames sized and hide only their
@@ -255,13 +255,13 @@ Original plan, for reference:
   the Admin Mode panel: the on/off switch, "View as" Admin / User / Guest,
   and Publish Changes (disabled until editing exists). Styles:
   `styles/cms-admin.css`, loaded by the script after verification.
-- **Indicators.** In Admin view, every card from `PergamonHome.cardIds()` /
+- **Indicators.** In Admin view, every card from `PergamonPage.cardIds()` /
   `element(id)` whose `content.cardType` is known gets an absolutely placed
   dashed frame and a pencil button (a tile's pencil sits beside its link,
   inside the list item, so the card still navigates). A MutationObserver
   re-applies them when the carousel redraws its cards or the document is
   redrawn. While Admin view is on, the carousel stops gliding
-  (`PergamonHome.holdMotion`) and shows its real cards from the first one
+  (`PergamonPage.holdMotion`) and shows its real cards from the first one
   (the moving row's inert copies carry no pencils). No card box changes size. A badge on the pencil shows unsaved changes
   (amber) or a saved draft (accent).
 - **Previews.** User and Guest views remove every editing control and show
@@ -295,7 +295,7 @@ Original plan, for reference:
   `site_content_routes` decides (its answer is shown on the field).
 - **Drawer** (`scripts/cms/drawer.js`): one editor for every card. Valid
   values go straight into the working copy and the card is redrawn at once
-  (`PergamonHome.render`; `PergamonHome.reveal(id)` keeps the card in
+  (`PergamonPage.render`; `PergamonPage.reveal(id)` keeps the card in
   view in the carousel). Desktop: docked on the right, the page narrows beside it.
   ≤ 900px: a bottom sheet with room added below the page. Leaving a card
   with unsaved changes (another pencil, close, Escape) asks Save Draft /
@@ -338,11 +338,11 @@ uploads use 0009 (`create_media_upload`, `get_media`, `site-media-drafts`).
 - **Editor** (`scripts/cms/image-editor.js`, in the drawer): Desktop / Phone
   tabs (the first opens on the layout visitors on this screen get); a stage
   showing a copy of the card drawn by the homepage's own code and CSS
-  (`PergamonHome.sample`) at a 1440px-screen (desktop) or 390px-screen
+  (`PergamonPage.sample`) at a 1440px-screen (desktop) or 390px-screen
   (phone) size, the whole picture faded around it and the crop outlined.
   Drag (pointer, touch, or arrow keys; the stage has `touch-action: none`, so
   dragging never scrolls) and the zoom slider redraw the stage and the page's
-  card live (`PergamonHome.previewArt`) and go into the working copy when the
+  card live (`PergamonPage.previewArt`) and go into the working copy when the
   gesture ends, so images behave like text fields: unsaved state, Save Draft,
   Discard, the leave prompt and conflicts are M4's.
 - **Uploads:** PNG / JPEG / WebP, ≤ 5 MB, ≤ 10,000px a side; the type is
@@ -544,6 +544,15 @@ draft or published version contains `site.sidebar`): re-run 0012's
 
 ## 11. Migration 0014: page layout, schema 2
 
+**Pages in general (P1, phase 1).** The code below serves any page in the page registry
+(`scripts/cms/pages.js`): `content.forPage(id)` gives these functions for one page, with
+its own component prefix and the schemas it may have, and the loader, renderer, working
+copy and Admin Mode follow the page the document is (`data-atlas-page`). Where this file
+says homepage and `home.…`, read the page and its prefix. Two things are the homepage's
+alone: schema 1, and `site.sidebar` (Site Navigation), which every other page reads from
+the homepage's published document. The database still accepts only `home`: another page
+needs its migration.
+
 `supabase/proposed/0014_page_layout.sql` (H5.3) lets the homepage document
 describe its own layout, so widgets can be placed, resized, added and
 removed as independent instances.
@@ -605,7 +614,7 @@ data changes.
 - **The homepage draws both schemas.** `content.toModel`
   reads either schema: a schema-1 document is upgraded for drawing only (the
   stored document is never changed), so today's published content is drawn
-  as the two regions above. `scripts/home.js` renders each region with the
+  as the two regions above. `scripts/page.js` renders each region with the
   shared Atlas Grid renderer; a document whose layout fails
   `PergamonGrid.validatePage` is refused whole (the page keeps what it had).
   `content.validateDocument` accepts schema 2 (with the grid rules when the
@@ -637,7 +646,7 @@ resized, added and removed on the page.
   `is_admin`: `grid/editor.js` (proposals; new here: `proposeAdd`,
   `proposeRemove`, `proposeStack`, `history.amend`), `grid/interaction.js`
   and `grid/overlay.js`, one of each per region over the homepage's own
-  renderers (`PergamonHome.regions()`). The document side is the workspace.
+  renderers (`PergamonPage.regions()`). The document side is the workspace.
   Visitors download none of it (checked: guest and member pages are
   byte-identical to before, scripts included).
 - **Document.** `workspace.js` holds one undo / redo history for the whole
@@ -689,7 +698,7 @@ resized, added and removed on the page.
   changes per widget; a draft or version whose layout this site wouldn't show
   can't be published or restored from the dialogs. Restoring a schema-1
   version brings back today's homepage, layout and content.
-- **Image previews.** `PergamonHome.cardSize(id, layout, room)` gives the size
+- **Image previews.** `PergamonPage.cardSize(id, layout, room)` gives the size
   a card's widget is really drawn at (its own or a saved card's), and the
   image editor builds the card in a grid slot of that size: in this window as
   if the drawer weren't docked; stacked at 390px for Phone. A widget too narrow
@@ -697,3 +706,20 @@ resized, added and removed on the page.
 - **Tests.** `tests/cms/layout-editing.test.mjs` (workspace, history,
   instances, conflicts, draft → publish → rollback against 0014 in PGlite, and
   without it), `tests/design/grid-editor.test.mjs`, `page-layout.test.mjs`.
+
+## 13. Game library (agreed direction, not built)
+
+Games get canonical records in one more versioned CMS document, `library`, in the
+existing tables (drafts, publishing, history and image checks as for a page). Agreed
+2026-11-24; the migration (0016) and its scope are still to be approved.
+
+- A game owns: stable id, name, description, category, destination, availability
+  (available, coming soon, hidden, archived), square artwork and optional wide
+  artwork, each with a default crop.
+- A card refers to a game and owns only its presentation, including an optional crop
+  of its own.
+- The library publishes by itself; restoring a page never restores game records.
+- Archiving or removing a game never breaks a widget that refers to it.
+- Edited in a Game Library dialog, from Admin Mode and from a card's editor.
+- The homepage moves gradually: code that reads both kinds of card, then the library,
+  then an explicit conversion in the draft.

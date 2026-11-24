@@ -8,7 +8,8 @@
 // Sidebar navigation: one renderer, different destinations (data only).
 //   Site Navigation  every regular page. Administrators edit it in Admin Mode
 //                    (component `site.sidebar` of the homepage CMS document,
-//                    published with the homepage); BUILT_IN_NAV is the fallback
+//                    published with the homepage, whatever page this is);
+//                    BUILT_IN_NAV is the fallback
 //                    when nothing is published (or the CMS can't be reached).
 //                    The last published version is cached in localStorage so
 //                    later visits draw it on first paint.
@@ -21,9 +22,9 @@
 //
 // Layout modes (data-layout on .pa-page):
 //   (none)  the sidebar is a fixed rail below the header, full height.
-//   home    the sidebar is not inserted here; the page mounts it inside its
-//           own grid with PergamonLayout.mountSidebar(parent, before)
-//           (see home.js).
+//   inline  the sidebar is not inserted here; the page mounts it inside its
+//           own grid with PergamonLayout.mountSidebar(parent, before), as the
+//           pages drawn by scripts/page.js do.
 //           If the page never does, it falls back to the default position.
 // On tablet and phone widths the sidebar is the slide-out drawer in both modes.
 (function () {
@@ -183,13 +184,13 @@
 
   var script = document.currentScript;
   var page = script && script.closest ? script.closest('.pa-page') : null;
-  var homeMode = !!page && page.getAttribute('data-layout') === 'home';
+  var inlineMode = !!page && page.getAttribute('data-layout') === 'inline';
 
   if (script) script.insertAdjacentHTML('beforebegin', header);
   else document.body.insertAdjacentHTML('afterbegin', header);
   var headerEl = document.querySelector('.pa-header');
   headerEl.insertAdjacentElement('afterend', backdrop);
-  if (!homeMode) backdrop.insertAdjacentElement('afterend', sidebar);
+  if (!inlineMode) backdrop.insertAdjacentElement('afterend', sidebar);
 
   // ── Desktop collapse ──────────────────────────────────────────────────
   var toggle = sidebar.querySelector('.pa-sidebar-toggle');
@@ -262,34 +263,36 @@
     sidebar.classList.toggle('has-override', !!override);
   }
 
-  // The published Site Navigation: from the homepage's CMS loader when it is
-  // on the page (one request), otherwise one public request of our own.
+  // The published Site Navigation is in the homepage's document: on the
+  // homepage, from its CMS loader (one request); on any other page, editable
+  // ones included, from one public request of our own.
   function usePublished(nav) {
     published = validNav(nav) ? nav : null;
     try { localStorage.setItem(NAV_CACHE, JSON.stringify({ nav: published })); } catch (e) {}
     drawNav();
   }
+  var NAV_PAGE = 'home';
   function navOf(doc) { return doc && doc.components ? doc.components['site.sidebar'] : undefined; }
   function loadPublished() {
     var cms = window.PergamonCMS;
-    if (cms && cms.loader && cms.loader.enabled) {
+    if (cms && cms.loader && cms.loader.enabled && cms.loader.pageId === NAV_PAGE) {
       cms.loader.settled().then(function () { var p = cms.loader.published(); if (p) usePublished(navOf(p.doc)); });
       return;
     }
     var base = window.PERGAMON_SUPABASE_URL, key = window.PERGAMON_SUPABASE_ANON_KEY;
     if (!base || !key || typeof fetch !== 'function') return;
-    fetch(base + '/rest/v1/rpc/get_published_content?p_page=home', {
+    fetch(base + '/rest/v1/rpc/get_published_content?p_page=' + NAV_PAGE, {
       headers: { apikey: key, Accept: 'application/json' }, cache: 'no-store', credentials: 'omit'
     })
       .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
       .then(function (p) {
         if (p === null) return usePublished(null);                      // nothing published: built-in
-        if (p && p.page === 'home' && p.content) usePublished(navOf(p.content));
+        if (p && p.page === NAV_PAGE && p.content) usePublished(navOf(p.content));
       })
       .catch(function () {});                                           // keep what is shown
   }
 
-  // ── Home layout: the page places the sidebar in its own grid ──────────
+  // ── Inline layout: the page places the sidebar in its own grid ────────
   window.PergamonLayout = {
     sidebar: sidebar,
     // Insert the sidebar into parent, before `before` (default: first child).

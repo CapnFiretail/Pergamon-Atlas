@@ -23,6 +23,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Handbook catalogue, Site Navigation (H3); component library (H4) | Built |
 | Colours, spacing and surfaces, Atlas Grid (H5.2); Layout Lab (H5.4) | Built |
 | Homepage on the grid, Layout Mode (H5.3) | Built |
+| Shared pages: page and widget registries, page renderer, editing for any registered page (P1, phase 1) | Built; the homepage is the only registered page so far |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
 | Atlas Studio's Environments cards: the Panel surface (S4) | Built |
@@ -64,7 +65,10 @@ the roadmap in `ATLAS_VISION.md` §11.
 | `PergamonAtlas.V1/scripts/handbook/layout-lab.js` | Foundations › Layout Lab: the Handbook wiring and its policy (changes validated at the live grid width and accepted only if the layout fits at every wider width; below the layout’s own fitting width it is shown stacked and read-only). |
 | `PergamonAtlas.V1/scripts/canvas/*.js`, `styles/canvas.css` | **Node canvas:** geometry (pure), renderer and interaction. Content-neutral; Atlas Studio uses it (`STUDIO.md`). |
 | `PergamonAtlas.V1/scripts/handbook/canvas-page.js` | Foundations › Node Canvas: a live example, the canvas design, its elements with their source, and the canvas conventions. |
-| `PergamonAtlas.V1/scripts/cms/layout-mode.js` | Admin Mode's Layout Mode on the homepage: the same engine, controller and overlay per page region, with the CMS working copy as the document (`docs/cms/ARCHITECTURE.md` §12). |
+| `PergamonAtlas.V1/scripts/page.js`, `scripts/page-widgets.js` | **Page renderer**, for every editable page, and how each widget type is drawn from a page's content. |
+| `PergamonAtlas.V1/scripts/cms/pages.js`, `scripts/cms/widgets.js` | **Page registry** and **widget registry**: what is particular to a page, and what kind of content a widget type has and its names. |
+| `tests/design/page-registry.test.mjs` | Both registries against everything that depends on them, Handbook coverage of widget types, and a page that isn't the homepage. |
+| `PergamonAtlas.V1/scripts/cms/layout-mode.js` | Admin Mode's Layout Mode: the same engine, controller and overlay per page region, with the CMS working copy as the document (`docs/cms/ARCHITECTURE.md` §12). |
 | `tests/design/grid-editor.test.mjs` | The editing engine’s proposals, gestures and history. |
 | `tests/cms/layout-editing.test.mjs` | Layout Mode's document: instances, history, conflicts, saving and rollback. |
 | `PergamonAtlas.V1/styles/handbook.css` | Handbook layout (colours from theme tokens, text from type roles). |
@@ -171,11 +175,12 @@ is on:
 | Content Card (`content-card.js`) | Content | Artwork (with its phone crop when 180px or narrower), title, metadata, link, optional action icon | `{ title, meta, href, art, action }` |
 | Carousel (`carousel.js`) | Container | Layout, gliding and arrows (`glide.js`), optional filters and sections, empty state, announcements, responsive widths | sections of `{ key, element, label, facet }` items |
 
-The **homepage** (`scripts/home.js`) owns everything game- and CMS-specific:
-it turns CMS cards and game entries into those inputs (`featureCard`,
-`gameCard`, `gamesCarousel`), draws the document's widget instances in its
-regions with the shared grid renderer, and keeps the API Admin Mode uses. Admin Mode marks its controls `data-no-copy`, so the carousel's
-moving copies leave them out without knowing about Admin Mode.
+The **page code** owns everything game- and CMS-specific: `scripts/page-widgets.js`
+turns CMS cards and game entries into those inputs, one adapter per widget type;
+`scripts/page.js` draws the document's widget instances in its regions with the
+shared grid renderer, and keeps the API Admin Mode uses. Admin Mode marks its
+controls `data-no-copy`, so the carousel's moving copies leave them out without
+knowing about Admin Mode.
 
 **Responsiveness**: the Carousel and the Content Card follow their own width
 (size containers `carousel` and `content-card`). The feature banner's
@@ -231,29 +236,56 @@ order. Skip the content steps for a widget with no content of its own (as
    ([Connecting a component to a role](#connecting-a-component-to-a-role-h2)).
 3. **Sizing.** An entry in `scripts/grid/widget-types.js`, measured at the
    CMS's maximum content, and the placeable list in `tests/design/grid.test.mjs`.
-4. **Loading.** Style and script in `index.html`, and in `gate.js` `ASSETS`.
-5. **Homepage.** `scripts/home.js`: `DRAW`, the adapter from CMS content to the
-   component's inputs, and (with content) in-place redraw and `sample`.
-6. **Content.** `scripts/cms/content.js`: `WIDGET_TYPES`, `WIDGET_NAMES`,
-   `BASE_IDS`; then search it for `'feature-hero'` and `'carousel'` to find each
-   per-type branch (model, ownership, validation, starter content, lists, fields).
-7. **Server.** A new migration replacing `cms_validate_home_v2`: the type
+4. **Loading.** Style and script in the pages that may use it, and in `gate.js` `ASSETS`.
+5. **Registry.** An entry in `scripts/cms/widgets.js`: its kind of content (a card,
+   a list of cards, none) and its names. Admin Mode (Manage cards, Layout Mode,
+   reviews, history) follows from it. A new *kind* of content also needs
+   `scripts/cms/content.js` (search for `hasCard` and `isList`: model, ownership,
+   validation, starter content) and its fields in `CARD_FIELDS`.
+6. **Adapter.** `scripts/page-widgets.js`: from the page's content to the component's
+   inputs, in-place updates, and a sample of its card.
+7. **Server.** A new migration replacing the schema-2 page validator: the type
    allowlist and its content rules, and `get_published_content` if it keeps
    private parts. Client and server must agree (`tests/cms/page-layout.test.mjs`).
-8. **Admin Mode** (`scripts/cms/`). `layout-mode.js` (which inspector buttons
-   apply), `manage.js` `NAMES`, `MANAGE_LABELS` in `admin.js`, and `LIST_LABELS`
-   in both `admin.js` and `publish.js`.
+8. **Built-in layouts.** Only if a page starts with it: `regions()` in
+   `scripts/cms/pages.js` and that page's built-in document.
 9. **Handbook** (`scripts/handbook/`). Sample input in `component-examples.js`;
-   an entry (with its Source paths) and `ROLES` in `widgets-page.js`. Only if it is demonstrated on the
+   an entry (live example, inputs, `Widget type`, Source paths) and `ROLES` in `widgets-page.js`. Only if it is demonstrated on the
    grid: `componentDraw` in `grid-page.js`.
-10. **Tests and status.** Extend `tests/cms/layout-editing.test.mjs` and
-    `tests/design/`, run the checks (`docs/cms/TESTING.md`), then finish the
+10. **Tests and status.** `tests/design/page-registry.test.mjs` fails until steps 3,
+    5, 6, 7 and 9 agree. Extend `tests/cms/layout-editing.test.mjs` and `tests/design/`, run the checks (`docs/cms/TESTING.md`), then finish the
     milestone as in `CLAUDE.md`.
 
 **Release order:** migration (staging, then production), then the code, then
 the first published document that uses the type. A front end that doesn't know
-the type refuses the whole document and shows the built-in homepage, so before
+the type refuses the whole document and shows the built-in page, so before
 rolling the code back, restore a version without it.
+
+## Making a page editable
+
+An editable page is an ordinary page drawn by `scripts/page.js`: the same header,
+sidebar, themes, grid, widgets, Admin Mode, drafts, publishing and history. It adds
+no code of its own beyond its content. Paths are under `PergamonAtlas.V1/` unless
+shown in full.
+
+1. **Registry.** An entry in `scripts/cms/pages.js` (its header says what each field
+   is): schema 2 only, `siteNavigation: false`, its own prefix, and a built-in layout.
+2. **Built-in content.** A document for that layout, as `data/home-content.js` has:
+   shown until something is published, and whenever the database can't be read.
+3. **HTML.** As `index.html`: `data-layout="inline"` on `.pa-page`; one
+   `<div class="home" data-atlas-page="<id>">`; the same scripts in the same order,
+   with the page's own file in place of `home.js`; `handbook/entry.js`,
+   `studio/entry.js` and `cms/admin.js` last. No inline scripts or styles.
+4. **Page file.** A call to `PergamonPages.mount` (`scripts/home.js` is the example).
+5. **Server.** A migration: a row in `site_pages` whose `schema_version` is the entry's
+   `schemaVersion`, and `validate_content` accepting the page and its prefix. Until it
+   is applied the page shows its built-in content; saving is refused.
+6. **Checks.** `tests/design/page-registry.test.mjs`; `tests/site/second-page.mjs` shows
+   what another page must and mustn't share with the homepage.
+
+Site Navigation is in the homepage's document and is drawn, not edited, elsewhere.
+Not yet possible: pages created without code, regions added in Layout Mode, widgets
+whose height follows their content.
 
 ## Adding a section
 
@@ -323,8 +355,7 @@ them) can make a style that looks equivalent in the CSS render differently.
   for the games).
 - The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
-- The homepage is the only page on the Atlas Grid and the only one Layout
-  Mode edits; widgets stay in their region, and extra carousels share the
+- The homepage is the only registered page so far; widgets stay in their region, and extra carousels share the
   "Explore More Games" heading.
 - The book icon appears where Admin Mode lives (the homepage) and on the
   Handbook itself.

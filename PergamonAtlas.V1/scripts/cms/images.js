@@ -4,7 +4,7 @@
 //
 // Framing is stored in the card's art (schema v1, see docs/cms/ARCHITECTURE.md),
 // never in the file, so originals are untouched. Two layouts, as the homepage
-// CSS draws them (scripts/home.js, styles/home.css):
+// CSS draws them (scripts/page.js, styles/home.css):
 //   desktop   focus + scale                 (cover: the image fills the card)
 //             anchor + scale                (fit 'height': the spotlight)
 //   phone     focusNarrow + scaleNarrow / anchorNarrow + scaleNarrow, used
@@ -64,7 +64,7 @@
     if (width > MAX_SIDE || height > MAX_SIDE) return { error: `This image is ${width} × ${height} pixels; the limit is 10,000 on each side.` };
     const warnings = [];
     if (recommendedWidth && width < recommendedWidth) warnings.push(`At ${width} pixels wide it may look soft on large screens (${recommendedWidth} or more is best).`);
-    if (bytes > LARGE_BYTES) warnings.push(`At ${mb(bytes)} it may slow the homepage down; a compressed WebP loads faster.`);
+    if (bytes > LARGE_BYTES) warnings.push(`At ${mb(bytes)} it may slow the page down; a compressed WebP loads faster.`);
     return { warnings };
   }
 
@@ -309,7 +309,7 @@
       return { mediaId: slot.media_id, width: size.width, height: size.height, warnings: pixels.warnings };
     }
 
-    // { id: { url, width, height } } for the homepage renderer.
+    // { id: { url, width, height } } for the page renderer.
     function map() {
       const out = {};
       Object.keys(entries).forEach(id => { const e = entries[id]; if (e.url) out[id] = { url: e.url, width: e.width, height: e.height }; });

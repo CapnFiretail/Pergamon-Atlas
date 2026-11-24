@@ -20,7 +20,7 @@
 //
 // A schema-1 document stays schema 1 until its layout changes; the first
 // layout change makes it schema 2 (content.upgradeDocument), and a layout
-// back at today's homepage on a schema-1 base is schema 1 again.
+// back at the built-in one on a schema-1 base is schema 1 again.
 //
 // No DOM here: works in the browser (window.PergamonCMS.workspace) and in
 // Node (module.exports) for tests. `api` wraps the RPCs; `storage` is
@@ -40,13 +40,14 @@
   const same = (a, b) => canon(a) === canon(b);
   const comp = (doc, id) => (doc && doc.components ? doc.components[id] : undefined);
 
-  // Ordered collections: each carousel's cards and each feature's saved cards.
+  // Ordered collections: each list widget's cards and each card widget's saved cards.
   // A card's list is its id without the last segment (home.carousel.snake →
   // home.carousel), its key the last segment; the list component holds
   // { order: [keys] }. A saved list with no cards is left out of the document.
+  // (LISTS: the homepage's schema-1 lists, when no `content` says what there is.)
   const LISTS = ['home.carousel', 'home.featured.saved', 'home.spotlight.saved'];
   const LAYOUT = 'page.layout';                 // content.LAYOUT: the layout, among changed ids
-  const isSavedList = list => /^home\.[^.]+\.saved$/.test(list);
+  const isSavedList = list => /^[a-z][a-z0-9-]*\.[^.]+\.saved$/.test(list);
   const listOf = id => (typeof id === 'string' && id.lastIndexOf('.') > 0 ? id.slice(0, id.lastIndexOf('.')) : '');
   const keyOf = id => id.slice(id.lastIndexOf('.') + 1);
   const orderIn = (doc, list) => { const c = comp(doc, list); return c && Array.isArray(c.order) ? c.order : []; };
@@ -92,11 +93,12 @@
     const now = opts.now || Date.now;
     const TYPING_MS = 1500;
 
-    // The lists a document has; its regions (schema 1: today's, for layout work).
+    // The lists a document has; its regions (schema 1: the built-in ones, for layout work).
     const listsOf = doc => (content ? content.listsOf(doc) : LISTS);
     const isList = id => listsOf(working).indexOf(id) >= 0;
     const regionsOf = doc => (content ? content.regionsOf(doc) : (doc && doc.regions) || null);
     const page2 = doc => !!(doc && doc.regions);
+    const instanceKey = id => content.instanceKey(id);
     // Ids whose content differs between two documents (LAYOUT: the layout).
     const changedIds = (a, b) => Object.keys(Object.assign({}, a.components, b.components)).filter(id => !same(comp(a, id), comp(b, id)))
       .concat((page2(a) || page2(b)) && !same(regionsOf(a), regionsOf(b)) ? [LAYOUT] : []);
@@ -135,7 +137,7 @@
 
     // ── Layout ────────────────────────────────────────────────────────────
     // A layout change: the copy becomes schema 2, and back to schema 1 when
-    // the result is today's homepage and the saved document is schema 1. A
+    // the result is the built-in layout and the saved document is schema 1. A
     // document the page couldn't show is never kept.
     function editLayout(change) {
       if (!content) return false;
@@ -153,7 +155,7 @@
       return true;
     }
     function settle(doc, baseDoc) {
-      if (content && page2(doc) && baseDoc && !page2(baseDoc) && same(doc.regions, content.homeRegions())) { doc.schema = content.SCHEMA; delete doc.regions; }
+      if (content && page2(doc) && baseDoc && !page2(baseDoc) && same(doc.regions, content.builtInRegions())) { doc.schema = content.SCHEMA; delete doc.regions; }
     }
     // One region's layout as edited on the grid (scripts/grid/editor.js).
     function putRegion(doc, layout) {
@@ -161,13 +163,13 @@
       if (i < 0) return false;
       doc.regions[i] = clone(layout);
     }
-    const ownedBy = (key, id) => key === 'home.' + id || key.indexOf('home.' + id + '.') === 0;
+    const ownedBy = (key, id) => key === instanceKey(id) || key.indexOf(instanceKey(id) + '.') === 0;
     function dropContent(doc, id) { Object.keys(doc.components).forEach(k => { if (ownedBy(k, id)) delete doc.components[k]; }); }
     const setRegion = layout => editLayout(doc => putRegion(doc, layout));
     // A new instance: its region's new layout and its own content (if any).
     const addInstance = (layout, id, component) => editLayout(doc => {
       if (Object.keys(doc.components).some(k => ownedBy(k, id))) return false;
-      if (component !== undefined) doc.components['home.' + id] = clone(component);
+      if (component !== undefined) doc.components[instanceKey(id)] = clone(component);
       return putRegion(doc, layout);
     });
     // Remove an instance and everything that is its own (cards, saved cards).
@@ -251,7 +253,7 @@
       const original = comp(base.doc, cardId);
       const list = listOf(cardId);
       const owner = content ? content.ownerOf(cardId, working) : null;
-      if (content && !owner && cardId.indexOf('home.') === 0) return;      // its widget is gone
+      if (content && !owner && content.isInstanceKey(cardId)) return;      // its widget is gone
       edit(doc => {
         if (isList(cardId)) {
           if (original === undefined && isSavedList(cardId)) delete doc.components[cardId];
@@ -446,9 +448,9 @@
       });
       // Content of widgets that are gone goes with them; a widget kept without
       // its content gets it back.
-      Object.keys(next.components).forEach(k => { if (k.indexOf('home.') === 0 && !content.ownerOf(k, next)) delete next.components[k]; });
+      Object.keys(next.components).forEach(k => { if (content.isInstanceKey(k) && !content.ownerOf(k, next)) delete next.components[k]; });
       content.instancesOf(next).forEach(i => {
-        const k = 'home.' + i.id, c = [comp(working, k), comp(info.latest.doc, k), comp(base.doc, k)].find(x => x !== undefined);
+        const k = instanceKey(i.id), c = [comp(working, k), comp(info.latest.doc, k), comp(base.doc, k)].find(x => x !== undefined);
         if (next.components[k] === undefined && c !== undefined) next.components[k] = clone(c);
       });
       settle(next, info.latest.doc);
@@ -487,7 +489,7 @@
       canUndo: () => !!history && history.canUndo(),
       canRedo: () => !!history && history.canRedo(),
       setRegion, addInstance, removeInstance, discardLayout,
-      // The working layout's regions (schema 1: today's homepage).
+      // The working layout's regions (schema 1: the built-in ones).
       regions: () => clone(working ? regionsOf(working) : []) || [],
       region: id => clone((working && regionsOf(working) || []).find(r => r.id === id)),
       // The documents known here, the one being edited first (what an id

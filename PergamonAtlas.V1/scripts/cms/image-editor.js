@@ -4,9 +4,9 @@
 //   Desktop / Phone   each layout keeps its own zoom and position
 //                     (scripts/cms/images.js); the phone follows the desktop
 //                     framing until it is given its own.
-//   stage             a copy of the real card, drawn by the homepage's own
-//                     code and styles (PergamonHome.sample) at the size its
-//                     widget is drawn at (PergamonHome.cardSize), with the
+//   stage             a copy of the real card, drawn by the page's own
+//                     code and styles (PergamonPage.sample) at the size its
+//                     widget is drawn at (PergamonPage.cardSize), with the
 //                     whole picture faded around it and the crop outlined. Drag (or arrow keys) to move the
 //                     picture; the zoom slider scales it.
 //   file              upload or replace (a private draft image), revert to
@@ -16,7 +16,7 @@
 // Framing changes are drawn live (on the stage and on the page's card) and
 // go into the working copy when the gesture ends. Created by drawer.js:
 //   imageEditor.create({ field, cardId, workspace, content, images, store,
-//     home, commit(id), setProblem(key, msg), busyChanged(), onForbidden() })
+//     view, commit(id), setProblem(key, msg), busyChanged(), onForbidden() })
 //   → { element, refresh(), clearProblems(), busy(), destroy() }
 (function () {
   'use strict';
@@ -60,7 +60,7 @@
   let lastLayout = null;                       // the tab the next card opens on
 
   function create(env) {
-    const { field, cardId, workspace, content, images, store, home } = env;
+    const { field, cardId, workspace, content, images, store, view } = env;
     const type = content.cardType(cardId, ...workspace.docs());
     const isTile = type === 'tile';
     // First time: the layout visitors get on this screen. The homepage switches
@@ -70,7 +70,7 @@
     let layout = lastLayout;
     // A widget this narrow shows the compact card on every screen: there is
     // no desktop framing to set, only the phone's.
-    const sizeOf = l => (isTile || !home.cardSize ? null : home.cardSize(cardId, l, dockedRoom()));
+    const sizeOf = l => (isTile || !view.cardSize ? null : view.cardSize(cardId, l, dockedRoom()));
     const compactOnly = () => { const s = sizeOf('desktop'); return !!s && s.compact; };
     let dead = false;
     let uploading = false;
@@ -176,13 +176,13 @@
     function build() {
       if (layout === 'desktop' && compactOnly()) layout = 'phone';
       const a = art();
-      const m = a ? home.artModel(a) : null;
+      const m = a ? view.artModel(a) : null;
       const size = sizeOf(layout);
       const key = [layout, size ? Math.round(size.width) + '×' + Math.round(size.height || size.minHeight) + (size.frame || '') : '', m && m.src ? m.src : a ? 'missing' : 'none'].join('|');
       if (built && built.key === key) return;
       built = null;
       canvas.replaceChildren();
-      const sample = home.sample(cardId);
+      const sample = view.sample(cardId);
       if (!sample) return;
       sample.art(a);
       const card = sample.element;
@@ -281,7 +281,7 @@
       live = f;
       const a = f ? images.setFraming(art(), layout, f, type) : art();
       if (built) built.sample.art(a);
-      home.previewArt(cardId, a);
+      view.previewArt(cardId, a);
       place(f || current());
       zoomText(f || current());
     }
@@ -489,7 +489,7 @@
     function describe(a) {
       if (!a) return 'No image yet: the card shows a placeholder.';
       if (a.source && a.source.static) {
-        const m = home.artModel(a);
+        const m = view.artModel(a);
         const size = m && m.width ? ` · ${m.width} × ${m.height}` : '';
         return `Built-in image · ${a.source.static.split('/').pop()}${size}`;
       }

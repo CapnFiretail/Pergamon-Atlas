@@ -20,15 +20,17 @@
   <link rel="stylesheet" href="/operation/styles/footer.css">
 </head>
 <body>
-<div class="pa-page" data-layout="home">
+<div class="pa-page" data-layout="inline">
   <script src="/scripts/layout.js"></script>
   <div class="pa-layout">
 
     <main class="pa-main home-page">
-      <div id="home" class="home"></div>
+      <div id="home" class="home" data-atlas-page="home"></div>
       <script src="/data/entries.js"></script>
       <script src="/data/home-content.js"></script>
 <script src="/operation/scripts/auth/supabase-config.js"></script>
+<script src="/scripts/cms/pages.js"></script>
+<script src="/scripts/cms/widgets.js"></script>
 <script src="/scripts/cms/content.js"></script>
 <script src="/scripts/cms/loader.js"></script>
       <script src="/scripts/glide.js"></script>
@@ -39,6 +41,8 @@
       <script src="/scripts/grid/atlas-grid.js"></script>
       <script src="/scripts/grid/widget-types.js"></script>
       <script src="/scripts/grid/renderer.js"></script>
+      <script src="/scripts/page-widgets.js"></script>
+      <script src="/scripts/page.js"></script>
       <script src="/scripts/home.js"></script>
     </main>
   </div>

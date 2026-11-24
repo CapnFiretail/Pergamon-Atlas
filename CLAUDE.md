@@ -44,6 +44,8 @@ generated files (below), `*/package-lock.json`, `tests/cms/fixtures/`,
 - **Stay within the task.** No unrelated improvements; mention them instead.
 - **Match validation to risk.** Test what the change could break; don't repeat
   checks that already passed on the same code.
+- **Persistent data, different presentation.** A thing shown in several places has one
+  record; widgets refer to it and own only its presentation (`ATLAS_VISION.md` §1).
 - **Plain HTML/CSS/JS.** No framework, page build step or new infrastructure
   unless approved. Build what the task needs now; reuse before adding.
 - **Never hand-edit generated files:** `styles/typography.css` (from
@@ -68,7 +70,8 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Where something lives | `README.md` › Layout; `docs/design/HANDBOOK.md` › Files |
 | Add or change a widget | `docs/design/HANDBOOK.md` › Adding a widget type, The component library; then `scripts/components/<name>.js` header, its entry in `scripts/grid/widget-types.js` |
 | Grid, sizing, renderer, editing engine | Headers of `scripts/grid/*.js` |
-| Homepage drawing | `scripts/home.js` header; `docs/cms/ARCHITECTURE.md` §11 |
+| Page drawing (every editable page) | Headers of `scripts/page.js`, `page-widgets.js`; `docs/cms/ARCHITECTURE.md` §11 |
+| Make a page editable; page and widget registries | `docs/design/HANDBOOK.md` › Making a page editable; headers of `scripts/cms/pages.js`, `widgets.js` |
 | Content document and fields | `docs/cms/ARCHITECTURE.md` §3 (schema 1), §11 (schema 2); `scripts/cms/content.js` |
 | Admin Mode | `docs/cms/ARCHITECTURE.md`: §5a mode, §5b cards, §5c images, §5d publishing, §5e collections and history, §5f navigation, §12 Layout Mode |
 | Database, access, media | `docs/cms/ARCHITECTURE.md` §2–4; the one migration in `supabase/proposed/` |
@@ -90,7 +93,10 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 ## Finishing a milestone
 
 1. Run the checks the change calls for (`docs/cms/TESTING.md` › Run).
-2. Update the affected documentation where the fact already lives. One fact,
+2. Handbook: every new or changed reusable component, widget, element or design token
+   has its entry in the same milestone (live example, inputs, Source paths where they
+   apply). Explain any exception in the report.
+3. Update the affected documentation where the fact already lives. One fact,
    one place: code and registries first, then docs; others link to it.
-3. Update `docs/STATUS.md`: replace outdated lines, don't append a history.
-4. Report briefly: **changes, validation, outstanding issues, next steps.**
+4. Update `docs/STATUS.md`: replace outdated lines, don't append a history.
+5. Report briefly: **changes, validation, outstanding issues, next steps.**

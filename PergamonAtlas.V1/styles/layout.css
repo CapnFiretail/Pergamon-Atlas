@@ -261,9 +261,9 @@
 /* The collapsed sidebar clips overflow, so its tooltips sit inside the rail. */
 :root[data-sidebar="collapsed"] .pa-sidebar { overflow: visible; }
 
-/* ── Home layout: the page grid owns the sidebar's place (see home.js) ── */
-.pa-page[data-layout="home"] .pa-layout,
-.pa-page[data-layout="home"] #footer-placeholder,
+/* ── Inline layout: the page grid owns the sidebar's place (scripts/page.js) ── */
+.pa-page[data-layout="inline"] .pa-layout,
+.pa-page[data-layout="inline"] #footer-placeholder,
 .pa-page.has-inline-sidebar .pa-layout,
 .pa-page.has-inline-sidebar #footer-placeholder { margin-left: 0; }
 @media (min-width: 901px) {

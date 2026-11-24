@@ -180,6 +180,7 @@
         ['Inputs', ['Sections, each with a title, optional icon, optional filter names, items', { code: '{ key, element, label, facet }' }, 'and empty messages. One section: no section arrows. No filters: no tabs.']],
         ['Owns', ['Layout, gliding and arrows, filters, sections, empty state, screen-reader announcements, its responsive widths.']],
         ['Used on', ['Homepage: “Explore More Games” (sections Games and Tools; the Games cards come from the CMS component', { code: 'home.carousel' }, ').']],
+        ['Widget type', [{ code: 'carousel' }, 'An ordered list of cards.']],
         ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile; the carousel stands still while editing.']],
         ['Type roles', roles('carousel')],
         ['Source', [{ path: 'scripts/components/carousel.js' }, { path: 'styles/components/carousel.css' }, { path: 'scripts/glide.js' }]]
@@ -188,7 +189,7 @@
 
     // ── Content components ──────────────────────────────────────────────
     const contents = group('Content components', 'Own the presentation of one piece of content and its interaction. The page decides what they show and where they go.');
-    function featureEntry(variant, id, name, examples, text, used, admin) {
+    function featureEntry(variant, id, name, examples, text, used, type, admin) {
       const art = entry(contents, id, name, [chip('Content', 'active'), chip(variant === 'hero' ? 'Variant: hero' : 'Variant: banner', 'muted'), chip('Shares the feature banner renderer', 'muted')], text);
       if (C.featureBanner) {
         const s = stage(`Live: ${examples.map(x => x.name.toLowerCase()).join('; ')}. Compact shows the narrow layout its page area switches to.`, true);
@@ -207,6 +208,7 @@
         ['Layout', [variant === 'hero' ? 'Tall; the action sits under the title.' : 'Wide and short; the action on the right.', 'Its height comes from where it is placed; its compact layout from the page area it sits in.']],
         ['Placement', ['Put it inside a page area that is a size container named', { code: 'upper' }, 'and give it its height there. The compact layout applies when that area is 560px or narrower; above that it keeps its wide layout even if the card itself is narrower (for example, in a two-column row). Without such an area it always shows its wide layout. On the homepage that area is', { code: '.home-upper' }, '. For another page:', { code: '.area { container: upper / inline-size; display: grid; grid-template-rows: ' + (variant === 'hero' ? '260px' : '140px') + '; }' }, { code: '@container upper (max-width: 560px) { .area { grid-template-rows: auto; } }' }]],
         ['Used on', used],
+        type,
         ['Admin Mode', admin],
         ['Type roles', roles(variant)],
         ['Source', [{ path: 'scripts/components/feature-banner.js' }, { path: 'styles/components/feature-banner.css' }]]
@@ -215,10 +217,12 @@
     featureEntry('hero', 'hero', 'Featured Content — Hero', X.hero || [],
       'The large card that introduces one piece of content: full-bleed artwork, a title between ornament rules, and one action. On the homepage it is the Featured Game.',
       ['Homepage: the Featured slot (CMS component', { code: 'home.featured' }, ').'],
+      ['Widget type', [{ code: 'feature-hero' }, 'One active card, with its own saved cards.']],
       ['Title, button label, destination, image and its desktop and phone framing; saved cards to switch between.']);
     featureEntry('banner', 'banner', 'Spotlight — Banner', X.banner || [],
       'The same component as a wide, short banner: the title on the left, the artwork through the middle, the action on the right. On the homepage it is the Spotlight.',
       ['Homepage: the Spotlight slot (CMS component', { code: 'home.spotlight' }, ').'],
+      ['Widget type', [{ code: 'feature-spotlight' }, 'One active card, with its own saved cards.']],
       ['Title, button label, destination, image with edge colour and framing; saved cards to switch between.']);
     {
       const art = entry(contents, 'card', 'Content Card', [chip('Content', 'active'), chip('Live preview', 'muted')],
@@ -239,7 +243,7 @@
       art.append(facts([
         ['Inputs', [{ code: '{ title, meta, href, art, action }' }, '(action: play, or none).']],
         ['Owns', ['Its artwork (crop, zoom, phone crop when 180px or narrower), title, metadata, link and action icon.']],
-        ['Used on', ['Homepage carousel: one card per game (CMS components', { code: 'home.carousel.<card>' }, '; the homepage turns each game into title, category and link).']],
+        ['Used on', ['Homepage carousel: one card per game (CMS components', { code: 'home.carousel.<card>' }, '; the page’s widgets turn each game into title, category and link).']],
         ['Admin Mode', ['Title, category, destination game and image with its framing.']],
         ['Type roles', roles('card')],
         ['Source', [{ path: 'scripts/components/content-card.js' }, { path: 'styles/components/content-card.css' }]]
@@ -303,7 +307,8 @@
       }
       art.append(s.fig, facts([
         ['Configuration', ['Not editable yet: the homepage’s destinations are set in', { code: 'data/home-content.js' }, '(', { code: 'context' }, '); every instance shows the same links.']],
-        ['Grid', ['Widget type', { code: 'atlas-navigation' }, '; at least 242px wide (much narrower and the longest label is cut off).']],
+        ['Widget type', [{ code: 'atlas-navigation' }, 'No content of its own.']],
+        ['Grid', ['At least 242px wide (much narrower and the longest label is cut off).']],
         ['Type roles', roles('atlas')],
         ['Source', [{ path: 'scripts/components/atlas-navigation.js' }, { path: 'styles/components/atlas-navigation.css' }]]
       ]));

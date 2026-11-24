@@ -117,7 +117,7 @@
     const label = id => env.cardLabel(id);
     const typeLabel = id => {
       const docs = workspace.docs();
-      const t = ({ feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' })[content.cardType(id, ...docs)] || 'Card';
+      const t = content.widgets.cardLabel(content.cardType(id, ...docs));
       const name = content.isSaved(id, ...docs) ? `Saved ${t.toLowerCase()} (not active)` : t;
       // A widget added to the page: say which one.
       const o = content.ownerOf(id, ...docs);
@@ -140,7 +140,7 @@
           // The image slot has its own editor (scripts/cms/image-editor.js).
           if (!cms.imageEditor || !env.images) return;
           const image = cms.imageEditor.create({
-            field, cardId: id, workspace, content, images: env.images, store: env.imageStore, home: env.home,
+            field, cardId: id, workspace, content, images: env.images, store: env.imageStore, view: env.view,
             commit: cardId => { env.onEdit(cardId); if (cardId === current) update(); },
             setProblem: (key, problem) => { if (problem) errors[key] = problem; else delete errors[key]; update(); },
             busyChanged: () => update(),
@@ -192,7 +192,7 @@
         row.input = input;
         wrap.append(lab, input);
         if (row.other) wrap.append(row.other);
-        if (field.type === 'link') wrap.append(el('p', 'cms-field-hint', field.gamesOnly ? 'Carousel cards link to a game.' : 'A game, or another page on this site.'));
+        if (field.type === 'link') wrap.append(el('p', 'cms-field-hint', field.gamesOnly ? content.widgets.cards[content.cardType(id, ...workspace.docs())].linkHint : 'A game, or another page on this site.'));
         wrap.append(error);
         form.append(wrap);
         fields.push(row);

@@ -5,7 +5,8 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by P1's local
+  commits, unpushed.
 - **Production:** `d537d14` (S5: Studio › Ideas; Connections and Ideas saved in
   Supabase), released 2026-11-24 (Vercel `8aY37MEUBFWP4wTFh2Z9S2PLikwz`) and verified
   the same day as a guest and by comparing every published site file with the
@@ -21,7 +22,11 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 - **Migrations, production and staging:** 0001–0006, 0008–0015. 0007 (optional)
   not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
   both (user-reported).
-- **Active milestone:** none.
+- **Active milestone:** P1, Games catalog on the shared page architecture. Phase 1
+  (page and widget registries, page renderer, Site Navigation on any page): local
+  review approved by the user 2026-11-24, committed locally, not pushed. No database
+  change, nothing visible changed. Phase 2 (widgets) is next; migration 0016's scope
+  is still to be approved. Agreed for the game library: `cms/ARCHITECTURE.md` §13.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
@@ -32,7 +37,6 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   the first one: check there is no leftover draft, close older admin tabs and note
   the live version. If it goes wrong, restore that version before any frontend
   rollback (rollback deployment `DZcxwUDrU2Qkup2aeG63UFLCZxzH`, `41d691b`).
-- No committed test keeps components independent of games and the CMS.
 - Local `main` may be behind `origin/main`; compare with `origin/main`.
 - Untracked and deliberately left: `supabase/proposed/production-h53/` (release
   SQL kit), 0012 diagnostics, `review/`, `PergamonAtlas.Legacy/`, `-w`.

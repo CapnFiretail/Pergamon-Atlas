@@ -20,12 +20,13 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 ├── studio/                Atlas Studio (administrators)
 ├── suggestions/  achievements/  leaderboards/  updates/  …   placeholders
 ├── scripts/
-│   ├── theme.js  layout.js  home.js  account.js   page scripts
+│   ├── theme.js  layout.js  account.js  …   site and page scripts
+│   ├── page.js  page-widgets.js   the page renderer; home.js: the homepage's own part
 │   ├── components/        component library (widgets)
 │   ├── grid/              Atlas Grid: engine, widget sizing, renderer, editor
 │   ├── canvas/            node canvas: geometry, renderer, interaction
 │   ├── design/            design registries (typography, colours, surfaces)
-│   ├── cms/               homepage CMS and Admin Mode
+│   ├── cms/               page and widget registries, CMS and Admin Mode
 │   ├── handbook/          Handbook pages
 │   └── studio/            Studio shell and sections (connections/, ideas/, …)
 ├── styles/                theme.css (tokens), typography.css (generated), …
@@ -41,7 +42,7 @@ supabase/functions/        Edge Functions (publish-media)
 docs/DEVELOPMENT.md        environments and the local development server
 docs/design/               Handbook and Studio guides, vision
 docs/cms/                  CMS architecture, staging, tests
-tests/                     cms/ and design/ (node --test)
+tests/                     cms/ and design/ (node --test), site/ (browser)
 tools/                     build helpers: Supabase config, typography, vision;
                            the local development server (dev-server.*)
 vercel.json                output directory, redirects, headers
@@ -51,6 +52,9 @@ Game pages and the Games catalog still draw their content area with the legacy
 `operation/styles/main.css`; only their header, sidebar and footer follow the theme.
 
 ## Adding a page
+
+For a page edited in Admin Mode, see `docs/design/HANDBOOK.md` › Making a page
+editable. For any other:
 
 In `<head>`: `theme.js`, the Google Fonts link, `theme.css`, `typography.css`
 (right after `theme.css`; a test checks it), `layout.css`, `operation/styles/footer.css`.

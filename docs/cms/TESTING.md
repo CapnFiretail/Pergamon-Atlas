@@ -9,6 +9,7 @@
 | Design registries, styles, grid, the Widgets catalogue, the Studio, the local development server, a page's `<head>`, the vision | `node --test "tests/design/*.test.mjs"` |
 | `scripts/design/typography.js` | `node tools/build-typography.mjs` (`--check` to verify) |
 | `docs/design/ATLAS_VISION.md` | `node tools/build-vision.mjs` (`--check` to verify) |
+| The page renderer, the loader, Admin Mode, the registries | Also `tests/site/` (below) |
 | Documentation only | The check for its generated copy, if any; links and paths exist |
 
 `tests/cms/staging-*.mjs` **write to staging**: run them only with approval.
@@ -30,9 +31,20 @@ suites.
 | `images.test.mjs` | Card images (`scripts/cms/images.js`): the image slot and its parts in the schema, file checks by content (PNG/JPEG/WebP only, 5 MB, 10,000px), desktop / phone framing in schema v1's fields (each layout independent, server ranges, reset, match desktop, replacement), geometry matching the homepage CSS and drag maths, the upload store against a fake Supabase (issued path only, signed previews, failures and tampered answers change nothing, no retry loop), and image edits through the workspace (saved with text, discard, revert, conflicts). |
 | `publish.test.mjs` | Publishing (`scripts/cms/publish.js`): the change summary (per card, framing as each layout shows it, new images), the sequence against a fake server (only unprepared images of the draft are prepared, publish only after all are ready, a failed image publishes nothing and a retry skips prepared ones, stale draft / live version refused, concurrent publishes create one version), and the workspace after publishing (excluded edits stay unsaved). |
 
-The site regression suite (Playwright; homepage geometry, cards, carousel,
-themes, navigation, games, account pages, redirects) also checks the pinned
-supabase-js and reports report-only CSP violations per page.
+## Browser checks (`tests/site/`)
+
+They need the local development server and an installed Playwright (not a dependency;
+`lib.mjs` says how it is found). The database is emulated and sign-in is a stand-in:
+nothing leaves the machine, and they say nothing about real authentication. Run one at
+a time.
+
+| File | Use |
+|---|---|
+| `snapshot.mjs` | What visitors see of the homepage, before and after a change that must not alter it: markup, geometry, styles, pictures, requests (43 views). |
+| `admin.mjs` | Admin Mode end to end, before and after: what an administrator sees and what the database holds at each step. Two transcripts must be the same. |
+| `second-page.mjs` | A made-up second page on the shared code: its own content, cache, draft and ids; Site Navigation from the homepage. |
+
+Not covered by a committed suite: games, account pages and redirects.
 
 ## What the emulation can't prove (run on staging)
 

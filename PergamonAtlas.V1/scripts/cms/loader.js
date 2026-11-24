@@ -1,13 +1,15 @@
-// Published homepage content from the CMS (Supabase).
+// A page's published content from the CMS (Supabase). Which page is the one
+// this document is (data-atlas-page, scripts/cms/pages.js).
 //
 // Loaded after supabase-config.js and scripts/cms/content.js and before
-// scripts/home.js, so the request is already in flight while the page parses.
-// Only the public get_published_content('home') is ever called: drafts and
-// working copies never reach this code.
+// scripts/page.js, so the request is already in flight while the page parses.
+// Only the public get_published_content is ever called: drafts and working
+// copies never reach this code.
 //
+//   pageId               the page whose content this is ('home'), or null
 //   initial()            the last published version this browser received
-//                        (re-validated), for home.js's first render; or null.
-//   attach(home, root, v, fallback)
+//                        (re-validated), for the first render; or null.
+//   attach(view, root, v, fallback)
 //                        apply the fresh published version once it arrives,
 //                        unless it's the version already shown (v); if nothing
 //                        is published, return to the fallback document.
@@ -25,6 +27,7 @@
   const URL_BASE = window.PERGAMON_SUPABASE_URL;
   const KEY = window.PERGAMON_SUPABASE_ANON_KEY;
   const ENV = window.PERGAMON_ENV || 'development';
+  const page = content && cms.pages.current() ? content.page : null;
 
   // Where published content is read. Production stays on the static
   // document until the CMS is approved there: set production to true then.
@@ -32,11 +35,11 @@
 
   const REVEAL_MS = 1200;      // longest the first visit waits before showing the static copy
   const TIMEOUT_MS = 8000;     // give up on the request after this
-  const CACHE_KEY = 'pa-cms-home:' + (URL_BASE || '');
+  const CACHE_KEY = 'pa-cms-' + (page ? page.id : '') + ':' + (URL_BASE || '');
   const MEDIA_PATH = /^media\/[0-9a-f]{64}\.(png|jpg|webp)$/;
   const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-  const enabled = !!(content && content.validateDocument && URL_BASE && KEY && LIVE[ENV] === true);
+  const enabled = !!(page && URL_BASE && KEY && LIVE[ENV] === true);
 
   // Public image URLs for the media ids the document uses (validated paths only).
   function mediaMap(raw) {
@@ -58,7 +61,7 @@
   // get_published_content payload -> { version, doc, media } | { none: true } | null (invalid).
   function normalize(p) {
     if (p === null) return { none: true };
-    if (!p || typeof p !== 'object' || p.page !== 'home' || !Number.isInteger(p.version) || p.schema !== content.SCHEMA) return null;
+    if (!p || typeof p !== 'object' || p.page !== page.id || !Number.isInteger(p.version) || p.schema !== page.schemaVersion) return null;
     if (!content.validateDocument(p.content)) return null;
     const media = mediaMap(p.media);
     if (!media) return null;
@@ -82,7 +85,7 @@
   function fetchPublished() {
     const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     const timer = ctrl ? setTimeout(() => ctrl.abort(), TIMEOUT_MS) : null;
-    return fetch(URL_BASE + '/rest/v1/rpc/get_published_content?p_page=home', {
+    return fetch(URL_BASE + '/rest/v1/rpc/get_published_content?p_page=' + page.id, {
       headers: { apikey: KEY, Accept: 'application/json' },
       cache: 'no-store', credentials: 'omit', signal: ctrl ? ctrl.signal : undefined
     })
@@ -96,7 +99,7 @@
       .finally(() => { if (timer) clearTimeout(timer); });
   }
 
-  // Start the request now (before home.js renders).
+  // Start the request now (before the page renders).
   let request = null;
   if (enabled) {
     request = fetchPublished();
@@ -111,6 +114,7 @@
 
   cms.loader = {
     enabled: enabled,
+    pageId: page ? page.id : null,
     initial: () => (enabled ? readCache() : null),
     hold(on) { held = !!on; },
     // The newest published version known here: fresh answer, else cache; null if none.
@@ -131,8 +135,8 @@
     },
     // Resolves once the request has settled (whatever its outcome).
     settled: () => (request ? request.then(() => {}, () => {}) : Promise.resolve()),
-    attach(home, root, shownVersion, fallbackDoc) {
-      if (!enabled || !request || !home) return;
+    attach(view, root, shownVersion, fallbackDoc) {
+      if (!enabled || !request || !view) return;
       let shown = shownVersion || null;
       let revealTimer = null;
       if (!shown && root) {
@@ -144,16 +148,16 @@
           latest = result.none ? { none: true } : { version: result.version, doc: result.doc, media: result.media };
           if (result.none) {                                    // nothing published: back to the static copy
             clearCache();
-            if (!held && shown && fallbackDoc && home.render(fallbackDoc)) shown = null;
+            if (!held && shown && fallbackDoc && view.render(fallbackDoc)) shown = null;
             return;
           }
-          if (!held && result.version !== shown && home.render(result.doc, { media: result.media })) {
+          if (!held && result.version !== shown && view.render(result.doc, { media: result.media })) {
             shown = result.version;
           }
           writeCache(result.raw);
         })
         .catch(err => {
-          console.info('Pergamon CMS: showing the built-in homepage content (' + (err && err.name === 'AbortError' ? 'timed out' : (err && err.message) || 'unavailable') + ').');
+          console.info('Pergamon CMS: showing the built-in ' + page.noun + ' content (' + (err && err.name === 'AbortError' ? 'timed out' : (err && err.message) || 'unavailable') + ').');
         })
         .finally(() => {
           if (revealTimer) clearTimeout(revealTimer);

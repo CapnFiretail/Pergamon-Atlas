@@ -828,7 +828,7 @@ select.cms-field-input { cursor: pointer; }
      the floating controls (layout-mode.js allows for it). */
   :root[data-cms-mode="layout"] .pa-main.home-page { box-sizing: border-box; min-height: calc(100vh - var(--cms-layout-top, 88px)); margin-right: var(--cms-drawer-w); padding-bottom: 72px; }
   :root[data-cms-mode="layout"] #footer-placeholder { display: none; }
-  :root[data-cms-mode="layout"] #home {
+  :root[data-cms-mode="layout"] [data-atlas-page] {
     width: var(--cms-canvas-width, auto);
     margin: 0 0 var(--cms-canvas-below, 0) var(--cms-canvas-left, 0);
     transform: scale(var(--atlas-scale, 1));

@@ -120,7 +120,7 @@ test('both schemas draw the same page: schema 1 is today’s two regions, its co
   const v1 = cms.toModel(clone(home.document), ctx);
   const v2 = cms.toModel(cms.upgradeDocument(clone(home.document)), ctx);
   assert.deepEqual(v2, v1, 'schema 1 and its upgrade give the same model');
-  assert.deepEqual(v1.regions, cms.homeRegions(), 'schema 1 is drawn with the approved regions');
+  assert.deepEqual(v1.regions, cms.builtInRegions(), 'schema 1 is drawn with the approved regions');
   assert.deepEqual(Object.keys(v1.instances).sort(), ['carousel', 'featured', 'navigation', 'spotlight']);
   assert.equal(v1.instances.featured.card, v1.featured, 'legacy fields are the instances’ content');
   assert.equal(v1.instances.carousel.cards, v1.carousel);

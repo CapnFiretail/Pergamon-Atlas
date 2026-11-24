@@ -1,4 +1,6 @@
-// Admin Mode for the homepage (CMS milestones M3–M6).
+// Admin Mode for a page drawn by scripts/page.js (CMS milestones M3–M6); which
+// page it is, and so what it edits, follows from the page itself
+// (window.PergamonPage, scripts/cms/pages.js).
 //
 // Loaded after auth.js. Builds nothing, and loads the editor (workspace.js,
 // images.js, drawer.js, image-editor.js, publish.js, publish-dialog.js,
@@ -19,7 +21,7 @@
 //                   (layout-mode.js). Undo and Redo step through both
 //   Admin view      the working copy (workspace.js) drawn on the page, with a
 //                   frame and pencil on every supported card, found through
-//                   PergamonHome.cardIds() / element(id) (no game names here);
+//                   PergamonPage.cardIds() / element(id) (no game names here);
 //                   a pencil opens the card editing drawer (drawer.js)
 //   images          the working copy's uploaded images: private drafts are
 //                   shown to the administrator through short-lived signed
@@ -27,32 +29,30 @@
 //   User / Guest    no editing controls, published content; Guest also shows
 //                   the guest appearance (PergamonTheme.previewSignedIn).
 //                   Unsaved edits stay in the working copy for Admin view.
-//   collections     "Manage cards" on every Featured / Spotlight card and
-//                   carousel, and each carousel's "Add card" tile (manage.js);
+//   collections     "Manage cards" on every card and list widget, and each
+//                   list's "Add card" tile (manage.js);
 //                   a saved card being edited is previewed in its widget
 //   history         Version History and Restore in the panel (history.js)
 //   site navigation the sidebar's links on every page (site-nav.js), stored
-//                   as `site.sidebar` in this same document: opened from the
-//                   panel or the pencil on the homepage's sidebar; Admin view
-//                   shows the working copy's links on that sidebar
+//                   as `site.sidebar` in the homepage's document and so edited
+//                   on the homepage only: opened from the panel or the pencil
+//                   on its sidebar; Admin view shows the working copy's links
+//                   on that sidebar
 (function () {
   'use strict';
   const cms = window.PergamonCMS || {};
   const auth = window.PergamonAuth;
-  const home = window.PergamonHome;
-  const root = document.getElementById('home');
-  // Only where the homepage reads the CMS (staging previews and development).
-  if (!cms.loader || !cms.loader.enabled || !cms.content || !auth || !home || !root || !window.PergamonSupabaseClient) return;
+  const pageView = window.PergamonPage;
+  // Only where the page reads the CMS.
+  if (!cms.loader || !cms.loader.enabled || !cms.content || !auth || !pageView || !window.PergamonSupabaseClient) return;
 
-  const PAGE = 'home';
+  const root = pageView.root;
+  const PAGE = cms.content.page;
+  const WIDGETS = cms.content.widgets;
   const STATE_KEY = 'pa-cms-admin';
   const VIEWS = { admin: 'Admin', user: 'User', guest: 'Guest' };
   const MODES = { content: 'Content', layout: 'Layout' };
-  const TYPE_LABELS = { feature: 'Featured card', spotlight: 'Spotlight card', tile: 'Carousel card' };
   const STATUS_LABELS = { unsaved: 'unsaved changes', draft: 'saved in draft' };
-  // By widget type: its ordered list, and its Manage cards button.
-  const LIST_LABELS = { 'carousel': 'Carousel order', 'feature-hero': 'Saved featured cards order', 'feature-spotlight': 'Saved spotlight cards order' };
-  const MANAGE_LABELS = { 'feature-hero': 'featured cards', 'feature-spotlight': 'spotlight cards', 'carousel': 'carousel cards' };
   const ICONS = {
     admin: '<path d="M12 3 5 6v5c0 4.4 3 8.3 7 9.5 4-1.2 7-5.1 7-9.5V6z"/><path d="m9 12 2 2 4-4"/>',
     pencil: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
@@ -83,10 +83,10 @@
   let manager = null;                  // Manage cards (manage.js)
   let history = null;                  // Version History (history.js)
   let layoutMode = null;               // Layout Mode (layout-mode.js)
-  const addTiles = new Map();          // carousel instance → its "Add card" tile (Content mode)
+  const addTiles = new Map();          // list instance → its "Add card" tile (Content mode)
   let previewId = null;                // saved card shown in its slot while edited
   let siteNav = null;                  // Site Navigation editor (site-nav.js)
-  const layout = window.PergamonLayout && window.PergamonLayout.siteNavigation ? window.PergamonLayout : null;
+  const layout = PAGE.siteNavigation && window.PergamonLayout && window.PergamonLayout.siteNavigation ? window.PergamonLayout : null;
   const NAV_ID = 'site.sidebar';
 
   // ── Server verification ───────────────────────────────────────────────
@@ -171,11 +171,11 @@
 
   function start() {
     workspace = cms.workspace.create({
-      page: PAGE,
+      page: PAGE.id,
       scope: window.PERGAMON_SUPABASE_URL || '',
       storage: (() => { try { return window.sessionStorage; } catch (e) { return null; } })(),
       validate: cms.content.validateDocument,
-      fallbackDoc: window.PergamonHomeContent && window.PergamonHomeContent.document,
+      fallbackDoc: pageView.builtIn,
       content: cms.content,
       createHistory: grid().editor.createHistory,
       starter: type => cms.content.starterContent(type, liveGames()[0]),
@@ -204,7 +204,7 @@
     state = OFF;
     if (layoutMode) { layoutMode.destroy(); layoutMode = null; }
     undecorate();
-    if (home.holdMotion) home.holdMotion(false);
+    if (pageView.holdMotion) pageView.holdMotion(false);
     if (publisher) { publisher.destroy(); publisher = null; }
     if (manager) { manager.destroy(); manager = null; }
     if (history) { history.destroy(); history = null; }
@@ -257,7 +257,7 @@
     const head = el('div', 'cms-admin-head');
     const heading = el('div', 'cms-admin-heading');
     const title = el('h2', 'cms-admin-title', 'Admin Mode'); title.id = 'cms-admin-title';
-    heading.append(title, el('p', 'cms-admin-sub', 'Verified administrator · homepage and site navigation'));
+    heading.append(title, el('p', 'cms-admin-sub', `Verified administrator · ${PAGE.noun}${PAGE.siteNavigation ? ' and site navigation' : ''}`));
     const toggle = el('button', 'cms-admin-switch');
     toggle.type = 'button';
     toggle.setAttribute('role', 'switch');
@@ -304,7 +304,7 @@
 
     // Published / saved draft / unsaved, at a glance.
     const stateList = el('ul', 'cms-admin-state');
-    stateList.setAttribute('aria-label', 'Homepage content');
+    stateList.setAttribute('aria-label', `${PAGE.name} content`);
     const stateRows = {};
     [['published', 'Published'], ['draft', 'Saved draft'], ['unsaved', 'Unsaved']].forEach(([key, name]) => {
       const li = el('li', 'cms-admin-state-row');
@@ -355,16 +355,16 @@
       content: cms.content,
       images: cms.images,
       imageStore,
-      home,
+      view: pageView,
       games: liveGames(),
       cardLabel: id => cardTitle(id),
       whenLoaded: ensureLoaded,
-      onEdit: id => { draw(); home.reveal(id); decorate(); },
+      onEdit: id => { draw(); pageView.reveal(id); decorate(); },
       onOpen: id => {
         draw();
         // A saved card is edited where it would appear: shown in its widget.
         setPreview(cms.content.isSaved(id, ...docs()) ? id : null);
-        home.reveal(id);
+        pageView.reveal(id);
         decorate();
         setEditing(id);
         requestAnimationFrame(() => requestAnimationFrame(() => bringIntoView(id)));
@@ -372,11 +372,11 @@
       onClose: id => {
         setEditing(null);
         setPreview(null);
-        // The page widens again and the carousel may redraw its tiles: focus
+        // The page widens again and a list may redraw its tiles: focus
         // the card's pencil once that has happened (for a saved card, its
         // slot's Manage cards button, which lists it).
         requestAnimationFrame(() => requestAnimationFrame(() => {
-          if (id) home.reveal(id);
+          if (id) pageView.reveal(id);
           decorate();
           const owner = id ? cms.content.ownerOf(id, ...docs()) : null;
           if (layoutMode && layoutMode.isOn()) { if (owner) layoutMode.focus(owner.instance); return; }
@@ -424,7 +424,7 @@
     manager = cms.manage.create({
       workspace,
       content: cms.content,
-      home,
+      view: pageView,
       games: liveGames(),
       cardLabel: id => cardTitle(id),
       openEditor: id => drawer.open(id),
@@ -476,7 +476,7 @@
     layoutMode = cms.layoutMode.create({
       workspace,
       content: cms.content,
-      home,
+      view: pageView,
       games: liveGames(),
       openEditor: id => drawer.open(id),
       openManager: (which, from) => manager.open(which, from),
@@ -509,11 +509,11 @@
   // A saved card shown in its slot (null: the active cards), in Admin view only.
   function setPreview(id) {
     if (previewId === id) return;
-    previewId = id && home.previewSaved ? (home.previewSaved(id) ? id : null) : null;
-    if (!previewId && home.previewSaved) home.previewSaved(null);
+    previewId = id && pageView.previewSaved ? (pageView.previewSaved(id) ? id : null) : null;
+    if (!previewId && pageView.previewSaved) pageView.previewSaved(null);
     root.querySelectorAll('.cms-preview-badge').forEach(n => n.remove());
     if (previewId) {
-      const host = home.element(previewId);
+      const host = pageView.element(previewId);
       if (host) {
         const badge = el('span', 'cms-preview-badge', 'Preview: saved card, not active');
         host.append(badge);
@@ -608,7 +608,7 @@
   function redo() { if (canStep() && workspace.redo()) redraw(); }
   // The documents that say what a component id is (the page's own layout too,
   // until the workspace has loaded).
-  const docs = () => (workspace ? workspace.docs() : []).concat({ schema: cms.content.PAGE_SCHEMA, regions: home.model().regions });
+  const docs = () => (workspace ? workspace.docs() : []).concat({ schema: cms.content.PAGE_SCHEMA, regions: pageView.model().regions });
 
   // Reflect state everywhere: panel, header button, preview bar, page, cards, drawer, appearance.
   function apply() {
@@ -643,7 +643,7 @@
     // While Admin Mode is on it decides what the page shows; the loader only records updates.
     cms.loader.hold(state.active);
     // Cards stay still while they can be edited (pencils sit on the real cards).
-    if (home.holdMotion) home.holdMotion(editing);
+    if (pageView.holdMotion) pageView.holdMotion(editing);
     if (editing) {
       // Content mode's controls and Layout Mode's are never on the page together.
       if (layoutOn) undecorate();
@@ -676,7 +676,7 @@
     const media = live ? live.media : {};
     if (server) return { doc: server.doc, media };
     if (live) return { doc: live.doc, media };
-    return { doc: window.PergamonHomeContent.document, media: {} };
+    return { doc: pageView.builtIn, media: {} };
   }
   // `working`: the administrator's working copy, whose Site Navigation the
   // homepage's sidebar previews; otherwise the sidebar shows the published links.
@@ -687,7 +687,7 @@
     }
     const key = cms.workspace.canon(doc) + cms.workspace.canon(media);
     if (key === drawnKey) return;
-    if (home.render(doc, { media })) drawnKey = key;
+    if (pageView.render(doc, { media })) drawnKey = key;
   }
   function drawPublished() { const p = publishedView(); render(p.doc, p.media, false); }
   // Admin view: the working copy (once loaded), with its private draft
@@ -748,8 +748,8 @@
   function cardTitle(id) {
     if (id === cms.content.LAYOUT) return 'Page layout';
     const owner = cms.content.ownerOf(id, ...docs());
-    if (owner && (owner.part === 'saved' || (owner.part === '' && owner.type === 'carousel'))) {
-      return LIST_LABELS[owner.type] + (cms.content.ownerOf(id) ? '' : ` (${cms.content.instanceLabel(owner.instance, owner.type)})`);
+    if (owner && (owner.part === 'saved' || (owner.part === '' && WIDGETS.isList(owner.type)))) {
+      return WIDGETS.get(owner.type).order + (cms.content.ownerOf(id) ? '' : ` (${cms.content.instanceLabel(owner.instance, owner.type)})`);
     }
     if (id === NAV_ID) return 'Site Navigation (every page)';
     const loaded = workspace && workspace.isLoaded();
@@ -757,7 +757,7 @@
     if (c && c.title) return c.title;
     const saved = loaded ? workspace.savedComponent(id) : null;
     if (saved && saved.title) return `${saved.title} (deleted)`;
-    const m = home.model();
+    const m = pageView.model();
     const all = [].concat(...Object.values(m.instances).map(i => [i.card].concat(i.saved || [], i.cards || [])));
     const item = all.filter(Boolean).find(x => x.id === id);
     return (item && item.title) || id;
@@ -768,10 +768,10 @@
     const editingId = ui && ui.drawer.isOpen() ? ui.drawer.current() : null;
     const loaded = workspace && workspace.isLoaded();
     const known = docs();
-    home.cardIds().forEach(id => {
+    pageView.cardIds().forEach(id => {
       const type = cms.content.cardType(id, ...known);
-      const card = home.element(id);
-      if (!type || !TYPE_LABELS[type] || !card) return;
+      const card = pageView.element(id);
+      if (!type || !WIDGETS.cards[type] || !card) return;
       // Controls sit beside a link, never inside it, so the card still navigates.
       const host = card.matches('a') ? card.parentElement : card;
       if (!host) return;
@@ -780,7 +780,7 @@
         host.classList.add('cms-editable');
         const frame = el('span', 'cms-edit-frame');
         frame.setAttribute('aria-hidden', 'true');
-        frame.dataset.noCopy = '';                   // never in the carousel's moving copies
+        frame.dataset.noCopy = '';                   // never in a carousel's moving copies
         pencil = el('button', 'cms-edit-pencil');
         pencil.dataset.noCopy = '';
         pencil.type = 'button';
@@ -799,16 +799,13 @@
       host.classList.toggle('cms-editing', id === editingId);
       const expanded = String(id === editingId);
       if (pencil.getAttribute('aria-expanded') !== expanded) pencil.setAttribute('aria-expanded', expanded);
-      const label = `Edit ${TYPE_LABELS[type].toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
+      const label = `Edit ${WIDGETS.cardLabel(type).toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
       if (pencil.getAttribute('aria-label') !== label) pencil.setAttribute('aria-label', label);
-      // Featured / Spotlight: Manage cards beside the pencil.
+      // A card widget: Manage cards beside the pencil.
       if (cms.content.slotOf(id, ...known) === id) manageButton(host, id, pencil);
     });
-    const carousels = home.instances().filter(i => i.type === 'carousel' && i.slot);
-    carousels.forEach(i => {
-      const strip = i.slot.querySelector('.home-carousel');
-      if (strip) manageButton(strip, cms.content.instanceKey(i.id), null);
-    });
+    const lists = pageView.instances().filter(i => WIDGETS.isList(i.type) && i.slot);
+    lists.forEach(i => { if (i.list) manageButton(i.list, cms.content.instanceKey(i.id), null); });
     // Site Navigation: a pencil on the homepage's sidebar (the desktop rail;
     // on phones the panel's Site Navigation button opens the same editor).
     const rail = layout && siteNav ? layout.sidebar : null;
@@ -828,9 +825,9 @@
       const label = `Edit Site Navigation (every page)${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
       if (p.getAttribute('aria-label') !== label) { p.setAttribute('aria-label', label); p.dataset.tip = 'Edit Site Navigation'; }
     }
-    // Each carousel's "Add card" tile follows its cards while Admin view holds the row.
-    for (const id of [...addTiles.keys()]) if (!carousels.some(i => i.id === id)) addTiles.delete(id);
-    carousels.forEach(i => {
+    // Each list's "Add card" tile follows its cards while Admin view holds it.
+    for (const id of [...addTiles.keys()]) if (!lists.some(i => i.id === id)) addTiles.delete(id);
+    lists.forEach(i => {
       const which = cms.content.instanceKey(i.id);
       let tile = addTiles.get(i.id);
       if (!tile) {
@@ -841,23 +838,23 @@
         b.append(el('span', 'cms-add-label', 'Add card'), el('span', 'cms-add-note'));
         b.addEventListener('click', () => {
           if (!ui || !workspace || !workspace.isLoaded() || !manager) return;
-          manager.addCarouselCard(which);
+          manager.addListCard(which);
         });
         tile.node.append(b);
         addTiles.set(i.id, tile);
       }
-      // (A removed carousel that came back is a new element.)
-      if (tile.slot !== i.slot) { tile.slot = i.slot; home.setCarouselTail(i.id, tile.node); }
+      // (A removed widget that came back is a new element.)
+      if (tile.slot !== i.slot) { tile.slot = i.slot; pageView.setListTail(i.id, tile.node); }
       const n = loaded ? workspace.order(which).length : 0;
       const full = n >= cms.content.LIMITS.carousel;
       const addButton = tile.node.firstChild;
       addButton.disabled = !loaded || full;
       const note = full ? `Limit of ${cms.content.LIMITS.carousel} cards reached` : '';
       if (addButton.lastChild.textContent !== note) addButton.lastChild.textContent = note;
-      const addLabel = full ? `Add carousel card (limit of ${cms.content.LIMITS.carousel} reached)` : 'Add carousel card';
+      const addLabel = `Add ${WIDGETS.get(i.type).one}` + (full ? ` (limit of ${cms.content.LIMITS.carousel} reached)` : '');
       if (addButton.getAttribute('aria-label') !== addLabel) addButton.setAttribute('aria-label', addLabel);
     });
-    // Carousel redraws (filters, sections, content) replace tiles: decorate whatever appears.
+    // List redraws (filters, sections, content) replace tiles: decorate whatever appears.
     if (!observer) {
       let queued = false;
       observer = new MutationObserver(() => {
@@ -869,7 +866,7 @@
     }
   }
 
-  // "Manage cards" for a widget (beside the pencil, or on a carousel's
+  // "Manage cards" for a widget (beside the pencil, or on a list's
   // corner): placed absolutely, so no box changes size.
   function manageButton(host, which, after) {
     let b = host.querySelector(':scope > .cms-manage-button');
@@ -892,16 +889,16 @@
     }
     const loaded = workspace && workspace.isLoaded();
     const owner = cms.content.ownerOf(which, ...docs());
-    const strip = owner.type === 'carousel';
-    const n = loaded ? workspace.order(strip ? which : cms.content.savedList(which)).length : null;
-    const label = `Manage ${MANAGE_LABELS[owner.type]}` + (cms.content.ownerOf(which) ? '' : `, ${cms.content.instanceLabel(owner.instance, owner.type)}`) + (n === null ? '' : strip ? ` (${n})` : ` (${n} saved)`);
+    const isList = WIDGETS.isList(owner.type);
+    const n = loaded ? workspace.order(isList ? which : cms.content.savedList(which)).length : null;
+    const label = `Manage ${WIDGETS.get(owner.type).manage}` + (cms.content.ownerOf(which) ? '' : `, ${cms.content.instanceLabel(owner.instance, owner.type)}`) + (n === null ? '' : isList ? ` (${n})` : ` (${n} saved)`);
     if (b.getAttribute('aria-label') !== label) b.setAttribute('aria-label', label);
   }
 
   function undecorate() {
     if (observer) { observer.disconnect(); observer = null; }
     setPreview(null);
-    addTiles.forEach((tile, id) => home.setCarouselTail(id, null));
+    addTiles.forEach((tile, id) => pageView.setListTail(id, null));
     addTiles.clear();
     root.querySelectorAll('.cms-edit-pencil, .cms-edit-frame, .cms-manage-button').forEach(n => n.remove());
     if (layout) { layout.sidebar.querySelectorAll(':scope > .cms-nav-pencil').forEach(n => n.remove()); layout.sidebar.classList.remove('cms-nav-editable'); }
@@ -916,7 +913,7 @@
 
   // Keep the card being edited in sight beside (or above) the drawer.
   function bringIntoView(id) {
-    const card = home.element(id);
+    const card = pageView.element(id);
     if (!card) return;
     const r = card.getBoundingClientRect();
     const header = document.querySelector('.pa-header');

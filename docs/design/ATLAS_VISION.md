@@ -14,6 +14,10 @@ Pergamon Atlas is a coherent ecosystem of games, tools, and other experiences. N
 
 **Guiding principle:** Consistency without uniformity. Unified by default, exceptions by design. A page should unmistakably belong to Atlas while allowing games and specialized tools to have their own functional and artistic character.
 
+**Data principle:** Persistent data, different presentation. A thing Atlas shows (a game, for example) has one canonical, persistent record that owns what it is: identity, name, artwork, description, category, destination, availability. Widgets refer to records and own only how they present them: which record, where, how large, in what order, in what style. Changing a record changes every widget that shows it; changing a widget changes no record.
+
+**Page principle:** Every standard content page is an ordinary Atlas page: the same renderer, site header, sidebar, themes, grid, widgets, editing and publishing. A catalogue is a page with particular widgets, not a separate kind of page.
+
 ## 2. Layers of the System
 
 - **Foundations:** typography, color and themes, spacing, grids, radii, borders, elevation, motion, responsive behavior, and accessibility standards. Shared, semantic definitions are the source of truth.
