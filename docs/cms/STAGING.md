@@ -1,15 +1,13 @@
 # Staging environment for the CMS
 
-Vercel previews currently use the **production** Supabase project (the
-values are hard-coded in `operation/scripts/auth/supabase-config.js`). No
-admin write may be tested until previews use a separate project.
-
-Target:
+Set up and in use: Vercel previews and local development use the separate
+**staging** project. The numbered steps below are the record of how it was set
+up; for daily work read only *Keeping production isolated*.
 
 | Where | Supabase project |
 |---|---|
 | Production (pergamonatlas.com) | production `rddijjezqrcjrnwskenb` |
-| Vercel previews | **staging** (new) |
+| Vercel previews | staging `rambkiswuigtjfgdxexk` |
 | Local development / tests | staging, or the in-process emulation in `tests/cms` |
 
 ## Steps that need you (Supabase / Vercel owner)
@@ -124,14 +122,13 @@ Supabase personal access token for the CLI works; revoke it afterwards.
    `PUBLISH_MEDIA_ALLOWED_ORIGINS`, then run the staging integration tests
    (see TESTING.md) against the preview.
 
-Note for the eventual merge: once `main` has this build step, production
-builds need the Production-scope variables (set in step 5); without them the
-build fails and the previous production deployment stays live.
+Production builds need the Production-scope variables (set in step 5); without
+them the build fails and the previous production deployment stays live.
 
 ## Keeping production isolated
 
 - The production publishable key and URL stay in the Production scope only;
-  previews physically cannot load them once step 1 is wired (the build
+  previews physically cannot load them (the build
   refuses).
 - Migrations reach production only after approval, by running the reviewed
   files in the production SQL editor, in order, after a backup

@@ -9,38 +9,23 @@ planned).
 **The long-term architecture is defined in [`ATLAS_VISION.md`](ATLAS_VISION.md)**,
 the canonical, living vision for the design system, widgets, page builder and
 admin tools. This file describes what is built. The vision is also readable
-inside the Handbook (Vision & Architecture), generated from that file.
-[`ARCHITECTURE_REVIEW_H1.md`](ARCHITECTURE_REVIEW_H1.md) compares H1 with the
-vision and lists recommendations for later phases.
+inside the Handbook (Vision & Architecture), generated from that file. What is
+live and active now is in [`../STATUS.md`](../STATUS.md).
 
-## Status: implemented, planned, long-term
+## Built and planned
 
-| | What | Phase |
-|---|---|---|
-| **Implemented** | Admin-only `/handbook/` and the header's book icon | H1 |
-| | Typography registry, generated tokens and `.pa-type-*` classes, alignment tests | H1 |
-| | Overview, Foundations › Typography (live specimens, values, usage, exceptions) | H1 |
-| | Vision & Architecture (this vision, rendered from the repository) | H1 |
-| **Implemented** | Header, sidebar, homepage widgets, Settings, Account and footer take matching styles from the roles | H2 |
-| **Implemented** | Handbook redesign: catalogue Dashboard, Typography specimens, Widgets catalogue; Handbook sections in the shared site sidebar | H3 |
-| | Site Navigation: the sidebar's links, edited in Admin Mode, published with the homepage (`site.sidebar`, migration 0013) | H3 |
-| **Planned** | Review of the remaining typography differences; Admin Mode typography; legacy game typography | H2 |
-| | Motion, Responsive, Accessibility | H5 |
-| **Implemented** | Component library: Feature banner (hero, banner), Content Card, Carousel, extracted from the homepage and previewed live in the Handbook | H4 |
-| **Implemented** | Foundations › Colors: colour roles, previews that resolve every role per palette and mode, live contrast checks | H5.2a |
-| | Foundations › Spacing & Surfaces: spacing scale, page frame (insets, widget gutter), radii and elevation tokens | H5.2b |
-| | Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation, read-only renderer; Foundations › Atlas Grid | H5.2c |
-| | Layout Lab: move and resize real widgets on the grid (snapping, collision blocking, content minimums, undo/redo, keyboard and touch); shared editing engine, controller and overlay (also Admin Mode's). Nothing is saved | H5.4 |
-| | Homepage on the Atlas Grid: fixed-height rows and page regions (sidebar frame), schema-2 page document, Atlas Navigation extracted as a library component, long-title typography | H5.3 |
-| | Admin Mode Layout Mode: the homepage's widgets moved, resized, added and removed on a canvas scaled to fit beside an inspector, as independent instances with their own cards; one undo history with content edits; drafts, publish review and rollback. Complete locally and on staging (migration 0014 applied there); not yet released to production | H5.3 |
-| **Long-term** | Element and widget registry with dependencies and automatic where-used | H4+ |
-| | Page model, templates and layout constraints | H5 |
-| | Visual editing: drafts, preview, validation, publish, rollback | H6 |
-| | Hybrid template + blank-grid page builder | H7 |
+Milestone labels (H1, H5.3 …) follow the order of work, not the numbering of
+the roadmap in `ATLAS_VISION.md` §11.
 
-Planned and long-term items follow the vision's roadmap (section 11); they are
-sequencing intentions, not commitments. The same status table closes
-`ATLAS_VISION.md`; update both when a phase lands.
+| Area | State |
+|---|---|
+| Handbook, vision page, typography registry (H1); typography adoption where it matches (H2) | Built |
+| Handbook catalogue, Site Navigation (H3); component library (H4) | Built |
+| Colours, spacing and surfaces, Atlas Grid (H5.2); Layout Lab (H5.4) | Built |
+| Homepage on the grid, Layout Mode (H5.3) | Built |
+| Remaining typography differences, Admin Mode and game typography | Deferred on purpose |
+| Motion, Responsive, Accessibility; Elements and Layouts pages | Planned |
+| Widget registry with where-used; page templates; page builder | Long-term |
 
 ## Files
 
@@ -169,7 +154,7 @@ in Admin Mode (see `docs/cms/ARCHITECTURE.md` §5f), or the built-in links in
 
 General-purpose components, not game widgets. Each owns its presentation and
 behaviour and knows nothing about games, the CMS, Admin Mode or the page it
-is on (a test checks the code for that):
+is on:
 
 | Component | Kind | Owns | Inputs |
 |---|---|---|---|
@@ -218,6 +203,46 @@ sidebar by the site's sidebar code. The Atlas Navigation panel is a library
 component since H5.3 (`scripts/components/atlas-navigation.js`).
 Each entry lists its inputs, what it owns, where it is used, what Admin Mode
 can change, its type roles and its source files.
+
+## Adding a widget type
+
+First decide whether you need one. New content is a card; a second copy is
+another instance (Layout Mode adds it); a different look is usually a variant
+of an existing component. A new **type** touches everything below, in this
+order. Skip the content steps for a widget with no content of its own (as
+`atlas-navigation`). Paths are under `PergamonAtlas.V1/` unless shown in full.
+
+1. **Component.** `scripts/components/<name>.js` and
+   `styles/components/<name>.css`. Its header comment is the API
+   documentation. It knows nothing about games, the CMS or its page, uses theme
+   tokens only, and follows its container's width.
+2. **Typography.** Type-role tokens, with `adoption` entries
+   ([Connecting a component to a role](#connecting-a-component-to-a-role-h2)).
+3. **Sizing.** An entry in `scripts/grid/widget-types.js`, measured at the
+   CMS's maximum content, and the placeable list in `tests/design/grid.test.mjs`.
+4. **Loading.** Style and script in `index.html`, and in `gate.js` `ASSETS`.
+5. **Homepage.** `scripts/home.js`: `DRAW`, the adapter from CMS content to the
+   component's inputs, and (with content) in-place redraw and `sample`.
+6. **Content.** `scripts/cms/content.js`: `WIDGET_TYPES`, `WIDGET_NAMES`,
+   `BASE_IDS`; then search it for `'feature-hero'` and `'carousel'` to find each
+   per-type branch (model, ownership, validation, starter content, lists, fields).
+7. **Server.** A new migration replacing `cms_validate_home_v2`: the type
+   allowlist and its content rules, and `get_published_content` if it keeps
+   private parts. Client and server must agree (`tests/cms/page-layout.test.mjs`).
+8. **Admin Mode** (`scripts/cms/`). `layout-mode.js` (which inspector buttons
+   apply), `manage.js` `NAMES`, `MANAGE_LABELS` in `admin.js`, and `LIST_LABELS`
+   in both `admin.js` and `publish.js`.
+9. **Handbook** (`scripts/handbook/`). Sample input in `component-examples.js`;
+   an entry and `ROLES` in `widgets-page.js`. Only if it is demonstrated on the
+   grid: `componentDraw` in `grid-page.js`.
+10. **Tests and status.** Extend `tests/cms/layout-editing.test.mjs` and
+    `tests/design/`, run the checks (`docs/cms/TESTING.md`), then finish the
+    milestone as in `CLAUDE.md`.
+
+**Release order:** migration (staging, then production), then the code, then
+the first published document that uses the type. A front end that doesn't know
+the type refuses the whole document and shows the built-in homepage, so before
+rolling the code back, restore a version without it.
 
 ## Adding a section
 

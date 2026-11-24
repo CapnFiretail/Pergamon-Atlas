@@ -1,7 +1,7 @@
 # CMS / Admin Mode: production rollout runbook
 
-Status: **prepared, not started.** Nothing here has been applied to
-production (`rddijjezqrcjrnwskenb`). Each phase needs explicit approval.
+Status: **completed 2026-11-18; historical record.** Not a description of
+production today: see [`../STATUS.md`](../STATUS.md).
 
 ## Audit findings (2026-11-18)
 
@@ -110,3 +110,28 @@ production (`rddijjezqrcjrnwskenb`). Each phase needs explicit approval.
 | Bad published content | Admin publishes a fix, or `rollback(home, <earlier version>, <current>)` | New version restores old content; history kept |
 | Edge Function issue | Unset or narrow `PUBLISH_MEDIA_ALLOWED_ORIGINS`, or delete the function | Publishing new images stops; published images keep working |
 | Database | The CMS migrations are additive and unused while the CMS is off, so leaving them in place is harmless; each file ends with reference rollback SQL. 0010 has a rollback block. Restore from the phase 0 backup only as a last resort. | — |
+
+## H5.3 release (2026-11-23) and Gate 7
+
+Production went from `41d691b` to `d6c2cee`, after migrations 0013 and 0014.
+
+| Check | Result |
+|---|---|
+| Staging image publishing from a schema-2 page | Passed, 24/24 |
+| Preview | Passed, 29/29 |
+| Migrations 0013 and 0014 in production (run by the user) | Passed, 7/7 and 8/8 |
+| Production after release | Passed, 23/23 |
+| Admin inspection (user) | Passed, 10/10 |
+
+**Gate 7, the first production schema-2 publish, was closed early on 2026-11-24
+by the user's decision.**
+
+| Step | Result |
+|---|---|
+| Backup of version 52; isolated admin session | Passed (session user-reported) |
+| Saving a schema-2 draft in production (draft 53) | Passed (user-reported) |
+| Public homepage unchanged while that draft existed | Passed, 31/31 |
+| Second draft (54) | Saved; its contents were not checked |
+| Discarding the draft | Passed: 53 and 54 are superseded, no draft remains |
+| Final state (user's query) | Live 52, schema-1 content and the history to 52 unchanged |
+| Publishing schema 2, and restoring from it | **Deferred: not tested in production.** Local rehearsal only, 28/28 |

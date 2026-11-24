@@ -1,7 +1,7 @@
-# Pergamon Atlas CMS — architecture (Admin Mode V1, Phase 1B)
+# Pergamon Atlas CMS — architecture
 
-Status: **proposed**. Nothing here is applied to any Supabase project or
-deployed. Migrations live in `supabase/proposed/` until approved.
+Live in production. Which migrations are applied where, and what is open, is in
+[`../STATUS.md`](../STATUS.md). Migration files stay in `supabase/proposed/`.
 
 ## 1. Overview
 
@@ -209,9 +209,8 @@ contents (`.home.cms-pending`) for at most 1.2 s. Invalid, slow (8 s timeout)
 or failed answers keep the static/cached copy; "nothing published" returns
 to the static copy. The browser re-validates every document
 (`content.validateDocument`: internal links only, safe image paths, text
-limits) before drawing. **Production:** the loader is off when
-`PERGAMON_ENV` is `production` (`LIVE` table in `loader.js`); flip it only
-after the production CMS rollout is approved.
+limits) before drawing. The `LIVE` table in `loader.js` switches it per
+environment (`PERGAMON_ENV`); it is on in all of them.
 
 Known browser behaviour (M1): after a live zoom edit is reverted, Chrome can
 draw the image's edges very slightly differently (compositor resampling
@@ -243,7 +242,7 @@ Original plan, for reference:
 
 ## 5a. Admin Mode (implemented in M3: `scripts/cms/admin.js`)
 
-- **Who sees it.** Runs only where the loader is live (not production). On
+- **Who sees it.** Runs only where the loader is live (§5). On
   load and on every sign-in/sign-out it reads the session and calls
   `rpc is_admin()` with it; nothing is built (no button, no stylesheet, no
   pencils) unless the database answers `true`. Stored state
@@ -451,11 +450,11 @@ No schema or migration change: the browser drives the existing
 
 | Item | State |
 |---|---|
-| supabase-js pinned to 2.118.0, served from `/vendor/supabase-js/`, SRI `sha384` on every page; tarball verified against npm's integrity | **done** on this branch |
+| supabase-js pinned to 2.118.0, served from `/vendor/supabase-js/`, SRI `sha384` on every page; tarball verified against npm's integrity | **done** |
 | Content-Security-Policy-Report-Only: strict policy on all non-game pages (`script-src 'self'` + hashes of the 6 inline `loadSnippets` calls; `style-src` + hash of the inline `<style>` on /suggestions/; Google Fonts; production Supabase only); permissive policy on game pages (AdSense needs `'unsafe-inline'`, Google ad hosts and a `www.google.com` frame). Scanned on all 17 pages: no violations | **done**, report-only |
 | `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` | **done** |
-| Explicit per-environment Supabase config (`tools/write-supabase-config.mjs` as the Vercel build command; previews → staging) | **done** on this branch (see STAGING.md) |
-| Legacy exposures (`homepage_settings.updated_by`, listable `homepage` bucket) and profiles grants | **proposed** in `0010_legacy_hardening.sql` (optional) |
+| Explicit per-environment Supabase config (`tools/write-supabase-config.mjs` as the Vercel build command; previews → staging) | **done** (see STAGING.md) |
+| Legacy exposures (`homepage_settings.updated_by`, listable `homepage` bucket) and profiles grants | **done** (`0010_legacy_hardening.sql`) |
 
 Inline hashes are of the text as the browser parses it: HTML parsing turns
 CRLF into LF, so hash multi-line blocks after normalising line endings
@@ -469,28 +468,18 @@ endpoint. Game pages can't get a strict policy while AdSense runs inline.
 ## 7. Decisions still open
 
 1. Server-side resizing of published images (see §4).
-2. Whether to apply the optional `0010_legacy_hardening.sql` to production.
-3. When to switch the CSP from report-only to enforced on non-game pages.
-4. Whether to keep `PUBLISH_MEDIA_ALLOWED_ORIGINS` to fixed domains for
+2. When to switch the CSP from report-only to enforced on non-game pages.
+3. Whether to keep `PUBLISH_MEDIA_ALLOWED_ORIGINS` to fixed domains for
    staging (previews have changing URLs; a stable preview alias helps).
 
-## 8. Migration 0011: rollout to production
+## 8. Migration 0011: shared public media
 
-`supabase/proposed/0011_shared_public_media.sql` is applied to **staging
-only** (2026-11-18). Production has none of the CMS schema yet, so it goes
-with the CMS rollout, never on its own:
+`supabase/proposed/0011_shared_public_media.sql` only drops
+`site_media_public_path_key` and adds `site_media_public_path_idx`; it is
+idempotent and touches no data.
 
-1. Production backup first (Database → Backups).
-2. Apply in order in the production SQL editor: 0008, 0009, **0011** (and
-   0010 if approved). 0011 only drops `site_media_public_path_key` and adds
-   `site_media_public_path_idx`; it is idempotent and touches no data.
-3. Check: no unique constraint on `site_media.public_path`; the index
-   exists; `cms_record_prepared_media` is executable by `service_role` only;
-   the `site-media-drafts` policies are unchanged.
-4. Deploy `publish-media` to production (unchanged code) with production
-   origins only.
-5. Any future orphan clean-up must keep a public object while any
-   `site_media` row references its path.
+Any future orphan clean-up must keep a public object while any `site_media`
+row references its path.
 
 Reverting 0011 (re-adding the unique constraint) only works while no two rows
 share a path; once identical images are published that way, keep 0011.
@@ -525,53 +514,42 @@ share a path; once identical images are published that way, keep 0011.
 
 ## 9. Migration 0012: saved cards and version history
 
-`supabase/proposed/0012_saved_cards.sql` is applied to **staging only**
-(2026-11-21). It replaces `validate_content` and `get_published_content`,
-and adds `cms_check_card` and `list_published_versions`; no table, policy,
+`supabase/proposed/0012_saved_cards.sql` replaces `validate_content` and
+`get_published_content`, and adds `cms_check_card` and `list_published_versions`; no table, policy,
 bucket or data changes. Every existing document stays valid and the public
 answer for a document without saved cards is byte-identical (checked on
 staging before and after).
 
-Production, when approved: run the file in the SQL editor **before**
-releasing the code (the editor would otherwise get PT422 when saving saved
-cards; nothing unsafe), then check that `anon` can execute only
-`get_published_content`, and `authenticated` also
-`list_published_versions` (it checks `is_admin()` itself). Revert (only
+It comes before the code that saves saved cards (which would otherwise get
+PT422; nothing unsafe). `anon` can execute only `get_published_content`, and
+`authenticated` also `list_published_versions` (it checks `is_admin()`
+itself). Revert (only
 while no draft or published version uses saved cards): re-run 0008's two
 functions and drop the two new ones.
 
 ## 10. Migration 0013: Site Navigation
 
-`supabase/proposed/0013_site_sidebar.sql` is applied to **staging only**
-(2026-11-22; `verify_0013.sql` 7/7). It adds `cms_check_nav` and replaces
+`supabase/proposed/0013_site_sidebar.sql` (checked by `verify_0013.sql`) adds
+`cms_check_nav` and replaces
 `validate_content` (0012's body plus an optional `site.sidebar` checked by
 `cms_check_nav`); no table, policy, grant or data changes. Every existing
 document stays valid; `get_published_content` is unchanged and already
 returns the component.
 
-Production, when approved: run the file in the SQL editor, then
-`verify_0013.sql` (all rows true). The code is safe either way: without
-0013, pages show the built-in links (no published document has
+The code is safe without it: pages then show the built-in links (no published document has
 `site.sidebar`), and saving a Site Navigation draft would be refused with
 PT422 (the editor shows the error; nothing is stored). Revert (only while no
 draft or published version contains `site.sidebar`): re-run 0012's
 `validate_content`, then drop `cms_check_nav`.
 
-## 11. Migration 0014: page layout, schema 2 (applied to staging only, 2026-11-23)
+## 11. Migration 0014: page layout, schema 2
 
 `supabase/proposed/0014_page_layout.sql` (H5.3) lets the homepage document
 describe its own layout, so widgets can be placed, resized, added and
 removed as independent instances.
 
-| Where | State |
-|---|---|
-| Local | Complete: validator, client mirror, renderer and editor tested against 0013 + 0014 in PGlite |
-| Staging | Applied 2026-11-23 on top of 0013: function bodies match the file and every stored document was unchanged. The full lifecycle (layout draft, second instance with its own saved card, publish, public page, restore to schema 1) passed through the Admin UI; staging is back on its schema-1 baseline |
-| Production | **Not applied** (0013 isn't either). Nothing there writes or receives schema 2 |
-
 It only creates or replaces functions and their grants: no table, policy or
-data changes. Staging image publishing from a schema-2 page is not yet tested
-live (the path is the same as schema 1's).
+data changes.
 
 ```jsonc
 {
@@ -637,12 +615,11 @@ live (the path is the same as schema 1's).
   Spotlight 20px; compact 30 / 24px; fallback font 22 / 18px). On the grid the
   sizing contracts guarantee the room; stacked cards are at least their
   authored height and grow with their content (layout data is untouched).
-- **Production rollout**, when approved: 0013, then 0014, in the SQL editor
-  (each with its checks); then the H5.3 front end. Site scripts are cached for
-  up to 4 hours: an older page that receives a schema-2 document shows its
-  built-in content, and an older Admin Mode tab would start from the built-in
-  content too. So wait out the cache and reload admin tabs before publishing
-  the first layout.
+- **Before publishing a layout**, close or reload older tabs: a page loaded
+  before H5.3 that receives a schema-2 document shows its built-in content, and
+  an older Admin Mode tab would start from the built-in content too. Scripts and
+  styles are revalidated on every load (a Cloudflare cache rule), so a reload is
+  enough.
 - **Not needed for content.** A document stays schema 1 until its layout
   changes, so without 0014 Admin Mode works exactly as before; only saving a
   layout is refused (PT422, shown as "This server can't store page layouts

@@ -1,2 +1,4 @@
 node_modules/
 supabase/.temp/
+.claude/settings.local.json
+.claude/worktrees/

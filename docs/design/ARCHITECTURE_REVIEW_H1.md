@@ -1,8 +1,9 @@
 # H1 Architecture Review against the Atlas Vision
 
 **Date:** 2026-11-21 · **Scope:** Handbook Phase H1 as built, compared with
-[`ATLAS_VISION.md`](ATLAS_VISION.md) v0.1 · **Status:** recommendations only;
-nothing here is implemented or approved.
+[`ATLAS_VISION.md`](ATLAS_VISION.md) v0.1 · **Status:** historical
+record of H1; not current. See [`../STATUS.md`](../STATUS.md) and
+[`HANDBOOK.md`](HANDBOOK.md).
 
 ## Summary
 

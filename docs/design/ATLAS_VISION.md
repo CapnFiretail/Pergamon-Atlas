@@ -6,7 +6,7 @@
 
 **Priority:** Sitewide cohesion first, advanced visual editing later
 
-> This is the canonical statement of Atlas's long-term architecture. Sections 1–13 are the vision as agreed; the closing *Implementation status* records where the site stands today and is updated as phases land. To change the vision, edit this file and run `node tools/build-vision.mjs` so the Handbook's copy is regenerated.
+> This is the canonical statement of Atlas's long-term architecture. Sections 1–13 are the vision as agreed; the closing *Implementation status* says where the current state is recorded. To change the vision, edit this file and run `node tools/build-vision.mjs` so the Handbook's copy is regenerated.
 
 ## 1. North Star
 
@@ -140,27 +140,4 @@ These are sequencing intentions, not deadlines or commitments to specific techno
 
 ## Implementation status
 
-As of 2026-11-22 (after the H4 component library). This section is maintained with the code; the vision above is not changed by it.
-
-| Area | State | Where |
-|---|---|---|
-| Admin-only Handbook at `/handbook/`, book icon left of Admin Mode | Implemented (H1) | `handbook/`, `scripts/handbook/` |
-| Typography registry, generated tokens and `.pa-type-*` classes, alignment tests | Implemented (H1) | `scripts/design/typography.js`, `styles/typography.css`, `tests/design/` |
-| Live Typography page: specimens, roles, values, usage, exceptions | Implemented (H1) | Foundations › Typography |
-| This vision, readable in the Handbook | Implemented (H1) | Vision & Architecture |
-| Header, sidebar, homepage widgets, Settings, Account and footer using the type roles where they match | Implemented (H2) | Their CSS reads the role tokens |
-| Handbook catalogue redesign: Dashboard, Typography specimens, Widgets catalogue, Handbook sections in the shared sidebar | Implemented (Handbook redesign milestone) | `scripts/handbook/`, `scripts/layout.js` |
-| Site Navigation: the sidebar links edited in Admin Mode, published with the homepage | Implemented (Handbook redesign milestone; migration 0013 on staging) | `scripts/cms/site-nav.js`, `site.sidebar` |
-| Remaining typography differences, Admin Mode typography | Planned (H2) | Kept as pending in the registry |
-| Normalisations, legacy game typography, contrast fixes | Planned (H2) | Listed as pending/legacy in the registry |
-| Colors & Themes: colour roles documented, previews resolve every role per palette and mode, live contrast checks | Implemented (H5.2a) | `styles/theme.css`, `scripts/design/colors.js`, Handbook › Colors |
-| Spacing & Surfaces: spacing scale, page frame tokens (two inset families, 16px widget gutter), radii and elevation, documented live | Implemented (H5.2b) | `styles/theme.css`, `styles/layout.css`, `scripts/design/surfaces.js`, Handbook › Spacing & Surfaces |
-| Atlas Grid foundation: 20-column square-cell layout model, widget sizing contracts, validation and a read-only renderer, demonstrated in the Handbook and used by the homepage | Implemented (H5.2c) | `scripts/grid/`, `styles/grid.css`, Handbook › Atlas Grid |
-| Layout Lab: direct editing of real widgets on the grid (move, resize from eight handles, collision blocking, content minimums, undo/redo, keyboard and touch), on a shared editing engine | Implemented (H5.4) | `scripts/grid/editor.js`, `interaction.js`, `overlay.js`, Handbook › Layout Lab |
-| Homepage on the Atlas Grid; layout editing in Admin Mode: independent widget instances, scaled Layout Mode workspace, one undo history, schema-2 drafts, publish and rollback | Complete locally and on staging (H5.3; migration 0014 on staging). Production rollout pending (0013, 0014 and the front end) | `scripts/grid/`, `scripts/home.js`, `scripts/cms/layout-mode.js`, `scripts/cms/workspace.js` |
-| Motion, Responsive, Accessibility | Planned (H5) | Shown as Planned in the Handbook |
-| Component library: Feature banner (hero / banner), Content Card, Carousel, previewed live in the Handbook | Implemented (H4) | `scripts/components/`, `styles/components/` |
-| Element and widget registry with dependencies and automatic where-used | Long-term (H4+) | — |
-| Page model, templates and layout constraints | Long-term (H5) | — |
-| Visual editing with drafts, preview, publish and rollback | Long-term (H6) | — |
-| Hybrid page builder | Long-term (H7) | — |
+What is built, planned and deferred, and how the built parts work, is in `docs/design/HANDBOOK.md`. What is live and active now is in `docs/STATUS.md`. This document changes only when the direction does.
