@@ -5,19 +5,21 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branch:** `development/v1-admin-infrastructure`, ahead of `origin/main` by
-  Atlas Studio and S3 (S1.1, S2, S3), approved by the user for release.
-- **Production:** `fd03796` (through the copyable source paths in Handbook ›
-  Library › Widgets), verified 2026-11-24 against the live files and as a guest;
-  later commits on `main` so far are this file only. Homepage version 52,
-  schema 1, no draft (as of H5.3, 2026-11-24).
+- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Production:** `81e4731` (Atlas Studio S1.1 and S2, unified canvas design S3),
+  released 2026-11-24 (Vercel `BJQ5GSPfDejBr2tLb4wWSjnQ4wWh`) and verified the same
+  day against the live files and as a guest, 25/25; later commits on `main` so far
+  are this file only. Homepage version 52, schema 1, unchanged by the release.
+  Frontend rollback: `5wGMvFPPRwMiCnsogukHm9bxD4Jz` (`60bc79c`).
+- **Outstanding verification of this release:**
+  - The protected preview of `81e4731` was built but not opened (no Vercel
+    sign-in); released by the user's decision on local validation and that build.
+  - Production as an administrator (Studio › Connections, Layout Mode, Layout Lab,
+    Handbook), without saving: not done, the user's to do.
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
   not confirmed.
-- **Active milestone:** releasing S1–S3. Atlas Studio S1.1 (foundation) and S2
-  (Connections editor, stored in the browser only), `design/STUDIO.md`: approved.
-  S3, Unified Canvas Design: functionally approved 2026-11-24; its visual design is
+- **Active milestone:** none. S3 is functionally approved; its visual design is
   acceptable for now and provisional (Next). Other Studio sections are placeholders.
-  Browser checks ran locally in Chromium with the real migrations in PGlite.
 
 ## Risks
 
