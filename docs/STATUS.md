@@ -6,7 +6,8 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 ## Now
 
 - **Branch:** `development/v1-admin-infrastructure`, ahead of `main` by
-  documentation and configuration only.
+  documentation and configuration only. Uncommitted: copyable source paths in
+  Handbook › Library › Widgets (awaiting review).
 - **Production:** `d6c2cee` on `origin/main` (through H5.3). Homepage version 52,
   schema 1, no draft (verified 2026-11-24).
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)

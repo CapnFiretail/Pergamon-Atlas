@@ -348,9 +348,16 @@
 .hb-stage { display: grid; gap: 10px; margin: 0; padding: 20px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-background); overflow: hidden; }
 .hb-stage > figcaption { margin: 0; }
 .hb-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 22px; margin: 0; }
-.hb-fact { display: grid; gap: 3px; min-width: 0; }
+.hb-fact { display: grid; align-content: start; gap: 3px; min-width: 0; }
 .hb-fact dt, .hb-fact dd { margin: 0; }
 .hb-fact dd .hb-code { margin-right: 2px; }
+.hb-path { display: flex; align-items: center; gap: var(--space-2); }
+.hb-path + .hb-path { margin-top: var(--space-1); }
+.hb-path .hb-code { min-width: 0; }
+.hb-copy { position: relative; flex: none; min-height: 28px; padding: 0 var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.hb-copy:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.hb-copy[data-state="done"] { border-color: var(--color-success); color: var(--color-success); }
+.hb-copy[data-state="failed"] { border-color: var(--color-danger); color: var(--color-danger); }
 .hb-nav-pair { display: flex; flex-wrap: wrap; gap: 18px 28px; }
 .hb-nav-col { display: grid; align-content: start; gap: 6px; flex: 1 1 240px; max-width: 280px; }
 .hb-nav-col > h3, .hb-nav-col > p { margin: 0; }

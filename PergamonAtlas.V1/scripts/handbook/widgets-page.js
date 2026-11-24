@@ -8,7 +8,9 @@
 //
 // Live previews are drawn by the real components (scripts/components/,
 // styles/components/) with the sample inputs in component-examples.js; the
-// sidebar previews by the site's own sidebar code.
+// sidebar previews by the site's own sidebar code. Every entry's Source row
+// gives its implementation files: { path } parts, repository-relative with a
+// copy control (tests/design/widgets-page.test.mjs checks the files exist).
 (function () {
   'use strict';
   const ns = window.PergamonHandbook = window.PergamonHandbook || {};
@@ -26,6 +28,9 @@
     atlas: ['section-title', 'item-title', 'caption']
   };
 
+  const SITE_DIR = 'PergamonAtlas.V1/';     // the site's folder in the repository
+  const COPY_RESET = 2500;
+
   function render(view, ctx) {
     const { el, chip } = ctx;
     const C = window.PergamonComponents || {};
@@ -37,6 +42,9 @@
     const toc = el('ul', 'hb-wtoc');
     toc.setAttribute('aria-label', 'Widgets on this page');
     view.append(toc);
+    const copyStatus = el('p', 'pa-visually-hidden');
+    copyStatus.setAttribute('role', 'status');
+    view.append(copyStatus);
 
     function group(title, text) {
       const sec = el('section', 'hb-wgroup');
@@ -67,6 +75,40 @@
       toc.append(li);
       return art;
     }
+    // A repository-relative path with its copy control. If copying isn't
+    // possible, the path is selected so it can be copied by hand.
+    let clearStatus = 0;
+    function pathPart(sitePath) {
+      const path = SITE_DIR + sitePath;
+      const row = el('span', 'hb-path');
+      const code = el('code', 'hb-code', path);
+      const button = el('button', 'hb-copy pa-type-button-small');
+      button.type = 'button';
+      const label = el('span', '', 'Copy');
+      button.append(label, el('span', 'pa-visually-hidden', ' ' + path));
+      let reset = 0;
+      function show(state, text, message) {
+        clearTimeout(reset);
+        clearTimeout(clearStatus);
+        button.dataset.state = state;
+        label.textContent = text;
+        copyStatus.textContent = message;
+        reset = setTimeout(() => { delete button.dataset.state; label.textContent = 'Copy'; }, COPY_RESET);
+        clearStatus = setTimeout(() => { copyStatus.textContent = ''; }, COPY_RESET);
+      }
+      button.addEventListener('click', async () => {
+        copyStatus.textContent = '';                  // so a repeated message is announced again
+        try {
+          await navigator.clipboard.writeText(path);
+          show('done', 'Copied', `Copied ${path}`);
+        } catch (e) {
+          window.getSelection().selectAllChildren(code);
+          show('failed', 'Copy failed', 'Copy failed. The path is selected, so you can copy it yourself.');
+        }
+      });
+      row.append(code, button);
+      return row;
+    }
     function facts(rows) {
       const dl = el('dl', 'hb-facts');
       rows.forEach(([k, v]) => {
@@ -74,7 +116,8 @@
         const dd = el('dd', 'pa-type-body-small');
         (Array.isArray(v) ? v : [v]).forEach((part, i) => {
           if (i) dd.append(' ');
-          if (part && part.code) dd.append(el('code', 'hb-code', part.code)); else dd.append(String(part));
+          if (part && part.path) dd.append(pathPart(part.path));
+          else if (part && part.code) dd.append(el('code', 'hb-code', part.code)); else dd.append(String(part));
         });
         row.append(el('dt', 'pa-type-label hb-muted', k), dd);
         dl.append(row);
@@ -135,11 +178,11 @@
       } else art.append(missing.cloneNode(true));
       art.append(facts([
         ['Inputs', ['Sections, each with a title, optional icon, optional filter names, items', { code: '{ key, element, label, facet }' }, 'and empty messages. One section: no section arrows. No filters: no tabs.']],
-        ['Owns', ['Layout, gliding and arrows (', { code: 'scripts/glide.js' }, '), filters, sections, empty state, screen-reader announcements, its responsive widths.']],
+        ['Owns', ['Layout, gliding and arrows, filters, sections, empty state, screen-reader announcements, its responsive widths.']],
         ['Used on', ['Homepage: “Explore More Games” (sections Games and Tools; the Games cards come from the CMS component', { code: 'home.carousel' }, ').']],
         ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile; the carousel stands still while editing.']],
         ['Type roles', roles('carousel')],
-        ['Source', [{ code: 'scripts/components/carousel.js' }, { code: 'styles/components/carousel.css' }]]
+        ['Source', [{ path: 'scripts/components/carousel.js' }, { path: 'styles/components/carousel.css' }, { path: 'scripts/glide.js' }]]
       ]));
     }
 
@@ -166,7 +209,7 @@
         ['Used on', used],
         ['Admin Mode', admin],
         ['Type roles', roles(variant)],
-        ['Source', [{ code: 'scripts/components/feature-banner.js' }, { code: 'styles/components/feature-banner.css' }]]
+        ['Source', [{ path: 'scripts/components/feature-banner.js' }, { path: 'styles/components/feature-banner.css' }]]
       ]));
     }
     featureEntry('hero', 'hero', 'Featured Content — Hero', X.hero || [],
@@ -199,7 +242,7 @@
         ['Used on', ['Homepage carousel: one card per game (CMS components', { code: 'home.carousel.<card>' }, '; the homepage turns each game into title, category and link).']],
         ['Admin Mode', ['Title, category, destination game and image with its framing.']],
         ['Type roles', roles('card')],
-        ['Source', [{ code: 'scripts/components/content-card.js' }, { code: 'styles/components/content-card.css' }]]
+        ['Source', [{ path: 'scripts/components/content-card.js' }, { path: 'styles/components/content-card.css' }]]
       ]));
     }
 
@@ -239,8 +282,8 @@
         ['Site Navigation', ['Edited in Admin Mode on the homepage: Admin Mode › Site Navigation. Up to 16 links in up to 4 groups: label, icon, destination (the site’s pages or a game) and visibility, in any order.']],
         ['Publishing', ['Stored as', { code: 'site.sidebar' }, 'in the homepage’s content and published with the homepage’s Publish Changes; Version History and Restore include it. The server checks every link and icon.']],
         ['Handbook navigation', ['Defined in', { code: 'scripts/handbook/handbook.js' }, '; not editable.']],
-        ['Shared code', [{ code: 'scripts/layout.js' }, 'draws both;', { code: 'styles/layout.css' }, 'styles both.']],
-        ['Type roles', roles('sidebar')]
+        ['Type roles', roles('sidebar')],
+        ['Source', [{ path: 'scripts/layout.js' }, { path: 'styles/layout.css' }]]
       ]));
     }
     {
@@ -262,7 +305,7 @@
         ['Configuration', ['Not editable yet: the homepage’s destinations are set in', { code: 'data/home-content.js' }, '(', { code: 'context' }, '); every instance shows the same links.']],
         ['Grid', ['Widget type', { code: 'atlas-navigation' }, '; at least 242px wide (much narrower and the longest label is cut off).']],
         ['Type roles', roles('atlas')],
-        ['Source', [{ code: 'scripts/components/atlas-navigation.js' }, { code: 'styles/components/atlas-navigation.css' }]]
+        ['Source', [{ path: 'scripts/components/atlas-navigation.js' }, { path: 'styles/components/atlas-navigation.css' }]]
       ]));
     }
   }

@@ -51,6 +51,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | `PergamonAtlas.V1/scripts/grid/widget-types.js` | **Widget sizing contracts: the source of truth** (minimum and default cells, content minimums in pixels with height floors per the widget’s own width bands, how they were measured). |
 | `PergamonAtlas.V1/scripts/grid/renderer.js`, `styles/grid.css` | Read-only renderer: places widgets with CSS Grid, stacks below a page-set breakpoint, refuses invalid layouts, optional cell overlay. |
 | `PergamonAtlas.V1/scripts/handbook/grid-page.js` | Foundations › Atlas Grid: live demonstrations drawn by the renderer. |
+| `tests/design/widgets-page.test.mjs` | Every Widgets entry gives implementation paths, and the files exist. |
 | `tests/design/grid.test.mjs` | Geometry, contracts, validation and fit (`node --test tests/design/grid.test.mjs`). |
 | `PergamonAtlas.V1/scripts/grid/editor.js` | **Editing engine** (pure; also runs in Node): move, eight-handle resize, add, remove and stacking-order proposals, gesture transactions, history. Validates at the width its caller gives. |
 | `PergamonAtlas.V1/scripts/grid/interaction.js`, `scripts/grid/overlay.js`, `styles/grid-editor.css` | Pointer, touch and keyboard controller, and the editing decorations (hit areas, selection, handles, previews). Content-neutral; reusable by any editor. |
@@ -202,7 +203,9 @@ icon, filters, an empty collection, and a Wide / Compact width control), the
 sidebar by the site's sidebar code. The Atlas Navigation panel is a library
 component since H5.3 (`scripts/components/atlas-navigation.js`).
 Each entry lists its inputs, what it owns, where it is used, what Admin Mode
-can change, its type roles and its source files.
+can change, its type roles and its **Source**: the implementation files as
+repository-relative paths, each with a copy button (`{ path }` parts in
+`widgets-page.js`, checked by `tests/design/widgets-page.test.mjs`).
 
 ## Adding a widget type
 
@@ -233,7 +236,7 @@ order. Skip the content steps for a widget with no content of its own (as
    apply), `manage.js` `NAMES`, `MANAGE_LABELS` in `admin.js`, and `LIST_LABELS`
    in both `admin.js` and `publish.js`.
 9. **Handbook** (`scripts/handbook/`). Sample input in `component-examples.js`;
-   an entry and `ROLES` in `widgets-page.js`. Only if it is demonstrated on the
+   an entry (with its Source paths) and `ROLES` in `widgets-page.js`. Only if it is demonstrated on the
    grid: `componentDraw` in `grid-page.js`.
 10. **Tests and status.** Extend `tests/cms/layout-editing.test.mjs` and
     `tests/design/`, run the checks (`docs/cms/TESTING.md`), then finish the
