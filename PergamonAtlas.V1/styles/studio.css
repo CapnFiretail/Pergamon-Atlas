@@ -1,0 +1,133 @@
+/* Atlas Studio (scripts/studio/*). Loaded only after the server confirms an
+ * administrator. Layout only: colours come from styles/theme.css and text from
+ * the type roles in styles/typography.css (.pa-type-*). */
+
+.st, .st * { box-sizing: border-box; }
+/* The site's own sidebar carries the Studio's sections (studio.js) as the
+   floating rail, with the same frame as the homepage and the Handbook. */
+.pa-main.st-root { padding: var(--page-inset-widgets); }
+.st { color: var(--color-text-primary); }
+.st.has-sidebar { display: grid; grid-template-columns: var(--pa-sidebar-w) minmax(0, 1fr); align-items: start; gap: 16px; }
+.pa-ready .st.has-sidebar { transition: grid-template-columns 0.2s ease; }
+.st-content { width: 100%; min-width: 0; max-width: 1180px; margin: 0 auto; }
+@media (min-width: 901px) {
+  .st > .pa-sidebar.is-inline { position: sticky; top: calc(var(--pa-header-h) + 24px); max-height: calc(100vh - var(--pa-header-h) - 48px); }
+}
+@media (max-width: 900px) {
+  .st.has-sidebar { grid-template-columns: minmax(0, 1fr); }
+}
+/* A section that uses the whole page: at least the window's height. */
+.st-content--wide { max-width: none; }
+.st-view.st-view--wide {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 20px;
+  min-height: calc(100vh - var(--pa-header-h) - 2 * var(--page-inset-widgets));
+  min-height: calc(100dvh - var(--pa-header-h) - 2 * var(--page-inset-widgets));
+}
+.st :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* ── Page parts ────────────────────────────────────────────────────────── */
+.st-view { display: grid; gap: 28px; }
+.st-crumbs ol { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 0; padding: 0; list-style: none; color: var(--color-text-secondary); }
+.st-crumbs li + li::before { content: "/"; margin-right: 8px; color: var(--color-border); }
+.st-crumbs [aria-current] { color: var(--color-text-primary); }
+.st-view > .st-crumbs + .st-page-head { margin-top: -14px; }
+.st-page-head { display: grid; gap: 12px; }
+.st-page-title { margin: 0; }
+.st-page-title:focus { outline: none; }
+.st-lead { margin: 0; max-width: 68ch; color: var(--color-text-secondary); }
+.st-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.st-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 1px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.st-icon { display: block; width: 24px; height: 24px; }
+.st-icon svg, .st-empty-icon svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* A section that isn't built yet. */
+.st-empty {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 10px;
+  min-height: 280px;
+  padding: 28px 18px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-panel);
+  text-align: center;
+}
+.st-empty > * { margin: 0; }
+.st-empty-icon { width: 48px; height: 48px; margin-bottom: 4px; color: var(--color-accent-text); }
+.st-empty p { max-width: 52ch; text-wrap: balance; color: var(--color-text-secondary); }
+
+/* ── Controls (scripts/studio/ui.js) ───────────────────────────────────── */
+.st-tool-icon { display: block; flex: none; width: 18px; height: 18px; }
+.st-tool-icon svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.st-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.st-button:hover:not(:disabled) { border-color: var(--color-accent); }
+.st-button:disabled { opacity: 0.45; cursor: default; }
+.st-button--primary { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-on-accent); }
+.st-button--primary:hover:not(:disabled) { border-color: var(--color-accent-hover); background: var(--color-accent-hover); }
+.st-button--danger { background: transparent; color: var(--color-danger); }
+.st-button--danger:hover:not(:disabled) { border-color: var(--color-danger); }
+.st-segmented { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-background); }
+.st-segment { min-height: 30px; padding: 0 14px; border: 0; border-radius: var(--radius-item); background: transparent; color: var(--color-text-secondary); cursor: pointer; }
+.st-segment:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.st-segment[aria-pressed="true"] { background: var(--color-accent-soft); color: var(--color-accent-text); box-shadow: inset 0 0 0 1px var(--color-accent); }
+
+.st-field { display: grid; align-content: start; gap: 6px; min-width: 0; }
+.st-field-label { font: 700 14px/1.4 var(--font-ui); }
+.st-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font: 500 15px/1.35 var(--font-ui);
+}
+textarea.st-input { resize: vertical; }
+.st-input:hover { border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border)); }
+.st-input[aria-invalid="true"] { border-color: var(--color-danger); }
+.st-field-hint, .st-field-error { margin: 0; color: var(--color-text-secondary); font: 500 12px/1.4 var(--font-ui); }
+.st-field-error { color: var(--color-danger); font-weight: 600; }
+.st-field-error[hidden] { display: none; }
+
+.st-dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: var(--radius-dialog);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-dialog);
+  color: var(--color-text-primary);
+}
+.st-dialog--wide { width: min(640px, calc(100vw - 32px)); }
+.st-dialog::backdrop { background: var(--color-overlay); }
+.st-dialog-box { display: grid; gap: 14px; padding: 24px; }
+.st-dialog-title, .st-dialog-text { margin: 0; }
+.st-dialog-text { color: var(--color-text-secondary); }
+.st-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 4px; }

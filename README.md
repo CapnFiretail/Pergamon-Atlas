@@ -17,14 +17,17 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 ├── account/               Sign in / register / profile / password recovery
 ├── settings/              Appearance settings (display mode, colour palette)
 ├── handbook/              Atlas Handbook (administrators)
+├── studio/                Atlas Studio (administrators)
 ├── suggestions/  achievements/  leaderboards/  updates/  …   placeholders
 ├── scripts/
 │   ├── theme.js  layout.js  home.js  account.js   page scripts
 │   ├── components/        component library (widgets)
 │   ├── grid/              Atlas Grid: engine, widget sizing, renderer, editor
+│   ├── canvas/            node canvas: geometry, renderer, interaction
 │   ├── design/            design registries (typography, colours, surfaces)
 │   ├── cms/               homepage CMS and Admin Mode
-│   └── handbook/          Handbook pages
+│   ├── handbook/          Handbook pages
+│   └── studio/            Studio shell and sections (connections/)
 ├── styles/                theme.css (tokens), typography.css (generated), …
 ├── data/                  entries.js (games catalog), home-content.js (static fallback)
 ├── operation/             shared legacy layer: Supabase auth, footer, main.css
@@ -35,7 +38,7 @@ artwork/source/            original artwork files (not deployed)
 supabase/migrations/       legacy schema history, 0001–0006
 supabase/proposed/         migrations 0007 onward (applied state: docs/STATUS.md)
 supabase/functions/        Edge Functions (publish-media)
-docs/design/               Handbook guide, vision
+docs/design/               Handbook and Studio guides, vision
 docs/cms/                  CMS architecture, staging, tests
 tests/                     cms/ and design/ (node --test)
 tools/                     build helpers: Supabase config, typography, vision

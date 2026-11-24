@@ -43,7 +43,7 @@ generated files (below), `*/package-lock.json`, `tests/cms/fixtures/`,
 - **Inline `<script>`/`<style>` blocks** have CSP hashes in `vercel.json`;
   changing one means changing its hash.
 - **Interface checks are not security.** The server enforces every write.
-  Guests and members see no sign of the Handbook or Admin Mode.
+  Guests and members see no sign of the Handbook, the Studio or Admin Mode.
 - **Rolling back:** restore a schema-1 homepage before rolling the front end
   back to one that can't read schema 2.
 - **Leave alone** game logic, `ads.txt`, and untracked files you didn't make.
@@ -67,6 +67,8 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Colours, spacing, surfaces | `styles/theme.css` (values); `scripts/design/colors.js`, `surfaces.js` (uses) |
 | Typography | `scripts/design/typography.js` (the role); `HANDBOOK.md` › Connecting a component to a role |
 | Handbook pages | `HANDBOOK.md` › Adding a section; `scripts/handbook/handbook.js` header |
+| Atlas Studio | `docs/design/STUDIO.md`; `scripts/studio/studio.js` header |
+| Studio Connections, node canvas | `docs/design/STUDIO.md` › Connections; headers of `scripts/studio/connections/*.js`, `scripts/canvas/*.js` |
 | Header, sidebar, themes | Headers of `scripts/layout.js`, `scripts/theme.js` |
 | New page | `README.md` › Adding a page |
 | Direction and principles | `docs/design/ATLAS_VISION.md`, the relevant section; `HANDBOOK.md` › Built and planned |

@@ -44,7 +44,13 @@
     { js: '/scripts/grid/editor.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.editor) },
     { js: '/scripts/grid/overlay.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.overlay) },
     { js: '/scripts/grid/interaction.js', ready: () => !!(window.PergamonGrid && window.PergamonGrid.interaction) },
-    { js: '/scripts/handbook/layout-lab.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.layoutLab) }
+    { js: '/scripts/handbook/layout-lab.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.layoutLab) },
+    // Node Canvas: the canvas Atlas Studio uses, drawn live.
+    { css: '/styles/canvas.css' },
+    { js: '/scripts/canvas/geometry.js', ready: () => !!(window.PergamonCanvas && window.PergamonCanvas.geometry) },
+    { js: '/scripts/canvas/renderer.js', ready: () => !!(window.PergamonCanvas && window.PergamonCanvas.renderer) },
+    { js: '/scripts/canvas/interaction.js', ready: () => !!(window.PergamonCanvas && window.PergamonCanvas.interaction) },
+    { js: '/scripts/handbook/canvas-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.canvasPage) }
   ];
   let loading = null;
   let shown = null;                    // 'handbook' | 'denied'

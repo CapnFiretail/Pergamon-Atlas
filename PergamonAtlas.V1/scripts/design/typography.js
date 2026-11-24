@@ -148,6 +148,7 @@
       adoption: [
         { file: 'styles/components/atlas-navigation.css', selector: '.home-context-label', status: 'adopted', note: 'Atlas Navigation rows.' },
         { file: 'styles/settings.css', selector: '.palette-name', status: 'adopted', note: 'Settings palette names.' },
+        { file: 'styles/canvas.css', selector: '.cv-node-body', status: 'adopted', note: 'Node names on a canvas (Atlas Studio).' },
         { file: 'styles/cms-admin.css', selector: '.cms-manage-name', status: 'pending', current: { weight: 400 }, note: 'Inherits weight 400.' }
       ]
     },

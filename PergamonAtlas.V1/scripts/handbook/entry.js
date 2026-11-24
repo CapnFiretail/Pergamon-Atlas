@@ -11,6 +11,8 @@
 // decides what the page shows; anything it may change in a later phase must
 // be enforced by the server, as the CMS functions are.
 //
+// The Studio (scripts/studio/entry.js) uses this same check.
+//
 //   PergamonHandbook.access.verify()   → Promise<boolean> (latest answer)
 //   PergamonHandbook.access.onChange(fn(isAdmin))
 (function () {

@@ -1,0 +1,178 @@
+/* Node canvas (scripts/canvas/renderer.js). Colours are theme roles only; a
+ * node's logo brings its own. Content is drawn in world units and scaled by the
+ * view; controls use --cv-px, so they keep their size on screen at every zoom
+ * (as the Atlas Grid's editing decorations do, styles/grid-editor.css). */
+.cv, .cv * { box-sizing: border-box; }
+.cv {
+  --cv-px: calc(1px / var(--cv-scale, 1));
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-background);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--color-text-secondary) 38%, transparent) 1.2px, transparent 1.6px);
+  background-position: var(--cv-dx, 0) var(--cv-dy, 0);
+  background-size: var(--cv-dot, 24px) var(--cv-dot, 24px);
+  color: var(--color-text-primary);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cv:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.cv.is-panning, .cv.is-panning * { cursor: grabbing !important; }
+.cv.is-moving, .cv.is-moving * { cursor: grabbing !important; }
+.cv.is-connecting, .cv.is-connecting * { cursor: crosshair !important; }
+.cv-world { position: absolute; top: 0; left: 0; width: 0; height: 0; transform-origin: 0 0; }
+.cv-layer { position: absolute; top: 0; left: 0; }
+.cv [hidden] { display: none !important; }
+
+/* ── Connections ───────────────────────────────────────────────────────── */
+.cv-lines { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; }
+.cv-edge-line, .cv-ghost { fill: none; stroke: color-mix(in srgb, var(--color-text-secondary) 80%, transparent); stroke-width: 2; stroke-linecap: round; }
+.cv-edge-head { fill: var(--color-text-secondary); }
+.cv-edge-hit { fill: none; stroke: transparent; stroke-width: calc(18 * var(--cv-px)); pointer-events: stroke; cursor: pointer; outline: none; }
+.cv-edge:has(.cv-edge-hit:hover) .cv-edge-line { stroke: color-mix(in srgb, var(--color-accent) 70%, var(--color-text-secondary)); }
+.cv-edge:has(.cv-edge-hit:focus-visible) .cv-edge-line { stroke: var(--color-focus); stroke-width: 3.5; }
+.cv-edge.is-selected .cv-edge-line { stroke: var(--color-accent); stroke-width: 3; }
+.cv-edge.is-selected .cv-edge-head { fill: var(--color-accent); }
+.cv-edge.is-source { opacity: 0.35; }
+.cv-ghost { stroke: var(--color-accent); stroke-dasharray: 6 5; }
+.cv-ghost.is-snapped { stroke-dasharray: none; stroke-width: 3; }
+.cv-ghost.is-refused { stroke: var(--color-danger); }
+.cv-edge-label {
+  position: absolute;
+  max-width: 170px;
+  padding: 2px 9px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  font: 600 12px/1.5 var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  translate: -50% -50%;
+  cursor: pointer;
+}
+.cv-edge-label.is-selected { border-color: var(--color-accent); color: var(--color-accent-text); }
+
+/* ── Nodes ─────────────────────────────────────────────────────────────── */
+.cv-node { position: absolute; width: 192px; height: 72px; }
+.cv-node.is-selected { z-index: 1; }
+.cv-node-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  color: var(--color-text-primary);
+  font-family: var(--type-item-title-family);
+  font-size: var(--type-item-title-size);
+  font-weight: var(--type-item-title-weight);
+  line-height: var(--type-item-title-leading);
+  letter-spacing: var(--type-item-title-tracking);
+  text-transform: var(--type-item-title-transform);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.12s ease;
+}
+.cv-node-body:hover { border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border)); }
+.cv-node-body:focus-visible { box-shadow: 0 0 0 calc(2 * var(--cv-px)) var(--color-background), 0 0 0 calc(4 * var(--cv-px)) var(--color-focus); }
+.cv-node.is-selected .cv-node-body { border-color: var(--color-accent); box-shadow: 0 0 0 calc(2 * var(--cv-px)) var(--color-accent), var(--shadow-raised); }
+.cv-node.is-selected .cv-node-body:focus-visible { box-shadow: 0 0 0 calc(2 * var(--cv-px)) var(--color-accent), 0 0 0 calc(4 * var(--cv-px)) var(--color-background), 0 0 0 calc(6 * var(--cv-px)) var(--color-focus); }
+.cv-node.is-target .cv-node-body { border-color: var(--color-accent); background: color-mix(in srgb, var(--color-surface), var(--color-accent) 12%); }
+.cv-node.is-refused .cv-node-body { border-color: var(--color-danger); }
+.cv.is-editing .cv-node.is-selected .cv-node-body { cursor: grab; }
+.cv-node-logo { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; }
+.cv-node-logo svg, .cv-node-logo img { display: block; width: 28px; height: 28px; object-fit: contain; }
+.cv-node-name { display: -webkit-box; min-width: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow-wrap: anywhere; }
+
+/* ── Editing controls ──────────────────────────────────────────────────── */
+.cv-port {
+  position: absolute;
+  width: calc(28 * var(--cv-px));
+  height: calc(28 * var(--cv-px));
+  padding: 0;
+  border: 0;
+  background: none;
+  translate: -50% -50%;
+  visibility: hidden;
+  cursor: crosshair;
+}
+.cv-port::before {
+  content: "";
+  position: absolute;
+  inset: calc(8 * var(--cv-px));
+  border: calc(2 * var(--cv-px)) solid var(--color-accent);
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+.cv-port[data-port="top"] { left: 50%; top: 0; }
+.cv-port[data-port="right"] { left: 100%; top: 50%; }
+.cv-port[data-port="bottom"] { left: 50%; top: 100%; }
+.cv-port[data-port="left"] { left: 0; top: 50%; }
+.cv.is-editing .cv-node.is-selected .cv-port, .cv.is-editing.is-connecting .cv-port { visibility: visible; }
+.cv.is-moving .cv-port, .cv.is-moving .cv-node-actions { visibility: hidden !important; }
+.cv-port:hover::before, .cv-end:hover::before { background: var(--color-accent); }
+.cv-port:focus-visible, .cv-end:focus-visible { outline: calc(2 * var(--cv-px)) solid var(--color-focus); outline-offset: calc(-2 * var(--cv-px)); border-radius: 50%; }
+
+.cv-node-actions, .cv-edge-tools { position: absolute; display: flex; gap: calc(6 * var(--cv-px)); }
+.cv-node-actions { right: 0; bottom: calc(100% + 18 * var(--cv-px)); visibility: hidden; }
+.cv.is-editing .cv-node.is-selected .cv-node-actions { visibility: visible; }
+.cv.is-connecting .cv-node-actions { visibility: hidden !important; }
+.cv-edge-tools { translate: -50% calc(-50% - 22 * var(--cv-px)); }
+.cv-edge-tools.has-label { translate: -50% calc(-50% - 34 * var(--cv-px)); }
+/* The same control as Admin Mode's pencils. */
+.cv-action {
+  display: grid;
+  place-items: center;
+  width: calc(32 * var(--cv-px));
+  height: calc(32 * var(--cv-px));
+  padding: 0;
+  border: calc(1.5 * var(--cv-px)) solid var(--color-accent);
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: 0 calc(2 * var(--cv-px)) calc(8 * var(--cv-px)) rgb(0 0 0 / 0.35);
+  color: var(--color-accent-text);
+  cursor: pointer;
+}
+.cv-action svg { width: 50%; height: 50%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cv-action:hover { background: var(--color-accent); color: var(--color-on-accent); }
+.cv-action--remove { border-color: var(--color-danger); color: var(--color-danger); }
+.cv-action--remove:hover { background: var(--color-danger); color: var(--color-background); }
+.cv-action:focus-visible { outline: calc(2 * var(--cv-px)) solid var(--color-focus); outline-offset: calc(2 * var(--cv-px)); }
+
+/* A selected connection's ends, just outside their ports. */
+.cv-end {
+  position: absolute;
+  width: calc(28 * var(--cv-px));
+  height: calc(28 * var(--cv-px));
+  padding: 0;
+  border: 0;
+  background: none;
+  translate: calc(-50% + var(--cv-ox, 0) * 12 * var(--cv-px)) calc(-50% + var(--cv-oy, 0) * 12 * var(--cv-px));
+  cursor: crosshair;
+}
+.cv-end::before {
+  content: "";
+  position: absolute;
+  inset: calc(7 * var(--cv-px));
+  border: calc(2 * var(--cv-px)) solid var(--color-accent);
+  border-radius: calc(4 * var(--cv-px));
+  background: var(--color-surface);
+}
+@media (pointer: coarse) {
+  .cv-action { width: calc(40 * var(--cv-px)); height: calc(40 * var(--cv-px)); }
+  .cv-port, .cv-end { width: calc(36 * var(--cv-px)); height: calc(36 * var(--cv-px)); }
+  .cv-port::before, .cv-end::before { inset: calc(11 * var(--cv-px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cv-node-body { transition: none; }
+}

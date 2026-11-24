@@ -32,6 +32,7 @@
     spacing: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
     grid: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
     lab: '<rect x="3" y="3" width="11" height="9" rx="1.5"/><rect x="3" y="15" width="18" height="6" rx="1.5"/><path d="M17 4v6M14 7h6"/>',
+    canvas: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="9" r="2.5"/><circle cx="9" cy="18" r="2.5"/><path d="m8.4 6.6 7.2 1.8M6.6 8.4l1.8 7.2M16.3 10.8l-5.5 5.4"/>',
     motion: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
     elements: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
     widgets: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><path d="M17 13v8M13 17h8"/>',
@@ -49,6 +50,7 @@
       { path: 'foundations/spacing', label: 'Spacing & Surfaces', icon: 'spacing', text: 'The spacing scale, the page frame, and the surfaces: panels, cards, controls, radii and elevation.' },
       { path: 'foundations/grid', label: 'Atlas Grid', icon: 'grid', text: 'The 20-column square-cell grid widgets snap to: coordinates, spans, sizing contracts, validation and narrow screens.' },
       { path: 'foundations/lab', label: 'Layout Lab', icon: 'lab', text: 'Move and resize real widgets on the Atlas Grid: snapping, collision blocking, content minimums, undo and redo.' },
+      { path: 'foundations/canvas', label: 'Node Canvas', icon: 'canvas', text: 'A pannable canvas of nodes joined by curves: elements, controls and editing conventions, with their source.' },
       { path: 'foundations/motion', label: 'Motion', icon: 'motion', text: 'Durations, easing and reduced-motion rules, including the carousel’s glide.' }
     ] },
     { id: 'library', label: 'Library', text: 'The reusable parts Atlas pages are made of, from small elements to whole layouts.', items: [
@@ -166,6 +168,8 @@
     } else if (kind === 'lab') {
       // A selected block and its proposed new place.
       [[1, 1, 3, 2, 'hb-pv-cell hb-pv-cell--selected'], [5, 1, 2, 1, 'hb-pv-cell'], [1, 3, 6, 1, 'hb-pv-cell'], [4, 1, 3, 2, 'hb-pv-cell hb-pv-cell--preview']].forEach(([c, r, w, h, cls]) => { const n = add(cls); n.style.gridArea = r + ' / ' + c + ' / span ' + h + ' / span ' + w; });
+    } else if (kind === 'canvas') {
+      box.innerHTML = '<svg class="hb-pv-curve" viewBox="0 0 120 60"><path d="M24 14C60 14 56 46 96 46"/><circle cx="24" cy="14" r="5"/><circle cx="96" cy="46" r="5"/></svg>';
     } else if (kind === 'motion') {
       box.innerHTML = '<svg class="hb-pv-curve" viewBox="0 0 120 60"><path d="M4 56C40 56 46 4 116 4"/><circle cx="116" cy="4" r="4"/></svg>';
     } else if (kind === 'elements') {
@@ -207,7 +211,7 @@
     cats.setAttribute('aria-label', 'Catalogue');
     const library = GROUPS[2];
     cats.append(
-      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography, Colors, Spacing & Surfaces, Atlas Grid, Layout Lab ready'),
+      card('foundations', 'Foundations', 'Typography, colors, spacing and motion: the decisions every element is built from.', 'foundations', 'Typography, Colors, Spacing & Surfaces, Atlas Grid, Layout Lab, Node Canvas ready'),
       card('library/elements', 'Elements', library.items[0].text, 'elements', 'planned'),
       card('library/widgets', 'Widgets', 'Larger reusable components: navigation, Featured Game, Spotlight and the games carousel.', 'widgets', 'ready'),
       card('library/layouts', 'Layouts', library.items[2].text, 'layouts', 'planned')

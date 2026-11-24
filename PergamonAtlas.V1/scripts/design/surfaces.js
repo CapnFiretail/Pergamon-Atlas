@@ -53,8 +53,8 @@
     { id: 'card', name: 'Card', radius: '--radius-card', use: 'Inside a panel: surface or page background, 1px border, card radius.', where: 'Game tiles, palette options, the empty carousel track' },
     { id: 'item', name: 'Item', radius: '--radius-item', use: 'A row or option inside a panel; hover uses the hover surface, selected the soft accent.', where: 'Sidebar links, mode options, palette previews, fields' },
     { id: 'control', name: 'Control', radius: '--radius-md', use: 'Buttons: an accent fill (primary) or a 1px border (secondary); pills use the pill radius.', where: 'Menu button, carousel buttons, placeholder actions' },
-    { id: 'dialog', name: 'Dialog', radius: '--radius-dialog', shadow: '--shadow-dialog', use: 'Surface, 1px border, dialog radius and shadow, above the overlay.', where: 'Admin Mode publish dialog' },
-    { id: 'raised', name: 'Raised panel', radius: '--radius-panel', shadow: '--shadow-raised', use: 'A panel that floats beside the content.', where: 'Sidebar rail (homepage, Handbook)' }
+    { id: 'dialog', name: 'Dialog', radius: '--radius-dialog', shadow: '--shadow-dialog', use: 'Surface, 1px border, dialog radius and shadow, above the overlay.', where: 'Admin Mode publish dialog, Studio dialogs' },
+    { id: 'raised', name: 'Raised panel', radius: '--radius-panel', shadow: '--shadow-raised', use: 'A panel that floats beside the content.', where: 'Sidebar rail (homepage, Handbook, Studio), canvas nodes and their panel' }
   ];
 
   const notYet = [

@@ -544,6 +544,9 @@
   .hbg-contracts th[scope="row"] { min-width: 200px; }
 }
 
+/* ── Node Canvas page (canvas-page.js): the canvas is styles/canvas.css ───── */
+.hbc-canvas { height: 380px; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
+
 /* ── Layout Lab page (layout-lab.js) ───────────────────────────────────────
    The canvas, decorations and editing states come from styles/grid.css and
    styles/grid-editor.css; these rules frame the workspace and its controls. */

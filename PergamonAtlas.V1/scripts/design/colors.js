@@ -54,6 +54,8 @@
       why: 'Status colours must mean the same thing in every palette.' },
     { where: 'Admin Mode (styles/cms-admin.css)', colors: 'Light-mode error / success text, the “unsaved” amber, black shadows',
       why: 'Administrative status signals tuned for legibility; not part of the public site.' },
+    { where: 'Service logos (scripts/studio/connections/registry.js)', colors: 'Each service’s own brand colour',
+      why: 'A logo is recognised by its colour; one-colour marks follow the text colour.' },
     { where: 'Handbook samples (styles/handbook.css)', colors: 'Fixed dark stages for the feature and game typography samples',
       why: 'They show those roles on the surfaces they are designed for.' }
   ];
