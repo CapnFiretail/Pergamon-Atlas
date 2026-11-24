@@ -2,7 +2,10 @@
 // page's content (CMS cards, games) into the inputs of the reusable components
 // in scripts/components/, which know nothing of either.
 //
-//   PergamonPageWidgets.create({ liveGame(path), settings }) → { [type]: adapter }
+//   PergamonPageWidgets.create({ liveGame(path), listedGame(path), settings })
+//     → { [type]: adapter }
+//     liveGame   a game that can be played now, or null; listedGame: one that may be
+//                shown, coming soon or not
 //     settings   the page's own configuration of a type (what isn't CMS content):
 //                { explore: the carousel's sections, navigation: the panel's
 //                title and links, signedIn() }
@@ -20,6 +23,9 @@
 //     list(), setTail(node), reveal(key), category()   a 'list' widget's, for
 //                          Admin Mode: the element its controls sit on, a tile
 //                          after its cards, bring a card into view, its filter
+//     shown()                          how many cards a 'list' widget shows
+//     setCount(n), setLevel(n)         a heading's: the cards the page's lists show,
+//                          and its heading level
 //     start(), hold(on)                motion, once in place; held while edited
 //     setSignedIn(on)
 //   }                      (each only where it applies)
@@ -29,7 +35,7 @@
 (function () {
   'use strict';
   const C = window.PergamonComponents;
-  if (!C || !C.featureBanner || !C.contentCard || !C.carousel || !C.atlasNavigation) return;
+  if (!C || !C.featureBanner || !C.contentCard || !C.carousel || !C.atlasNavigation || !C.pageHeading || !C.cardGrid) return;
   const ICONS = C.atlasNavigation.ICONS;
   const norm = path => String(path || '').replace(/\/+$/, '');
 
@@ -88,9 +94,11 @@
         emptyFilterMessage: sec.emptyCategory
       }))
     });
+    let shown = data.sections.some(sec => sec.component) ? items(cards).length : 0;
     return {
       element: c.element,
-      setCards: next => data.sections.forEach(sec => { if (sec.component) c.setItems(sec.id, items(next)); }),
+      setCards: next => data.sections.forEach(sec => { if (sec.component) { const list = items(next); shown = list.length; c.setItems(sec.id, list); } }),
+      shown: () => shown,
       list: () => (c.element.matches('.home-carousel') ? c.element : c.element.querySelector('.home-carousel')),
       // Admin Mode's "Add card" tile follows the document's cards only.
       setTail: node => c.setTail(node, docSection),
@@ -100,6 +108,36 @@
       hold: c.hold
     };
   }
+  // Games as cards, all at once. Unlike the carousel it also shows games that are
+  // coming soon: it is a list of what there is.
+  function gamesGrid(listedGame) {
+    const g = C.cardGrid({ label: 'Games', emptyMessage: 'No games here yet.' });
+    return {
+      element: g.element,
+      setCards: cards => g.setItems((cards || []).map(item => {
+        const entry = listedGame(item.href);
+        return entry ? { key: item.id, element: gameCard(item, entry), label: item.title || entry.name } : null;
+      }).filter(Boolean)),
+      shown: g.count,
+      list: () => g.section,
+      setTail: g.setTail,
+      reveal: g.has
+    };
+  }
+
+  // A page heading: its count panel shows what its `count` asks for.
+  function headingWidget() {
+    const h = C.pageHeading();
+    let counts = 'none', cards = 0;
+    const draw = () => h.setCount(counts === 'cards' ? cards : null);
+    return {
+      element: h.element,
+      setCard(item) { h.element.dataset.cmsId = item.id; counts = item.count; h.apply(item); draw(); },
+      setCount(n) { cards = n; draw(); },
+      setLevel: h.setLevel
+    };
+  }
+
   // The page's explore sections for its own carousel (the one it starts with);
   // any other carousel shows its cards as the document section alone.
   function carouselConfig(explore, id) {
@@ -119,6 +157,14 @@
           return config && window.PergamonGlide ? gamesCarousel(config, m ? m.cards : [], env.liveGame) : null;
         },
         sampleCard: item => sampleGameCard(env.liveGame, item)
+      },
+      'page-heading': {
+        create: headingWidget,
+        sampleCard(item) { const copy = headingWidget(); copy.setCard(item); return { element: copy.element, art() {} }; }
+      },
+      'card-grid': {
+        create(p, m) { const g = gamesGrid(env.listedGame); g.setCards(m ? m.cards : []); return g; },
+        sampleCard: item => sampleGameCard(env.listedGame, item)
       },
       'atlas-navigation': {
         create() {

@@ -127,6 +127,17 @@
       ]
     },
     {
+      id: 'page-heading-title', name: 'Page heading title', kind: 'variant', of: 'page-title', status: 'active',
+      use: 'The title of a Page Heading widget.',
+      restrictions: ['Page Heading only.'],
+      size: 'clamp(26px, 12cqi, 64px)', leading: '1.05',
+      responsive: [
+        { type: 'note', text: 'Sizes follow the title area’s width (cqi). Long titles are set smaller than the role: 1.6 × the title area’s width ÷ the title’s length (1.2 × with the fallback fonts), never below 20px (18px), then wrap.' }
+      ],
+      preview: { text: 'Games', container: 'inline', width: 520 },
+      adoption: [{ file: 'styles/components/page-heading.css', selector: '.page-heading-title', status: 'adopted', note: 'Page Heading title.' }]
+    },
+    {
       id: 'card-title', name: 'Card title', kind: 'role', status: 'active',
       use: 'The title of a game or content card.',
       restrictions: ['One line; truncate rather than wrap inside fixed-size cards.'],
@@ -174,6 +185,7 @@
       responsive: [],
       preview: { text: 'Guests use Obsidian & Gold. Sign in to choose another palette.' },
       adoption: [
+        { file: 'styles/components/card-grid.css', selector: '.card-grid-empty', status: 'adopted', note: 'Card grid message when it is empty.' },
         { file: 'styles/components/carousel.css', selector: '.home-track-empty p', status: 'adopted', note: 'Games carousel message for an empty category.' },
         { file: 'styles/settings.css', selector: '.settings-note', status: 'adopted', note: 'Settings notes.' },
         { file: 'styles/account.css', selector: '.account-intro', status: 'adopted', note: 'Account introduction.' },
@@ -205,12 +217,22 @@
       preview: { text: 'Coming soon' },
       adoption: [
         { file: 'styles/placeholder.css', selector: '.pa-placeholder .pa-placeholder-tag', status: 'pending', current: { leading: '1.6' }, note: 'Inherits line height 1.6 from the placeholder paragraph style.' },
+        { file: 'styles/components/page-heading.css', selector: '.page-heading-count-label', status: 'adopted', note: 'Page Heading count label.' },
         { file: 'styles/components/carousel.css', selector: '.home-track-tag', status: 'adopted', note: 'Games carousel “Coming soon” tags.' },
         { file: 'styles/cms-admin.css', selector: '.cms-drawer-eyebrow', status: 'equivalent' },
         { file: 'styles/components/content-card.css', selector: '.home-art-label', status: 'pending', current: { weight: 600 } },
         { file: 'styles/layout.css', selector: '.pa-sidebar-heading', status: 'pending', current: { weight: 600, tracking: '0.04em' } },
         { file: 'styles/cms-admin.css', selector: '.cms-admin-label', status: 'pending', current: { tracking: '0.06em' } }
       ]
+    },
+    {
+      id: 'page-heading-label', name: 'Page heading label', kind: 'variant', of: 'label', status: 'active',
+      use: 'The ruled subtitle of a Page Heading widget.',
+      restrictions: ['Page Heading only.', 'A few words.'],
+      size: '15px', tracking: '0.15em',
+      responsive: [{ type: 'container', container: 'page-heading', query: '(max-width: 1000px)', size: '12px', name: 'narrow' }],
+      preview: { text: 'Pergamon Catalogs' },
+      adoption: [{ file: 'styles/components/page-heading.css', selector: '.page-heading-sub', status: 'adopted', note: 'Page Heading subtitle.' }]
     },
     {
       id: 'nav', name: 'Navigation', kind: 'role', status: 'active',
@@ -269,6 +291,7 @@
       responsive: [],
       preview: { text: '1,284 · 03:59' },
       adoption: [
+        { file: 'styles/components/page-heading.css', selector: '.page-heading-count-num', status: 'adopted', note: 'Page Heading count: 40px, 32px and 24px as it narrows.' },
         { file: 'styles/theme.css', selector: '.pa-numeric', status: 'equivalent', note: 'Defined but not used by any page yet.' },
         { file: 'games/battleship/index.html', selector: '.score-item .val', status: 'legacy', current: { size: '26px', weight: 800 }, note: 'Game scores: Georgia, 22–28px across games.' },
         { file: 'games/connect-four/index.html', selector: '.score-item .val', status: 'legacy', current: { size: '28px', weight: 800 } }

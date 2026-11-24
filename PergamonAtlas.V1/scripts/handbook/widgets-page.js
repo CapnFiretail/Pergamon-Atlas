@@ -25,6 +25,8 @@
     banner: ['spotlight-title', 'spotlight-cta'],
     carousel: ['section-title-large', 'tab', 'body-small', 'label'],
     card: ['card-title'],
+    heading: ['page-heading-title', 'page-heading-label', 'numeric', 'label'],
+    grid: ['body-small'],
     atlas: ['section-title', 'item-title', 'caption']
   };
 
@@ -187,6 +189,36 @@
       ]));
     }
 
+    {
+      const art = entry(containers, 'card-grid', 'Card Grid', [chip('Container', 'active'), chip('Live preview', 'muted'), chip('Grows with its content', 'muted')],
+        'Every item of a collection at once, in as many columns as its width has room for. It is as tall as its items need and never clips them. Like the carousel, it never builds or inspects its items: the page gives it ready-made elements, such as content cards.');
+      if (C.cardGrid && C.contentCard) {
+        const items = n => (X.cards || []).slice(0, n).map((c, i) => ({ key: 'grid-' + i, label: c.title, element: C.contentCard({ title: c.title, meta: c.meta, href: '#', art: c.art, action: c.action }).element }));
+        const s1 = stage('Live: content cards. Compact shows its narrow layout (its own width, 640px or less).', true);
+        const place = el('div', 'hb-place');
+        const g1 = C.cardGrid({ label: 'Example collection' });
+        g1.setItems(items(6));
+        g1.element.addEventListener('click', e => e.preventDefault());
+        place.append(g1.element);
+        s1.body.append(place);
+        const s2 = stage('Live: an empty collection.', false);
+        const place2 = el('div', 'hb-place');
+        place2.append(C.cardGrid({ label: 'An empty collection', emptyMessage: 'Items will appear here.' }).element);
+        s2.body.append(place2);
+        art.append(s1.fig, s2.fig);
+      } else art.append(missing.cloneNode(true));
+      art.append(facts([
+        ['Inputs', ['Items', { code: '{ key, element, label }' }, ', an accessible label and an empty message.']],
+        ['Owns', ['Columns and gaps, the empty state, screen-reader announcements. Cards are at least 190px wide, 128px when the grid is 640px wide or less.']],
+        ['Height', ['Its content’s, or its rectangle’s if that is taller. On the grid, the row it ends on takes the extra height, so nothing can be placed below it for now (Foundations › Atlas Grid › Widgets that grow).']],
+        ['Used on', ['No page yet; planned for the Games page.']],
+        ['Widget type', [{ code: 'card-grid' }, 'An ordered list of cards. Offered in Layout Mode on the local server only until its migration is applied.']],
+        ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile. Games that are coming soon are shown too; games that are hidden or archived are not.']],
+        ['Type roles', roles('grid')],
+        ['Source', [{ path: 'scripts/components/card-grid.js' }, { path: 'styles/components/card-grid.css' }]]
+      ]));
+    }
+
     // ── Content components ──────────────────────────────────────────────
     const contents = group('Content components', 'Own the presentation of one piece of content and its interaction. The page decides what they show and where they go.');
     function featureEntry(variant, id, name, examples, text, used, type, admin) {
@@ -247,6 +279,34 @@
         ['Admin Mode', ['Title, category, destination game and image with its framing.']],
         ['Type roles', roles('card')],
         ['Source', [{ path: 'scripts/components/content-card.js' }, { path: 'styles/components/content-card.css' }]]
+      ]));
+    }
+
+    {
+      const art = entry(contents, 'page-heading', 'Page Heading', [chip('Content', 'active'), chip('Live preview', 'muted')],
+        'The decorative heading of a page: an emblem, a divider, a centred title with a ruled subtitle, and a count panel, in a double frame. It follows the theme and the accent colour. Not the site header, which is part of the frame around every page.');
+      if (C.pageHeading) {
+        const s = stage('Live: every part is optional but the title. Compact shows its narrow layout (its own width).', true);
+        (X.headings || []).forEach(x => {
+          const place = el('div', 'hb-place hb-place--heading');
+          const h = C.pageHeading({ level: 4 });
+          h.apply(x.content);
+          h.setCount(x.count);
+          place.append(h.element);
+          s.body.append(el('p', 'pa-type-label hb-muted hb-example-name', x.name), place);
+        });
+        art.append(s.fig);
+      } else art.append(missing.cloneNode(true));
+      art.append(facts([
+        ['Inputs', [{ code: '{ title, subtitle, emblem, countLabel }' }, 'and', { code: 'setCount(n)' }, ', ', { code: 'setLevel(n)' }, '. Emblems:', { code: Object.keys((C.pageHeading && C.pageHeading.EMBLEMS) || {}).join(', ') }, 'or none. Any other is one entry in the component: a single-colour mask or an SVG, drawn in the accent.']],
+        ['Layout', ['Follows its own width: the count moves under the title at 760px; at 480px and narrower the subtitle and the count are left out, and at 330px the divider. Long titles are set smaller, then wrap. It fills its rectangle’s height.']],
+        ['Count', ['Derived, never stored: the widget asks for what to count (the cards this page’s lists show) and the page counts as it draws.']],
+        ['Heading level', ['The page decides. The first one on a page without a heading of its own is its <h1>; others are <h2>.']],
+        ['Used on', ['No page yet; planned for the Games page.']],
+        ['Widget type', [{ code: 'page-heading' }, 'One set of fields. Offered in Layout Mode on the local server only until its migration is applied.']],
+        ['Admin Mode', ['Title, subtitle, emblem, what to count and the count’s label.']],
+        ['Type roles', roles('heading')],
+        ['Source', [{ path: 'scripts/components/page-heading.js' }, { path: 'styles/components/page-heading.css' }]]
       ]));
     }
 

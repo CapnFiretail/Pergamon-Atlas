@@ -21,8 +21,14 @@
 //   grid.setStackBelow(px)  change the stacking breakpoint (e.g. to
 //                        minFitWidth() of the layout being shown)
 //   grid.slot(id)        a widget's slot element (for editors)
-//   grid.geometry()      { width, cell, row, gutter, columns } at the current
-//                        width (row: the layout's fixed rowHeight, or cell)
+//   grid.geometry()      { width, cell, row, gutter, columns, grown } at the current
+//                        width (row: the layout's fixed rowHeight, or cell).
+//                        grown: { row, by } when growing widgets are taller
+//                        than their rectangles: the row they end on and the
+//                        pixels it has taken beyond its own height, else null
+//   grid.toGrid(y)       a y in the canvas, as it is on screen, with what a
+//                        growing widget has added taken out: the y the layout
+//                        has (for editors)
 //
 // Presentation never changes the layout: stacking only reorders the view.
 // An invalid layout is never corrected or partly shown: it is refused
@@ -78,6 +84,7 @@
           slot.className = 'atlas-grid-slot';
           slot.dataset.widgetId = w.id;
           slot.dataset.widgetType = w.type;
+          slot.toggleAttribute('data-atlas-grows', G.grows(w, types));
           if (d && d.container) slot.style.containerName = d.container;
           const instance = d ? d.render({ id: w.id, type: w.type }) : null;
           if (instance && instance.element) slot.append(instance.element);
@@ -98,6 +105,22 @@
       else canvas.style.removeProperty('--atlas-row-height');
       canvas.style.setProperty('--atlas-extent', Math.max(rows, 1));
       canvas.toggleAttribute('data-atlas-empty', rows === 0);
+      // Growing widgets all end on the layout's last row: that row takes the
+      // height their content needs; rows shown below it (while editing) don't.
+      const last = layout.widgets.some(w => G.grows(w, types)) ? G.extent(layout) : 0;
+      canvas.toggleAttribute('data-atlas-grows', last > 0);
+      if (!last) canvas.style.removeProperty('--atlas-tracks');
+      else {
+        const fixed = n => (n > 0 ? `repeat(${n}, var(--atlas-row)) ` : '');
+        canvas.style.setProperty('--atlas-tracks', `${fixed(last - 1)}minmax(var(--atlas-row), max-content) ${fixed(Math.max(rows, 1) - last)}`.trim());
+      }
+    }
+    // What growing widgets have added, when they are drawn on the grid.
+    function grown(row, g) {
+      const last = state === 'grid' && canvas.hasAttribute('data-atlas-grows') ? G.extent(layout) : 0;
+      if (!last) return null;
+      const by = canvas.offsetHeight - G.spanSize(Math.max(G.extent(layout), minExtent), row, g);
+      return by > 0.5 ? { row: last, by } : null;
     }
     function remove(id) {
       const e = slots.get(id);
@@ -170,7 +193,14 @@
       geometry() {
         const w = contentWidth(), g = gutter();
         const cell = G.cellSize(w, G.COLUMNS, g);
-        return { width: w, cell, row: G.rowSize(layout, cell), gutter: g, columns: G.COLUMNS };
+        const row = G.rowSize(layout, cell);
+        return { width: w, cell, row, gutter: g, columns: G.COLUMNS, grown: grown(row, g) };
+      },
+      toGrid(y) {
+        const g = this.geometry();
+        if (!g.grown) return y;
+        const end = G.spanSize(g.grown.row, g.row, g.gutter);          // where that row ends in the layout
+        return y <= end ? y : Math.max(end, y - g.grown.by);
       },
       destroy() {
         ro.disconnect();

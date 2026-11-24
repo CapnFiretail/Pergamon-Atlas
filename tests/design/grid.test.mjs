@@ -197,7 +197,7 @@ test('every widget type has a valid contract', () => {
     assert.deepEqual(G.validateContract(id, t.contract), [], id);
     assert.ok(t.name && t.measured && t.responsive && typeof t.placeable === 'boolean', id);
   }
-  assert.deepEqual(Object.keys(TYPES).filter(id => TYPES[id].placeable).sort(), ['atlas-navigation', 'carousel', 'feature-hero', 'feature-spotlight']);
+  assert.deepEqual(Object.keys(TYPES).filter(id => TYPES[id].placeable).sort(), ['atlas-navigation', 'card-grid', 'carousel', 'feature-hero', 'feature-spotlight', 'page-heading']);
 });
 
 test('at the reference width, each minimum cell count is the smallest span reaching its pixel floor', () => {
@@ -339,4 +339,22 @@ test('pages: regions are separate grids; ids unique across the page', () => {
   assert.deepEqual(codes(G.validatePage({ regions: [{ id: 'Upper', widgets: [] }] }, T)), ['invalid-region']);
   assert.deepEqual(codes(G.validatePage({ regions: [{ id: 'a', widgets: [] }, { id: 'a', widgets: [] }] }, T)), ['duplicate-region']);
   assert.deepEqual(codes(G.validatePage({ regions: [] }, T)), ['invalid-page']);
+});
+
+// ── Growing widgets (P1) ────────────────────────────────────────────────────
+// For now nothing may end below one; the other rules are unchanged.
+const GROW = Object.assign({ list: { placeable: true, grows: true, contract: T.box.contract } }, T);
+
+test('growing widgets: nothing may end below one', () => {
+  const list = W('l', 1, 4, 10, 3, 'list');
+  const ok = [[W('a', 1, 1, 10, 3, 'box')], [W('a', 11, 1, 4, 6, 'box')], [W('a', 11, 5, 4, 2, 'box')], [W('m', 11, 4, 10, 3, 'list')], []];
+  ok.forEach(others => assert.deepEqual(G.validateLayout({ widgets: [list, ...others] }, GROW), [], JSON.stringify(others)));
+  for (const w of [W('a', 1, 7, 4, 2, 'box'), W('a', 11, 1, 4, 7, 'box'), W('a', 11, 6, 4, 2, 'box'), W('m', 11, 4, 10, 4, 'list')]) {
+    const e = G.validateLayout({ widgets: [list, w] }, GROW);
+    assert.deepEqual(codes(e), ['below-growing'], JSON.stringify(w));
+    assert.deepEqual([e[0].widgets, e[0].detail.growing], [['l', w.id], 'l']);
+  }
+  // Only a type that grows has the rule, and other regions are other grids.
+  assert.deepEqual(G.validateLayout({ widgets: [Object.assign({}, list, { type: 'box' }), W('a', 1, 7, 4, 2, 'box')] }, GROW), []);
+  assert.deepEqual(G.validatePage({ regions: [{ id: 'one', widgets: [list] }, { id: 'two', widgets: [W('a', 1, 20, 4, 2, 'box')] }] }, GROW), []);
 });

@@ -17,6 +17,9 @@
 //                        breakpoints the component's own CSS already uses;
 //                        minHeight is the floor above the last band.
 //   placeable  false: documented, not yet placeable (validation refuses it)
+//   grows      true: as tall as its rectangle or its content, whichever is more
+//              (atlas-grid.js › Growing widgets); minHeight is then the least it
+//              may be given, not the most its content needs
 //   stack      'content': stacked (narrow screens), its height follows its
 //              content rather than its authored height
 //
@@ -70,6 +73,25 @@
       contract: { minCols: 4, minRows: 6, defaultCols: 6, defaultRows: 11, minWidth: 242, minHeight: 342 },
       measured: 'Four entries. Below 234px the longest label (“Suggestions”) is cut off; 242px leaves a little room. Its content needs 342px of height with stacked rows; on a grid its rows share any extra height.',
       responsive: 'Rows stretch to fill its rectangle; stacked, it is as tall as its content.'
+    },
+    'page-heading': {
+      name: 'Page heading',
+      component: 'pageHeading()',
+      placeable: true,
+      stack: 'content',
+      contract: { minCols: 5, minRows: 2, defaultCols: 20, defaultRows: 4, minWidth: 300, minHeight: 150, minHeightBands: [{ maxWidth: 480, minHeight: 104 }, { maxWidth: 760, minHeight: 180 }, { maxWidth: 1000, minHeight: 134 }] },
+      measured: 'Every part, with a 40-character title and subtitle and a 16-character count label, in the site’s fonts and in the fallback fonts: 102px of height up to 480px wide (no subtitle or count), 179px up to 760px (the count under the title), 132px up to 1000px, 148px wider.',
+      responsive: 'The count moves under the title at 760px and narrower; at 480px the subtitle and the count are left out, and at 330px the divider.'
+    },
+    'card-grid': {
+      name: 'Card grid',
+      component: 'cardGrid({ label, emptyMessage })',
+      placeable: true,
+      grows: true,
+      stack: 'content',
+      contract: { minCols: 5, minRows: 4, defaultCols: 20, defaultRows: 6, minWidth: 300, minHeight: 232 },
+      measured: 'Two columns of cards at 300px. One row of cards at its narrowest is 232px tall; wider or with more cards it is taller, and the grid gives it the room.',
+      responsive: 'As many columns as fit: cards at least 190px wide, 128px at 640px and narrower.'
     }
   };
 

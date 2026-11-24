@@ -24,15 +24,18 @@
 
   const W = (id, type, col, row, cols, rows) => ({ id, type, col, row, cols, rows });
   // Different widths and heights, gaps across and down, room to rearrange,
-  // and a widget below the first group. The Carousel has the fewest rows its
-  // content needs on the Handbook's usual grid (about 1122px wide): 7.
+  // and widgets below the first group. The Carousel has the fewest rows its
+  // content needs on the Handbook's usual grid (about 1122px wide): 7. The Card
+  // grid grows, so it is last.
   const INITIAL = E.freezeLayout({ widgets: [
-    W('hero', 'feature-hero', 1, 1, 10, 9),
-    W('spotlight', 'feature-spotlight', 12, 1, 9, 5),
-    W('carousel', 'carousel', 1, 12, 20, 7)
+    W('heading', 'page-heading', 1, 1, 20, 4),
+    W('hero', 'feature-hero', 1, 6, 10, 9),
+    W('spotlight', 'feature-spotlight', 12, 6, 9, 5),
+    W('carousel', 'carousel', 1, 17, 20, 7),
+    W('grid', 'card-grid', 1, 25, 20, 6)
   ] });
   const fitsFrom = layout => G.minFitWidth(layout, TYPES);
-  const NAMES = { hero: 'Hero', spotlight: 'Spotlight', carousel: 'Carousel' };
+  const NAMES = { heading: 'Page heading', grid: 'Card grid', hero: 'Hero', spotlight: 'Spotlight', carousel: 'Carousel' };
   const nameOf = w => NAMES[w.id] || TYPES[w.type].name;
   const px = n => `${Math.round(n)}px`;
 
@@ -152,7 +155,7 @@
       else if (e.type === 'reject') {
         const err = (e.errors || [])[0];
         const other = err && err.code === 'overlap' ? err.widgets.find(x => x !== e.id) : null;
-        status.textContent = e.reason === 'unchanged' ? `${name} can’t go further that way.` : other ? `Not allowed: ${name} would overlap ${nameOf(layout.widgets.find(x => x.id === other))}. Nothing changed.` : `Not allowed: ${err ? err.message : 'invalid placement'} Nothing changed.`;
+        status.textContent = e.reason === 'unchanged' ? `${name} can’t go further that way.` : other ? `Not allowed: ${name} would overlap ${nameOf(layout.widgets.find(x => x.id === other))}. Nothing changed.` : err && err.code === 'below-growing' ? `Not allowed: ${nameOf(layout.widgets.find(x => x.id === err.detail.growing))} grows with its content, so nothing can go below it for now. Nothing changed.` : `Not allowed: ${err ? err.message : 'invalid placement'} Nothing changed.`;
       } else if (e.type === 'cancel' && e.reason === 'cancelled') status.textContent = 'Cancelled. Nothing changed.';
       refreshInspector();
     }

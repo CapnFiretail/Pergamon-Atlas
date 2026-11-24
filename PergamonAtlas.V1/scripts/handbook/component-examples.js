@@ -48,6 +48,12 @@
       filters: ['All', 'Strategy', 'Arcade', 'Card', 'Classic'],
       emptyMessage: 'Nothing here yet.', emptyFilterMessage: 'Nothing in this category yet.'
     },
+    headings: [
+      { name: 'Every part', content: { title: 'Games', subtitle: 'Pergamon Catalogs', emblem: 'games', countLabel: 'Games' }, count: 8 },
+      { name: 'Another emblem, no count', content: { title: 'The Atlas Library', subtitle: 'Reading room', emblem: 'compass' }, count: null },
+      { name: 'Title and count', content: { title: 'Release notes', countLabel: 'Entries' }, count: 24 },
+      { name: 'Title only, long', content: { title: 'A heading at its longest, forty letters' }, count: null }
+    ],
     emptyCarousel: { id: 'empty', title: 'An empty collection', emptyTag: 'Coming Soon', emptyMessage: 'Items will appear here.' }
   };
 })();

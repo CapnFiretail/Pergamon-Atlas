@@ -117,7 +117,7 @@
     const label = id => env.cardLabel(id);
     const typeLabel = id => {
       const docs = workspace.docs();
-      const t = content.widgets.cardLabel(content.cardType(id, ...docs));
+      const t = content.cardLabel(id, ...docs);
       const name = content.isSaved(id, ...docs) ? `Saved ${t.toLowerCase()} (not active)` : t;
       // A widget added to the page: say which one.
       const o = content.ownerOf(id, ...docs);
@@ -159,7 +159,7 @@
         let input;
         if (field.type === 'choice') {
           input = el('select', 'cms-field-input');
-          field.options.forEach(o => { const opt = el('option', '', o); opt.value = o; input.append(opt); });
+          field.options.forEach(o => { const opt = el('option', '', o.label || o); opt.value = o.value || o; input.append(opt); });
         } else if (field.type === 'link') {
           input = el('select', 'cms-field-input');
           const group = el('optgroup'); group.label = 'Games';
@@ -192,7 +192,8 @@
         row.input = input;
         wrap.append(lab, input);
         if (row.other) wrap.append(row.other);
-        if (field.type === 'link') wrap.append(el('p', 'cms-field-hint', field.gamesOnly ? content.widgets.cards[content.cardType(id, ...workspace.docs())].linkHint : 'A game, or another page on this site.'));
+        if (field.type === 'link') wrap.append(el('p', 'cms-field-hint', field.gamesOnly ? content.linkHint(id, ...workspace.docs()) : 'A game, or another page on this site.'));
+        else if (field.hint) wrap.append(el('p', 'cms-field-hint', field.hint));
         wrap.append(error);
         form.append(wrap);
         fields.push(row);
@@ -242,7 +243,7 @@
       const problem = content.checkField(row.field, value);
       showError(row, problem);
       if (!problem) {
-        workspace.setField(current, row.field.key, value);
+        workspace.setField(current, row.field.key, value === '' && row.field.optional ? undefined : value);
         env.onEdit(current);
       }
       if (feedback.dataset.kind === 'success' || feedback.dataset.kind === 'error') setFeedback('');

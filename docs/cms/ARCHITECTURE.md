@@ -720,6 +720,8 @@ existing tables (drafts, publishing, history and image checks as for a page). Ag
   of its own.
 - The library publishes by itself; restoring a page never restores game records.
 - Archiving or removing a game never breaks a widget that refers to it.
-- Edited in a Game Library dialog, from Admin Mode and from a card's editor.
+- Edited in a Game Library dialog, from Admin Mode and from a card's editor. Games that
+  are coming soon can be chosen for a card.
 - The homepage moves gradually: code that reads both kinds of card, then the library,
   then an explicit conversion in the draft.
+- 0016 also checks on the server that nothing is placed below a growing widget.

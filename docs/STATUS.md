@@ -23,10 +23,12 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
   both (user-reported).
 - **Active milestone:** P1, Games catalog on the shared page architecture. Phase 1
-  (page and widget registries, page renderer, Site Navigation on any page): local
-  review approved by the user 2026-11-24, committed locally, not pushed. No database
-  change, nothing visible changed. Phase 2 (widgets) is next; migration 0016's scope
-  is still to be approved. Agreed for the game library: `cms/ARCHITECTURE.md` §13.
+  (page and widget registries, page renderer, Site Navigation on any page): approved by
+  the user 2026-11-24, committed locally as `2e51a75`. Phase 2 (Page Heading, Card
+  Grid, widgets that grow): approved and committed locally after it. Neither is pushed.
+  No database change; the homepage is unchanged. Next: phase 3, the Games page. Migration 0016's scope is still to be approved; until it is applied
+  Layout Mode offers the new widgets on the local server only, and can't save them.
+  Agreed for the game library: `cms/ARCHITECTURE.md` §13.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).

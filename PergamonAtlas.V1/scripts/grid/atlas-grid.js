@@ -21,6 +21,14 @@
 //   extent = max(row + rows − 1)            the canvas ends after this row
 // No maximum row; empty cells and rows are kept; nothing is compacted.
 //
+// Growing widgets (type.grows): as tall as their rectangle or their content,
+// whichever is more. The layout stores only the rectangle; drawn, the row a
+// growing widget ends on takes whatever its content needs beyond it. Because
+// that pushes down everything below that row, nothing may end lower than a
+// growing widget (belowGrowing). A CURRENT LIMITATION of the engine, not a
+// design rule: placing widgets under one needs rows whose height is known only
+// once they are drawn.
+//
 // Validation never corrects a layout: it returns structured errors
 //   { code, widgets: [id, …], message, detail }
 // so an editor can explain why a proposed layout is refused. Two checks:
@@ -81,6 +89,15 @@
   // The order a stacked presentation shows widgets in: the layout's own
   // stack order when it has one, otherwise reading order.
   const stackOrder = layout => (Array.isArray(layout.stack) ? layout.stack.slice() : readingOrder(layout));
+
+  // Pairs [growing widget, widget that ends below it]: not allowed (see above).
+  const grows = (w, types) => !!(w && types && Object.prototype.hasOwnProperty.call(types, w.type) && types[w.type].grows);
+  const lastRow = w => w.row + w.rows - 1;
+  function belowGrowing(widgets, types) {
+    const out = [];
+    widgets.forEach(g => { if (grows(g, types)) widgets.forEach(w => { if (lastRow(w) > lastRow(g)) out.push([g, w]); }); });
+    return out;
+  }
 
   // ── Sizing contracts ────────────────────────────────────────────────────
   //   { minCols, minRows, defaultCols, defaultRows, minWidth, minHeight,
@@ -166,6 +183,7 @@
       const o = overlap(placed[i], placed[j]);
       if (o) out.push(err('overlap', [placed[i].id, placed[j].id], `“${placed[i].id}” and “${placed[j].id}” overlap.`, { cells: o }));
     }
+    belowGrowing(placed, types).forEach(([g, w]) => out.push(err('below-growing', [g.id, w.id], `“${w.id}” ends below “${g.id}”, which grows with its content, so nothing can be placed under it.`, { growing: g.id, endsAt: lastRow(g) })));
     return out;
   }
 
@@ -243,7 +261,7 @@
   }
   const round = n => Math.round(n * 10) / 10;
 
-  const api = { COLUMNS, GUTTER, MIN_ROW, MAX_ROW, cellSize, spanSize, cellsFor, rowSize, rect, extent, canvasHeight, overlap, readingOrder, stackOrder, minHeightAt, validateContract, validateLayout, checkFit, minFitWidth, widgetMinFitWidth, validatePage, findInstance };
+  const api = { COLUMNS, GUTTER, MIN_ROW, MAX_ROW, cellSize, spanSize, cellsFor, rowSize, rect, extent, canvasHeight, overlap, grows, belowGrowing, readingOrder, stackOrder, minHeightAt, validateContract, validateLayout, checkFit, minFitWidth, widgetMinFitWidth, validatePage, findInstance };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PergamonGrid = Object.assign(root.PergamonGrid || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

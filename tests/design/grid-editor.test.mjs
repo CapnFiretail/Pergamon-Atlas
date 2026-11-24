@@ -437,3 +437,29 @@ test('amending replaces the present step; back at the start it disappears', () =
   assert.equal(h.amend(1), true);
   assert.deepEqual([h.present(), h.canUndo(), h.canRedo()], [1, false, false]);
 });
+
+// ── Growing widgets (P1) ────────────────────────────────────────────────────
+test('growing widgets: moves, resizes and additions that would put something below one are refused', () => {
+  const box = { minCols: 2, minRows: 1, defaultCols: 4, defaultRows: 2, minWidth: 10, minHeight: 10 };
+  const types = { box: { placeable: true, contract: box }, list: { placeable: true, grows: true, contract: Object.assign({}, box, { defaultCols: 20 }) } };
+  const env = { types, width: 1392 };
+  const at = (id, type, col, row, cols, rows) => ({ id, type, col, row, cols, rows });
+  const L = { widgets: [at('a', 'box', 1, 1, 4, 2), at('l', 'list', 1, 4, 20, 3)] };
+  const why = p => p.errors.map(e => e.code);
+  assert.deepEqual(why(E.proposeMove(L, 'a', { col: 1, row: 8 }, env)), ['below-growing']);
+  assert.ok(E.proposeMove(L, 'l', { col: 1, row: 10 }, env).valid, 'it can move down itself, leaving room above');
+  assert.ok(E.proposeResize(L, 'l', 'bottom', { bottom: 12 }, env).valid, 'and be made taller');
+  const beside = { widgets: [at('l', 'list', 1, 1, 10, 4), at('a', 'box', 12, 1, 4, 4)] };
+  assert.deepEqual(why(E.grow(beside, 'a', 0, 1, env)), ['below-growing']);
+  assert.deepEqual(why(E.grow(beside, 'l', 0, -1, env)), ['below-growing']);
+  // Adding: the first free place that keeps the growing widget last.
+  const gap = E.proposeAdd(L, { id: 'b', type: 'box' }, env);
+  assert.ok(gap.valid && gap.widget.row === 1 && gap.widget.col === 5);
+  const full = E.proposeAdd({ widgets: [at('l', 'list', 1, 1, 20, 3)] }, { id: 'b', type: 'box' }, env);
+  assert.deepEqual(why(full), ['below-growing'], 'refused, with the reason');
+  // A new growing widget goes below everything.
+  const last = E.proposeAdd({ widgets: [at('a', 'box', 1, 6, 4, 2)] }, { id: 'l', type: 'list' }, env);
+  assert.ok(last.valid && last.widget.row === 8, JSON.stringify(last.widget));
+  // Removing one is always allowed.
+  assert.ok(E.proposeRemove(L, 'l', env).valid);
+});

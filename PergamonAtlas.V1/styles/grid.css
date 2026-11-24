@@ -23,6 +23,7 @@
      rounding building up down a long canvas. */
   /* Rows: square (the cell) unless the layout fixes their height. */
   --atlas-row: var(--atlas-row-height, var(--atlas-cell));
+  --atlas-row-size: var(--atlas-row);    /* the same, where --atlas-row is a widget's own row number */
   height: calc(var(--atlas-extent) * var(--atlas-row) + (var(--atlas-extent) - 1) * var(--atlas-gap));
   grid-template-rows: repeat(var(--atlas-extent), minmax(0, 1fr));
   gap: var(--atlas-gap);
@@ -46,6 +47,13 @@
    height of its own. */
 :where(.atlas-grid:not([data-atlas-state="stack"])) .atlas-grid-slot > * { min-height: 0; }
 
+/* Growing widgets (a type that grows): the canvas is as tall as its content
+   needs, all of it taken by the row they end on (--atlas-tracks, set by the
+   renderer). Every other widget keeps exactly its rectangle. */
+.atlas-grid-canvas[data-atlas-grows] { height: auto; grid-template-rows: var(--atlas-tracks); }
+.atlas-grid-canvas[data-atlas-grows] > .atlas-grid-slot:not([data-atlas-grows]) { align-self: start; height: calc(var(--atlas-rows) * var(--atlas-row-size) + (var(--atlas-rows) - 1) * var(--atlas-gap)); }
+.atlas-grid-slot[data-atlas-grows] { grid-template-rows: minmax(0, auto); align-content: stretch; }
+
 /* An empty layout has no rows at all. */
 .atlas-grid-canvas[data-atlas-empty] { height: 0; grid-template-rows: none; }
 
@@ -54,6 +62,7 @@
    layout itself is unchanged. */
 .atlas-grid[data-atlas-state="stack"] .atlas-grid-canvas { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
 .atlas-grid[data-atlas-state="stack"] .atlas-grid-slot { grid-column: 1; grid-row: auto; order: var(--atlas-order); min-height: var(--atlas-min-height); }
+.atlas-grid[data-atlas-state="stack"] .atlas-grid-canvas[data-atlas-grows] > .atlas-grid-slot { align-self: auto; height: auto; }
 
 /* A refused layout shows nothing rather than something wrong. */
 .atlas-grid[data-atlas-state="invalid"] .atlas-grid-slot { display: none; }

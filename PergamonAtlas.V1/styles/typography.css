@@ -33,6 +33,13 @@
   --type-section-title-large-tracking: var(--type-section-title-tracking);
   --type-section-title-large-transform: var(--type-section-title-transform);
   --type-section-title-large-size-narrow: 18px;
+  /* Page heading title (variant of page-title) */
+  --type-page-heading-title-family: var(--type-page-title-family);
+  --type-page-heading-title-size: clamp(26px, 12cqi, 64px);
+  --type-page-heading-title-weight: var(--type-page-title-weight);
+  --type-page-heading-title-leading: 1.05;
+  --type-page-heading-title-tracking: var(--type-page-title-tracking);
+  --type-page-heading-title-transform: var(--type-page-title-transform);
   /* Card title (role) */
   --type-card-title-family: var(--font-display);
   --type-card-title-size: 16px;
@@ -75,6 +82,14 @@
   --type-label-leading: 1.5;
   --type-label-tracking: 0.08em;
   --type-label-transform: uppercase;
+  /* Page heading label (variant of label) */
+  --type-page-heading-label-family: var(--type-label-family);
+  --type-page-heading-label-size: 15px;
+  --type-page-heading-label-weight: var(--type-label-weight);
+  --type-page-heading-label-leading: var(--type-label-leading);
+  --type-page-heading-label-tracking: 0.15em;
+  --type-page-heading-label-transform: var(--type-label-transform);
+  --type-page-heading-label-size-narrow: 12px;
   /* Navigation (role) */
   --type-nav-family: var(--font-ui);
   --type-nav-size: 15px;
@@ -164,12 +179,14 @@
 .pa-type-page-title { font-family: var(--type-page-title-family); font-size: var(--type-page-title-size); font-weight: var(--type-page-title-weight); line-height: var(--type-page-title-leading); letter-spacing: var(--type-page-title-tracking); text-transform: var(--type-page-title-transform); }
 .pa-type-section-title { font-family: var(--type-section-title-family); font-size: var(--type-section-title-size); font-weight: var(--type-section-title-weight); line-height: var(--type-section-title-leading); letter-spacing: var(--type-section-title-tracking); text-transform: var(--type-section-title-transform); }
 .pa-type-section-title-large { font-family: var(--type-section-title-large-family); font-size: var(--type-section-title-large-size); font-weight: var(--type-section-title-large-weight); line-height: var(--type-section-title-large-leading); letter-spacing: var(--type-section-title-large-tracking); text-transform: var(--type-section-title-large-transform); }
+.pa-type-page-heading-title { font-family: var(--type-page-heading-title-family); font-size: var(--type-page-heading-title-size); font-weight: var(--type-page-heading-title-weight); line-height: var(--type-page-heading-title-leading); letter-spacing: var(--type-page-heading-title-tracking); text-transform: var(--type-page-heading-title-transform); }
 .pa-type-card-title { font-family: var(--type-card-title-family); font-size: var(--type-card-title-size); font-weight: var(--type-card-title-weight); line-height: var(--type-card-title-leading); letter-spacing: var(--type-card-title-tracking); text-transform: var(--type-card-title-transform); }
 .pa-type-item-title { font-family: var(--type-item-title-family); font-size: var(--type-item-title-size); font-weight: var(--type-item-title-weight); line-height: var(--type-item-title-leading); letter-spacing: var(--type-item-title-tracking); text-transform: var(--type-item-title-transform); }
 .pa-type-body { font-family: var(--type-body-family); font-size: var(--type-body-size); font-weight: var(--type-body-weight); line-height: var(--type-body-leading); letter-spacing: var(--type-body-tracking); text-transform: var(--type-body-transform); }
 .pa-type-body-small { font-family: var(--type-body-small-family); font-size: var(--type-body-small-size); font-weight: var(--type-body-small-weight); line-height: var(--type-body-small-leading); letter-spacing: var(--type-body-small-tracking); text-transform: var(--type-body-small-transform); }
 .pa-type-caption { font-family: var(--type-caption-family); font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); line-height: var(--type-caption-leading); letter-spacing: var(--type-caption-tracking); text-transform: var(--type-caption-transform); }
 .pa-type-label { font-family: var(--type-label-family); font-size: var(--type-label-size); font-weight: var(--type-label-weight); line-height: var(--type-label-leading); letter-spacing: var(--type-label-tracking); text-transform: var(--type-label-transform); }
+.pa-type-page-heading-label { font-family: var(--type-page-heading-label-family); font-size: var(--type-page-heading-label-size); font-weight: var(--type-page-heading-label-weight); line-height: var(--type-page-heading-label-leading); letter-spacing: var(--type-page-heading-label-tracking); text-transform: var(--type-page-heading-label-transform); }
 .pa-type-nav { font-family: var(--type-nav-family); font-size: var(--type-nav-size); font-weight: var(--type-nav-weight); line-height: var(--type-nav-leading); letter-spacing: var(--type-nav-tracking); text-transform: var(--type-nav-transform); }
 .pa-type-tab { font-family: var(--type-tab-family); font-size: var(--type-tab-size); font-weight: var(--type-tab-weight); line-height: var(--type-tab-leading); letter-spacing: var(--type-tab-tracking); text-transform: var(--type-tab-transform); }
 .pa-type-button { font-family: var(--type-button-family); font-size: var(--type-button-size); font-weight: var(--type-button-weight); line-height: var(--type-button-leading); letter-spacing: var(--type-button-tracking); text-transform: var(--type-button-transform); }
@@ -183,5 +200,6 @@
 .pa-type-spotlight-cta { font-family: var(--type-spotlight-cta-family); font-size: var(--type-spotlight-cta-size); font-weight: var(--type-spotlight-cta-weight); line-height: var(--type-spotlight-cta-leading); letter-spacing: var(--type-spotlight-cta-tracking); text-transform: var(--type-spotlight-cta-transform); }
 
 @container carousel (max-width: 640px) { .pa-type-section-title-large { --type-section-title-large-size: var(--type-section-title-large-size-narrow); } }
+@container page-heading (max-width: 1000px) { .pa-type-page-heading-label { --type-page-heading-label-size: var(--type-page-heading-label-size-narrow); } }
 @container upper (max-width: 560px) { .pa-type-feature-title { --type-feature-title-size: var(--type-feature-title-size-narrow); } }
 @container upper (max-width: 560px) { .pa-type-spotlight-title { --type-spotlight-title-size: var(--type-spotlight-title-size-narrow); } }

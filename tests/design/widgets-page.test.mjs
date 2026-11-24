@@ -14,7 +14,7 @@ const paths = [...src.matchAll(/\{ path: '([^']+)' \}/g)].map(m => m[1]);
 
 test('every entry has a Source row with paths', () => {
   const entries = src.split('const art = entry(').slice(1);
-  assert.equal(entries.length, 5);           // the two feature banners share one
+  assert.equal(entries.length, 7);           // the two feature banners share one
   entries.forEach(e => assert.match(e, /\['Source', \[\{ path: /, e.slice(0, 60)));
 });
 

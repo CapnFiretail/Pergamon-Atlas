@@ -52,6 +52,10 @@
     let selected = null, press = null, tap = null, gesture = null, frame = 0, suppressClick = false;
 
     // ── Geometry from the screen ────────────────────────────────────────────
+    // A growing widget is taller on screen than in the layout: positions are kept
+    // as they are on screen, and the edge they place is turned into the layout's
+    // (toGrid), so a drag follows the pointer wherever the widget was grabbed.
+    const toGrid = y => (grid.toGrid ? grid.toGrid(y) : y);
     function local(clientX, clientY) {
       const r = canvas.getBoundingClientRect();
       const scale = canvas.offsetWidth ? r.width / canvas.offsetWidth : 1;
@@ -78,8 +82,10 @@
     // p: where the gesture started, in canvas coordinates (from local()).
     function begin(kind, id, handle, e, p) {
       const w = widget(id);
+      const slot = grid.slot(id), added = grid.geometry().grown;
+      const more = added && slot && slot.hasAttribute('data-atlas-grows') ? added.by : 0;
       const g = { pitch: p.pitch, rowPitch: p.rowPitch, gutter: p.gutter };
-      const edges = { left: (w.col - 1) * g.pitch, right: (w.col + w.cols - 1) * g.pitch - g.gutter, top: (w.row - 1) * g.rowPitch, bottom: (w.row + w.rows - 1) * g.rowPitch - g.gutter };
+      const edges = { left: (w.col - 1) * g.pitch, right: (w.col + w.cols - 1) * g.pitch - g.gutter, top: (w.row - 1) * g.rowPitch, bottom: (w.row + w.rows - 1) * g.rowPitch - g.gutter + more };
       gesture = {
         kind, id, handle, tx: E.beginGesture(o.layout(), { kind, id, handle, env: o.env() }),
         // Where the pointer held the widget (move) or each edge (resize).
@@ -97,13 +103,13 @@
       let target;
       if (gs.kind === 'move') {
         gs.snapped.col = snap((p.x - gs.grab.x) / p.pitch, gs.snapped.col);
-        gs.snapped.row = snap((p.y - gs.grab.y) / p.rowPitch, gs.snapped.row);
+        gs.snapped.row = snap(toGrid(p.y - gs.grab.y) / p.rowPitch, gs.snapped.row);
         target = { col: gs.snapped.col + 1, row: gs.snapped.row + 1 };
       } else {
         target = {};
         for (const edge of E.HANDLES[gs.handle]) {
           const across = edge === 'left' || edge === 'right', pitch = across ? p.pitch : p.rowPitch;
-          const px = p[across ? 'x' : 'y'] - gs.grab[edge];
+          const px = across ? p.x - gs.grab[edge] : toGrid(p.y - gs.grab[edge]);
           // Start edges sit on a cell's start; end edges one gutter before the next.
           const f = edge === 'left' || edge === 'top' ? px / pitch : (px + p.gutter) / pitch;
           gs.snapped[edge] = snap(f, gs.snapped[edge]);
@@ -114,7 +120,7 @@
       gs.proposal = proposal;
       const minimum = Object.values(proposal.clamped).includes('minimum');
       overlay.preview(proposal.widget, !proposal.valid ? 'invalid' : minimum ? 'minimum' : 'valid');
-      const pointerRow = Math.floor(Math.max(0, p.y) / p.rowPitch) + 1;
+      const pointerRow = Math.floor(Math.max(0, toGrid(p.y)) / p.rowPitch) + 1;
       grid.setExtent(E.editingExtent(o.layout(), proposal, { pointerRow, spare: SPARE_ROWS }));
       emit({ type: 'preview', id: gs.id, proposal });
     }

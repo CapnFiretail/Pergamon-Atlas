@@ -40,20 +40,23 @@ test('widget types: the registry, the grid contracts, the adapters and the serve
   assert.deepEqual(sorted(widgets.types), sorted(Object.keys(gridTypes).filter(t => gridTypes[t].placeable)));
   const adapters = [...code(read('scripts/page-widgets.js')).split('function create(env)').pop().matchAll(/^ {6}'([a-z-]+)':/gm)].map(m => m[1]);
   assert.deepEqual(sorted(adapters), sorted(widgets.types));
-  // The newest migration that lists the types.
+  // The newest migration that lists the types; a type it doesn't know says which one it waits for.
   const dir = path.join(ROOT, 'supabase/proposed');
   const sql = readdirSync(dir).filter(f => /^\d{4}_.*\.sql$/.test(f)).sort().map(f => readFileSync(path.join(dir, f), 'utf8')).filter(s => /t not in \(('[a-z-]+'(, )?)+\)/.test(s)).pop();
-  assert.deepEqual(sorted([...sql.match(/t not in \(([^)]*)\)/)[1].matchAll(/'([a-z-]+)'/g)].map(m => m[1])), sorted(widgets.types));
+  const stored = [...sql.match(/t not in \(([^)]*)\)/)[1].matchAll(/'([a-z-]+)'/g)].map(m => m[1]);
+  assert.deepEqual(sorted(stored), sorted(widgets.types.filter(t => !widgets.get(t).needs)));
+  widgets.types.filter(t => widgets.get(t).needs).forEach(t => assert.ok(!widgets.offered(t), t + ': offered on the local server only'));
 });
 
 test('every widget type has its names, and a kind of card it can have', () => {
   const ids = new Set();
   widgets.types.forEach(t => {
     const w = widgets.get(t);
-    assert.ok(w.name && w.baseId && ['card', 'list', 'none'].includes(w.content), t);
+    assert.ok(w.name && w.baseId && ['card', 'list', 'single', 'none'].includes(w.content), t);
     assert.ok(!ids.has(w.baseId), t + ': its own base id'); ids.add(w.baseId);
     if (w.content === 'none') return;
     assert.ok(widgets.cards[w.card], t);
+    if (w.content === 'single') { assert.ok(w.starter && w.starter.title && w.edit, t); return; }
     (w.content === 'card' ? ['cards', 'one', 'manage', 'order', 'starter'] : ['cards', 'one', 'manage', 'order', 'intro', 'empty', 'hint']).forEach(k => assert.ok(w[k], `${t}.${k}`));
   });
 });
@@ -79,7 +82,7 @@ test('the shared code names no page, and components know neither pages nor games
   ['scripts/page.js', 'scripts/cms/loader.js', 'scripts/cms/admin.js', 'scripts/cms/workspace.js', 'scripts/cms/drawer.js', 'scripts/cms/image-editor.js', 'scripts/cms/layout-mode.js', 'scripts/cms/manage.js',
     'scripts/cms/publish.js', 'scripts/cms/publish-dialog.js', 'scripts/cms/history.js'].forEach(f => {
     // (The schema-1 lists, and where Site Navigation is kept, are the homepage's by definition.)
-    const names = [...code(read(f)).replace(/const LISTS = \[.*\];/, '').replace('Published with the homepage.', '').matchAll(/'home(\.[a-z.]*)?'|"home"|homepage|'(feature-hero|feature-spotlight|carousel|atlas-navigation)'/gi)].map(m => m[0]);
+    const names = [...code(read(f)).replace(/const LISTS = \[.*\];/, '').replace('Published with the homepage.', '').matchAll(/'home(\.[a-z.]*)?'|"home"|homepage|'(feature-hero|feature-spotlight|carousel|atlas-navigation|page-heading|card-grid)'/gi)].map(m => m[0]);
     assert.deepEqual(names, [], f);
   });
   readdirSync(path.join(V1, 'scripts/components')).forEach(f => assert.doesNotMatch(code(read('scripts/components/' + f)), /PergamonCMS|PergamonPage|atlasEntries/, f));
@@ -123,4 +126,53 @@ test('editing another page: cards, saved cards, widgets, undo and saving use its
   assert.ok(sample.validateDocument(saves[0][1]) && Object.keys(saves[0][1].components).every(k => k.startsWith('sample.')));
   assert.ok(ws.removeInstance(E.proposeRemove(ws.region('main'), 'carousel', { types: gridTypes, width: 1217 }).layout, 'carousel'));
   assert.ok(!Object.keys(ws.working().components).some(k => k.startsWith('sample.carousel')));
+});
+
+// ── Page Heading and Card Grid (P1) ─────────────────────────────────────────
+const HEADING = { title: 'Games', subtitle: 'Pergamon Catalogs', emblem: 'games', count: 'cards', countLabel: 'Games' };
+const TILE = { title: 'Snake', category: 'Arcade', href: '/games/snake/' };
+const NEW = { schema: 2, regions: [{ id: 'main', rowHeight: 23.43, widgets: [{ id: 'heading', type: 'page-heading', col: 1, row: 1, cols: 20, rows: 5 }, { id: 'grid', type: 'card-grid', col: 1, row: 6, cols: 20, rows: 7 }] }],
+  components: { 'sample.heading': HEADING, 'sample.grid': { order: ['snake'] }, 'sample.grid.snake': TILE } };
+const withHeading = h => Object.assign(clone(NEW), { components: Object.assign(clone(NEW.components), { 'sample.heading': h }) });
+
+test('a heading has only its own fields, each valid; the grid keeps the list rules', () => {
+  assert.ok(sample.validateDocument(NEW));
+  assert.ok(sample.validateDocument(withHeading({ title: 'Only', emblem: 'none', count: 'none' })), 'subtitle and label are optional');
+  const h = o => Object.assign({}, HEADING, o);
+  [{ emblem: 'none', count: 'none' }, h({ title: '' }), h({ title: 'x'.repeat(41) }), h({ title: '<b>' }), h({ subtitle: '' }), h({ emblem: 'url(x)' }), h({ count: 8 }), h({ countLabel: 'x'.repeat(17) }), h({ href: '/games/' }), [], null]
+    .forEach(x => assert.ok(!sample.validateDocument(withHeading(x)), JSON.stringify(x)));
+  const d = clone(NEW); d.components['sample.heading.saved'] = { order: [] };
+  assert.ok(!sample.validateDocument(d), 'no saved headings');
+  const e = clone(NEW); e.components['sample.grid'].order.push('gone');
+  assert.ok(!sample.validateDocument(e), 'every listed card exists');
+  // The emblems the editor offers are the component's.
+  const emblems = [...read('scripts/components/page-heading.js').replace(/\r\n/g, '\n').split('const EMBLEMS = {')[1].split('\n  };')[0].matchAll(/^    ([a-z]+): \{/gm)].map(m => m[1]);
+  const field = sample.cardFields('sample.heading', HEADING, NEW).find(f => f.key === 'emblem');
+  assert.deepEqual(sorted(field.options.map(o => o.value)), sorted(emblems.concat('none')));
+});
+
+test('editing them: fields, optional fields, cards, names in the editor, a server without the types', async () => {
+  const ws = workspace.create({
+    page: 'sample', content: sample, validate: sample.validateDocument, fallbackDoc: NEW, createHistory: E.createHistory, starter: t => sample.starterContent(t),
+    api: { getDraft: async () => ({ data: { draft: null, published: null } }), saveDraft: async () => ({ error: { code: 'PT422', message: 'widgets: "heading" has an unsupported type' } }) }
+  });
+  await ws.load();
+  ws.setField('sample.heading', 'subtitle', undefined);
+  assert.deepEqual(ws.unsavedCards(), ['sample.heading']);
+  assert.ok(sample.validateDocument(ws.working()));
+  ws.discardCard('sample.heading');
+  assert.deepEqual(ws.component('sample.heading'), HEADING);
+  assert.equal(ws.addCard('sample.grid', 'pong', TILE), 'sample.grid.pong');
+  assert.ok(ws.moveCard('sample.grid.pong', 0) && ws.removeCard('sample.grid.snake'));
+  assert.deepEqual(ws.order('sample.grid'), ['pong']);
+  assert.equal(sample.cardLabel('sample.heading', NEW), 'Page heading');
+  assert.equal(sample.cardLabel('sample.grid.snake', NEW), 'Grid card');
+  assert.equal(content.cardLabel('home.carousel.x'), 'Carousel card');
+  assert.equal(sample.slotOf('sample.heading', NEW), null, 'nothing to switch between');
+  const r = await ws.save();
+  assert.match(r.error.message, /can’t store one of the added widgets yet/);
+  assert.ok(ws.unsavedCards().length, 'and nothing is lost');
+  assert.equal(sample.newInstanceId('page-heading', ...ws.docs()), 'heading-2');
+  assert.ok(sample.validateDocument(withHeading(sample.starterContent('page-heading'))), 'what a new one starts with is valid');
+  assert.deepEqual(sample.toModel(NEW).instances.grid.cards.map(c => [c.id, c.type]), [['sample.grid.snake', 'tile']]);
 });

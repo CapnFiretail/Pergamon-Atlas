@@ -4,7 +4,8 @@
 // what is the page's own and calls
 //
 //   PergamonPages.mount({
-//     heading       the page's visually hidden <h1> (omit when a widget has it)
+//     heading       the page's visually hidden <h1>; omitted, its first Page
+//                   Heading widget is the <h1>
 //     document      its built-in content: shown until something is published,
 //                   and whenever the published content can't be read
 //     staticImages  details of the images under /images/featured/ it may use
@@ -48,9 +49,11 @@
     // ── Data ─────────────────────────────────────────────────
     const entries = (window.atlasEntries && window.atlasEntries.games) || [];
     const norm = path => String(path || '').replace(/\/+$/, '');
-    const liveGame = path => entries.find(e => norm(e.path) === norm(path) && !e.archived && e.visibility === 'public' && e.status !== 'coming-soon') || null;
+    const listedGame = path => entries.find(e => norm(e.path) === norm(path) && !e.archived && e.visibility === 'public') || null;
+    const liveGame = path => { const e = listedGame(path); return e && e.status !== 'coming-soon' ? e : null; };
     const adapters = window.PergamonPageWidgets.create({
       liveGame,
+      listedGame,
       settings: Object.assign({ signedIn: () => !!(theme && theme.get().signedIn) }, opts.settings)
     });
 
@@ -102,6 +105,18 @@
     }
     const DRAW = {};
     Object.keys(adapters).forEach(type => { DRAW[type] = { container: adapters[type].container, render: drawWidget }; });
+    // What a widget shows about the rest of the page: how many cards its lists
+    // show, and (where the page has no heading of its own) which heading is first.
+    function relate() {
+      const order = [].concat(...model.regions.map(r => G.stackOrder(r))).filter(id => instances[id]);
+      const cards = order.reduce((n, id) => n + (instances[id].widget.shown ? instances[id].widget.shown() : 0), 0);
+      const first = opts.heading ? null : order.find(id => instances[id].widget.setLevel);
+      order.forEach(id => {
+        const w = instances[id].widget;
+        if (w.setCount) w.setCount(cards);
+        if (w.setLevel) w.setLevel(id === first ? 1 : 2);
+      });
+    }
     // Motion: a carousel measures its width to decide whether to glide, so
     // each starts once it is in place (held, while Admin Mode holds them all).
     let held = false;
@@ -150,6 +165,7 @@
     buildRegions();
     drawRegions();
     mountSidebar();
+    relate();
     startWidgets();
 
     // Window widths the card previews fall back to, and what the page takes
@@ -192,6 +208,7 @@
         drawRegions();
         cardWidgets().forEach(drawCard);
         listWidgets().forEach(id => { if (model.instances[id]) instances[id].widget.setCards(cardsOf(id)); });
+        relate();
         startWidgets();
         return true;
       },

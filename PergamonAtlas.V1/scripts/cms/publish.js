@@ -15,7 +15,7 @@
 (function (root) {
   'use strict';
 
-  const FIELD_LABELS = { title: 'Title', description: 'Description', cta: 'Button label', href: 'Destination link', category: 'Category' };
+  const FIELD_LABELS = { title: 'Title', description: 'Description', cta: 'Button label', href: 'Destination link', category: 'Category', subtitle: 'Subtitle', emblem: 'Emblem', count: 'Count', countLabel: 'Count label' };
   const DESKTOP_ART = ['fit', 'focus', 'scale', 'anchor'];
   const PHONE_ART = ['focusNarrow', 'scaleNarrow', 'anchorNarrow'];
 
@@ -84,7 +84,7 @@
       if (!type) { other.push(OTHER_LABELS[id] || id); return; }
       const saved = content.isSaved(id, ...docs);
       const owner = content.ownerOf(id, ...docs);
-      const typeLabel = (saved ? 'Saved ' + content.widgets.cardLabel(type).toLowerCase() : content.widgets.cardLabel(type)) + (content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
+      const typeLabel = (saved ? 'Saved ' + content.cardLabel(id, ...docs).toLowerCase() : content.cardLabel(id, ...docs)) + (content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
       const a = pub[id], b = next[id];
       let changes;
       if (a === undefined) changes = [saved ? 'Added to saved cards' : 'Added'];

@@ -799,7 +799,7 @@
       host.classList.toggle('cms-editing', id === editingId);
       const expanded = String(id === editingId);
       if (pencil.getAttribute('aria-expanded') !== expanded) pencil.setAttribute('aria-expanded', expanded);
-      const label = `Edit ${WIDGETS.cardLabel(type).toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
+      const label = `Edit ${cms.content.cardLabel(id, ...known).toLowerCase()}: ${cardTitle(id)}${STATUS_LABELS[status] ? ` (${STATUS_LABELS[status]})` : ''}`;
       if (pencil.getAttribute('aria-label') !== label) pencil.setAttribute('aria-label', label);
       // A card widget: Manage cards beside the pencil.
       if (cms.content.slotOf(id, ...known) === id) manageButton(host, id, pencil);

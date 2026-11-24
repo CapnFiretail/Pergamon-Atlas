@@ -4,11 +4,20 @@
 //
 //   name       the widget's name ("Featured Game")
 //   baseId     the id its first instance gets ('featured', then 'featured-2')
-//   content    'card'  one active card with its own saved cards
-//              'list'  an ordered list of cards
-//              'none'  no content of its own
+//   content    'card'    one active card with its own saved cards
+//              'list'    an ordered list of cards
+//              'single'  one set of fields, nothing else
+//              'none'    no content of its own
 //   card       the kind of its cards (CARDS), unless it has none
-//   starter    the title a new one's card starts with ('card')
+//   label, linkHint   what one of them is called, and said of its link, if not
+//              as the kind says
+//   starter    what a new one starts with: its card's title ('card') or its fields
+//              ('single')
+//   edit       what Layout Mode calls editing it (default "Edit card")
+//   needs      the migration the database must have to store it. Until every
+//              environment has it, the type is drawn wherever a document has it
+//              but Layout Mode offers it on the local server only, where saving
+//              it is refused and nothing is lost. Remove it with that release
 //   cards, one, manage, order     its cards in Manage cards, buttons and reviews
 //   intro, empty, hint   'list': what Manage cards and Layout Mode say about it
 //
@@ -36,14 +45,27 @@
       empty: 'No cards: the carousel shows its empty message. Add a card to start.',
       hint: 'Use Manage cards to fill it.'
     },
-    'atlas-navigation': { name: 'Atlas Navigation', baseId: 'navigation', content: 'none' }
+    'atlas-navigation': { name: 'Atlas Navigation', baseId: 'navigation', content: 'none' },
+    'page-heading': {
+      name: 'Page Heading', baseId: 'heading', content: 'single', card: 'heading', needs: '0016', edit: 'Edit heading',
+      starter: { title: 'New heading', subtitle: 'Pergamon Atlas', emblem: 'compass', count: 'none' }
+    },
+    'card-grid': {
+      name: 'Card Grid', baseId: 'grid', content: 'list', card: 'tile', needs: '0016',
+      label: 'Grid card', linkHint: 'Grid cards link to a game.',
+      cards: 'Grid cards', one: 'grid card', manage: 'grid cards', order: 'Card grid order',
+      intro: 'The cards this grid shows, in this order. Changes are part of the draft until you publish.',
+      empty: 'No cards: the grid shows its empty message. Add a card to start.',
+      hint: 'Use Manage cards to fill it. It grows with its cards.'
+    }
   };
 
   // Kinds of card: how the editor and the reviews call one.
   const CARDS = {
     feature: { label: 'Featured card' },
     spotlight: { label: 'Spotlight card' },
-    tile: { label: 'Carousel card', linkHint: 'Carousel cards link to a game.' }
+    tile: { label: 'Carousel card', linkHint: 'Carousel cards link to a game.' },
+    heading: { label: 'Page heading' }
   };
 
   const get = type => (Object.prototype.hasOwnProperty.call(WIDGETS, type) ? WIDGETS[type] : null);
@@ -51,11 +73,14 @@
   const api = {
     types: Object.keys(WIDGETS),
     get: get,
-    hasCard: type => kind(type) === 'card',
+    hasCard: type => kind(type) === 'card' || kind(type) === 'single',      // one set of fields, edited as one
+    hasSaved: type => kind(type) === 'card',                                // … with saved cards to switch to
     isList: type => kind(type) === 'list',
-    hasContent: type => kind(type) === 'card' || kind(type) === 'list',
+    hasContent: type => !!kind(type) && kind(type) !== 'none',
+    offered: type => !!get(type) && (!get(type).needs || root.PERGAMON_ENV === 'development'),
     cards: CARDS,
-    cardLabel: card => (CARDS[card] ? CARDS[card].label : 'Card')
+    cardLabel: (card, type) => (get(type) && get(type).label) || (CARDS[card] ? CARDS[card].label : 'Card'),
+    linkHint: (card, type) => (get(type) && get(type).linkHint) || (CARDS[card] && CARDS[card].linkHint) || ''
   };
   root.PergamonCMS = root.PergamonCMS || {};
   root.PergamonCMS.widgets = api;

@@ -366,6 +366,10 @@
         if (err.code === 'PT422' && page2(doc) && /unsupported field "regions"|schema: must be 1/.test(err.message)) {
           return { error: { code: 'layout', message: 'This server can’t store page layouts yet (migration 0014). Nothing was saved; undo the layout changes to save the content alone.' } };
         }
+        // Nor one without a newer widget type that widget.
+        if (err.code === 'PT422' && /has an unsupported type/.test(err.message)) {
+          return { error: { code: 'layout', message: 'This server can’t store one of the added widgets yet. Nothing was saved; undo adding it (or remove it) to save the rest.' } };
+        }
         return { error: err };
       }
       const id = res.data && res.data.draft_id;

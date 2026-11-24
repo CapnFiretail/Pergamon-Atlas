@@ -376,6 +376,8 @@
 .hb-place { width: 100%; min-width: 0; }
 .hb-place--hero, .hb-place--banner { container: upper / inline-size; display: grid; max-width: 760px; }
 .hb-place--hero { grid-template-rows: 260px; }
+.hb-place--heading { display: grid; min-height: 190px; }
+.hb-stage-body[data-width="compact"] .hb-place--heading { min-height: 0; }
 .hb-place--banner { grid-template-rows: 140px; }
 .hb-stage-body[data-width="compact"] .hb-place { width: 390px; max-width: 100%; }
 .hb-stage-body[data-width="compact"] .hb-place--hero, .hb-stage-body[data-width="compact"] .hb-place--banner { grid-template-rows: auto; }

@@ -40,6 +40,8 @@
   min-height: 0;
   border-radius: var(--radius-panel);
 }
+/* On a grid with growing widgets, over the others: exactly their rectangles. */
+.atlas-grid-canvas[data-atlas-grows] > .atlas-edit-item:not([data-atlas-grows]) { align-self: start; height: calc(var(--atlas-rows) * var(--atlas-row-size) + (var(--atlas-rows) - 1) * var(--atlas-gap)); }
 .atlas-edit-item[hidden] { display: none; }
 
 /* The region with the selection is above its neighbours: its handles and

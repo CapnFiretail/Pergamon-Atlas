@@ -81,6 +81,13 @@
     canvas.append(selection, preview);
     canvas.classList.add('atlas-edit-canvas', 'ck-scope');
 
+    // Marked like its widget, so it has the same height on a grid with growing
+    // widgets (styles/grid.css, grid-editor.css).
+    function over(node, w) {
+      place(node, w);
+      const slot = canvas.querySelector(`:scope > .atlas-grid-slot[data-widget-id="${w.id}"]`);
+      node.toggleAttribute('data-atlas-grows', !!slot && slot.hasAttribute('data-atlas-grows'));
+    }
     function describe(w) {
       return `${label(w)}, ${where(w)}, ${w.cols} by ${w.rows}${w.id === selectedId ? ', selected' : ''}`;
     }
@@ -88,7 +95,7 @@
       const w = layout.widgets.find(x => x.id === selectedId);
       selection.hidden = !w;
       if (!w) return;
-      place(selection, w);
+      over(selection, w);
       badge.textContent = `${size(w)} · col ${w.col}, row ${w.row}`;
       for (const { a, b } of actions) {
         b.hidden = !a.shown(w);
@@ -113,7 +120,7 @@
             hits.set(w.id, hit);
             canvas.insertBefore(hit, selection);
           }
-          place(hit, w);
+          over(hit, w);
           hit.setAttribute('aria-label', describe(w));
           hit.setAttribute('aria-pressed', String(w.id === selectedId));
         }
@@ -134,7 +141,7 @@
       preview(w, state) {
         preview.hidden = !w;
         if (!w) { preview.removeAttribute('data-state'); return; }
-        place(preview, w);
+        over(preview, w);
         preview.dataset.state = state || 'valid';
         previewLabel.textContent = `${size(w)} · col ${w.col}, row ${w.row}` + (state === 'invalid' ? ' · blocked' : state === 'minimum' ? ' · minimum' : '');
       },

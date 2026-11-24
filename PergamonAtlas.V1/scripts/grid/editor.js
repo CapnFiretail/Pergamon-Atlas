@@ -14,7 +14,8 @@
 //   proposeAdd(layout, { id, type }, env)   the type's default size (more rows
 //     where its content needs them) in the first free place in reading order,
 //     below everything else if there is none; existing widgets never move.
-//     null when the type has no usable size at this width
+//     null when the type has no usable size at this width. Nothing can go under a
+//     growing widget (atlas-grid.js), so a new one may find no valid place
 //   proposeRemove(layout, id, env)
 //   proposeStack(layout, id, step, env)     earlier (−1) or later (+1) in the
 //     stacked presentation; nothing on the grid changes
@@ -200,14 +201,19 @@
     const size = defaultSize(w.type, env), { columns } = opts(env);
     if (!size) return null;
     const bottom = G.extent(layout) + 1;
-    let spot = null;
+    // A place that is free and keeps growing widgets last, if there is one;
+    // otherwise the first free one (refused, with the reason).
+    const free = at => !layout.widgets.some(x => G.overlap(x, at));
+    const allowed = at => !G.belowGrowing(layout.widgets.concat(at), env.types).length;
+    let spot = null, refused = null;
     for (let row = 1; row <= bottom && !spot; row++) {
       for (let col = 1; col + size.cols - 1 <= columns && !spot; col++) {
-        const at = Object.assign({ col, row }, size);
-        if (!layout.widgets.some(x => G.overlap(x, at))) spot = at;
+        const at = Object.assign({ id: w.id, type: w.type, col, row }, size);
+        if (!free(at)) continue;
+        if (allowed(at)) spot = at; else refused = refused || at;
       }
     }
-    const widget = Object.assign({ id: w.id, type: w.type }, spot);
+    const widget = spot || refused;
     const next = { widgets: layout.widgets.concat(widget) };
     // Stacked, it follows the widget it follows on the grid.
     if (Array.isArray(layout.stack)) {

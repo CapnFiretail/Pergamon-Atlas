@@ -24,6 +24,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Colours, spacing and surfaces, Atlas Grid (H5.2); Layout Lab (H5.4) | Built |
 | Homepage on the grid, Layout Mode (H5.3) | Built |
 | Shared pages: page and widget registries, page renderer, editing for any registered page (P1, phase 1) | Built; the homepage is the only registered page so far |
+| Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built; on no page yet, not storable until migration 0016 |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
 | Atlas Studio's Environments cards: the Panel surface (S4) | Built |
@@ -42,7 +43,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | `PergamonAtlas.V1/scripts/handbook/handbook.js` | App shell: the sections (`GROUPS`, shown in the site sidebar), hash routes, breadcrumbs, the Dashboard, group and planned pages, the phone-preview frame mode. |
 | `PergamonAtlas.V1/scripts/handbook/widgets-page.js` | Library › Widgets: the component catalogue, with live previews. |
 | `PergamonAtlas.V1/scripts/handbook/component-examples.js` | Sample inputs for those previews (content only; the components draw them). |
-| `PergamonAtlas.V1/scripts/components/*.js`, `styles/components/*.css` | The component library: `feature-banner`, `content-card`, `carousel`, `atlas-navigation`. |
+| `PergamonAtlas.V1/scripts/components/*.js`, `styles/components/*.css` | The component library: `feature-banner`, `content-card`, `carousel`, `card-grid`, `page-heading`, `atlas-navigation`. |
 | `PergamonAtlas.V1/scripts/layout.js` | The site's header and sidebar. One sidebar renderer for Site Navigation (published, cached or built-in) and a section's own navigation (the Handbook). |
 | `PergamonAtlas.V1/scripts/cms/site-nav.js` | Admin Mode's Site Navigation editor. |
 | `PergamonAtlas.V1/scripts/handbook/typography-page.js` | Foundations › Typography. |
@@ -173,6 +174,8 @@ is on:
 |---|---|---|---|
 | Feature banner (`feature-banner.js`) | Content | Artwork, title lockup, one action; variants `hero` (Featured Content) and `banner` (Spotlight) | `{ title, actionLabel, href, art }`, `actionIcon` |
 | Content Card (`content-card.js`) | Content | Artwork (with its phone crop when 180px or narrower), title, metadata, link, optional action icon | `{ title, meta, href, art, action }` |
+| Page heading (`page-heading.js`) | Content | Emblem, divider, title, ruled subtitle, count panel, double frame | `{ title, subtitle, emblem, countLabel }`, `setCount`, `setLevel` |
+| Card grid (`card-grid.js`) | Container | Columns, empty state, announcements; grows with its items | `{ key, element, label }` items |
 | Carousel (`carousel.js`) | Container | Layout, gliding and arrows (`glide.js`), optional filters and sections, empty state, announcements, responsive widths | sections of `{ key, element, label, facet }` items |
 
 The **page code** owns everything game- and CMS-specific: `scripts/page-widgets.js`
@@ -207,8 +210,8 @@ relies on them changed; renaming them is optional later work.
 
 ## The Widgets catalogue
 
-Grouped as **Containers** (Carousel), **Content components** (Featured
-Content — Hero, Spotlight — Banner, Content Card) and **Navigation and page
+Grouped as **Containers** (Carousel, Card Grid), **Content components** (Featured
+Content — Hero, Spotlight — Banner, Content Card, Page Heading) and **Navigation and page
 widgets** (Sidebar Navigation, Atlas Navigation panel). Every preview is drawn
 by the real code: the components with the sample inputs in
 `component-examples.js` (variants, missing artwork, long titles, no action
@@ -235,13 +238,14 @@ order. Skip the content steps for a widget with no content of its own (as
 2. **Typography.** Type-role tokens, with `adoption` entries
    ([Connecting a component to a role](#connecting-a-component-to-a-role-h2)).
 3. **Sizing.** An entry in `scripts/grid/widget-types.js`, measured at the
-   CMS's maximum content, and the placeable list in `tests/design/grid.test.mjs`.
+   CMS's maximum content (or `grows`, when its content has no maximum: Widgets that grow), and the placeable list in `tests/design/grid.test.mjs`.
 4. **Loading.** Style and script in the pages that may use it, and in `gate.js` `ASSETS`.
-5. **Registry.** An entry in `scripts/cms/widgets.js`: its kind of content (a card,
-   a list of cards, none) and its names. Admin Mode (Manage cards, Layout Mode,
+5. **Registry.** An entry in `scripts/cms/widgets.js`: its kind of content (a card
+   with saved cards, a single set of fields, a list of cards, none) and its names, and
+   `needs`, the migration it waits for (until then only the local server offers it). Admin Mode (Manage cards, Layout Mode,
    reviews, history) follows from it. A new *kind* of content also needs
    `scripts/cms/content.js` (search for `hasCard` and `isList`: model, ownership,
-   validation, starter content) and its fields in `CARD_FIELDS`.
+   validation, starter content) and its fields in `CARD_FIELDS` (a `single` widget needs only those).
 6. **Adapter.** `scripts/page-widgets.js`: from the page's content to the component's
    inputs, in-place updates, and a sample of its card.
 7. **Server.** A new migration replacing the schema-2 page validator: the type
@@ -260,6 +264,20 @@ order. Skip the content steps for a widget with no content of its own (as
 the first published document that uses the type. A front end that doesn't know
 the type refuses the whole document and shows the built-in page, so before
 rolling the code back, restore a version without it.
+
+## Widgets that grow
+
+A type marked `grows` in `scripts/grid/widget-types.js` (the Card Grid) is as tall as
+its rectangle or its content, whichever is more. The layout stores only the rectangle;
+drawn, the row the widget ends on takes the extra height, and every other widget keeps
+exactly its rectangle. Stacked, it is as tall as its content.
+
+**Temporary technical limitation, not a design rule:** nothing in a region may end below
+a growing widget (`below-growing`; Layout Mode refuses it and says to move the growing
+widget down first). What is under one would move by an amount known only once it is
+drawn, and the grid's rows are known before. Lifting it means rows whose height comes
+from content, in the engine (`belowGrowing` in `scripts/grid/atlas-grid.js`), renderer
+and editing code. The rule is the browser's; the server doesn't check it.
 
 ## Making a page editable
 
@@ -285,7 +303,7 @@ shown in full.
 
 Site Navigation is in the homepage's document and is drawn, not edited, elsewhere.
 Not yet possible: pages created without code, regions added in Layout Mode, widgets
-whose height follows their content.
+placed under a growing one.
 
 ## Adding a section
 
@@ -355,6 +373,7 @@ them) can make a style that looks equivalent in the CSS render differently.
   for the games).
 - The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
+- Nothing can be placed under a growing widget (Widgets that grow).
 - The homepage is the only registered page so far; widgets stay in their region, and extra carousels share the
   "Explore More Games" heading.
 - The book icon appears where Admin Mode lives (the homepage) and on the

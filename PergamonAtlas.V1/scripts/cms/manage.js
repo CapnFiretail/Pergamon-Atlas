@@ -37,7 +37,7 @@
   function create(env) {
     const { workspace, content } = env;
     const WIDGETS = content.widgets, PAGE = content.page;
-    const ownerOf = which => { const o = content.ownerOf(which, workspace.working()); return o && o.part === '' && WIDGETS.hasContent(o.type) ? o : null; };
+    const ownerOf = which => { const o = content.ownerOf(which, workspace.working()); return o && o.part === '' && (WIDGETS.hasSaved(o.type) || WIDGETS.isList(o.type)) ? o : null; };
 
     const overlay = el('div', 'cms-publish cms-manage');
     overlay.hidden = true;

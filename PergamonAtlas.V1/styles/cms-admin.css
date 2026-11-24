@@ -145,7 +145,7 @@
 /* ── Card indicators (Admin view) ──────────────────────────────────────── */
 /* Frame and pencil are absolutely placed in the card (or beside a tile's
    link, in its list item): the card's own box never changes. */
-.home-track-item.cms-editable { position: relative; }
+:is(.home-track-item, .card-grid-item).cms-editable { position: relative; }
 .cms-edit-frame {
   position: absolute;
   inset: 0;
@@ -154,7 +154,7 @@
   border-radius: inherit;
   pointer-events: none;
 }
-.home-track-item > .cms-edit-frame { border-radius: 12px; }
+:is(.home-track-item, .card-grid-item) > .cms-edit-frame { border-radius: 12px; }
 .cms-edit-pencil, .cms-nav-pencil {
   position: absolute;
   top: 10px;
@@ -172,7 +172,7 @@
   color: var(--color-accent-text);
   cursor: pointer;
 }
-.home-track-item > .cms-edit-pencil { top: 8px; right: 8px; width: 30px; height: 30px; }
+:is(.home-track-item, .card-grid-item) > .cms-edit-pencil { top: 8px; right: 8px; width: 30px; height: 30px; }
 .cms-edit-pencil:hover, .cms-edit-pencil[aria-expanded="true"], .cms-nav-pencil:hover { background: var(--color-accent); color: var(--color-on-accent); }
 .cms-edit-pencil:focus-visible, .cms-nav-pencil:focus-visible, .cms-admin-panel :focus-visible, .cms-admin-bar :focus-visible, .cms-drawer :focus-visible {
   outline: 2px solid var(--color-focus);
@@ -181,8 +181,8 @@
 .cms-edit-icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Manage cards: the pencil's look, beside it on a Featured / Spotlight card,
-   on the carousel's top edge. Absolutely placed: no box changes size. */
-.home-carousel.cms-manageable { position: relative; }
+   on a list's top edge. Absolutely placed: no box changes size. */
+:is(.home-carousel, .card-grid).cms-manageable { position: relative; }
 .cms-manage-button {
   position: absolute;
   top: 10px;
@@ -200,7 +200,7 @@
   color: var(--color-accent-text);
   cursor: pointer;
 }
-.home-carousel > .cms-manage-button { top: -16px; right: 20px; }
+:is(.home-carousel, .card-grid) > .cms-manage-button { top: -16px; right: 20px; }
 .cms-manage-button:hover { background: var(--color-accent); color: var(--color-on-accent); }
 .cms-manage-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 
@@ -237,6 +237,7 @@
   text-align: center;
   cursor: pointer;
 }
+.card-grid-item > .cms-add-tile-item { height: 100%; }
 .cms-add-tile:hover:not(:disabled) { border-style: solid; background: var(--color-accent-soft); }
 .cms-add-tile:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 .cms-add-tile:disabled { cursor: not-allowed; opacity: 0.55; }

@@ -109,7 +109,7 @@
     const later = button('Later on phones', () => restack(1));
     const removeButton = button('Remove widget', remove, 'cms-layout-tool cms-layout-remove ck-button ck-button--danger');
     const [typeLabel, typeSelect] = select('Type', 'cms-layout-type');
-    content.WIDGET_TYPES.forEach(t => { const o = el('option', '', content.WIDGET_NAMES[t]); o.value = t; typeSelect.append(o); });
+    content.WIDGET_TYPES.filter(WIDGETS.offered).forEach(t => { const o = el('option', '', content.WIDGET_NAMES[t]); o.value = t; typeSelect.append(o); });
     const [regionLabel, regionSelect] = select('Area', 'cms-layout-region');
     const addButton = button('Add widget', add);
     const undoButton = iconButton('Undo', 'undo', () => env.undo());
@@ -155,9 +155,10 @@
     const widgetOf = s => { const r = s && workspace.region(s.region); return (r && r.widgets.find(w => w.id === s.id)) || null; };
 
     // On the selected widget: the inspector's commands, at hand.
-    const hasCard = w => WIDGETS.hasCard(w.type), hasCards = w => WIDGETS.hasContent(w.type);
+    const hasCard = w => WIDGETS.hasCard(w.type), hasCards = w => WIDGETS.hasSaved(w.type) || WIDGETS.isList(w.type);
+    const editText = w => (w && WIDGETS.get(w.type).edit) || 'Edit card';
     const actions = [
-      { kind: 'edit', label: w => (hasCard(w) ? 'Edit card' : 'Manage cards'), shown: hasCards, run: w => (hasCard(w) ? editButton : manageButton).click() },
+      { kind: 'edit', label: w => (hasCard(w) ? editText(w) : 'Manage cards'), shown: w => hasCard(w) || hasCards(w), run: w => (hasCard(w) ? editButton : manageButton).click() },
       { kind: 'remove', label: () => 'Remove widget', shown: () => true, run: () => removeButton.click() }
     ];
 
@@ -269,8 +270,15 @@
       const err = (e.errors || [])[0];
       const other = err && err.code === 'overlap' ? layout.widgets.find(x => err.widgets.indexOf(x.id) >= 0 && x.id !== w.id) : null;
       if (other) return `Not allowed: ${label(w)} would overlap ${label(other)}. Nothing changed.`;
+      if (err && err.code === 'below-growing') return under(layout, err);
       if (err && /min|fit/.test(err.code)) return `Not allowed: ${label(w)} would be too small for its content on a 1280px screen. Nothing changed.`;
       return 'Not allowed there. Nothing changed.';
+    }
+
+    // (A limitation of the grid engine for now: scripts/grid/atlas-grid.js.)
+    function under(layout, err) {
+      const g = layout.widgets.find(x => x.id === err.detail.growing);
+      return `Not allowed: ${g ? label(g) : 'that widget'} grows with its content, so nothing can go below it. Move it down first to make room above. Nothing changed.`;
     }
 
     // ── Widgets ──────────────────────────────────────────────────────────
@@ -280,7 +288,8 @@
       const id = content.newInstanceId(type, ...workspace.docs());
       const p = E.proposeAdd(region, { id, type }, envFor(region.id));
       if (!p || !p.valid || !workspace.addInstance(p.layout, id, content.starterContent(type, env.games[0]))) {
-        say(`There is no room for another ${content.WIDGET_NAMES[type]} here. Nothing changed.`, 'error');
+        const blocked = p && p.errors.find(e => e.code === 'below-growing');
+        say(blocked ? under(p.layout, blocked) : `There is no room for another ${content.WIDGET_NAMES[type]} here. Nothing changed.`, 'error');
         return;
       }
       env.onChanged();
@@ -371,10 +380,11 @@
       name.textContent = w ? label(w) : 'Nothing selected';
       if (shown && s) {
         const g = s.grid.geometry(), r = G.rect(shown, g.cell, g.gutter, g.row);
-        details.textContent = `column ${shown.col}, row ${shown.row} · ${shown.cols} × ${shown.rows} cells` + (s.grid.state() === 'grid' ? ` · ${Math.round(r.width)} × ${Math.round(r.height)}px` : '');
+        details.textContent = `column ${shown.col}, row ${shown.row} · ${shown.cols} × ${shown.rows} cells` + (s.grid.state() === 'grid' ? ` · ${Math.round(r.width)} × ${Math.round(r.height)}px` : '') + (TYPES[shown.type].grows ? ' · grows with its content' : '');
       } else details.textContent = 'Click a widget, or Tab to it. Arrows move it, Shift + arrows resize it.';
       const region = w && regions.find(r => r.id === selected.region);
       const order = region ? G.stackOrder(region) : [];
+      editButton.textContent = editText(w);
       editButton.disabled = !w || !hasCard(w);
       manageButton.disabled = !w || !hasCards(w);
       earlier.disabled = !ready || order.indexOf(w.id) === 0;

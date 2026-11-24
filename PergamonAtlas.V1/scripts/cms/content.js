@@ -5,7 +5,7 @@
 // place they become CSS. A page document (schema 2) is regions of widget
 // instances, any number of each type, whose content is under
 // '<prefix>.<instance>' (the page's prefix, scripts/cms/pages.js):
-//   '<prefix>.<instance>'               a card, or an ordered list ('list' widgets)
+//   '<prefix>.<instance>'               a card or fields, or an ordered list ('list')
 //   '<prefix>.<instance>.saved'         a card widget's saved cards, in order
 //   '<prefix>.<instance>.saved.<key>'   one of them
 //   '<prefix>.<instance>.<key>'         a list widget's card
@@ -172,8 +172,24 @@
     feature: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false), IMAGE(1600, [ALT])],
     spotlight: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false), IMAGE(1200, [EDGE, ALT])],
     // Tiles are drawn only for live games, so their links pick a game.
-    tile: [TITLE(40), DESCRIPTION, { key: 'category', label: 'Category', type: 'choice', options: CATEGORIES }, LINK(true), IMAGE(400, [ALT])]
+    tile: [TITLE(40), DESCRIPTION, { key: 'category', label: 'Category', type: 'choice', options: CATEGORIES }, LINK(true), IMAGE(400, [ALT])],
+    // A choice may name its options: { value, label }.
+    heading: [
+      TITLE(40),
+      { key: 'subtitle', label: 'Subtitle', type: 'text', max: 40, optional: true, hint: 'Left out on narrow screens.' },
+      { key: 'emblem', label: 'Emblem', type: 'choice', options: [{ value: 'games', label: 'Games' }, { value: 'compass', label: 'Compass' }, { value: 'none', label: 'None' }] },
+      { key: 'count', label: 'Count', type: 'choice', options: [{ value: 'none', label: 'None' }, { value: 'cards', label: 'Cards shown on this page' }], hint: 'Counted as the page is drawn. Left out on narrow screens.' },
+      { key: 'countLabel', label: 'Count label', type: 'text', max: 16, optional: true }
+    ]
   };
+  const optionValues = field => field.options.map(o => (o && typeof o === 'object' ? o.value : o));
+  // A 'single' widget's fields: only the listed ones, each valid.
+  function validFields(c, kind) {
+    const fields = CARD_FIELDS[kind];
+    if (!c || typeof c !== 'object' || Array.isArray(c)) return false;
+    return Object.keys(c).every(k => fields.some(f => f.key === k)) &&
+      fields.every(f => (c[f.key] === undefined ? !!f.optional || !!f.ifPresent : !checkField(f, c[f.key]) && c[f.key] !== ''));
+  }
 
   // Site path the server could accept as a destination: lower-case segments, ending in "/".
   const ROUTE_PATH = /^\/[a-z0-9-]+(\/[a-z0-9-]+)*\/$/;
@@ -187,7 +203,7 @@
       if (!ROUTE_PATH.test(value)) return 'Use a site path such as /games/chess-forge/ (lower-case, starting and ending with “/”).';
       return null;
     }
-    if (field.type === 'choice') return field.options.indexOf(value) < 0 ? 'Choose one of the listed options.' : null;
+    if (field.type === 'choice') return optionValues(field).indexOf(value) < 0 ? 'Choose one of the listed options.' : null;
     if (field.type === 'color') return /^#[0-9a-fA-F]{6}$/.test(value) ? null : 'Use a colour written like #030916.';
     if (!value.trim()) return field.optional ? null : `${field.label} can’t be empty.`;
     if (value.length > field.max) return `Use at most ${field.max} characters (now ${value.length}).`;
@@ -249,6 +265,7 @@
   function starterContent(type, game) {
     if (widgets.isList(type)) return { order: [] };
     if (!widgets.hasCard(type)) return undefined;
+    if (!widgets.hasSaved(type)) return Object.assign({}, widgets.get(type).starter);
     return { title: widgets.get(type).starter, cta: 'Play Now', href: (game && game.path) || '/games/' };
   }
 
@@ -279,7 +296,7 @@
     // (home.featured.saved.x → home.featured).
     function slotOf(id, ...docs) {
       const o = ownerOf(id, docs);
-      return o && widgets.hasCard(o.type) && (o.part === '' || o.part === 'saved-card') ? instanceKey(o.instance) : null;
+      return o && widgets.hasSaved(o.type) && (o.part === '' || o.part === 'saved-card') ? instanceKey(o.instance) : null;
     }
     const isSaved = (id, ...docs) => { const o = ownerOf(id, docs); return !!o && o.part === 'saved-card'; };
     // The ordered list a card is part of (carousel or saved), or null for an active card.
@@ -294,13 +311,19 @@
       const o = ownerOf(id, docs);
       if (!o) return null;
       const w = widgets.get(o.type);
-      const isCard = w.content === 'list' ? o.part === 'card' : o.part === '' || o.part === 'saved-card';
+      const isCard = widgets.isList(o.type) ? o.part === 'card' : o.part === '' || o.part === 'saved-card';
       return isCard ? w.card : null;
     }
+
+    // What a card is called ("Carousel card"), and said of its link.
+    const typeOf = (id, docs) => (ownerOf(id, docs) || {}).type;
+    const cardLabel = (id, ...docs) => widgets.cardLabel(cardType(id, ...docs), typeOf(id, docs));
+    const linkHint = (id, ...docs) => widgets.linkHint(cardType(id, ...docs), typeOf(id, docs));
 
     function cardModel(id, c, ctx, kind) {
       if (!c || typeof c !== 'object') return null;
       const type = kind || cardType(id);
+      if (type === 'heading') return Object.assign({}, c, { id: id, type: type, title: String(c.title || '') });
       const model = { id: id, type: type, title: String(c.title || ''), href: String(c.href || ''), art: artModel(c.art, ctx) };
       if (type === 'tile') model.category = String(c.category || '');
       else model.cta = String(c.cta || '');
@@ -378,7 +401,7 @@
       (doc.regions || []).some(r => (w = (r.widgets || []).find(x => x.id === id)));
       if (!w || !widgets.hasContent(w.type)) return null;             // no content of its own
       if (rest === '') return { instance: id, type: w.type, part: '' };
-      if (widgets.hasCard(w.type)) {
+      if (widgets.hasSaved(w.type)) {
         if (rest === '.saved') return { instance: id, type: w.type, part: 'saved' };
         if (rest.indexOf('.saved.') === 0 && KEY.test(rest.slice(7))) return { instance: id, type: w.type, part: 'saved-card' };
       }
@@ -411,7 +434,9 @@
           if (w.col + w.cols - 1 > PAGE_LIMITS.columns || w.row + w.rows - 1 > PAGE_LIMITS.rows) return false;
           ids.add(w.id);
           const key = instanceKey(w.id);
-          if (widgets.hasCard(w.type)) {
+          if (widgets.hasCard(w.type) && !widgets.hasSaved(w.type)) {
+            if (!validFields(comps[key], widgets.get(w.type).card)) return false;
+          } else if (widgets.hasCard(w.type)) {
             if (!validCard(comps[key], false)) return false;
             // Saved cards: all listed, or none at all.
             if (comps[key + '.saved'] !== undefined ? !validList(comps, key + '.saved', key + '.saved.', LIMITS.saved, false)
@@ -442,7 +467,7 @@
       return id;
     }
     // The ordered lists a document has: each card widget's saved cards, each list widget's cards.
-    const listsOf = doc => [].concat(...instancesOf(doc).map(i => (widgets.isList(i.type) ? [instanceKey(i.id)] : widgets.hasCard(i.type) ? [savedList(instanceKey(i.id))] : [])));
+    const listsOf = doc => [].concat(...instancesOf(doc).map(i => (widgets.isList(i.type) ? [instanceKey(i.id)] : widgets.hasSaved(i.type) ? [savedList(instanceKey(i.id))] : [])));
     // How one layout differs from another, in words: [{ label, changes }].
     // Either may be schema 1 or missing (the built-in layout).
     function layoutChanges(before, after) {
@@ -477,7 +502,7 @@
       PAGE_SCHEMA: PAGE_SCHEMA, PAGE_LIMITS: PAGE_LIMITS, WIDGET_TYPES: WIDGET_TYPES,
       builtInRegions: page.regions, upgradeDocument: upgradeDocument, componentOwner: componentOwner, validatePageDocument: validatePageDocument,
       SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, SLOTS: SLOTS, LIMITS: LIMITS, CATEGORIES: CATEGORIES,
-      cardType: cardType, slotOf: slotOf, isSaved: isSaved, listOf: listOf, savedList: savedList, savedId: savedId, newKey: newKey,
+      cardType: cardType, cardLabel: cardLabel, linkHint: linkHint, slotOf: slotOf, isSaved: isSaved, listOf: listOf, savedList: savedList, savedId: savedId, newKey: newKey,
       artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument,
       cardFields: cardFields, checkField: checkField
     };

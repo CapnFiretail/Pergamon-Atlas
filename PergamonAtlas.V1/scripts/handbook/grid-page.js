@@ -19,11 +19,13 @@
   // Demonstration blocks: a plain widget type of the page's own (any size from
   // 2 × 1 cells; no content floor).
   const DEMO_TYPES = { block: { placeable: true, contract: { minCols: 2, minRows: 1, defaultCols: 4, defaultRows: 2, minWidth: 1, minHeight: 1 } } };
+  const GROW_TYPES = Object.assign({ growing: { placeable: true, grows: true, contract: DEMO_TYPES.block.contract } }, DEMO_TYPES);
   const STACK_BELOW = 600;
 
   const demos = freeze({
     spans: { widgets: [W('a', 1, 1, 6, 4), W('b', 7, 1, 4, 2), W('c', 7, 3, 4, 2), W('d', 12, 1, 5, 3), W('e', 18, 1, 3, 6), W('f', 1, 5, 10, 2)] },
     growth: { widgets: [W('top', 1, 1, 8, 3), W('middle', 11, 5, 6, 2), W('low', 3, 14, 10, 2)] },
+    grow: { widgets: [W('note', 1, 1, 8, 2), W('side', 10, 1, 4, 3), W('list', 1, 4, 20, 2, 'growing')] },
     real: { widgets: [W('hero', 1, 1, 12, 6, 'feature-hero'), W('spotlight', 13, 1, 8, 4, 'feature-spotlight'), W('carousel', 1, 8, 20, 6, 'carousel')] }
   });
   const withoutLowest = freeze({ widgets: demos.growth.widgets.filter(w => w.id !== 'low') });
@@ -61,6 +63,8 @@
     const ex = ns.componentExamples || {};
     if (!C || !ex.hero) return null;
     return {
+      'page-heading': { render: () => { const h = C.pageHeading({ level: 3 }); h.apply(ex.headings[0].content); h.setCount(ex.cards.length); return { element: h.element }; } },
+      'card-grid': { render: () => { const g = C.cardGrid({ label: 'Example collection' }); g.setItems(ex.cards.map((d, i) => ({ key: 'g' + i, label: d.title, element: C.contentCard(Object.assign({ href: '#' }, d)).element }))); return { element: g.element }; } },
       'feature-hero': { container: 'upper', render: () => { const b = C.featureBanner({ variant: 'hero' }); b.apply(ex.hero[0].content); return { element: b.element }; } },
       'feature-spotlight': { container: 'upper', render: () => { const b = C.featureBanner({ variant: 'banner' }); b.apply(ex.banner[0].content); return { element: b.element }; } },
       'carousel': { render: () => {
@@ -106,11 +110,11 @@
       function describe() {
         const w = host.clientWidth, cell = G.cellSize(w);
         const n = G.extent(current);
-        const state = grid.state();
+        const state = grid.state(), grown = grid.geometry().grown;
         status.textContent = state === 'stack'
           ? `Stacked: this frame is ${px(w)} wide, below the ${STACK_BELOW}px breakpoint. Reading order: ${G.readingOrder(current).join(', ')}. The layout itself is unchanged.`
           : state === 'invalid' ? `Refused: ${grid.errors().map(e => e.message).join(' ')}`
-            : `Container ${px(w)} · cell ${px(cell)} · gutter 16px · canvas ${n} rows, ${px(G.canvasHeight(current, cell))} tall.`;
+            : `Container ${px(w)} · cell ${px(cell)} · gutter 16px · canvas ${n} rows, ${px(G.canvasHeight(current, cell))} tall${grown ? `, and ${px(grown.by)} more that row ${grown.row} has grown` : ''}.`;
       }
       const ro = new ResizeObserver(describe);
       ro.observe(host);
@@ -154,6 +158,31 @@
       el('p', 'pa-type-caption hb-muted', 'Rows 4 and 7–13 are empty on purpose. While dragging, the editors show temporary rows below the canvas; they never become part of the layout.'));
     view.append(gr);
 
+    // ── Widgets that grow ────────────────────────────────────────────────
+    const gw = el('section', 'hb-section');
+    gw.append(el('h2', 'pa-type-section-title-large', 'Widgets that grow'),
+      el('p', 'pa-type-body-small hb-muted', 'A type can be marked as growing (the Card grid is): it is as tall as its rectangle or its content, whichever is more. The layout stores only the rectangle. Drawn, the row it ends on takes the extra height; the other widgets keep exactly theirs.'));
+    const lines = el('div', 'hbg-block hbg-lines');
+    let count = 3;
+    const growDemo = demo(demos.grow, { types: GROW_TYPES, draw: { block: blockDraw(() => demos.grow), growing: { render: () => ({ element: lines }) } } });
+    const drawLines = () => { lines.replaceChildren(...Array.from({ length: count }, (_, i) => el('span', 'hbg-block-pos', `Item ${i + 1}`))); };
+    drawLines();
+    const growTools = el('div', 'hb-toolbar');
+    const amount = el('div', 'hb-segmented');
+    amount.setAttribute('role', 'radiogroup');
+    amount.setAttribute('aria-label', 'Content');
+    [[3, '3 items'], [10, '10 items'], [20, '20 items']].forEach(([n, l], i) => {
+      const lab = el('label', 'hb-segment pa-type-tab');
+      const input = el('input'); input.type = 'radio'; input.name = 'hbg-amount'; input.value = n; input.checked = i === 0;
+      lab.append(input, el('span', '', l));
+      amount.append(lab);
+    });
+    amount.addEventListener('change', e => { count = Number(e.target.value); drawLines(); });
+    growTools.append(amount);
+    gw.append(growTools, growDemo.frame, growDemo.status,
+      el('p', 'pa-type-caption hb-muted', 'A limitation for now, not a design rule: nothing may end below a growing widget, because everything under it would move by an amount known only once it is drawn. Such a layout is refused (below-growing), and the editors say so.'));
+    view.append(gw);
+
     // ── Stacked presentation ─────────────────────────────────────────────
     const st = el('section', 'hb-section');
     st.append(el('h2', 'pa-type-section-title-large', 'Narrow screens: stacked'),
@@ -178,6 +207,7 @@
       const th = el('th', 'pa-type-body-small'); th.scope = 'row';
       const name = el('div', 'hbg-type-name');
       name.append(el('span', 'pa-type-item-title', t.name), el('code', 'hb-code', id), chip(t.placeable ? 'Placeable' : 'Not placeable yet', t.placeable ? 'active' : 'muted'));
+      if (t.grows) name.append(chip('Grows', 'muted'));
       th.append(name, el('p', 'pa-type-caption hb-muted', t.measured), el('p', 'pa-type-caption hb-muted', t.responsive));
       tr.append(th, el('td', 'pa-type-body-small hbg-num', `${c.minCols} × ${c.minRows}`), el('td', 'pa-type-body-small hbg-num', `${c.defaultCols} × ${c.defaultRows}`),
         el('td', 'pa-type-body-small hbg-floors', floors(c)), el('td', 'pa-type-body-small hbg-num hbg-now', ''));
@@ -234,6 +264,7 @@
       ['Duplicate id', { widgets: [W('a', 1, 1, 4, 2), W('a', 1, 4, 4, 2)] }, DEMO_TYPES],
       ['Below a type’s minimum cells', { widgets: [W('hero', 1, 1, 5, 6, 'feature-hero')] }, TYPES],
       ['A type that can’t be placed yet', { widgets: [W('card', 1, 1, 3, 4, 'content-card')] }, TYPES],
+      ['Under a widget that grows', { widgets: [W('list', 1, 1, 8, 2, 'growing'), W('a', 10, 2, 4, 2)] }, GROW_TYPES],
       ['Unknown type', { widgets: [W('x', 1, 1, 4, 2, 'poster')] }, TYPES]
     ];
     const vwrap = el('div', 'hb-table-wrap'); vwrap.tabIndex = 0;
@@ -299,6 +330,7 @@
     // Show the demonstrations, then keep the "at this width" column live.
     spans.show(demos.spans);
     growth.show(demos.growth);
+    growDemo.show(demos.grow);
     stacked.show(demos.spans);
     refused.show(refused.layout());
     function nowColumn() {
