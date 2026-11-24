@@ -5,25 +5,21 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by S4.
-- **Production:** `81e4731` (Atlas Studio S1.1 and S2, unified canvas design S3),
-  released 2026-11-24 (Vercel `BJQ5GSPfDejBr2tLb4wWSjnQ4wWh`) and verified the same
-  day against the live files and as a guest, 25/25; later commits on `main` so far
-  are this file only. Homepage version 52, schema 1, unchanged by the release.
-  Frontend rollback: `5wGMvFPPRwMiCnsogukHm9bxD4Jz` (`60bc79c`).
-- **Outstanding verification of this release:**
-  - The protected preview of `81e4731` was built but not opened (no Vercel
-    sign-in); released by the user's decision on local validation and that build.
-  - Production as an administrator (Studio › Connections, Layout Mode, Layout Lab,
-    Handbook), without saving: not done, the user's to do.
+- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Production:** `e1155fa` (S4: local development server, Studio › Environments),
+  released 2026-11-24 (Vercel `7zNFJvbBqQxjTNaH9C3T4SpWwdgS`) and verified the same
+  day as a guest and by comparing every published site file with the commit; later
+  commits on `main` so far are this file only. No database or homepage change
+  (version 52, schema 1, as last checked for the S3 release).
+  Frontend rollback: `AqsqTZQMAsXbCwc9znamUNiARNsC` (`b24f9c2`).
+- **Outstanding verification:** production as an administrator, without saving
+  (Studio › Connections and Environments, Layout Mode, Layout Lab, Handbook):
+  not done, the user's to do. S4's staging review was done by the user.
 - **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
   not confirmed.
-- **Active milestone:** S4, Persistent Development Environments (`DEVELOPMENT.md`,
-  `design/STUDIO.md` › Environments): locally approved, on the development branch
-  and its staging deployment, not released. Checked by tests and in a browser with
-  a stand-in for sign-in; not by Claude with a real account. Starting the server
-  at sign-in is not installed (`tools\dev-server install`). Other Studio sections
-  are placeholders; S3's visual design is provisional (Next).
+- **Active milestone:** none. Starting the local server at sign-in is not installed
+  (`tools\dev-server install`). Other Studio sections are placeholders; S3's
+  visual design is provisional (Next).
 
 ## Risks
 
