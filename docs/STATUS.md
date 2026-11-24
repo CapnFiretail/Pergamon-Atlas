@@ -5,23 +5,23 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by S5.
-- **Production:** `e1155fa` (S4: local development server, Studio › Environments),
-  released 2026-11-24 (Vercel `7zNFJvbBqQxjTNaH9C3T4SpWwdgS`) and verified the same
-  day as a guest and by comparing every published site file with the commit; later
-  commits on `main` so far are this file only. No database or homepage change
+- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Production:** `d537d14` (S5: Studio › Ideas; Connections and Ideas saved in
+  Supabase), released 2026-11-24 (Vercel `8aY37MEUBFWP4wTFh2Z9S2PLikwz`) and verified
+  the same day as a guest and by comparing every published site file with the
+  commit; later commits on `main` so far are this file only. No homepage change
   (version 52, schema 1, as last checked for the S3 release).
-  Frontend rollback: `AqsqTZQMAsXbCwc9znamUNiARNsC` (`b24f9c2`).
-- **Outstanding verification:** production as an administrator, without saving
-  (Studio › Connections and Environments, Layout Mode, Layout Lab, Handbook):
-  not done, the user's to do. S4's staging review was done by the user.
-- **Migrations, production and staging:** 0001–0006, 0008–0014. 0007 (optional)
-  not confirmed. **0015: staging only** (2026-11-24, run by the user; all 8 rows of
-  `verify_0015.sql` true, user-reported).
-- **Active milestone:** S5, Studio › Ideas, and Connections and Ideas saved in
-  Supabase (`design/STUDIO.md` › Ideas, Saved documents): local review approved by
-  the user 2026-11-24, on development; not released. Production needs 0015 (and
-  `verify_0015.sql`) **before** `main`.
+  Frontend rollback: `7zNFJvbBqQxjTNaH9C3T4SpWwdgS` (`e1155fa`). **Leave 0015 in
+  place**: its rollback deletes the saved documents (`design/STUDIO.md` › Saved
+  documents).
+- **Outstanding verification:** production as an administrator: Studio › Connections
+  and Ideas, including each administrator's first save or move of a browser copy;
+  and, without saving, Environments, Layout Mode, Layout Lab, Handbook: not done, the
+  user's to do. S5's local and staging reviews were done by the user.
+- **Migrations, production and staging:** 0001–0006, 0008–0015. 0007 (optional)
+  not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
+  both (user-reported).
+- **Active milestone:** none.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
