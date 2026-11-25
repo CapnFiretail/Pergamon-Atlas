@@ -711,7 +711,7 @@ resized, added and removed on the page.
 
 ## 13. Game Library (0016)
 
-**As built (P1, phase 4).** 0016 is on staging, not on production.
+**As built (P1, phases 4 and 5).** 0016 is on staging, not on production.
 
 - **Records** (`scripts/cms/library.js`): the same shape built in (`data/entries.js`, from
   which the older `atlasEntries` is derived), stored (`library.games.<id>`, without the
@@ -725,8 +725,30 @@ resized, added and removed on the page.
   the stored visibility overrides, are what is shown until the page itself is published:
   the library reaches visitors only with a published page.
 - **Which cards refer:** every card in a Card Grid (`refs: 'only'`); elsewhere, new cards on
-  pages without `ownCards`. The homepage has it, so nothing there changes before its
-  conversion, though its documents may already hold references.
+  pages without `ownCards` (the homepage has it) and on any page that already has a
+  reference (`content.refers`). Both kinds may stand side by side.
+- **Coming soon** is a matter of the widget (`playable` in `scripts/cms/widgets.js`): a
+  carousel shows games to play now and leaves it out, for references as for own-details
+  cards; the Card Grid lists it. Administrators see such a card in its place, marked, and
+  publishing the page or the library says it. Featured and Spotlight show what was chosen.
+- **Conversion of the homepage** (`convert.js`, `convert-dialog.js`; phase 5): opened by an
+  administrator from the panel, only where a page with `ownCards` has cards left to convert.
+  It shows every game card beside what it would show and says each difference (name,
+  category, description, picture, image description, whether visitors see it). For each:
+  keep, use the game's details, or use them and put the card's picture in the record
+  (`art` or `wide`), a change to the library's own working copy. Suggested: convert what
+  doesn't differ; fill a picture the record lacks; keep everything else; never replace. A
+  link that is no library game's stays. It keeps the order, ids, button label and `style`,
+  and the card's framing (as its `crop`, unless the record frames the same picture the same
+  way; a framing made for another picture is left behind). The result is schema 2, in the
+  working copy, one step to undo; saving and publishing are the usual ones. Publish the
+  library's pictures first, or visitors see the present ones meanwhile (the page's review
+  says so). A document with references never goes back to schema 1 by itself.
+- **Legacy:** documents with own details, schema 1 included, are read, edited, published and
+  restored as before; restoring one never touches the library, and it can be converted again.
+- **The built-in homepage** (`data/home-content.js`) stays a schema-1 document with its own
+  details: it is what an empty database starts from and what is shown before anything is
+  received, and referring to built-in records would change what visitors see there.
 - **Editing** (`library-dialog.js`; `library-editing.js` answers for the library what
   `content.js` does for a page): the shared workspace, publish dialog, history and image
   editor, and `fields.js`, the card editor's form. Opened from the panel and from the editor
@@ -810,5 +832,6 @@ is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
 - **Ads:** nothing loads until the auth client has reported its session. A guest then
   gets ads, a signed-in visitor once the server says they aren't an administrator; if
   that can't be asked, none. All nine pages with the tag.
-- Phase 5 (homepage): Featured and Spotlight references, with name, destination and
-  artwork from the record and no title override; its carousel follows availability.
+- Phase 5 (homepage), built: Featured and Spotlight references, with name, destination and
+  artwork from the record and no title override; its carousel follows availability
+  (games that are coming soon stay out of it, as before).

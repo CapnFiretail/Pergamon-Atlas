@@ -69,11 +69,23 @@
   }
 
   // published / draft: documents (published may be null: nothing live yet);
-  // imgs: scripts/cms/images.js when available; nameOf(game id): a record's name.
+  // imgs: scripts/cms/images.js when available; records: the game records
+  // cards refer to, by id (as they are now).
   // → { cards: [{ id, type, typeLabel, title, changes: [...] }], newImages: [media ids], other: [...],
   //     layout: [{ label, changes: [...] }] (widgets added, moved, resized, removed), empty }
-  function summarize(published, draft, content, imgs, nameOf) {
-    const titleOf = c => (!c ? '' : c.title || c.name || (c.game && ((nameOf && nameOf(c.game)) || c.game)) || '');
+  function summarize(published, draft, content, imgs, records) {
+    const recordOf = id => (records && Object.prototype.hasOwnProperty.call(records, id) ? records[id] : null);
+    const titleOf = c => (!c ? '' : c.title || c.name || (c.game && ((recordOf(c.game) || {}).name || c.game)) || '');
+    // A card that held its own details and now refers to a game, or the other way
+    // round: what that changes for visitors.
+    function swapped(a, b, type) {
+      const x = content.shownCard(a, type, records), y = content.shownCard(b, type, records), out = [content.isRef(b) ? 'Now uses the Game Library' : 'Now has its own details'];
+      if (x.note === 'missing' || y.note === 'missing') return out;
+      [['title', 'Title'], ['href', 'Destination link'], ['cta', 'Button label']].concat(type === 'tile' ? [['category', 'Category']] : []).forEach(([k, label]) => { if (String(x[k] || '') !== String(y[k] || '')) out.push(label); });
+      out.push(...artChanges(x.art || undefined, y.art || undefined, imgs, type));
+      if (['hidden', 'archived'].indexOf(y.note) >= 0) out.push(`Not shown to visitors (${y.note})`);
+      return out;
+    }
     const pub = (published && published.components) || {};
     const next = (draft && draft.components) || {};
     const ids = Object.keys(next).concat(Object.keys(pub).filter(k => !(k in next)));
@@ -100,6 +112,7 @@
         const kept = slot && !from ? Object.keys(next).find(k => savedHere(k) && same(next[k], a)) : null;
         if (from) changes = ['Now shows a saved card (was “' + titleOf(a) + '”)'];
         else if (kept) changes = ['Now shows a new card (“' + titleOf(a) + '” was saved)'];
+        else if (content.isRef && content.isRef(a) !== content.isRef(b)) changes = swapped(a, b, type);
         else {
           changes = Object.keys(FIELD_LABELS).filter(k => !same(a[k], b[k])).map(k => FIELD_LABELS[k]);
           // A record has two; each is named.

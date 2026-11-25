@@ -133,6 +133,7 @@
     const NOTES = {
       missing: id => `“${id}” isn’t in the Game Library, so visitors don’t see this card. Choose another game${env.removeCard && env.removeCard(current, true) ? ', or remove the card' : ''}.`,
       hidden: () => 'Hidden in the Game Library: visitors don’t see this card.',
+      'coming-soon': () => 'Coming soon: visitors don’t see this card here, only where every game is listed.',
       archived: () => 'Archived in the Game Library: visitors don’t see this card.',
       unpublished: () => 'Shown as in your Game Library draft. Visitors see this once the Game Library is published.'
     };
@@ -162,7 +163,8 @@
         row.input.replaceChildren(...options.map(o => { const opt = el('option', '', o.label); opt.value = o.value; return opt; }));
       }
       row.input.value = value;
-      const note = content.shownCard({ game: value }, null, all).note;
+      const owner = content.ownerOf(current, ...workspace.docs());
+      const note = content.shownCard({ game: value }, null, all, !!owner && content.widgets.playable(owner.type)).note;
       row.note.textContent = note ? NOTES[note](value) : '';
       row.note.dataset.note = note || '';
       row.editGame.textContent = all[value] ? 'Edit in Game Library' : 'Open Game Library';

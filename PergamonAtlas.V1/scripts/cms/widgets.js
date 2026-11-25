@@ -15,6 +15,8 @@
 //              ('single')
 //   edit       what Layout Mode calls editing it (default "Edit card")
 //   refs       'only': its cards are references to game records, nothing else
+//   playable   true: its cards are games to play now; one that is coming soon isn't
+//              shown there (a list of what there is, as the Card Grid, shows it)
 //   needs      the migration the database must have to store it. Until every
 //              environment has it, the type is drawn wherever a document has it
 //              but Layout Mode offers it on the local server only, where saving
@@ -40,7 +42,7 @@
       cards: 'Spotlight cards', one: 'spotlight card', manage: 'spotlight cards', order: 'Saved spotlight cards order'
     },
     'carousel': {
-      name: 'Carousel', baseId: 'carousel', content: 'list', card: 'tile',
+      name: 'Carousel', baseId: 'carousel', content: 'list', card: 'tile', playable: true,
       cards: 'Carousel cards', one: 'carousel card', manage: 'carousel cards', order: 'Carousel order',
       intro: 'The cards visitors see in the Explore More Games carousel, in this order (each category shows its cards in the same order). Changes are part of the draft until you publish.',
       empty: 'No cards: the carousel shows its empty message. Add a card to start.',
@@ -78,6 +80,7 @@
     hasSaved: type => kind(type) === 'card',                                // … with saved cards to switch to
     isList: type => kind(type) === 'list',
     refsOnly: type => !!get(type) && get(type).refs === 'only',
+    playable: type => !!get(type) && get(type).playable === true,
     hasContent: type => !!kind(type) && kind(type) !== 'none',
     offered: type => !!get(type) && (!get(type).needs || root.PERGAMON_ENV === 'development'),
     cards: CARDS,

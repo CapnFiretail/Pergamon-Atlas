@@ -6,7 +6,7 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 ## Now
 
 - **Branches:** `development/v1-admin-infrastructure` is ahead of `main`: P1 phase 4 (0016's
-  SQL, tests and documents, and the interface).
+  SQL, tests and documents, and the interface; `93b7a38`) and phase 5.
 - **Production:** `91283c6` (P1 phases 1–3: shared pages, Page Heading and Card Grid,
   the Games page, the fixed-height sidebar; administrator controls in the shared header
   on every page), released 2026-11-24 (Vercel `3iJ8BtNUazx2xb4r2kZxghQehRaa`) and
@@ -27,12 +27,16 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   0015 was run by the user; all 8 rows of `verify_0015.sql` true in both (user-reported).
 - **Active milestone:** P1, Games catalog on the shared page architecture: phases 1–3
   released (above). Phase 4 (migration 0016, the Game Library, editing the Games page,
-  ads): built as `cms/ARCHITECTURE.md` §13 says; local review
-  approved by the user 2026-11-25. 0016 and its
-  concurrency test (`cms/CONCURRENCY-0016.md`): reviewed, passed, on staging only. No
-  library or Games page content exists in any connected database. Next, each with
-  approval: the user's staging review, then production (0016 first, then the code,
-  then the first library). Phase 5 (the homepage) is not started.
+  ads): built as `cms/ARCHITECTURE.md` §13 says; local and
+  staging reviews approved by the user (2026-11-25, user-reported). The user
+  published on staging, confirmed it worked, and rolled it back afterwards (how isn't recorded):
+  staging's Games page isn't published now. Check 0016 is still there (`verify_0016.sql`)
+  before the next staging review. Executed by the agent: the suites, the deployment's
+  commit, and guest reads of staging. Phase 5 (the homepage's conversion): built; local
+  review approved 2026-11-25. 0016 and its
+  concurrency test (`cms/CONCURRENCY-0016.md`): reviewed, passed, on staging only. Next, each with
+  approval: phase 5's staging review, then one production release of both
+  (plan: `cms/RELEASE-P1.md`), then the P1 retrospective.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
@@ -43,6 +47,10 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   the first one: check there is no leftover draft, close older admin tabs and note
   the live version. If it goes wrong, restore that version before any frontend
   rollback (rollback deployment `DZcxwUDrU2Qkup2aeG63UFLCZxzH`, `41d691b`).
+- **The homepage's conversion on production.** All eight pictures of production's homepage
+  (version 52) are uploads, so a first library made from the built-in games differs from
+  every one: choose per card (or "… with these pictures", which also changes the Games
+  page), and publish the library before the page. It makes the first schema-2 homepage (below).
 - **Release order.** Phase 4's code must not reach production before 0016 is applied there:
   saving the Games page or the Game Library would be refused.
 - **Ads.** Real AdSense behaviour with `scripts/ads.js` is unverified (the local server and

@@ -183,7 +183,7 @@
         ['Inputs', ['Sections, each with a title, optional icon, optional filter names, items', { code: '{ key, element, label, facet }' }, 'and empty messages. One section: no section arrows. No filters: no tabs.']],
         ['Owns', ['Layout, gliding and arrows, filters, sections, empty state, screen-reader announcements, its responsive widths.']],
         ['Used on', ['Homepage: “Explore More Games” (sections Games and Tools; the Games cards come from the CMS component', { code: 'home.carousel' }, ').']],
-        ['Widget type', [{ code: 'carousel' }, 'An ordered list of cards: each with its own details (the homepage’s) or a reference to a game record (a new one on any other page).']],
+        ['Widget type', [{ code: 'carousel' }, 'An ordered list of cards: each with its own details (a homepage not yet converted) or a reference to a game record. Games that are coming soon aren’t shown in it.']],
         ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile; the carousel stands still while editing.']],
         ['Type roles', roles('carousel')],
         ['Source', [{ path: 'scripts/components/carousel.js' }, { path: 'styles/components/carousel.css' }, { path: 'scripts/glide.js' }]]
@@ -250,12 +250,12 @@
     featureEntry('hero', 'hero', 'Featured Content — Hero', X.hero || [],
       'The large card that introduces one piece of content: full-bleed artwork, a title between ornament rules, and one action. On the homepage it is the Featured Game.',
       ['Homepage: the Featured slot (CMS component', { code: 'home.featured' }, ').'],
-      ['Widget type', [{ code: 'feature-hero' }, 'One active card, with its own saved cards. On any page but the homepage a new card refers to a game record.']],
+      ['Widget type', [{ code: 'feature-hero' }, 'One active card, with its own saved cards. A new card refers to a game record, except on a homepage not yet converted.']],
       ['Title, button label, destination, image and its desktop and phone framing; saved cards to switch between. A card that refers to a game: which game, the button label and its framing; a game that isn’t listed leaves its place empty.']);
     featureEntry('banner', 'banner', 'Spotlight — Banner', X.banner || [],
       'The same component as a wide, short banner: the title on the left, the artwork through the middle, the action on the right. On the homepage it is the Spotlight.',
       ['Homepage: the Spotlight slot (CMS component', { code: 'home.spotlight' }, ').'],
-      ['Widget type', [{ code: 'feature-spotlight' }, 'One active card, with its own saved cards. On any page but the homepage a new card refers to a game record.']],
+      ['Widget type', [{ code: 'feature-spotlight' }, 'One active card, with its own saved cards. A new card refers to a game record, except on a homepage not yet converted.']],
       ['Title, button label, destination, image with edge colour and framing; saved cards to switch between. A card that refers to a game: which game, the button label and its framing.']);
     {
       const art = entry(contents, 'card', 'Content Card', [chip('Content', 'active'), chip('Live preview', 'muted')],
@@ -334,14 +334,15 @@
       } else art.append(missing.cloneNode(true));
       art.append(facts([
         ['Record', [{ code: '{ id, name, category, destination, availability, description?, art?, wide? }' }, '. The id is chosen once and belongs to that game only. Square artwork for cards, wide artwork for Featured and Spotlight (the square one where there is none), each with its default framing.']],
-        ['Availability', ['Available and coming soon: listed. Hidden and archived: cards that use the game aren’t shown to visitors. It decides listings, not access: the game’s own page stays reachable.']],
+        ['Availability', ['Available: listed. Coming soon: listed where every game is (the Card Grid), not in a carousel, which shows games to play now. Hidden and archived: cards that use the game aren’t shown to visitors. It decides listings, not access: the game’s own page stays reachable.']],
         ['Referring to a game', [{ code: '{ game: id, crop? }' }, '; Featured and Spotlight cards also their button label. A crop replaces the default framing as a whole, never the picture.']],
         ['Leaving', ['A published game is archived, never removed. A card whose game is gone stays in the draft, in its place, until another is chosen; such a page can’t be published, and says which games.']],
         ['Drafts and history', ['The library’s own. A page’s draft may use the library’s draft, marked “Not published yet”; publishing a page needs its games in the published library. An earlier library opens as unsaved changes, never straight to visitors, keeping games added since.']],
+        ['Converting cards', ['A homepage card that holds its own copy of a game can be converted (Admin Mode › Use the Game Library…): each difference is said, each card decided, the result reviewed on the page before anything is saved. Order, button label and framing stay; its picture can be put in the game’s record.']],
         ['Warnings', ['Publishing a game whose name and destination both change names the game, both values and the pages that use it, and may go on. Discarding a draft or removing a game names the pages first.']],
         ['Delivery', ['A page arrives with the records its cards refer to, of the same moment, and is cached with them. Before a page is published, and when nothing could be read, the built-in records are shown.']],
         ['Limits', [{ code: '64' }, 'records;', { code: '24' }, 'cards in a list.']],
-        ['Source', [{ path: 'scripts/cms/library.js' }, { path: 'scripts/cms/library-editing.js' }, { path: 'scripts/cms/library-dialog.js' }, { path: 'scripts/cms/fields.js' }, { path: 'data/entries.js' }]]
+        ['Source', [{ path: 'scripts/cms/library.js' }, { path: 'scripts/cms/library-editing.js' }, { path: 'scripts/cms/library-dialog.js' }, { path: 'scripts/cms/convert.js' }, { path: 'scripts/cms/convert-dialog.js' }, { path: 'scripts/cms/fields.js' }, { path: 'data/entries.js' }]]
       ]));
     }
 

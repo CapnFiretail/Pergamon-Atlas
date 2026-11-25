@@ -11,6 +11,7 @@
 //   restored(version, live, working)   an earlier library to edit, keeping games
 //                      added since → { doc } or { problem }
 //   identityChanges(before, after)     games whose name and destination both change
+//   postponed(before, after)           games that were available and become coming soon
 //   unlisted(before, after)            games visitors would no longer see listed
 //   usesOf(rows)       list_game_uses, by game: { id: [{ page, name, live, draft }] }
 //                      (live, draft: how many cards)
@@ -34,7 +35,7 @@
     { key: 'category', label: 'Category', type: 'choice', options: base.CATEGORIES },
     { key: 'destination', label: 'Destination', type: 'destination' },
     { key: 'availability', label: 'Availability', type: 'choice', options: library.AVAILABILITY,
-      hint: 'Available and coming soon: listed. Hidden and archived: cards that use the game aren’t shown to visitors. The game’s own page stays reachable either way.' },
+      hint: 'Available: listed. Coming soon: listed where every game is, not in a carousel. Hidden and archived: cards that use the game aren’t shown to visitors. The game’s own page stays reachable either way.' },
     { key: 'art', label: 'Square artwork', type: 'image', fit: 'cover', recommendedWidth: 640, cardType: 'tile', optional: true, parts: [base.ART_PARTS.alt] },
     { key: 'wide', label: 'Wide artwork (optional)', type: 'image', fit: 'cover', recommendedWidth: 1600, cardType: 'feature', optional: true, parts: [base.ART_PARTS.edge, base.ART_PARTS.alt] }
   ];
@@ -110,6 +111,10 @@
     const a = library.records(before), b = library.records(after);
     return Object.keys(a).filter(id => library.listed(a[id].availability) && !(b[id] && library.listed(b[id].availability))).map(id => ({ id: id, name: a[id].name }));
   }
+  function postponed(before, after) {
+    const a = library.records(before), b = library.records(after);
+    return Object.keys(b).filter(id => a[id] && a[id].availability === 'available' && b[id].availability === 'coming-soon').map(id => ({ id: id, name: b[id].name }));
+  }
   function usesOf(rows) {
     const out = {};
     (Array.isArray(rows) ? rows : []).forEach(r => {
@@ -124,7 +129,7 @@
 
   const api = {
     content: content, FIELDS: FIELDS, empty: empty, firstLibrary: firstLibrary, restored: restored, newId: newId, idProblem: idProblem,
-    destinationProblem: destinationProblem, identityChanges: identityChanges, unlisted: unlisted, usesOf: usesOf
+    destinationProblem: destinationProblem, identityChanges: identityChanges, unlisted: unlisted, postponed: postponed, usesOf: usesOf
   };
   root.PergamonCMS = root.PergamonCMS || {};
   root.PergamonCMS.libraryEditing = api;

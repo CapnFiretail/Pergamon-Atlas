@@ -25,6 +25,7 @@ suites.
 | `content`, `collections`, `saved-cards`, `site-sidebar`, `page-layout`, `layout-editing` `.test.mjs` | See their headers (0012–0014 and the editor). |
 | `game-library.test.mjs` | 0016 (proposed): the Game Library and the Games page, references, what visitors receive, authorization, that everything valid before is judged and answered as before, and its preflight, verification and recovery scripts. |
 | `library-editing.test.mjs` | The Game Library in the browser (`library.js`, `library-editing.js`) and cards that refer to its games, against 0016: both accept the same, drafts, conflicts, references, crops, what visitors receive, warnings, earlier versions, the homepage unchanged. |
+| `convert.test.mjs` | Converting the homepage's cards: differences, choices, pictures, what visitors are drawn, drafts, conflicts, history, schema 1 and 2. |
 | `studio-documents.test.mjs` | 0015, and the Studio's storage and store through it. See its header. |
 | `hardening.test.mjs` | Optional 0010: profiles privileges, `homepage_settings` column grant, legacy bucket listing. |
 | `function.test.mjs` | `publish-media` handler and byte checks with in-memory Auth/DB/Storage: real PNG/JPEG/WebP fixtures, SVG/GIF/HTML/EXE/truncated/oversized/huge-dimension rejection, auth, admin check, CORS, request shape, path tampering, type mismatch, failed copy/record and retry. |
@@ -47,6 +48,7 @@ a time.
 | `header.mjs` | The shared header on every page, for guests, members and administrators: the administrator controls, Admin Mode by page, sign-in and sign-out, every width. |
 | `games.mjs` | The Games page: games, destinations, artwork, availability and stored overrides, the shared frame, every width, palette and mode, the sidebar, keyboard. |
 | `library.mjs` | The Game Library and editing the Games page end to end on the real migrations: first library, drafts, publishing, the identity warning, history, conflicts, references, crops, missing games, Layout Mode, visitors (cached, offline, tampered), widths, sign-out. |
+| `convert.mjs` | The conversion end to end, and 19 views of the homepage before and after it; shared updates, visibility, history, editing afterwards. |
 | `ads.mjs` | Advertising on its nine pages: guests and members get it, administrators and unanswered checks don't. |
 | `widgets.mjs` | Page Heading and Card Grid, and widgets that grow: drawing at every width, palette and mode, and editing them in both modes on a made-up page. |
 | `second-page.mjs` | A made-up second page on the shared code: its own content, cache, draft and ids; Site Navigation from the homepage. |

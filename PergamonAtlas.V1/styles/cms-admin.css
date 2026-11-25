@@ -751,6 +751,25 @@ select.cms-field-input { cursor: pointer; }
   .cms-library-body > .cms-library-list { max-height: 38vh; overflow-y: auto; }
 }
 
+/* ── Use the Game Library (scripts/cms/convert-dialog.js) ──────────────── */
+.cms-convert-dialog { width: min(760px, 100%); }
+.cms-convert-all { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.cms-convert-all .cms-admin-label { margin: 0; }
+.cms-convert-all .cms-drawer-ghost { min-height: 34px; padding: 0 8px; color: var(--color-accent-text); font-size: 13px; }
+.cms-convert-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cms-convert-row { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: start; gap: 8px 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-background); }
+.cms-convert-text { display: grid; gap: 4px; min-width: 0; }
+.cms-convert-row > .cms-convert-text:nth-child(2) { grid-column: 2 / -1; }
+.cms-convert-text strong { color: var(--color-text-primary); font-size: 15px; }
+.cms-convert-text .cms-field-input { margin-top: 4px; min-height: 38px; font-size: 14px; }
+.cms-convert-look { display: grid; justify-items: center; gap: 4px; margin: 0; }
+.cms-convert-look .cms-manage-thumb[data-square] { width: 64px; height: 64px; }
+.cms-convert-look figcaption { color: var(--color-text-secondary); font-size: 12px; }
+@media (max-width: 560px) {
+  .cms-convert-row { grid-template-columns: auto minmax(0, 1fr); justify-items: start; }
+  .cms-convert-text { grid-column: 1 / -1; width: 100%; }
+}
+
 .cms-publish-dialog[data-step="done"] .cms-publish-title { color: var(--color-success); }
 :root[data-mode="light"] .cms-publish-dialog[data-step="done"] .cms-publish-title { color: #1E7A3A; }
 @media (max-width: 600px) {

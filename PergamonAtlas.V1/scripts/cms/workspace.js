@@ -21,7 +21,8 @@
 //
 // A schema-1 document stays schema 1 until its layout changes; the first
 // layout change makes it schema 2 (content.upgradeDocument), and a layout
-// back at the built-in one on a schema-1 base is schema 1 again.
+// back at the built-in one on a schema-1 base is schema 1 again (unless its cards refer
+// to game records, which only schema 2 can hold).
 //
 // No DOM here: works in the browser (window.PergamonCMS.workspace) and in
 // Node (module.exports) for tests. `api` wraps the RPCs; `storage` is
@@ -157,7 +158,7 @@
       return true;
     }
     function settle(doc, baseDoc) {
-      if (page2(doc) && baseDoc && !page2(baseDoc) && same(doc.regions, content.builtInRegions())) { doc.schema = content.SCHEMA; delete doc.regions; }
+      if (page2(doc) && baseDoc && !page2(baseDoc) && !content.gameRefs(doc).length && same(doc.regions, content.builtInRegions())) { doc.schema = content.SCHEMA; delete doc.regions; }
     }
     // One region's layout as edited on the grid (scripts/grid/editor.js).
     function putRegion(doc, layout) {

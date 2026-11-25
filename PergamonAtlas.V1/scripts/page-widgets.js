@@ -76,6 +76,7 @@
     return { element: card, art: model => C.contentCard.setArt(card, model) };
   }
 
+  // (content.toModel has left out, or marked, references to games a widget doesn't show.)
   // A card visitors see counts; one an administrator sees in its place doesn't.
   const counts = item => !item.note || item.note === 'unpublished';
 

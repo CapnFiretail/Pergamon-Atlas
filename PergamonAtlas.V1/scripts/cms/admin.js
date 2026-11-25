@@ -4,7 +4,8 @@
 //
 // Loaded after auth.js and admin-access.js. Builds nothing, and loads the editor
 // (workspace.js, images.js, fields.js, drawer.js, image-editor.js, publish.js,
-// publish-dialog.js, library-editing.js, library-dialog.js, layout-mode.js and the grid
+// publish-dialog.js, library-editing.js, library-dialog.js, convert.js,
+// convert-dialog.js, layout-mode.js and the grid
 // editing code, styles/cms-admin.css and grid-editor.css), only after the server confirms the signed-in account is an administrator (rpc is_admin(),
 // the same check every CMS write function runs). Stored state
 // (sessionStorage) and the supabase-js session are only ever read after that
@@ -38,6 +39,8 @@
 //                   the editor of a card that refers to one. Admin view draws such
 //                   cards from the library's working copy, and says which of them
 //                   visitors don't see so
+//   conversion      on a page whose cards hold their own details of games: replacing
+//                   them with references (convert-dialog.js), in the working copy
 //   site navigation the sidebar's links on every page (site-nav.js), stored
 //                   as `site.sidebar` in the homepage's document and so edited
 //                   on the homepage only: opened from the panel or the pencil
@@ -65,7 +68,7 @@
     stack: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
     plus: '<path d="M12 5v14M5 12h14"/>'
   };
-  const NOTES = { hidden: 'Hidden', archived: 'Archived', unpublished: 'Not published yet' };
+  const NOTES = { hidden: 'Hidden', archived: 'Archived', 'coming-soon': 'Coming soon: not shown here', unpublished: 'Not published yet' };
   const svg = (name, cls) => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name]}</svg>`;
   function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -90,6 +93,7 @@
   let history = null;                  // Version History (history.js)
   let layoutMode = null;               // Layout Mode (layout-mode.js)
   let games = null;                    // the Game Library (library-dialog.js)
+  let converter = null;                // Use the Game Library (convert-dialog.js)
   const addTiles = new Map();          // list instance → its "Add card" tile (Content mode)
   let previewId = null;                // saved card shown in its slot while edited
   let siteNav = null;                  // Site Navigation editor (site-nav.js)
@@ -162,6 +166,8 @@
       loadScript('/scripts/cms/site-nav.js', () => !!cms.siteNav),
       loadScript('/scripts/cms/library-editing.js', () => !!cms.libraryEditing),
       loadScript('/scripts/cms/library-dialog.js', () => !!cms.gameLibrary),
+      loadScript('/scripts/cms/convert.js', () => !!cms.convert),
+      loadScript('/scripts/cms/convert-dialog.js', () => !!cms.convertDialog),
       loadScript('/scripts/cms/layout-mode.js', () => !!cms.layoutMode),
       access.adminButton()
     ]).then(loaded => {
@@ -173,7 +179,7 @@
 
   // What a new card shows: a game record where this page's cards refer to them.
   function starter(type) {
-    const listed = PAGE.ownCards || !games ? [] : Object.values(games.records()).filter(g => cms.library.listed(g.availability));
+    const listed = !games || !cms.content.refers(workspace && workspace.working()) ? [] : Object.values(games.records()).filter(g => cms.library.listed(g.availability));
     return cms.content.starterContent(type, listed.length ? { game: listed[0].id } : liveGames()[0]);
   }
   const sessionStore = (() => { try { return window.sessionStorage; } catch (e) { return null; } })();
@@ -255,6 +261,7 @@
     if (manager) { manager.destroy(); manager = null; }
     if (history) { history.destroy(); history = null; }
     if (siteNav) { siteNav.destroy(); siteNav = null; }
+    if (converter) { converter.destroy(); converter = null; }
     if (games) { games.destroy(); games.clearLocal(); games = null; }
     if (layout) layout.previewSiteNavigation();     // back to the published links
     if (ui) { ui.drawer.destroy(); ui.panel.remove(); ui.bar.remove(); ui = null; }
@@ -381,6 +388,13 @@
     libraryNote.id = 'cms-admin-library-note';
     libraryButton.addEventListener('click', () => { if (libraryButton.disabled) return; setPanel(false); openLibrary(null, ui.button); });
 
+    // Cards with their own details of games, where the page has any (updateStatus).
+    const convertButton = el('button', 'cms-admin-nav', 'Use the Game Library…');
+    convertButton.type = 'button';
+    convertButton.hidden = true;
+    convertButton.setAttribute('aria-haspopup', 'dialog');
+    convertButton.addEventListener('click', () => { setPanel(false); openConvert(); });
+
     // Site Navigation: the sidebar on every page (stored with the homepage).
     const navButton = el('button', 'cms-admin-nav');
     navButton.type = 'button';
@@ -391,7 +405,7 @@
     navNote.id = 'cms-admin-nav-note';
     if (!layout) { navButton.hidden = true; navNote.hidden = true; }
 
-    panel.append(head, views, modes, stateList, publish, publishNote, historyButton, libraryButton, libraryNote, navButton, navNote);
+    panel.append(head, views, modes, stateList, publish, publishNote, historyButton, libraryButton, libraryNote, convertButton, navButton, navNote);
     document.body.append(panel);
 
     // Shown while previewing as a user or guest: no editing controls, a way back.
@@ -460,7 +474,7 @@
       content: cms.content,
       publish: cms.publish,
       cardLabel: id => cardTitle(id),
-      nameOf: id => games.nameOf(id),
+      records: () => games.records(),
       notices: server => games.notices(server.draft.content),
       api: {
         getDraft: page => auth.getCmsDraft(page),
@@ -501,7 +515,8 @@
       content: cms.content,
       publish: cms.publish,
       images: cms.images,
-      nameOf: id => games.nameOf(id),
+      records: () => games.records(),
+      needRecords: () => games.ensure(),
       api: {
         list: (page, limit) => auth.listCmsVersions(page, limit),
         restore: (page, id, expected) => auth.restoreCmsVersion(page, id, expected)
@@ -538,6 +553,22 @@
       });
     }
 
+    if (PAGE.ownCards) {
+      converter = cms.convertDialog.create({
+        workspace,
+        content: cms.content,
+        artModel: a => cms.content.artModel(a, { media: Object.assign({}, imageStore.map(), publishedView().media) }),
+        records: () => games.records(),
+        live: () => liveGames().map(g => g.path),
+        reload: () => games.ensure().then(() => games.reload()).then(r => { if (r && r.error) throw new Error(r.error.message); return resolveImages(); }),
+        setArtwork: artwork => games.setArtwork(artwork),
+        openLibrary: () => openLibrary(null, ui.button),
+        onChanged: redraw,
+        onForbidden: () => verify(),
+        returnFocus: () => { if (ui) ui.button.focus(); }
+      });
+    }
+
     layoutMode = cms.layoutMode.create({
       workspace,
       content: cms.content,
@@ -554,7 +585,7 @@
     button.addEventListener('click', () => setPanel(panel.hidden));
     toggle.addEventListener('click', () => setActive(!state.active));
 
-    return { button, panel, toggle, viewButtons, modeButtons, undoButton, redoButton, stateRows, bar, barText, drawer, publish, publishNote, historyButton, libraryButton, libraryNote, navButton };
+    return { button, panel, toggle, viewButtons, modeButtons, undoButton, redoButton, stateRows, bar, barText, drawer, publish, publishNote, historyButton, libraryButton, libraryNote, convertButton, navButton };
   }
 
   // Site Navigation needs the working copy (it edits it); it opens in Admin view.
@@ -571,6 +602,12 @@
     if (state.view !== 'admin') setView('admin');
     const go = () => { if (games && state.active) games.open(game, from); };
     ensureLoaded().then(go, go);
+  }
+  function openConvert() {
+    if (!converter || !state.active) return;
+    if (ui && ui.drawer.isOpen() && ui.drawer.busy()) return;
+    if (state.view !== 'admin') setView('admin');
+    ensureLoaded().then(() => { if (converter && state.active) converter.open(); }, () => updateStatus());
   }
   // After a publish or restore: the sidebar's published links follow the new live version.
   function followPublishedNav() {
@@ -778,10 +815,10 @@
   // Look up images the working copy uses that aren't known yet (or whose
   // preview URL is about to expire); the store redraws when they arrive.
   function resolveImages() {
-    if (!imageStore || !workspace || !workspace.isLoaded() || !(state.active && state.view === 'admin')) return;
+    if (!imageStore || !workspace || !workspace.isLoaded() || !(state.active && state.view === 'admin')) return null;
     const known = cms.loader.published();
     const ids = cms.content.mediaIds(workspace.working()).concat(games ? games.mediaIds() : []).filter(id => !(known && known.media && known.media[id]));
-    imageStore.resolve(ids).then(r => { if (r && r.error && r.error.code === 'PT403') verify(); });
+    return imageStore.resolve(ids).then(r => { if (r && r.error && r.error.code === 'PT403') verify(); });
   }
 
   function updateStatus() {
@@ -806,6 +843,7 @@
     ui.libraryButton.disabled = !state.active;
     ui.libraryNote.textContent = { empty: 'Not started yet. ', unsaved: 'Unsaved changes. ', draft: 'Saved in draft. ' }[games ? games.status() : ''] || '';
     ui.libraryNote.append('Every game’s details, for all cards that use it. Published on its own.');
+    ui.convertButton.hidden = !(PAGE.ownCards && state.active && loaded && cms.convert.plan(workspace.working(), { content: cms.content, records: {} }).length);
     ui.navButton.disabled = !state.active || !siteNav;
     ui.stateRows.unsaved.parentElement.dataset.on = String(unsaved.length > 0);
     ui.stateRows.draft.parentElement.dataset.on = String(!!draft);

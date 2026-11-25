@@ -361,23 +361,26 @@
     const cardLabel = (id, ...docs) => widgets.cardLabel(cardType(id, ...docs), typeOf(id, docs));
     const linkHint = (id, ...docs) => widgets.linkHint(cardType(id, ...docs), typeOf(id, docs));
 
+    // Whether this page's new cards refer to game records.
+    const refers = doc => !page.ownCards || gameRefs(doc).length > 0;
     // What a card shows, whether it describes a game or refers to one:
     //   { title, href, art, category?, cta?, note?, game? }
     //   note   why a reference isn't what visitors would see: 'missing' (no such
-    //          record), 'hidden', 'archived', 'unpublished' (record.unpublished)
-    function shownCard(c, type, games) {
+    //          record), 'hidden', 'archived', 'coming-soon' (in a widget of games to
+    //          play: `playable`), 'unpublished' (record.unpublished)
+    function shownCard(c, type, games, playable) {
       if (!isRef(c)) return Object.assign({}, c);
       const g = games && typeof c.game === 'string' && Object.prototype.hasOwnProperty.call(games, c.game) ? games[c.game] : null;
       if (!g) return { title: 'Not in the Game Library', href: '', art: null, category: String(c.game || ''), cta: String(c.game || ''), note: 'missing', game: null };
       const hidden = g.availability !== 'available' && g.availability !== 'coming-soon';
-      return { title: g.name, href: g.destination, art: withCrop(artFor(g, type), c.crop), category: g.category, cta: String(c.cta || ''), game: g, note: hidden ? g.availability : g.unpublished ? 'unpublished' : undefined };
+      return { title: g.name, href: g.destination, art: withCrop(artFor(g, type), c.crop), category: g.category, cta: String(c.cta || ''), game: g, note: hidden || (playable && g.availability === 'coming-soon') ? g.availability : g.unpublished ? 'unpublished' : undefined };
     }
 
-    function cardModel(id, c, ctx, kind) {
+    function cardModel(id, c, ctx, kind, playable) {
       if (!c || typeof c !== 'object') return null;
       const type = kind || cardType(id);
       if (isRef(c)) {
-        const shown = shownCard(c, type, ctx && ctx.games);
+        const shown = shownCard(c, type, ctx && ctx.games, playable);
         // Visitors don't see a card whose game isn't listed. Administrators editing the
         // page do, in its place, with why (ctx.editing).
         if (shown.note && shown.note !== 'unpublished' && !(ctx && ctx.editing)) return null;
@@ -416,7 +419,7 @@
             saved: orderOf(comps, key + '.saved').map(k => cardModel(key + '.saved.' + k, comps[key + '.saved.' + k], ctx, kind)).filter(Boolean)
           };
         } else if (widgets.isList(w.type)) {
-          instances[w.id] = { type: w.type, cards: orderOf(comps, key).map(k => cardModel(key + '.' + k, comps[key + '.' + k], ctx, kind)).filter(Boolean) };
+          instances[w.id] = { type: w.type, cards: orderOf(comps, key).map(k => cardModel(key + '.' + k, comps[key + '.' + k], ctx, kind, widgets.playable(w.type))).filter(Boolean) };
         } else instances[w.id] = { type: w.type };
       }));
       const inst = id => instances[id] || {};
@@ -569,7 +572,7 @@
       builtInRegions: page.regions, upgradeDocument: upgradeDocument, componentOwner: componentOwner, validatePageDocument: validatePageDocument,
       SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, SLOTS: SLOTS, LIMITS: LIMITS, CATEGORIES: CATEGORIES,
       cardType: cardType, cardLabel: cardLabel, linkHint: linkHint, slotOf: slotOf, isSaved: isSaved, listOf: listOf, savedList: savedList, savedId: savedId, newKey: newKey,
-      isRef: isRef, gameRefs: gameRefs, cropOf: cropOf, withCrop: withCrop, artFor: artFor, shownCard: shownCard, validArt: validArt,
+      isRef: isRef, refers: refers, gameRefs: gameRefs, cropOf: cropOf, withCrop: withCrop, artFor: artFor, shownCard: shownCard, validArt: validArt,
       artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument,
       cardFields: cardFields, checkField: checkField, ART_PARTS: { alt: ALT, edge: EDGE }
     };

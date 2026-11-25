@@ -84,7 +84,7 @@ test('every page has what the shared code asks for, and a valid built-in layout'
 });
 
 test('the shared code names no page, and components know neither pages nor games', () => {
-  ['scripts/page.js', 'scripts/cms/loader.js', 'scripts/cms/admin.js', 'scripts/cms/workspace.js', 'scripts/cms/drawer.js', 'scripts/cms/fields.js', 'scripts/cms/image-editor.js', 'scripts/cms/layout-mode.js', 'scripts/cms/manage.js',
+  ['scripts/page.js', 'scripts/cms/loader.js', 'scripts/cms/admin.js', 'scripts/cms/workspace.js', 'scripts/cms/drawer.js', 'scripts/cms/fields.js', 'scripts/cms/convert.js', 'scripts/cms/convert-dialog.js', 'scripts/cms/image-editor.js', 'scripts/cms/layout-mode.js', 'scripts/cms/manage.js',
     'scripts/cms/publish.js', 'scripts/cms/publish-dialog.js', 'scripts/cms/history.js'].forEach(f => {
     // (The schema-1 lists, and where Site Navigation is kept, are the homepage's by definition.)
     const names = [...code(read(f)).replace(/const LISTS = \[.*\];/, '').replace('Published with the homepage.', '').matchAll(/'home(\.[a-z.]*)?'|"home"|homepage|'(feature-hero|feature-spotlight|carousel|atlas-navigation|page-heading|card-grid)'/gi)].map(m => m[0]);

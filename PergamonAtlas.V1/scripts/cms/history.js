@@ -11,8 +11,9 @@
 //
 // Created by admin.js: history.create({ workspace, content, publish, images,
 //   api: { list(page, limit), restore(page, versionId, expectedLiveId) },
-//   nameOf(game id), openVersion(version) → { problem? }, onRestored(result),
-//   onForbidden(), returnFocus() })
+//   records(), needRecords() (a promise, when a version refers to games),
+//   openVersion(version) → { problem? }, onRestored(result), onForbidden(),
+//   returnFocus() })
 //   → { open(), isOpen(), busy(), destroy() }
 (function () {
   'use strict';
@@ -80,7 +81,7 @@
       const prev = versions.find(x => x.id === v.previous_version_id);
       if (!v.previous_version_id) return { lines: ['First published version.'] };
       if (!prev) return { lines: ['Changes compared with older versions aren’t shown.'] };
-      const s = env.publish.summarize(prev.content, v.content, env.content, env.images, env.nameOf);
+      const s = env.publish.summarize(prev.content, v.content, env.content, env.images, env.records && env.records());
       const lines = s.cards.map(c => `${c.typeLabel} “${c.title}”: ${c.changes.join(', ')}`).concat(s.layout.map(c => `Layout, ${c.label}: ${c.changes.join(', ')}`), s.other.map(o => `${o} changed`));
       return { lines: lines.length ? lines : ['No content changes.'] };
     }
@@ -98,6 +99,10 @@
           [button('Try again', 'primary', load), button('Close', 'ghost', close)]);
       }
       versions = Array.isArray(res.data) ? res.data : [];
+      if (env.needRecords && versions.some(v => env.content.gameRefs(v.content).length)) {
+        await env.needRecords().catch(() => {});
+        if (step !== 'loading') return;
+      }
       list();
     }
 
@@ -168,7 +173,7 @@
         para(`It is added as a new version${live ? `, replacing version ${live.id}` : ''}. Nothing is deleted: version ${live ? live.id : v.id} stays in the history and can be restored later.`)
       ];
       if (live) {
-        const s = env.publish.summarize(live.content, v.content, env.content, env.images, env.nameOf);
+        const s = env.publish.summarize(live.content, v.content, env.content, env.images, env.records && env.records());
         if (!s.empty) {
           const ul = el('ul', 'cms-publish-list cms-publish-changes');
           s.cards.slice(0, 8).forEach(c => {

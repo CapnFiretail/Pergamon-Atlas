@@ -10,9 +10,10 @@
 //   schemaVersion   what the server reports for it (site_pages.schema_version)
 //   siteNavigation  true for the one page whose document also holds Site
 //                   Navigation (`site.sidebar`, the sidebar on every page)
-//   ownCards        true while its cards hold their own details of a game (the
-//                   homepage, until it is converted); elsewhere a new card refers to
-//                   a game record (docs/cms/ARCHITECTURE.md §13)
+//   ownCards        true for a page whose cards held their own details of a game (the
+//                   homepage): they may be converted, and until one is, new ones do
+//                   too. Elsewhere a new card refers to a game record
+//                   (docs/cms/ARCHITECTURE.md §13)
 //   regions()       its layout before anyone has published one
 //
 // A page says which one it is in its HTML, on the element it is drawn in:

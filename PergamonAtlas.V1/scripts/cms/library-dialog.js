@@ -18,9 +18,10 @@
 //   api   getDraft, saveDraft, discardDraft, uses, overrides, list, describe,
 //         prepare, publish
 //   → { ensure(), isLoaded(), records(), published(), mediaIds(), status(), notices(doc),
-//       open(game, from), isOpen(), refresh(), clearLocal(), destroy() }
+//       setArtwork(artwork), open(game, from), isOpen(), refresh(), clearLocal(), destroy() }
 //   records()     the working copy's, by id, each `unpublished` where visitors don't
 //                 have it so; published(): what visitors have (hidden ones left out)
+//   setArtwork({ game: { art?, wide? } })   in the working copy, as one step → done or not
 //   notices(doc)  what publishing a page's document must be told about its games
 (function () {
   'use strict';
@@ -89,6 +90,13 @@
     const status = () => (!ws.isLoaded() ? '' : ws.unstored() && !ws.unsavedCards().length ? 'empty' : ws.unsavedCards().length ? 'unsaved' : ws.draft() ? 'draft' : 'published');
     const names = ids => ids.map(id => `“${nameOf(id)}”`).join(', ');
 
+    function setArtwork(artwork) {
+      const doc = JSON.parse(JSON.stringify(ws.working()));
+      const ids = Object.keys(artwork);
+      if (!ids.every(id => doc.components[keyOf(id)])) return false;
+      ids.forEach(id => Object.assign(doc.components[keyOf(id)], artwork[id]));
+      return ws.setDocument(doc);
+    }
     // For a page about to be published. Asked of the server, as it is now.
     async function notices(doc) {
       const refs = cms.content.gameRefs(doc), out = [];
@@ -101,6 +109,8 @@
       if (missing.length) out.push({ block: true, action, lines: [`Not in the published Game Library: ${names(missing)}. Publish the Game Library first, or choose other games for these cards.`, 'Nothing is lost: the draft is kept as it is.'] });
       const hidden = refs.filter(id => live[id] && !library.listed(live[id].availability));
       if (hidden.length) out.push({ lines: [`Visitors won’t see the cards for ${names(hidden)}: ${hidden.length === 1 ? 'it is' : 'they are'} hidden or archived in the Game Library.`] });
+      const soon = [].concat(...cms.content.instancesOf(doc).filter(i => cms.content.widgets.playable(i.type)).map(i => { const key = cms.content.instanceKey(i.id); return ((doc.components[key] || {}).order || []).map(k => (doc.components[key + '.' + k] || {}).game); })).filter((id, n, all) => live[id] && live[id].availability === 'coming-soon' && all.indexOf(id) === n);
+      if (soon.length) out.push({ lines: [`Coming soon, so not shown in a carousel: ${names(soon)}.`] });
       const changed = refs.filter(id => live[id] && now[id] && now[id].unpublished);
       if (changed.length) out.push({ lines: [`${names(changed)}: the Game Library has changes that aren’t published. Publishing this page shows the published details.`] });
       return out;
@@ -118,6 +128,8 @@
         ],
         confirm: `${c.after.name} is the same game: publish the change`
       }));
+      const soon = editing.postponed(before, after).filter(g => usedText(g.id));
+      if (soon.length) out.push({ lines: soon.map(g => `“${g.name}” becomes coming soon: it leaves any carousel it is in, and stays where every game is listed (${usedText(g.id)}).`) });
       const gone = editing.unlisted(before, after);
       if (gone.length) out.push({ lines: gone.map(g => `“${g.name}” is no longer listed${usedText(g.id) ? `: its cards disappear for visitors (${usedText(g.id)})` : ''}. Its own page stays reachable.`) });
       return out;
@@ -650,7 +662,7 @@
     overlay.addEventListener('mousedown', e => { if (e.target === overlay) close(true); });
 
     return {
-      ensure, records, published, mediaIds, status, notices, nameOf, open, isOpen, refresh,
+      ensure, records, published, mediaIds, status, notices, nameOf, setArtwork, open, isOpen, refresh,
       isLoaded: () => ws.isLoaded(),
       reload: () => ws.load(),
       clearLocal: () => ws.clearLocal(),

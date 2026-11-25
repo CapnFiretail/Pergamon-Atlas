@@ -237,7 +237,7 @@ test('a whole page with every kind of reference: saved, published, received, dra
   // The review says what changed, by name.
   const before = ok(await e.rpc(a, 'get_draft', 'games')).published.content, next = clone(before);
   next.components['games.grid.snake'] = { game: 'pong' }; next.components['games.grid.pong'].crop = { scale: 2 }; delete next.components['games.grid.breakout'].crop;
-  const s = publish.summarize(before, next, games, images, id => BUILT_IN.games[id].name);
+  const s = publish.summarize(before, next, games, images, BUILT_IN.games);
   assert.deepEqual(s.cards.map(c => [c.title, c.changes.join()]).sort(), [['Pong', 'Framing'], ['Pong', 'Game']]);
 });
 

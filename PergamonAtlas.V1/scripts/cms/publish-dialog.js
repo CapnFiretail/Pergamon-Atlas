@@ -13,7 +13,7 @@
 //   done / failed / stale   the outcome, with what to do next
 //
 // Created by admin.js: publishDialog.create({ workspace, content, publish,
-//   api: { getDraft, describe, prepare, publish }, cardLabel(id), nameOf(game id),
+//   api: { getDraft, describe, prepare, publish }, cardLabel(id), records(),
 //   notices({ draft, published }) → Promise<[{ lines, confirm?, block?,
 //     action?: { label, run } }]>   what to say in the review: `confirm` must be
 //     ticked to go on, `block` can't be published as it is
@@ -185,7 +185,7 @@
         if (step !== 'checking') return;
         if (!notices) return failed('Couldn’t check what this draft uses.', [`The live ${PAGE.noun} hasn’t changed. Check your connection and try again.`]);
       }
-      const summary = env.publish.summarize(server.published && server.published.content, server.draft.content, content, cms.images, env.nameOf);
+      const summary = env.publish.summarize(server.published && server.published.content, server.draft.content, content, cms.images, env.records && env.records());
       const nodes = [para(`The draft saved at ${time(server.draft.created_at)} will replace the live ${PAGE.noun}${server.published ? ` (version ${server.published.id})` : ''}. Guests and signed-in visitors see it right away.`)];
       const confirms = [];
       const confirmBox = text => {

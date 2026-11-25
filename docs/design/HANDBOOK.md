@@ -27,6 +27,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built |
 | Games page: an ordinary page of registered widgets; the floating sidebar as a panel of fixed height on every standard page (P1, phase 3) | Built |
 | Game Library, references to its games, editing the Games page, administrator-aware ads (P1, phase 4) | Built; not on production |
+| The homepage's cards: conversion to the Game Library (P1, phase 5) | Built; not on production |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
 | Atlas Studio's Environments cards: the Panel surface (S4) | Built |
@@ -74,6 +75,7 @@ the roadmap in `ATLAS_VISION.md` §11.
 | `PergamonAtlas.V1/scripts/cms/pages.js`, `scripts/cms/widgets.js` | **Page registry** and **widget registry**: what is particular to a page, and what kind of content a widget type has and its names. |
 | `PergamonAtlas.V1/scripts/cms/library.js` | **Game records** as received and kept: what a record is, and the library's document (`docs/cms/ARCHITECTURE.md` §13). |
 | `PergamonAtlas.V1/scripts/cms/library-editing.js`, `library-dialog.js` | The Game Library in Admin Mode: its rules, and its dialog. |
+| `PergamonAtlas.V1/scripts/cms/convert.js`, `convert-dialog.js` | Converting a page's own-details cards to references: what differs, and the choices. |
 | `PergamonAtlas.V1/scripts/cms/fields.js` | A component's fields as a form: the card editor's and the Game Library's. |
 | `PergamonAtlas.V1/scripts/ads.js` | Advertising, after the administrator check. |
 | `tests/design/page-registry.test.mjs` | Both registries against everything that depends on them, Handbook coverage of widget types, and a page that isn't the homepage. |
@@ -406,5 +408,5 @@ them) can make a style that looks equivalent in the CSS render differently.
 - The homepage and the Games page are the registered pages; widgets stay in their region,
   extra carousels share the homepage's "Explore More Games" heading, and Atlas Navigation's
   links are the same everywhere and set in code.
-- The homepage's cards hold their own details until they are converted (P1, phase 5).
+- The homepage's cards hold their own details until an administrator converts them.
 - The Vision page is read-only; the vision is changed in the repository.
