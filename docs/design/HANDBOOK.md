@@ -26,8 +26,8 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Shared pages: page and widget registries, page renderer, editing for any registered page (P1, phase 1) | Built |
 | Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built |
 | Games page: an ordinary page of registered widgets; the floating sidebar as a panel of fixed height on every standard page (P1, phase 3) | Built |
-| Game Library, references to its games, editing the Games page, administrator-aware ads (P1, phase 4) | Built; not on production |
-| The homepage's cards: conversion to the Game Library (P1, phase 5) | Built; not on production |
+| Game Library, references to its games, editing the Games page, administrator-aware ads (P1, phase 4) | Built |
+| The homepage's cards: conversion to the Game Library (P1, phase 5) | Built |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
 | Atlas Studio's Environments cards: the Panel surface (S4) | Built |

@@ -711,7 +711,7 @@ resized, added and removed on the page.
 
 ## 13. Game Library (0016)
 
-**As built (P1, phases 4 and 5).** 0016 is on staging, not on production.
+**As built (P1, phases 4 and 5).** 0016 is on staging and production.
 
 - **Records** (`scripts/cms/library.js`): the same shape built in (`data/entries.js`, from
   which the older `atlasEntries` is derived), stored (`library.games.<id>`, without the
@@ -762,6 +762,11 @@ resized, added and removed on the page.
   pages first (`list_game_uses`, and this page's unsaved cards).
 - **Not yet:** the description isn't shown anywhere; a destination that isn't one of the
   build's game pages needs its page and a `site_content_routes` row first.
+- **Built-in records and uploads:** a built-in record can hold only pictures shipped with the
+  site (`/images/featured/`), so uploaded ones (today the wide pictures of Chess Forge and
+  Connect Four) can't be refreshed into it without exporting them as files. Not decided.
+  Nothing drawn from the built-in records uses a wide picture: the built-in homepage has
+  its own.
 - **Ads** (`scripts/ads.js`, `PergamonAdmin.status()`): as approved below. Ads already on a
   page stay until it is left. The tag is no longer in the HTML: AdSense's site check then
   relies on `ads.txt`.
@@ -784,7 +789,7 @@ existing tables (drafts, publishing, history and image checks as for a page). Ag
 - 0016 also checks on the server that nothing is placed below a growing widget.
 
 **Approved for phase 4** (2026-11-24). The SQL, reviewed and applied on staging
-(`STAGING-0016.md`): `supabase/proposed/0016_game_library.sql` (its header
+and production (`STAGING-0016.md`, `RELEASE-P1.md`): `supabase/proposed/0016_game_library.sql` (its header
 is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
 `tests/cms/game-library.test.mjs`. As decided:
 
