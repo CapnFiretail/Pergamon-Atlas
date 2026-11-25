@@ -5,32 +5,29 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by P1's phases 1–3.
-- **Production:** `d537d14` (S5: Studio › Ideas; Connections and Ideas saved in
-  Supabase), released 2026-11-24 (Vercel `8aY37MEUBFWP4wTFh2Z9S2PLikwz`) and verified
-  the same day as a guest and by comparing every published site file with the
-  commit; later commits on `main` so far are this file only. No homepage change
-  (version 52, schema 1, as last checked for the S3 release).
-  Frontend rollback: `7zNFJvbBqQxjTNaH9C3T4SpWwdgS` (`e1155fa`). **Leave 0015 in
+- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Production:** `91283c6` (P1 phases 1–3: shared pages, Page Heading and Card Grid,
+  the Games page, the fixed-height sidebar; administrator controls in the shared header
+  on every page), released 2026-11-24 (Vercel `3iJ8BtNUazx2xb4r2kZxghQehRaa`) and
+  verified the same day as a guest (homepage, Games, every game page, the header,
+  Handbook and Studio refused, production database only, nothing written) and by
+  comparing every published site file with the commit; later commits on `main` so far
+  are this file only. No database change; the published homepage is unchanged
+  (version 52, schema 1).
+  Frontend rollback: `8aY37MEUBFWP4wTFh2Z9S2PLikwz` (`d537d14`). **Leave 0015 in
   place**: its rollback deletes the saved documents (`design/STUDIO.md` › Saved
   documents).
-- **Outstanding verification:** production as an administrator: Studio › Connections
-  and Ideas, including each administrator's first save or move of a browser copy;
-  and, without saving, Environments, Layout Mode, Layout Lab, Handbook: not done, the
-  user's to do. S5's local and staging reviews were done by the user.
+- **Outstanding verification:** production as an administrator, the user's to do: the
+  header's controls, Studio › Connections and Ideas (including the first save or move of
+  a browser copy); and, without saving, Environments, Layout Mode, Layout Lab, Handbook.
+  P1's local and staging reviews were done by the user.
 - **Migrations, production and staging:** 0001–0006, 0008–0015. 0007 (optional)
   not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
   both (user-reported).
-- **Active milestone:** P1, Games catalog on the shared page architecture. Phases 1
-  (`2e51a75`, shared pages), 2 (`11a750a`, Page Heading, Card Grid, widgets that grow)
-  and 3 (`ce3775f`, the Games page; the floating sidebar as a fixed-height panel):
-  approved by the user 2026-11-24 and on staging the same day (Vercel
-  `ALU4Gd5NzCPE3oxZXU8sTTYs4VPg`: build verified, the address answers with Vercel's
-  sign-in; its pages are the user's to open). Then, from that review, the administrator controls
-  moved into the shared header on every page. No database change. Not released: awaiting
-  staging review and release approval. Phase 4 (migration 0016, the Game Library,
-  editing the Games page, ads): approved in principle, starts after that release, its
-  SQL to be reviewed before any database. Agreed: `cms/ARCHITECTURE.md` §13.
+- **Active milestone:** P1, Games catalog on the shared page architecture: phases 1–3
+  released (above). Phase 4 (migration 0016, the Game Library, editing the Games page,
+  ads): approved, `cms/ARCHITECTURE.md` §13; the SQL and its tests are being prepared
+  locally and are reviewed before any database. Nothing of it is applied anywhere.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
