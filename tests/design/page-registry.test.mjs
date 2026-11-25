@@ -41,10 +41,14 @@ test('widget types: the registry, the grid contracts, the adapters and the serve
   assert.deepEqual(sorted(widgets.types), sorted(Object.keys(gridTypes).filter(t => gridTypes[t].placeable)));
   const adapters = [...code(read('scripts/page-widgets.js')).split('function create(env)').pop().matchAll(/^ {6}'([a-z-]+)':/gm)].map(m => m[1]);
   assert.deepEqual(sorted(adapters), sorted(widgets.types));
-  // The newest migration that lists the types; a type it doesn't know says which one it waits for.
+  // The newest applied migration that lists the types; a type it doesn't know says
+  // which one it waits for, and that one (once written) lists every type.
   const dir = path.join(ROOT, 'supabase/proposed');
-  const sql = readdirSync(dir).filter(f => /^\d{4}_.*\.sql$/.test(f)).sort().map(f => readFileSync(path.join(dir, f), 'utf8')).filter(s => /t not in \(('[a-z-]+'(, )?)+\)/.test(s)).pop();
-  const stored = [...sql.match(/t not in \(([^)]*)\)/)[1].matchAll(/'([a-z-]+)'/g)].map(m => m[1]);
+  const waiting = new Set(widgets.types.map(t => widgets.get(t).needs).filter(Boolean));
+  const listing = readdirSync(dir).filter(f => /^\d{4}_.*\.sql$/.test(f)).sort().map(f => [f.slice(0, 4), readFileSync(path.join(dir, f), 'utf8').match(/t not in \(((?:'[a-z-]+'(?:, )?){3,})\)/)]).filter(([, m]) => m)
+    .map(([n, m]) => [n, [...m[1].matchAll(/'([a-z-]+)'/g)].map(x => x[1])]);
+  const stored = listing.filter(([n]) => !waiting.has(n)).pop()[1];
+  listing.filter(([n]) => waiting.has(n)).forEach(([n, list]) => assert.deepEqual(sorted(list), sorted(widgets.types), n));
   assert.deepEqual(sorted(stored), sorted(widgets.types.filter(t => !widgets.get(t).needs)));
   widgets.types.filter(t => widgets.get(t).needs).forEach(t => assert.ok(!widgets.offered(t), t + ': offered on the local server only'));
 });

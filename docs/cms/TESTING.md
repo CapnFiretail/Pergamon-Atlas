@@ -5,7 +5,7 @@
 | Changed | Run (from the repository root unless shown) |
 |---|---|
 | CMS code, migrations, functions, build config | `cd tests/cms`, then `npm test` (first time: `npm install`) |
-| Any migration 0013 onward, or schema 2 | Also the same with `CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout,0015_studio_documents` |
+| Any migration 0013 onward, or schema 2 | Also the same with `CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout,0015_studio_documents` (and with `,0016_game_library`, proposed) |
 | Design registries, styles, grid, the Widgets catalogue, the Studio, the local development server, a page's `<head>`, the vision | `node --test "tests/design/*.test.mjs"` |
 | `scripts/design/typography.js` | `node tools/build-typography.mjs` (`--check` to verify) |
 | `docs/design/ATLAS_VISION.md` | `node tools/build-vision.mjs` (`--check` to verify) |
@@ -23,6 +23,7 @@ suites.
 |---|---|
 | `db.test.mjs` | 0008 + 0009 (+ 0011) on an emulated Supabase (roles, default grants, `auth.uid()`, storage RLS) with production's 0001–0006 applied first. Authorization for guest / user / admin / service role, role spoofing, direct table access, draft privacy, validation (34 malformed or unsafe documents), conflicts, atomic publish, concurrent publish, failed-publish recovery, rollback, immutability, upload reservations, draft-bucket and public-bucket policies, prepared-media rules, identical uploads sharing one public copy (0011) without loosening the path/hash rule, write-once fields or service-role-only recording. |
 | `content`, `collections`, `saved-cards`, `site-sidebar`, `page-layout`, `layout-editing` `.test.mjs` | See their headers (0012–0014 and the editor). |
+| `game-library.test.mjs` | 0016 (proposed): the Game Library and the Games page, references, what visitors receive, authorization, that everything valid before is judged and answered as before, and its preflight, verification and recovery scripts. |
 | `studio-documents.test.mjs` | 0015, and the Studio's storage and store through it. See its header. |
 | `hardening.test.mjs` | Optional 0010: profiles privileges, `homepage_settings` column grant, legacy bucket listing. |
 | `function.test.mjs` | `publish-media` handler and byte checks with in-memory Auth/DB/Storage: real PNG/JPEG/WebP fixtures, SVG/GIF/HTML/EXE/truncated/oversized/huge-dimension rejection, auth, admin check, CORS, request shape, path tampering, type mismatch, failed copy/record and retry. |
@@ -58,7 +59,7 @@ Not covered by a committed suite: the games themselves, account pages and redire
    user and admin (expect 401/403/empty).
 3. The deployed Edge Function: JWT verification, CORS from the preview
    origin, a real draft → public copy, retry after a forced failure.
-4. Real concurrency: two browsers saving/publishing at once.
+4. Real concurrency: two browsers saving/publishing at once. (0016: `CONCURRENCY-0016.md`.)
 5. End-to-end: admin uploads → prepares → saves → publishes → visitor sees
    the new version without a deploy → rollback restores the previous one.
 

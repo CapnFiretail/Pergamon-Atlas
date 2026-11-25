@@ -26,8 +26,10 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   both (user-reported).
 - **Active milestone:** P1, Games catalog on the shared page architecture: phases 1–3
   released (above). Phase 4 (migration 0016, the Game Library, editing the Games page,
-  ads): approved, `cms/ARCHITECTURE.md` §13; the SQL and its tests are being prepared
-  locally and are reviewed before any database. Nothing of it is applied anywhere.
+  ads): approved, `cms/ARCHITECTURE.md` §13. Its SQL, scripts and tests are on
+  the development branch for independent review. **0016 is not applied anywhere**;
+  nothing after the SQL is started. Before production: the two-session test in
+  `cms/CONCURRENCY-0016.md` (a plan: not approved, not run).
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).

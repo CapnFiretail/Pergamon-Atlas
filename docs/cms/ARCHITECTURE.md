@@ -720,7 +720,7 @@ own details, and stored visibility overrides still apply to the Games page.
 
 Games get canonical records in one more versioned CMS document, `library`, in the
 existing tables (drafts, publishing, history and image checks as for a page). Agreed
-2026-11-24; the migration (0016) and its scope are still to be approved.
+2026-11-24; the migration (0016) is under review.
 
 - A game owns: stable id, name, description, category, destination, availability
   (available, coming soon, hidden, archived), square artwork and optional wide
@@ -735,7 +735,10 @@ existing tables (drafts, publishing, history and image checks as for a page). Ag
   then an explicit conversion in the draft.
 - 0016 also checks on the server that nothing is placed below a growing widget.
 
-**Approved for phase 4** (2026-11-24; the SQL is still to be reviewed):
+**Approved for phase 4** (2026-11-24). The SQL is written and tested, provisionally
+approved subject to independent review, and not applied anywhere: `supabase/proposed/0016_game_library.sql` (its header
+is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
+`tests/cms/game-library.test.mjs`. As decided:
 
 - A published record is archived, never deleted: the server keeps its id in every later
   version. Restoring the library opens the old version as a draft, keeping games added since.
@@ -745,12 +748,18 @@ existing tables (drafts, publishing, history and image checks as for a page). Ag
   No table, no policy, no content created or converted.
 - Publishing and restoring a page need its games live; saving a draft may use the
   library's draft. Library and page writes take their locks in one order, so neither can
-  pass a check the other is about to undo.
+  pass a check the other is about to undo: the page's, then the library's, shared, then
+  images by id (provisionally accepted; to be tested as `CONCURRENCY-0016.md` says).
+- The library is only ever restored as a draft: direct `rollback` of it is refused.
+- **Current limits, not architectural ones:** 64 records in the library, 24 cards in a
+  grid. Raising one changes a number in the SQL and in the browser's checks, no document.
 - Where a game is used is asked of every page the database has, not of a list of pages.
 - **Availability is discovery, not access:** it decides listings. A game's own address
   stays open.
 - **Outages:** a browser shows what it last received. The built-in records are refreshed
-  from the live library at each release, so they don't bring back games hidden since.
+  from the live library deliberately, as a step of each release, never by themselves.
+  Accepted limitation: during an outage a browser with nothing received yet may list a
+  game hidden since the last release.
 - Stored overrides only suggest the first library draft; their rows stay as they are.
 - New internal functions are executable by nobody through the API.
 - **Ads:** nothing loads until the auth client has reported its session. A guest then
