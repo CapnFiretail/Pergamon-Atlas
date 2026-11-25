@@ -243,7 +243,8 @@ Original plan, for reference:
 ## 5a. Admin Mode (implemented in M3: `scripts/cms/admin.js`)
 
 - **Who sees it.** Runs only where the loader is live (§5). On
-  load and on every sign-in/sign-out it reads the session and calls
+  load and on every sign-in/sign-out the site's one check
+  (`scripts/admin-access.js`) reads the session and calls
   `rpc is_admin()` with it; nothing is built (no button, no stylesheet, no
   pencils) unless the database answers `true`. Stored state
   (`sessionStorage['pa-cms-admin']`: on/off and view) is read only after
@@ -251,7 +252,8 @@ Original plan, for reference:
   session, or a regular user's session, gets `false` — and every CMS write
   function checks `is_admin()` itself, so the interface is never the
   boundary.
-- **Controls.** A header button (beside search / settings / account) opens
+- **Controls.** The shared header's Admin Mode control (`design/HANDBOOK.md` › The
+  site header), which is unavailable on pages without this editor, opens
   the Admin Mode panel: the on/off switch, "View as" Admin / User / Guest,
   and Publish Changes (disabled until editing exists). Styles:
   `styles/cms-admin.css`, loaded by the script after verification.
@@ -732,3 +734,27 @@ existing tables (drafts, publishing, history and image checks as for a page). Ag
 - The homepage moves gradually: code that reads both kinds of card, then the library,
   then an explicit conversion in the draft.
 - 0016 also checks on the server that nothing is placed below a growing widget.
+
+**Approved for phase 4** (2026-11-24; the SQL is still to be reviewed):
+
+- A published record is archived, never deleted: the server keeps its id in every later
+  version. Restoring the library opens the old version as a draft, keeping games added since.
+- 0016: pages `games` and `library`, a schema-2 validator for any page, the two new
+  widgets, references (`{ game, crop? }`), public records in `get_published_content`
+  (never `library` itself, never hidden or archived records or references to them).
+  No table, no policy, no content created or converted.
+- Publishing and restoring a page need its games live; saving a draft may use the
+  library's draft. Library and page writes take their locks in one order, so neither can
+  pass a check the other is about to undo.
+- Where a game is used is asked of every page the database has, not of a list of pages.
+- **Availability is discovery, not access:** it decides listings. A game's own address
+  stays open.
+- **Outages:** a browser shows what it last received. The built-in records are refreshed
+  from the live library at each release, so they don't bring back games hidden since.
+- Stored overrides only suggest the first library draft; their rows stay as they are.
+- New internal functions are executable by nobody through the API.
+- **Ads:** nothing loads until the auth client has reported its session. A guest then
+  gets ads, a signed-in visitor once the server says they aren't an administrator; if
+  that can't be asked, none. All nine pages with the tag.
+- Phase 5 (homepage): Featured and Spotlight references, with name, destination and
+  artwork from the record and no title override; its carousel follows availability.

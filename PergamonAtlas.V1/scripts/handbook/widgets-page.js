@@ -20,6 +20,7 @@
   const typo = window.PergamonDesign && window.PergamonDesign.typography;
   const roleName = id => { const r = typo && typo.role(id); return r ? r.name : id; };
   const ROLES = {
+    header: ['brand', 'nav', 'body-small'],
     sidebar: ['nav'],
     hero: ['feature-title', 'feature-cta'],
     banner: ['spotlight-title', 'spotlight-cta'],
@@ -312,6 +313,27 @@
 
     // ── Navigation and page widgets ─────────────────────────────────────
     const navs = group('Navigation and page widgets', 'The site shell’s navigation, and homepage widgets that aren’t yet library components.');
+    {
+      const layout = window.PergamonLayout, controls = window.PergamonAdminHeader;
+      const art = entry(navs, 'header', 'Site Header', [chip('Site shell', 'muted'), chip('Every page', 'active')],
+        'The header of every page: the brand, the main links, and search, settings and account. Verified administrators also get Atlas Studio, Atlas Handbook and Admin Mode, in that order. A page adds nothing for any of it.');
+      const s = stage('Live: the site’s own header, still. It follows this window’s width.', false);
+      if (layout && layout.headerSample && controls) {
+        [['Visitors', ''], ['Administrators, on a page with an editor', controls.sampleHtml('ready')], ['Administrators, Admin Mode on', controls.sampleHtml('on')], ['Administrators, on a page that can’t be edited', controls.sampleHtml('unavailable')]].forEach(([name, html]) => {
+          const place = el('div', 'hb-place hb-place--header');
+          place.append(layout.headerSample(html));
+          s.body.append(el('p', 'pa-type-label hb-muted hb-example-name', name), place);
+        });
+      } else s.body.append(el('p', 'pa-type-body-small hb-muted', 'The header isn’t available on this page.'));
+      art.append(s.fig, facts([
+        ['Who sees the controls', ['Only an account the server has confirmed as an administrator', { code: 'is_admin()' }, '. Until it answers, and for guests and members, nothing of them is shown or downloaded. A sign-out removes them at once. Hiding them protects nothing: every page and every write has its own check.']],
+        ['Studio, Handbook', ['Links on every page; the current one is marked.']],
+        ['Admin Mode', ['Follows the page. Where the page has an editor, the control is the editor’s. Elsewhere it is dimmed, says it isn’t available, and explains itself when pressed; the same while the editor loads, or if it couldn’t. A page gets an editor by loading', { code: 'scripts/cms/admin.js' }, ', which tells the header.']],
+        ['Responsive', ['At 900px and narrower the main links move into the menu and tooltips are off. At 600px and narrower an administrator’s buttons are smaller; at 489px and narrower the brand’s name gives way to the logo (360px for visitors).']],
+        ['Type roles', roles('header')],
+        ['Source', [{ path: 'scripts/layout.js' }, { path: 'styles/layout.css' }, { path: 'scripts/admin-access.js' }, { path: 'scripts/admin-header.js' }, { path: 'styles/admin-header.css' }]]
+      ]));
+    }
     {
       const layout = window.PergamonLayout;
       const nav = layout && layout.siteNavigation;

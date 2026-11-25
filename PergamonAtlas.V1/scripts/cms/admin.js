@@ -2,7 +2,7 @@
 // page it is, and so what it edits, follows from the page itself
 // (window.PergamonPage, scripts/cms/pages.js).
 //
-// Loaded after auth.js. Builds nothing, and loads the editor (workspace.js,
+// Loaded after auth.js and admin-access.js. Builds nothing, and loads the editor (workspace.js,
 // images.js, drawer.js, image-editor.js, publish.js, publish-dialog.js,
 // layout-mode.js and the grid editing code, styles/cms-admin.css and
 // grid-editor.css), only after the
@@ -12,7 +12,9 @@
 // answer, so altering them in the browser can't show the controls; and the
 // controls can't do anything the CMS functions would refuse.
 //
-//   header button   opens the Admin Mode panel (only for verified admins)
+//   header button   the shared header's Admin Mode control
+//                   (scripts/admin-header.js), which this editor takes over on
+//                   the pages that have it: opens the Admin Mode panel
 //   panel           Admin Mode on/off, "View as" Admin / User / Guest, the
 //                   published / draft / unsaved state, Publish Changes
 //                   (the saved draft; publish-dialog.js and publish.js)
@@ -44,7 +46,9 @@
   const auth = window.PergamonAuth;
   const pageView = window.PergamonPage;
   // Only where the page reads the CMS.
-  if (!cms.loader || !cms.loader.enabled || !cms.content || !auth || !pageView || !window.PergamonSupabaseClient) return;
+  const access = window.PergamonAdmin;
+  if (!cms.loader || !cms.loader.enabled || !cms.content || !auth || !access || !pageView || !window.PergamonSupabaseClient) return;
+  access.provideEditor({ state: 'loading' });
 
   const root = pageView.root;
   const PAGE = cms.content.page;
@@ -54,7 +58,6 @@
   const MODES = { content: 'Content', layout: 'Layout' };
   const STATUS_LABELS = { unsaved: 'unsaved changes', draft: 'saved in draft' };
   const ICONS = {
-    admin: '<path d="M12 3 5 6v5c0 4.4 3 8.3 7 9.5 4-1.2 7-5.1 7-9.5V6z"/><path d="m9 12 2 2 4-4"/>',
     pencil: '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     stack: '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',
     plus: '<path d="M12 5v14M5 12h14"/>'
@@ -69,7 +72,6 @@
   const time = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); };
 
   let verified = false;
-  let check = 0;                       // latest verification; older answers are ignored
   const OFF = { active: false, view: 'admin', mode: 'content' };
   let state = OFF;
   let ui = null;                       // header button, panel, preview bar, drawer (once verified)
@@ -90,21 +92,11 @@
   const NAV_ID = 'site.sidebar';
 
   // ── Server verification ───────────────────────────────────────────────
-  async function isAdmin() {
-    const res = await auth.getSession();
-    if (!res || !res.data || !res.data.session) return false;
-    const answer = await auth.isCmsAdmin();
-    return !answer.error && answer.data === true;
-  }
-
-  function verify() {
-    const id = ++check;
-    return isAdmin().catch(() => false).then(ok => {
-      if (id !== check) return verified;
-      if (ok && !verified) mount();
-      else if (!ok && verified) unmount();
-      return ok;
-    });
+  // The site's one check (scripts/admin-access.js), asked again.
+  const verify = () => access.recheck();
+  function follow(ok) {
+    if (ok && !verified) mount();
+    else if (!ok && verified) unmount();
   }
 
   function readState() {
@@ -162,14 +154,16 @@
       loadScript('/scripts/cms/manage.js', () => !!cms.manage),
       loadScript('/scripts/cms/history.js', () => !!cms.history),
       loadScript('/scripts/cms/site-nav.js', () => !!cms.siteNav),
-      loadScript('/scripts/cms/layout-mode.js', () => !!cms.layoutMode)
-    ]).then(() => {
+      loadScript('/scripts/cms/layout-mode.js', () => !!cms.layoutMode),
+      access.adminButton()
+    ]).then(loaded => {
       if (!verified || ui) return;
-      start();
-    }, () => { verified = false; console.info('Pergamon CMS: Admin Mode could not load its editor.'); });
+      start(loaded[loaded.length - 1]);
+      access.provideEditor({ state: 'ready' });
+    }, () => { verified = false; access.provideEditor({ state: 'failed' }); console.info('Pergamon CMS: Admin Mode could not load its editor.'); });
   }
 
-  function start() {
+  function start(button) {
     workspace = cms.workspace.create({
       page: PAGE.id,
       scope: window.PERGAMON_SUPABASE_URL || '',
@@ -195,13 +189,14 @@
     });
     imageStore.onChange(() => { if (ui) { draw(); ui.drawer.refresh(); } });
     renewTimer = setInterval(resolveImages, 5 * 60 * 1000);
-    ui = buildInterface();
+    ui = buildInterface(button);
     apply();
   }
 
   function unmount() {
     verified = false;
     state = OFF;
+    access.provideEditor({ state: 'loading' });      // until the next administrator's is built
     if (layoutMode) { layoutMode.destroy(); layoutMode = null; }
     undecorate();
     if (pageView.holdMotion) pageView.holdMotion(false);
@@ -210,7 +205,7 @@
     if (history) { history.destroy(); history = null; }
     if (siteNav) { siteNav.destroy(); siteNav = null; }
     if (layout) layout.previewSiteNavigation();     // back to the published links
-    if (ui) { ui.drawer.destroy(); ui.button.remove(); ui.panel.remove(); ui.bar.remove(); ui = null; }
+    if (ui) { ui.drawer.destroy(); ui.panel.remove(); ui.bar.remove(); ui = null; }
     if (workspace) workspace.clearLocal();      // a signed-out browser keeps no edits
     workspace = null; loading = null; imageStore = null;
     clearInterval(renewTimer);
@@ -235,18 +230,12 @@
     return loading;
   }
 
-  function buildInterface() {
-    const actions = document.querySelector('.pa-header .pa-actions');
-    const button = el('button', 'pa-icon-button cms-admin-button');
-    button.type = 'button';
-    button.id = 'cms-admin-button';
+  // button: the header's control (a sign-out removes it; a sign-in makes another).
+  function buildInterface(button) {
+    button.dataset.named = '';               // apply() names it from here on
     button.setAttribute('aria-haspopup', 'dialog');
     button.setAttribute('aria-controls', 'cms-admin-panel');
     button.setAttribute('aria-expanded', 'false');
-    button.innerHTML = svg('admin', 'pa-icon') + '<span class="cms-admin-dot" aria-hidden="true"></span>';
-    // First in the header's actions, after the Handbook's book icon if it is there.
-    const book = actions && actions.querySelector('.pa-handbook-link');
-    if (book) book.after(button); else if (actions) actions.prepend(button);
 
     const panel = el('div', 'cms-admin-panel');
     panel.id = 'cms-admin-panel';
@@ -928,12 +917,6 @@
   // ── Start, and follow sign-in / sign-out ──────────────────────────────
   document.addEventListener('keydown', onKey);
   document.addEventListener('pointerdown', onPointer, true);
-  verify();
-  try {
-    auth.onAuthStateChange(event => {
-      if (event === 'TOKEN_REFRESHED') return;
-      // Outside the auth callback: supabase-js must not be re-entered from it.
-      setTimeout(verify, 0);
-    });
-  } catch (e) {}
+  access.onChange(follow);
+  access.verify().then(follow);
 })();

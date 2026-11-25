@@ -14,7 +14,7 @@
 //
 // Everything is drawn with the site's tokens and type roles (styles/theme.css,
 // styles/typography.css); studio.css only lays it out. Nothing here depends on
-// the Handbook's code beyond the shared administrator check (entry.js).
+// the Handbook's code beyond the shared administrator check (admin-access.js).
 (function () {
   'use strict';
   const ns = window.PergamonStudio = window.PergamonStudio || {};

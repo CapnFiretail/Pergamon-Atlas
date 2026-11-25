@@ -20,6 +20,12 @@
 //   preview          Admin Mode's unsaved Site Navigation, on the homepage only.
 // Hiding or removing a link never protects a page: pages keep their own checks.
 //
+// Administrator controls (Studio, Handbook, Admin Mode) are part of this header on
+// every page that uses it; a page adds nothing for them. Once someone is signed in,
+// the header loads the administrator check (scripts/admin-access.js, and the auth
+// client on pages without it), and only if the server confirms an administrator
+// the controls themselves (scripts/admin-header.js). Guests download none of it.
+//
 // Layout modes (data-layout on .pa-page):
 //   (none)  the sidebar is a fixed rail below the header, full height.
 //   inline  the sidebar is not inserted here; the page mounts it inside its
@@ -340,6 +346,24 @@
     },
     // Admin Mode after publish / rollback: the new published Site Navigation.
     setPublishedSiteNavigation: function (nav) { usePublished(nav); },
+    // The header's markup, as a still example (the Handbook): no working links, the
+    // administrator controls as given (PergamonAdminHeader.sampleHtml).
+    headerSample: function (adminHtml) {
+      var box = document.createElement('div');
+      box.innerHTML = header;
+      var h = box.firstElementChild;
+      h.classList.add('pa-header--preview');
+      h.querySelectorAll('a, button').forEach(function (n) {
+        n.tabIndex = -1; n.removeAttribute('href'); n.removeAttribute('aria-controls'); n.removeAttribute('data-tip');
+      });
+      if (adminHtml) {
+        var actions = h.querySelector('.pa-actions');
+        actions.insertAdjacentHTML('afterbegin', adminHtml);
+        actions.setAttribute('data-admin', '');
+      }
+      h.inert = true;
+      return h;
+    },
     // For editors and the Handbook's previews.
     siteNavigation: {
       builtIn: function () { return JSON.parse(JSON.stringify(BUILT_IN_NAV)); },
@@ -365,13 +389,73 @@
   // ── Confirm sign-in state for palette rules ──────────────────────────
   // theme.js starts from Supabase's stored session; pages that load the auth
   // client correct it here. Pages without auth keep the stored-session guess.
-  document.addEventListener('DOMContentLoaded', function () {
+  // A confirmed session also starts the administrator controls, below.
+  function followSession() {
     var auth = window.PergamonAuth;
     var theme = window.PergamonTheme;
-    if (!auth || !theme) return;
+    if (!auth) return;
+    var confirmed = function (signedIn) {
+      if (theme) theme.setSignedIn(signedIn);
+      if (signedIn) startAdmin();
+    };
     auth.getSession()
-      .then(function (res) { theme.setSignedIn(!!(res && res.data && res.data.session)); })
+      .then(function (res) { confirmed(!!(res && res.data && res.data.session)); })
       .catch(function () {});
-    try { auth.onAuthStateChange(function (event, session) { theme.setSignedIn(!!session); }); } catch (e) {}
+    try { auth.onAuthStateChange(function (event, session) { confirmed(!!session); }); } catch (e) {}
+  }
+
+  // ── Administrator controls ────────────────────────────────────────────
+  // In order; each only if the page hasn't loaded it. The auth client is the
+  // site's pinned copy, as every page with sign-in loads it.
+  var CLIENT = [
+    { src: '/operation/scripts/auth/supabase-config.js', ready: function () { return window.PERGAMON_ENV !== undefined || window.PERGAMON_SUPABASE_URL !== undefined; } },
+    { src: '/vendor/supabase-js/2.118.0/supabase.js', integrity: 'sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK', ready: function () { return !!window.supabase; } },
+    { src: '/operation/scripts/auth/supabase.js', ready: function () { return !!window.PergamonSupabaseClient; } },
+    { src: '/operation/scripts/auth/auth.js', ready: function () { return !!window.PergamonAuth; } }
+  ];
+  function load(f) {
+    return new Promise(function (resolve, reject) {
+      if (f.ready && f.ready()) return resolve();
+      var s = document.createElement('script');
+      s.src = f.src;
+      if (f.integrity) s.integrity = f.integrity;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { s.remove(); reject(new Error(f.src)); };
+      document.head.appendChild(s);
+    });
+  }
+  var loadAll = function (files) { return files.reduce(function (p, f) { return p.then(function () { return load(f); }); }, Promise.resolve()); };
+  function loadStyle(href) {
+    return new Promise(function (resolve) {
+      var l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = href;
+      l.onload = l.onerror = function () { resolve(); };
+      document.head.appendChild(l);
+    });
+  }
+  var adminStarted = false, controls = null;
+  function startAdmin() {
+    if (adminStarted) return;
+    adminStarted = true;
+    load({ src: '/scripts/admin-access.js', ready: function () { return !!window.PergamonAdmin; } })
+      .then(function () {
+        var access = window.PergamonAdmin;
+        var show = function (ok) {
+          if (!ok || controls) return;
+          controls = loadStyle('/styles/admin-header.css')
+            .then(function () { return load({ src: '/scripts/admin-header.js' }); })
+            .catch(function () { controls = null; });
+        };
+        access.onChange(show);
+        return access.verify().then(show);
+      })
+      .catch(function () { adminStarted = false; });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.PergamonAuth) { followSession(); return; }
+    // A page without the auth client: only a browser with a stored session needs it.
+    var theme = window.PergamonTheme;
+    if (theme && theme.get().signedIn) loadAll(CLIENT).then(followSession, function () {});
   });
 })();

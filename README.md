@@ -71,7 +71,8 @@ In `<body>`:
 </div>
 ```
 
-Copy an existing page (such as `settings/`) for the auth and footer scripts.
+Copy an existing page (such as `settings/`) for the auth and footer scripts. The header
+brings the administrator controls itself (`HANDBOOK.md` › The site header).
 
 ## Deploying
 

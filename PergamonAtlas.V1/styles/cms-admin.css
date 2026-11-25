@@ -2,24 +2,6 @@
  * server has confirmed an administrator, so visitors never download it.
  * Colours from /styles/theme.css; nothing here changes a card's size. */
 
-/* ── Header button ─────────────────────────────────────────────────────── */
-.cms-admin-button:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
-.cms-admin-button.is-active { background: var(--color-accent-soft); color: var(--color-accent-text); }
-.cms-admin-button[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--color-accent); }
-.cms-admin-button[aria-expanded="true"]::after { display: none; }   /* no tooltip over the open panel */
-.cms-admin-dot {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 7px;
-  height: 7px;
-  border: 1.5px solid var(--color-background);
-  border-radius: 50%;
-  background: var(--color-accent);
-  opacity: 0;
-}
-.cms-admin-button.is-active .cms-admin-dot { opacity: 1; }
-
 /* ── Panel ─────────────────────────────────────────────────────────────── */
 .cms-admin-panel, .cms-admin-panel *, .cms-admin-bar, .cms-admin-bar *, .cms-drawer, .cms-drawer * { box-sizing: border-box; }
 .cms-admin-panel {
@@ -267,7 +249,7 @@
 /* The card being edited: a solid frame instead of the dashed one. */
 .cms-editing > .cms-edit-frame { border: 2px solid var(--color-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent); }
 .cms-editing > .cms-edit-pencil { background: var(--color-accent); color: var(--color-on-accent); }
-.cms-admin-button.has-unsaved .cms-admin-dot { opacity: 1; background: var(--cms-unsaved); }
+.cms-admin-button.has-unsaved .pa-admin-dot { opacity: 1; background: var(--cms-unsaved); }
 
 /* ── Panel: published / draft / unsaved ────────────────────────────────── */
 .cms-admin-state { display: grid; gap: 6px; margin: 0; padding: 10px 12px; list-style: none; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-background); }
@@ -716,27 +698,9 @@ select.cms-field-input { cursor: pointer; }
 @media (max-width: 900px) {
   .cms-admin-panel { right: 12px; }
 }
-@media (max-width: 600px) {
-  /* A fourth header button: slightly smaller buttons keep the header on screen. */
-  .pa-capsule:has(.cms-admin-button) { gap: 0; padding: 4px; }
-  .pa-actions:has(.cms-admin-button) { gap: 0; }
-  .pa-actions:has(.cms-admin-button) .pa-icon-button { width: 32px; height: 32px; }
-  .pa-actions:has(.cms-admin-button) .pa-icon { width: 20px; height: 20px; }
-  /* And if the name is still too wide (e.g. before the web font loads), it shortens instead. */
-  .pa-header:has(.cms-admin-button) .pa-brand { flex-shrink: 1; }
-  .pa-header:has(.cms-admin-button) .pa-brand-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .cms-admin-dot { top: 4px; right: 4px; }
-}
 @media (max-width: 420px) {
-  .pa-header:has(.cms-admin-button) .pa-brand { gap: 8px; }
-  .pa-header:has(.cms-admin-button) .pa-brand-name { font-size: 15px; }
   .cms-admin-bar { gap: 8px; padding-left: 12px; font-size: 13px; }
 }
-/* Below this the name doesn't fit beside four buttons: logo only (as under 361px for everyone). */
-@media (max-width: 374px) {
-  .pa-header:has(.cms-admin-button) .pa-brand-name { display: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cms-admin-switch, .cms-admin-switch-knob { transition: none; }
 }

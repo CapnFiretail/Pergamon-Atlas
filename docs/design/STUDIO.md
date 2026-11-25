@@ -10,7 +10,6 @@ Every other section is a placeholder.
 | File | Role |
 |---|---|
 | `PergamonAtlas.V1/studio/index.html` | The page: an empty `#studio-root` until access is decided. `noindex`. |
-| `PergamonAtlas.V1/scripts/studio/entry.js` | The header's Studio icon. Loaded right after the Handbook's `entry.js` on the homepage, the Handbook and the Studio. |
 | `PergamonAtlas.V1/scripts/studio/gate.js` | Shows the Studio (and only then loads its code) or the generic access-denied notice. |
 | `PergamonAtlas.V1/scripts/studio/sections.js` | **The sections: the source of truth** (groups, icons, the default section). |
 | `PergamonAtlas.V1/scripts/studio/studio.js` | The shell: routes, the site sidebar's destinations, breadcrumbs, placeholders, section renderers. |
@@ -31,16 +30,15 @@ Every other section is a placeholder.
 
 ## Access
 
-The Handbook's check (`PergamonHandbook.access`, `HANDBOOK.md` › Access), with
-the same rules: nothing is shown or downloaded beyond `entry.js` (and `gate.js`
-on `/studio/`) until the server confirms an administrator, and signing out
+The site's administrator check (`HANDBOOK.md` › Access, The site header), with
+the same rules: nothing is shown or downloaded beyond it (and `gate.js` on
+`/studio/`) until the server confirms an administrator, and signing out
 replaces the Studio with the notice at once. The Studio's files can still be
 fetched by URL, and the repository is public: nothing confidential goes in
 them. Anything the Studio may read or change later must be enforced by the
 server.
 
-The header shows Studio, Handbook, Admin Mode, in that order; the Handbook's
-icon stays next to Admin Mode's.
+Its icon is in every page's header, for administrators.
 
 ## Navigation
 

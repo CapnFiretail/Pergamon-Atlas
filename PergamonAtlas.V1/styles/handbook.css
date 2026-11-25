@@ -376,6 +376,7 @@
 .hb-place { width: 100%; min-width: 0; }
 .hb-place--hero, .hb-place--banner { container: upper / inline-size; display: grid; max-width: 760px; }
 .hb-place--hero { grid-template-rows: 260px; }
+.hb-place--header { overflow-x: auto; }
 .hb-place--heading { display: grid; min-height: 190px; }
 .hb-stage-body[data-width="compact"] .hb-place--heading { min-height: 0; }
 .hb-place--banner { grid-template-rows: 140px; }

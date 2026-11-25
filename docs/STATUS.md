@@ -5,8 +5,7 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by P1's local
-  commits, unpushed.
+- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by P1's phases 1–3.
 - **Production:** `d537d14` (S5: Studio › Ideas; Connections and Ideas saved in
   Supabase), released 2026-11-24 (Vercel `8aY37MEUBFWP4wTFh2Z9S2PLikwz`) and verified
   the same day as a guest and by comparing every published site file with the
@@ -23,14 +22,15 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
   both (user-reported).
 - **Active milestone:** P1, Games catalog on the shared page architecture. Phases 1
-  (`2e51a75`, shared pages) and 2 (`11a750a`, Page Heading, Card Grid, widgets that
-  grow): approved by the user 2026-11-24, committed locally, not pushed. Phase 3 (the
-  Games page as an ordinary page of widgets over built-in game records; the floating
-  sidebar as a fixed-height panel): approved and committed locally after them. No
-  database change. Next: phase 4, migration 0016 (scope still to be
-  approved, with the server's growing-widget check), the Game Library and editing the
-  Games page; its proposal is being prepared, nothing of it is built. Agreed: verified
-  administrators get no ad scripts, everyone else as before.
+  (`2e51a75`, shared pages), 2 (`11a750a`, Page Heading, Card Grid, widgets that grow)
+  and 3 (`ce3775f`, the Games page; the floating sidebar as a fixed-height panel):
+  approved by the user 2026-11-24 and on staging the same day (Vercel
+  `ALU4Gd5NzCPE3oxZXU8sTTYs4VPg`: build verified, the address answers with Vercel's
+  sign-in; its pages are the user's to open). Then, from that review, the administrator controls
+  moved into the shared header on every page. No database change. Not released: awaiting
+  staging review and release approval. Phase 4 (migration 0016, the Game Library,
+  editing the Games page, ads): approved in principle, starts after that release, its
+  SQL to be reviewed before any database. Agreed: `cms/ARCHITECTURE.md` §13.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).

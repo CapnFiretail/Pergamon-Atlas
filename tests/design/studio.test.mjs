@@ -1,5 +1,5 @@
-// Atlas Studio: its sections, and that only the entry script reaches pages
-// before the administrator check. No dependencies:
+// Atlas Studio: its sections, and that none of its code reaches a page before
+// the administrator check. No dependencies:
 //   node --test tests/design/studio.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -31,14 +31,13 @@ test('every section has a unique path in its group, an icon and a description', 
   });
 });
 
-test('pages load only the entry script (and /studio/ its gate)', () => {
+test('pages load none of it (and /studio/ only its gate)', () => {
   const pages = readdirSync(SITE, { recursive: true }).map(p => p.replace(/\\/g, '/')).filter(p => p.endsWith('.html'));
   const found = {};
   pages.forEach(p => { const refs = read(p).match(/\/(?:scripts\/(?:studio|canvas)\/[\w/-]+\.js|styles\/(?:studio[\w-]*|canvas)\.css)(?=")/g); if (refs) found[p] = refs; });
-  const entry = '/scripts/studio/entry.js';
-  assert.deepEqual(found, { 'handbook/index.html': [entry], 'index.html': [entry], 'studio/index.html': [entry, '/scripts/studio/gate.js'] });
-  // The entry script uses the Handbook's administrator check, loaded just before it.
-  Object.keys(found).forEach(p => assert.match(read(p), /<script src="\/scripts\/handbook\/entry\.js"><\/script>\s*<script src="\/scripts\/studio\/entry\.js">/, p));
+  assert.deepEqual(found, { 'studio/index.html': ['/scripts/studio/gate.js'] });
+  // The gate uses the site's administrator check, loaded just before it.
+  assert.match(read('studio/index.html'), /<script src="\/scripts\/admin-access\.js"><\/script>\s*<script src="\/scripts\/studio\/gate\.js">/);
   assert.match(read('studio/index.html'), /name="robots" content="noindex, nofollow"/);
 });
 

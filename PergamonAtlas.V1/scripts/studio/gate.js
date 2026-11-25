@@ -1,4 +1,4 @@
-// /studio/: what the page shows. Verified administrators (entry.js) get the
+// /studio/: what the page shows. Verified administrators (admin-access.js) get the
 // Studio, whose styles and scripts load only then; everyone else gets a generic
 // access-denied notice that doesn't name the Studio. Signing out (or into a
 // non-admin account) while the page is open replaces the Studio with the
@@ -6,8 +6,8 @@
 (function () {
   'use strict';
   const root = document.getElementById('studio-root');
-  const ns = window.PergamonStudio;
-  const access = ns && ns.access;
+  const ns = window.PergamonStudio = window.PergamonStudio || {};
+  const access = ns.access = window.PergamonAdmin;
   if (typeof window.loadSnippets === 'function') window.loadSnippets('');
   if (!root) return;
 

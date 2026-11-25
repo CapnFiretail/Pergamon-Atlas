@@ -1,0 +1,60 @@
+/* The shared header's administrator controls (scripts/admin-header.js): Studio,
+ * Handbook, Admin Mode. Loaded by the header only after the server has confirmed
+ * an administrator. Their shape is the header's own .pa-icon-button; this is
+ * Admin Mode's states, and how the header makes room for three more buttons. */
+
+.cms-admin-button:not([aria-disabled="true"]):hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.cms-admin-button.is-active { background: var(--color-accent-soft); color: var(--color-accent-text); }
+.cms-admin-button[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--color-accent); }
+.cms-admin-button[aria-expanded="true"]::after { display: none; }   /* no tooltip over the open panel */
+.pa-admin-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--color-background);
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0;
+}
+.cms-admin-button.is-active .pa-admin-dot { opacity: 1; }
+
+/* Why Admin Mode does nothing here. */
+.pa-admin-note {
+  position: fixed;
+  z-index: 260;
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-item);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-popover);
+  color: var(--color-text-primary);
+  font-family: var(--type-body-small-family);
+  font-size: var(--type-body-small-size);
+  font-weight: var(--type-body-small-weight);
+  line-height: var(--type-body-small-leading);
+  letter-spacing: var(--type-body-small-tracking);
+  text-transform: var(--type-body-small-transform);
+}
+
+/* Smaller buttons keep the header on screen, and the name gives way when it no
+   longer fits beside six of them. */
+@media (max-width: 600px) {
+  .pa-capsule:has(> .pa-actions[data-admin]) { gap: 0; padding: 4px; }
+  .pa-actions[data-admin] { gap: 0; }
+  .pa-actions[data-admin] .pa-icon-button { width: 32px; height: 32px; }
+  .pa-actions[data-admin] .pa-icon { width: 20px; height: 20px; }
+  .pa-header:has(.pa-actions[data-admin]) .pa-brand { flex-shrink: 1; }
+  .pa-header:has(.pa-actions[data-admin]) .pa-brand-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .pa-admin-dot { top: 4px; right: 4px; }
+}
+@media (max-width: 489px) {
+  .pa-header:has(.pa-actions[data-admin]) .pa-brand-name { display: none; }
+}
+@media (max-width: 420px) {
+  .pa-header:has(.pa-actions[data-admin]) .pa-brand { gap: 8px; }
+}

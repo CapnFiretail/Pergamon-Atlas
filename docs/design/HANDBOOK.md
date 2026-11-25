@@ -39,7 +39,9 @@ the roadmap in `ATLAS_VISION.md` §11.
 | File | Role |
 |---|---|
 | `PergamonAtlas.V1/handbook/index.html` | The page: shared header, sidebar, footer and themes; an empty `#handbook-root` until access is decided. `noindex`. |
-| `PergamonAtlas.V1/scripts/handbook/entry.js` | Administrator check and the header's book icon. Loaded on the homepage and the Handbook. |
+| `PergamonAtlas.V1/scripts/admin-access.js` | **The administrator check**, for the whole site. |
+| `PergamonAtlas.V1/scripts/admin-header.js`, `styles/admin-header.css` | **The header's administrator controls** (Studio, Handbook, Admin Mode), loaded only after the check. |
+| `tests/design/admin-header.test.mjs`, `tests/site/header.mjs` | One check, one source, every page and width, what visitors get. |
 | `PergamonAtlas.V1/scripts/handbook/gate.js` | Shows the Handbook (and only then loads its code) or a generic access-denied notice. |
 | `PergamonAtlas.V1/scripts/handbook/handbook.js` | App shell: the sections (`GROUPS`, shown in the site sidebar), hash routes, breadcrumbs, the Dashboard, group and planned pages, the phone-preview frame mode. |
 | `PergamonAtlas.V1/scripts/handbook/widgets-page.js` | Library › Widgets: the component catalogue, with live previews. |
@@ -86,9 +88,9 @@ the roadmap in `ATLAS_VISION.md` §11.
 
 ## Access
 
-The icon and the page use the same check as Admin Mode: a Supabase session,
-then the server's `is_admin()` RPC. Guests and members see no icon, no link
-and no mention of the Handbook; visiting `/handbook/` shows "Access denied"
+The page uses the site's one administrator check (`scripts/admin-access.js`): a
+Supabase session, then the server's `is_admin()` RPC. Guests and members see no icon,
+no link and no mention of the Handbook; visiting `/handbook/` shows "Access denied"
 without naming it, and the Handbook's scripts and styles are never
 downloaded for them. Signing out while the page is open replaces it with the
 notice.
@@ -146,6 +148,21 @@ Every `##` section has its own address, `/handbook/#/vision/<section-id>`, so
 it can be bookmarked or shared with another admin. The contents list sits
 beside the document on wide screens and becomes a menu above it below
 1201px; it marks the section being read.
+
+## The site header
+
+One header, drawn by `scripts/layout.js` on every page that includes it. Its
+administrator controls (Studio, Handbook, Admin Mode, in that order) come with it: a
+page adds nothing, and a future page inherits them.
+
+- **Verification.** Once someone is signed in, the header loads the administrator check
+  (and the auth client, on pages without one). Only if the server confirms an
+  administrator does it load and show the controls; a sign-out or another account
+  removes them. Guests download none of it; members only the check.
+- **Admin Mode by capability.** A page with an editor (`scripts/cms/admin.js`) says so
+  through `PergamonAdmin.provideEditor`; the control is then the editor's. Anywhere else it is
+  unavailable and says why. Nothing on a page without an editor can be turned on.
+- **Responsive**, states and live examples: Handbook › Widgets › Site Header.
 
 ## Navigation: one sidebar
 
@@ -294,11 +311,12 @@ shown in full.
    shown until something is published, and whenever the database can't be read.
 3. **HTML.** As `index.html`: `data-layout="inline"` on `.pa-page`; one
    `<div class="home" data-atlas-page="<id>">`; the same scripts in the same order,
-   with the page's own file in place of `home.js`; `handbook/entry.js`,
-   `studio/entry.js` and `cms/admin.js` last. No inline scripts or styles.
+   with the page's own file in place of `home.js`; `admin-access.js` and `cms/admin.js`
+   last (they make the header's Admin Mode control available). No inline scripts or
+   styles.
 4. **Page file.** A call to `PergamonPages.mount` (`scripts/games.js` is the example).
-   A page that isn't edited yet leaves out `cms/loader.js`, `cms/admin.js` and the two
-   `entry.js`; it needs nothing from step 5.
+   A page that isn't edited yet leaves out `cms/loader.js`, `admin-access.js` and
+   `cms/admin.js`; it needs nothing from step 5. Its header still has the controls.
 5. **Server.** A migration: a row in `site_pages` whose `schema_version` is the entry's
    `schemaVersion`, and `validate_content` accepting the page and its prefix. Until it
    is applied the page shows its built-in content; saving is refused.
@@ -381,6 +399,4 @@ them) can make a style that looks equivalent in the CSS render differently.
 - The homepage and the Games page are the registered pages; only the homepage is edited
   (the database accepts no other page until migration 0016); widgets stay in their region, and extra carousels share the
   "Explore More Games" heading.
-- The book icon appears where Admin Mode lives (the homepage) and on the
-  Handbook itself.
 - The Vision page is read-only; the vision is changed in the repository.

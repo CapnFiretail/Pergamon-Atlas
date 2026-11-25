@@ -1,12 +1,12 @@
-// /handbook/: what the page shows. Verified administrators (entry.js, the
-// same server check as Admin Mode) get the Handbook, whose styles and scripts
+// /handbook/: what the page shows. Verified administrators (admin-access.js, the
+// site's one check) get the Handbook, whose styles and scripts
 // load only then; everyone else gets a generic access-denied notice that
 // doesn't name the Handbook. Signing out (or into a non-admin account) while
 // the page is open replaces the Handbook with the notice at once.
 (function () {
   'use strict';
   const root = document.getElementById('handbook-root');
-  const access = window.PergamonHandbook && window.PergamonHandbook.access;
+  const access = window.PergamonAdmin;
   if (typeof window.loadSnippets === 'function') window.loadSnippets('');
   if (!root) return;
 
