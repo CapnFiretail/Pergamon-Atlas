@@ -192,8 +192,9 @@ grant execute on function public.rollback(text, bigint, bigint) to authenticated
 
 commit;
 
--- Requests already running may still be in 0016's functions: let them finish, then drop
--- what only those called. (If only this part fails, run it again: nothing uses them.)
+-- Requests already running may still be in 0016's functions: give them time to finish,
+-- then drop what only those called. The wait makes that likely, not certain; the window
+-- is what ensures it. (If only this part fails, run it again: nothing uses them.)
 select pg_sleep(10);
 
 begin;

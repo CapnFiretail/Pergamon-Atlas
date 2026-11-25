@@ -1,7 +1,7 @@
 # Concurrency test for 0016
 
 Required before 0016 reaches production. **Part A: run 2026-11-24, all passed. Part B: a
-plan, not approved, not run.** The rules: the header of `supabase/proposed/0016_game_library.sql`.
+plan, not approved, not run; `STAGING-0016.md` says when.** The rules: the header of `supabase/proposed/0016_game_library.sql`.
 
 ## Locks, by write path
 
@@ -45,7 +45,7 @@ recovery impossible, so the cases that must commit run here.
 
 Run with the official PostgreSQL 17 Windows binaries, unpacked into a temporary folder and
 removed afterwards; no service, no system setting. Staging's major version must be 17 too
-(step 0 of part B): if it isn't, run this again with that version.
+(`STAGING-0016.md` step 2): if it isn't, run this again with that version.
 
 | Case | Expected |
 |---|---|
@@ -70,12 +70,13 @@ from the same version: one wins each time, which is the rule.
 
 **Found and corrected:** recovery dropped its helpers in the same transaction, and a
 homepage read running at that moment failed. It now restores, waits 10 seconds, then drops.
+The wait is a mitigation, not synchronization: the maintenance window stays mandatory.
 
 Cleanup: it stops the server and deletes the folder itself, and prints `(cluster removed)`.
 
 ## Applying and recovering
 
-Both in a **maintenance window**: no open editors, no saves or publishes. A9–A13 show what
+Both in a **mandatory maintenance window**: no open editors, no saves or publishes. A9–A13 show what
 happens if someone writes anyway, as a safety net and not as the procedure: nothing is
 corrupted, and the worst outcome is a refused write.
 
@@ -94,6 +95,10 @@ about 5 seconds after it.
 an existing administrator's id, in the project owner's own SQL Editor. No session, token or
 password is used or shown. Staging's version ids will skip some numbers.
 
+Run them in the order **B2, B4, B1, B3, B5**. B2 and B4 show that the two tabs really run
+at the same time. If either waits for tab 1, the editor is queueing the tabs: stop, because
+the waits of B1, B3 and B5 would then prove nothing.
+
 | Case | Tab 1 | Tab 2 | Expected in tab 2 |
 |---|---|---|---|
 | B1 | block L | block P | waited ≥ 10 s; PT422 `isn't in the Game Library` |
@@ -105,7 +110,7 @@ password is used or shown. Staging's version ids will skip some numbers.
 Tab 1 always ends with `RESULT held, undone`. **Stop** and report if a result differs, if
 anything mentions `deadlock` or `40P01`, or if a tab runs past 60 seconds.
 
-Step 0, for the record: `show server_version;` (17.x) and keep `verify_0016.sql`'s result.
+Before: `STAGING-0016.md` steps 1–6, with `verify_0016.sql`'s result kept.
 
 Afterwards: run `verify_0016.sql` again. Every check true, and its record rows (live
 version, fingerprints, stored versions) exactly as before. There is nothing else to clean

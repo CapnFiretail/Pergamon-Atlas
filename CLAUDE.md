@@ -76,7 +76,7 @@ Paths under `scripts/`, `styles/` and `data/` are in `PergamonAtlas.V1/`.
 | Content document and fields | `docs/cms/ARCHITECTURE.md` §3 (schema 1), §11 (schema 2); `scripts/cms/content.js` |
 | Admin Mode | `docs/cms/ARCHITECTURE.md`: §5a mode, §5b cards, §5c images, §5d publishing, §5e collections and history, §5f navigation, §12 Layout Mode |
 | Database, access, media | `docs/cms/ARCHITECTURE.md` §2–4; the one migration in `supabase/proposed/` |
-| Staging | `docs/cms/STAGING.md` › Keeping production isolated |
+| Staging | `docs/cms/STAGING.md` › Keeping production isolated (0016: `STAGING-0016.md`) |
 | Workflow, environments, local development server | `docs/DEVELOPMENT.md`; header of `tools/dev-server.mjs` |
 | Colours, spacing, surfaces | `styles/theme.css` (values); `scripts/design/colors.js`, `surfaces.js` (uses) |
 | Look of an editing canvas (either engine) | Header of `styles/canvas-kit.css`; `HANDBOOK.md` › Files |

@@ -36,9 +36,6 @@
 --   * A record that has been published keeps its id in every later version of the
 --     library (archive it instead): checked when the library is saved or
 --     published. The set of published ids therefore only ever grows.
---   * A published id isn't silently given to another game: compared with what is live,
---     a record's name or its destination may change in one publish, not both (unless
---     it had that destination before). Renaming, and moving to another route, stay free.
 --   * An earlier library is restored as a draft, never straight to visitors.
 --   * Saving a page's draft needs each game it adds in the live library or its draft.
 --     A draft may outlive the library draft it used (discarded or changed): what it
@@ -529,23 +526,6 @@ begin
     order by 1 limit 1;
     if missing is not null then
       raise exception 'library.games.%: a published game can be archived, not removed', missing using errcode = 'PT422';
-    end if;
-    -- The same id is the same game: from what is live, its name or its address may
-    -- change, not both at once (unless the address was its own before).
-    select substr(live.key, length('library.games.') + 1) into missing
-    from public.site_content_versions v
-    cross join lateral jsonb_each(v.content -> 'components') live(key, game)
-    where v.page = 'library' and v.status = 'published'
-      and left(live.key, length('library.games.')) = 'library.games.'
-      and doc -> 'components' -> live.key ->> 'name' <> live.game ->> 'name'
-      and doc -> 'components' -> live.key ->> 'destination' <> live.game ->> 'destination'
-      and not exists (
-        select 1 from public.site_content_versions h
-        where h.page = 'library' and h.status in ('published', 'archived')
-          and h.content -> 'components' -> live.key ->> 'destination' = doc -> 'components' -> live.key ->> 'destination')
-    order by 1 limit 1;
-    if missing is not null then
-      raise exception 'library.games.%: name and address can''t both change at once; another game needs an id of its own', missing using errcode = 'PT422';
     end if;
     return;
   end if;

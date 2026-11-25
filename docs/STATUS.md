@@ -29,7 +29,8 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   ads): approved, `cms/ARCHITECTURE.md` §13. Its SQL, scripts and tests are on
   the development branch for independent review. **0016 is not applied anywhere**;
   nothing after the SQL is started. Concurrency (`cms/CONCURRENCY-0016.md`): part A run
-  on a private PostgreSQL 17, all passed; part B, on staging, not approved or run.
+  on a private PostgreSQL 17, all passed. Next, with approval: `cms/STAGING-0016.md`
+  (staging, with part B); not approved or run.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
