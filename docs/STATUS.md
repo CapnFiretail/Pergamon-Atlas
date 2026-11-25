@@ -5,7 +5,8 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-25.
 
 ## Now
 
-- **Branches:** `main` and `development/v1-admin-infrastructure` are level.
+- **Branches:** `development/v1-admin-infrastructure` is ahead of `main` by one Studio
+  idea (starting collection, test counts, this line), not released.
 - **Production:** `e3d3762` (P1 phases 4 and 5), released 2026-11-25 (Vercel
   `9uhUEaV4SKaTbegvKT5kE1T7mBFa`); later commits on `main` so far are documents only.
   **Content, published by the user 2026-11-25:** Games page version 58, Game Library 63

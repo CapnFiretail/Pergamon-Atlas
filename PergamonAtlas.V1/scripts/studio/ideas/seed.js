@@ -37,7 +37,8 @@
       ['Milestone analytics', 'Associate sessions, costs, duration, commits and code changes with milestones.'],
       ['Automated documentation', 'Keep documentation synchronized with implementation.'],
       ['Reduced manual prompting', 'Reduce repeated copy-and-paste operations.'],
-      ['Shared AI context', 'Maintain consistent authoritative information across AI assistants.']
+      ['Shared AI context', 'Maintain consistent authoritative information across AI assistants.'],
+      ['Development Workflow Optimization', 'Improve the Pergamon Atlas development ecosystem using lessons from the P1 retrospective. Explore streamlined approvals, evidence-based verification, risk-based testing, concise communication, documentation architecture, shared AI context, development analytics, token efficiency and Atlas Studio integration. This is an overarching future initiative, not an approved milestone. Review related Ideas and existing infrastructure before defining its eventual scope.', '2026-11-25']
     ],
     handbook: [
       ['Complete component catalogue', 'Catalogue reusable widgets, elements, layouts and source references.'],
