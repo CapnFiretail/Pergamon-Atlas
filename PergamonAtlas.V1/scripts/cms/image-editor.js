@@ -12,11 +12,16 @@
 //   file              upload or replace (a private draft image), revert to
 //                     the saved image; the slot's own fields (description,
 //                     the spotlight's edge colour) from the schema's `parts`.
+//   crop              a card that refers to a game record shows the record's
+//                     artwork, in a framing of its own (field type 'crop') or,
+//                     without one, the record's: no file and no description
+//                     here, they are the record's.
 //
 // Framing changes are drawn live (on the stage and on the page's card) and
 // go into the working copy when the gesture ends. Created by drawer.js:
 //   imageEditor.create({ field, cardId, workspace, content, images, store,
-//     view, commit(id), setProblem(key, msg), busyChanged(), onForbidden() })
+//     view, artOf(component), commit(id), setProblem(key, msg), busyChanged(),
+//     onForbidden() })      artOf: for a crop, the artwork it frames
 //   → { element, refresh(), clearProblems(), busy(), destroy() }
 (function () {
   'use strict';
@@ -61,7 +66,8 @@
 
   function create(env) {
     const { field, cardId, workspace, content, images, store, view } = env;
-    const type = content.cardType(cardId, ...workspace.docs());
+    const isCrop = field.type === 'crop';
+    const type = field.cardType || content.cardType(cardId, ...workspace.docs());
     const isTile = type === 'tile';
     // First time: the layout visitors get on this screen. The homepage switches
     // at 640px of content, which is a screen up to 672px wide (16px gutters);
@@ -70,7 +76,7 @@
     let layout = lastLayout;
     // A widget this narrow shows the compact card on every screen: there is
     // no desktop framing to set, only the phone's.
-    const sizeOf = l => (isTile || !view.cardSize ? null : view.cardSize(cardId, l, dockedRoom()));
+    const sizeOf = l => (isTile || !view.cardSize ? null : view.cardSize(cardId, l, dockedRoom(), field));
     const compactOnly = () => { const s = sizeOf('desktop'); return !!s && s.compact; };
     let dead = false;
     let uploading = false;
@@ -79,8 +85,11 @@
     let live = null;               // framing being shown but not yet in the working copy
     let frameRequest = 0;
 
-    const art = () => { const c = workspace.component(cardId); return c && c.art ? c.art : null; };
-    const savedArt = () => { const c = workspace.savedComponent(cardId); return c && c.art ? c.art : null; };
+    const artIn = c => (!c ? null : isCrop ? content.withCrop(env.artOf(c), c.crop) : c[field.key] || null);
+    const art = () => artIn(workspace.component(cardId));
+    const savedArt = () => artIn(workspace.savedComponent(cardId));
+    const put = next => workspace.setField(cardId, field.key, next ? (isCrop ? content.cropOf(next) : next) : undefined);
+    const hasCrop = () => isCrop && !!(workspace.component(cardId) || {}).crop;
     const fit = () => images.fitOf(art() || { fit: field.fit });
     const current = () => images.framing(art(), layout, type);
     const sourceKey = a => (a && a.source ? (a.source.media ? 'media:' + a.source.media : 'static:' + a.source.static) : '');
@@ -153,7 +162,9 @@
     const resetButton = button('cms-image-link', 'Reset framing');
     const matchButton = button('cms-image-link', 'Match Desktop');
     const followNote = el('p', 'cms-image-follow');
+    const defaultButton = button('cms-image-link', 'Use the game’s framing');
     tools.append(followNote, resetButton, matchButton);
+    if (isCrop) tools.append(defaultButton);
 
     const fileRow = el('div', 'cms-image-file');
     const fileInput = el('input');
@@ -163,7 +174,9 @@
     fileInput.tabIndex = -1;
     const uploadButton = button('cms-drawer-secondary cms-image-upload', 'Upload image', 'upload');
     const revertButton = button('cms-drawer-ghost cms-image-revert', 'Revert to previous image', 'undo');
-    fileRow.append(uploadButton, revertButton, fileInput);
+    const removeButton = button('cms-drawer-ghost cms-image-remove', 'Remove image');
+    fileRow.append(uploadButton, revertButton, removeButton, fileInput);
+    fileRow.hidden = isCrop;
     const meta = el('p', 'cms-image-meta');
     const message = el('p', 'cms-image-message');
     message.setAttribute('role', 'status');
@@ -182,7 +195,7 @@
       if (built && built.key === key) return;
       built = null;
       canvas.replaceChildren();
-      const sample = view.sample(cardId);
+      const sample = view.sample(cardId, field);
       if (!sample) return;
       sample.art(a);
       const card = sample.element;
@@ -294,7 +307,7 @@
     function commit(next, note) {
       if (frameRequest) { cancelAnimationFrame(frameRequest); frameRequest = 0; }
       live = null;
-      workspace.setField(cardId, 'art', next || undefined);
+      put(next);
       env.commit(cardId);
       if (note) announce.textContent = note;
       refresh();
@@ -364,6 +377,9 @@
     resetButton.addEventListener('click', () => commit(images.resetFraming(art(), layout, type), `${LAYOUTS[layout].label} framing reset`));
     matchButton.addEventListener('click', () => commit(images.matchDesktop(art()), 'The phone now uses the desktop framing'));
 
+    defaultButton.addEventListener('click', () => commit(null, 'This card uses the game’s framing'));
+    removeButton.addEventListener('click', () => { commit(null, 'Image removed'); setMessage('Image removed.', ''); });
+
     function setLayout(next) {
       if (next === layout) return;
       if (drag) endDrag(null, false);
@@ -395,7 +411,7 @@
       }
       // Into the working copy even if the drawer moved on to another card meanwhile.
       const c = workspace.component(cardId);
-      workspace.setField(cardId, 'art', images.replaceSource(c && c.art, result.mediaId, field.fit));
+      put(images.replaceSource(c && c[field.key], result.mediaId, field.fit));
       env.commit(cardId);
       if (dead) return;
       const ready = `New image ready (${result.width} × ${result.height}). It stays private until published.`;
@@ -456,7 +472,7 @@
       row.error.textContent = problem || '';
       row.error.hidden = !problem;
       if (problem) row.input.setAttribute('aria-invalid', 'true'); else row.input.removeAttribute('aria-invalid');
-      env.setProblem('art.' + row.part.key, problem);
+      env.setProblem(field.key + '.' + row.part.key, problem);
     }
     function applyPart(row) {
       const value = row.input.value.trim();
@@ -468,7 +484,7 @@
       if (row.swatch) row.swatch.value = value.toLowerCase();
       const next = JSON.parse(JSON.stringify(a));
       next[row.part.key] = row.part.type === 'color' ? value.toUpperCase() : value;
-      workspace.setField(cardId, 'art', next);
+      put(next);
       env.commit(cardId);
     }
     function fillParts() {
@@ -487,7 +503,8 @@
 
     // ── Controls follow the state ────────────────────────────────────────
     function describe(a) {
-      if (!a) return 'No image yet: the card shows a placeholder.';
+      if (!a && isCrop) return '';
+      if (!a) return field.cardType === 'feature' ? 'No image yet: the square artwork is used in its place.' : 'No image yet: the card shows a placeholder.';
       if (a.source && a.source.static) {
         const m = view.artModel(a);
         const size = m && m.width ? ` · ${m.width} × ${m.height}` : '';
@@ -520,8 +537,8 @@
       empty.hidden = !empty.textContent || !!(a && built && built.src && built.natural && !built.failed);
       const s = built && built.size;
       const dims = s ? ` (${Math.round(s.width)} × ${Math.round(s.height || built.card.height)})` : '';
-      const note = (s && layout === 'desktop' ? (document.documentElement.dataset.cmsMode === 'layout' && s.here ? 'Desktop card, at its size on the canvas' : s.here ? 'Desktop card, at its size in this window' : 'Desktop card, at its size in a wider window') : LAYOUTS[layout].note) + dims;
-      caption.textContent = a
+      const note = (s && s.note ? s.note : s && layout === 'desktop' ? (document.documentElement.dataset.cmsMode === 'layout' && s.here ? 'Desktop card, at its size on the canvas' : s.here ? 'Desktop card, at its size in this window' : 'Desktop card, at its size in a wider window') : LAYOUTS[layout].note) + dims;
+      caption.textContent = !a && isCrop ? 'This game has no artwork yet. Add it in the Game Library.' : a
         ? `${note}. Drag the picture, or use the arrow keys, to choose what shows inside the outline.`
         : `${note}. Upload an image to replace the placeholder.`;
       zoom.min = String(range.min); zoom.max = String(range.max);
@@ -533,14 +550,18 @@
       const phoneOwn = layout === 'phone' && !!a && !images.follows(a);
       matchButton.hidden = !phoneOwn;
       matchButton.disabled = !ok;
-      followNote.textContent = !a ? '' : compact ? 'This widget is narrow enough to show the compact card on every screen, so only the phone framing is used.' : layout === 'desktop'
+      defaultButton.hidden = !hasCrop();
+      const whose = !isCrop || !a ? '' : hasCrop() ? 'This card has a framing of its own. ' : 'This card uses the game’s framing; moving or zooming gives it its own. ';
+      followNote.textContent = whose + (!a ? '' : compact ? 'This widget is narrow enough to show the compact card on every screen, so only the phone framing is used.' : layout === 'desktop'
         ? (images.follows(a) ? 'The phone uses this framing too.' : 'The phone has its own framing.')
-        : (images.follows(a) ? 'Following the desktop framing. Move or zoom to give the phone its own.' : 'The phone has its own framing.');
+        : (images.follows(a) ? 'Following the desktop framing. Move or zoom to give the phone its own.' : 'The phone has its own framing.'));
       uploadButton.querySelector('span').textContent = uploading ? 'Uploading…' : a ? 'Replace image' : 'Upload image';
       uploadButton.disabled = uploading;
       const changed = sourceKey(a) !== sourceKey(savedArt());
       revertButton.hidden = !changed;
       revertButton.disabled = uploading;
+      removeButton.hidden = !a || !field.optional;
+      removeButton.disabled = uploading;
       meta.textContent = describe(a);
       root.setAttribute('aria-busy', String(uploading));
     }
@@ -569,7 +590,7 @@
         if (drag) endDrag(null, false);
         if (frameRequest) cancelAnimationFrame(frameRequest);
         if (resize) resize.disconnect();
-        parts.forEach(row => env.setProblem('art.' + row.part.key, null));
+        parts.forEach(row => env.setProblem(field.key + '.' + row.part.key, null));
       }
     };
   }

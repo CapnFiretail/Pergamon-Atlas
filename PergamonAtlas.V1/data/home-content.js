@@ -14,9 +14,6 @@
 //   Positions are numbers; the translation layer builds the CSS.
 // - staticImages: size details for images under /images/featured/ that the
 //   document may reference (responsive variants, intrinsic size).
-// - context: the right-hand panel (Atlas Navigation). Each link may set
-//   `signedInLabel` to change its title for signed-in visitors. Set
-//   `context: null` to hide the panel.
 // - explore: the carousel's sections, switched with the top-right arrows.
 //   A section with `component` takes its cards from that document component;
 //   cards whose link isn't a live entry in /data/entries.js are skipped.
@@ -74,16 +71,6 @@ window.PergamonHomeContent = {
       width: 2172,
       height: 724
     }
-  },
-
-  context: {
-    title: 'Atlas Navigation',
-    links: [
-      { label: 'Login / Sign Up', signedInLabel: 'Account', description: 'Sign in or create an account', signedInDescription: 'Your profile and sign-in details', href: '/account/', icon: 'account' },
-      { label: 'Settings', description: 'Display mode and colour palette', href: '/settings/', icon: 'settings' },
-      { label: 'Update Log', description: 'What’s new on PergamonAtlas', href: '/updates/', icon: 'updates' },
-      { label: 'Suggestions', description: 'Share an idea with us', href: '/suggestions/', icon: 'suggestions' }
-    ]
   },
 
   explore: {

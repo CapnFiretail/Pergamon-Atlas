@@ -32,7 +32,7 @@
 // show the region stacked, in its stack order ("Order on phones").
 //
 // Created by admin.js (after is_admin): layoutMode.create({ workspace,
-//   content, view, games, openEditor(id), openManager(widget, from),
+//   content, view, starter(type), openEditor(id), openManager(widget, from),
 //   undo(), redo(), done(), onChanged(), onForbidden() })
 //   → { start(), stop(), refresh(), focus(instance), isOn(), dragging(), destroy() }
 (function () {
@@ -287,7 +287,7 @@
       if (!region || !editable(region.id)) return;
       const id = content.newInstanceId(type, ...workspace.docs());
       const p = E.proposeAdd(region, { id, type }, envFor(region.id));
-      if (!p || !p.valid || !workspace.addInstance(p.layout, id, content.starterContent(type, env.games[0]))) {
+      if (!p || !p.valid || !workspace.addInstance(p.layout, id, env.starter(type))) {
         const blocked = p && p.errors.find(e => e.code === 'below-growing');
         say(blocked ? under(p.layout, blocked) : `There is no room for another ${content.WIDGET_NAMES[type]} here. Nothing changed.`, 'error');
         return;
@@ -345,7 +345,7 @@
         const e = r.error || (r.conflict && r.conflict.error) || {};
         say(e.code === 'PT403' ? 'Your account can no longer save drafts. Your changes are still here in this browser.'
           : e.code === 'PT422' ? `The server didn’t accept this: ${e.message}`
-          : e.code === 'invalid' || e.code === 'layout' ? e.message
+          : e.code === 'invalid' || e.code === 'layout' || e.code === 'games' ? e.message
           : 'Couldn’t reach the server. Your changes are still here; try again.', 'error');
         if (e.code === 'PT403') env.onForbidden();
       }

@@ -11,6 +11,9 @@
 //   PergamonAdmin.verify()    → Promise<boolean>: the latest answer
 //   PergamonAdmin.recheck()   ask again
 //   PergamonAdmin.isAdmin(), PergamonAdmin.onChange(fn(isAdmin))
+//   PergamonAdmin.status()    → Promise: 'guest' | 'member' | 'admin', or 'unknown' when
+//                             it couldn't be asked (for what must know the difference
+//                             between a no and no answer: scripts/ads.js)
 //
 // What the page can do for an administrator (the header's Admin Mode control):
 //   provideEditor({ state })  by a page's editor (scripts/cms/admin.js): 'loading',
@@ -25,22 +28,26 @@
   const auth = window.PergamonAuth;
 
   let admin = false;
+  let answer = 'unknown';              // the latest answer (status)
   let check = 0;                       // latest check; older answers are ignored
   let pending = null;
   const listeners = [], editorListeners = [];
   const tell = (list, value) => list.forEach(fn => { try { fn(value); } catch (e) {} });
 
   async function ask() {
-    if (!auth || !window.PergamonSupabaseClient) return false;
+    if (!auth || !window.PergamonSupabaseClient) return 'unknown';
     const res = await auth.getSession();
-    if (!res || !res.data || !res.data.session) return false;
-    const answer = await auth.isCmsAdmin();
-    return !answer.error && answer.data === true;
+    if (!res || res.error || !res.data) return 'unknown';
+    if (!res.data.session) return 'guest';
+    const r = await auth.isCmsAdmin();
+    return r.error ? 'unknown' : r.data === true ? 'admin' : r.data === false ? 'member' : 'unknown';
   }
   function recheck() {
     const id = ++check;
-    pending = ask().catch(() => false).then(ok => {
+    pending = ask().catch(() => 'unknown').then(said => {
       if (id !== check) return pending;          // a newer check is running
+      answer = said;
+      const ok = said === 'admin';
       if (ok !== admin) { admin = ok; tell(listeners, ok); }
       return ok;
     });
@@ -53,6 +60,7 @@
     verify: () => pending || recheck(),
     recheck,
     isAdmin: () => admin,
+    status: () => (pending || recheck()).then(() => answer),
     onChange: fn => { listeners.push(fn); },
     provideEditor(e) { editor = e.state; tell(editorListeners, editor); },
     editor: () => editor,

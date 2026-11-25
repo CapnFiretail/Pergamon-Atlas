@@ -84,7 +84,7 @@ test('every page has what the shared code asks for, and a valid built-in layout'
 });
 
 test('the shared code names no page, and components know neither pages nor games', () => {
-  ['scripts/page.js', 'scripts/cms/loader.js', 'scripts/cms/admin.js', 'scripts/cms/workspace.js', 'scripts/cms/drawer.js', 'scripts/cms/image-editor.js', 'scripts/cms/layout-mode.js', 'scripts/cms/manage.js',
+  ['scripts/page.js', 'scripts/cms/loader.js', 'scripts/cms/admin.js', 'scripts/cms/workspace.js', 'scripts/cms/drawer.js', 'scripts/cms/fields.js', 'scripts/cms/image-editor.js', 'scripts/cms/layout-mode.js', 'scripts/cms/manage.js',
     'scripts/cms/publish.js', 'scripts/cms/publish-dialog.js', 'scripts/cms/history.js'].forEach(f => {
     // (The schema-1 lists, and where Site Navigation is kept, are the homepage's by definition.)
     const names = [...code(read(f)).replace(/const LISTS = \[.*\];/, '').replace('Published with the homepage.', '').matchAll(/'home(\.[a-z.]*)?'|"home"|homepage|'(feature-hero|feature-spotlight|carousel|atlas-navigation|page-heading|card-grid)'/gi)].map(m => m[0]);
@@ -146,7 +146,7 @@ test('game records: complete, each destination a page, each image a file; the ol
     const g = lib.games[id];
     assert.ok(g.id === id && g.name && content.CATEGORIES.includes(g.category) && ['available', 'coming-soon', 'hidden', 'archived'].includes(g.availability), id);
     assert.ok(existsSync(path.join(V1, g.destination, 'index.html')), g.destination);
-    const art = content.artModel(g.artwork.square, {});
+    const art = content.artModel(g.art, {});
     assert.ok(art && existsSync(path.join(V1, art.src)), id + ' artwork');
     assert.deepEqual([atlasEntries.games[i].path + '/', atlasEntries.games[i].name], [g.destination, g.name]);
   });
@@ -160,6 +160,7 @@ test('the Games page is widgets that refer to records and hold nothing of a game
   vm.runInNewContext(read('data/games-content.js'), box);
   const doc = JSON.parse(JSON.stringify(box.window.PergamonGamesContent.document)), games = records().PergamonGameLibrary.games;
   const api = content.forPage('games'), m = api.toModel(doc, { games });
+  assert.ok(api.validateDocument(doc));
   assert.deepEqual(m.instances.grid.cards.map(c => [c.title, c.href, c.category]), doc.components['games.grid'].order.map(k => [games[k].name, games[k].destination, games[k].category]));
   Object.keys(doc.components).filter(k => k.startsWith('games.grid.')).forEach(k => assert.deepEqual(Object.keys(doc.components[k]), ['game'], k));
   assert.equal(m.instances.heading.card.count, 'cards');
@@ -175,7 +176,7 @@ test('the Games page is widgets that refer to records and hold nothing of a game
 
 // ── Page Heading and Card Grid (P1) ─────────────────────────────────────────
 const HEADING = { title: 'Games', subtitle: 'Pergamon Catalogs', emblem: 'games', count: 'cards', countLabel: 'Games' };
-const TILE = { title: 'Snake', category: 'Arcade', href: '/games/snake/' };
+const TILE = { game: 'snake' };
 const NEW = { schema: 2, regions: [{ id: 'main', rowHeight: 23.43, widgets: [{ id: 'heading', type: 'page-heading', col: 1, row: 1, cols: 20, rows: 5 }, { id: 'grid', type: 'card-grid', col: 1, row: 6, cols: 20, rows: 7 }] }],
   components: { 'sample.heading': HEADING, 'sample.grid': { order: ['snake'] }, 'sample.grid.snake': TILE } };
 const withHeading = h => Object.assign(clone(NEW), { components: Object.assign(clone(NEW.components), { 'sample.heading': h }) });
@@ -219,5 +220,5 @@ test('editing them: fields, optional fields, cards, names in the editor, a serve
   assert.ok(ws.unsavedCards().length, 'and nothing is lost');
   assert.equal(sample.newInstanceId('page-heading', ...ws.docs()), 'heading-2');
   assert.ok(sample.validateDocument(withHeading(sample.starterContent('page-heading'))), 'what a new one starts with is valid');
-  assert.deepEqual(sample.toModel(NEW).instances.grid.cards.map(c => [c.id, c.type]), [['sample.grid.snake', 'tile']]);
+  assert.deepEqual(sample.toModel(NEW, { games: records().PergamonGameLibrary.games }).instances.grid.cards.map(c => [c.id, c.type, c.title]), [['sample.grid.snake', 'tile', 'Snake']]);
 });

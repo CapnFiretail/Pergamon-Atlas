@@ -4,7 +4,7 @@
 // changes no collection that has been saved.
 (function (root) {
   'use strict';
-  const ADDED = '2026-11-24';
+  const ADDED = '2026-11-24';                  // unless an idea has its own, third
   const LISTS = {
     vision: [
       ['Atlas of the Digital World', 'An explorable universe of games, tools, knowledge, archives and digital experiences.'],
@@ -66,7 +66,8 @@
       ['Sidebar refinement', 'Improve sidebar design and organization.'],
       ['Carousel refinement', 'Improve the public carousel experience.'],
       ['Artwork generation workflow', 'Consistent artwork sizing, positioning, fading and style.'],
-      ['Game asset design', 'Cohesive chess pieces and other interactive game assets.']
+      ['Game asset design', 'Cohesive chess pieces and other interactive game assets.'],
+      ['Game Catalog Widget Refinement', 'Revisit the game catalog widget\'s visual design, card proportions, spacing, information hierarchy, responsive behavior and overall presentation. Preserve the existing shared Game Library and widget architecture.', '2026-11-25']
     ],
     technical: [
       ['Automatic server startup', 'Start at Windows sign-in.'],
@@ -79,7 +80,7 @@
 
   const seed = () => ({
     format: 'pergamon-atlas.ideas', version: 1,
-    ideas: Object.keys(LISTS).flatMap(category => LISTS[category].map(([title, description]) => ({ id: slug(title), title, description, category, status: 'captured', added: ADDED, notes: '' })))
+    ideas: Object.keys(LISTS).flatMap(category => LISTS[category].map(([title, description, added]) => ({ id: slug(title), title, description, category, status: 'captured', added: added || ADDED, notes: '' })))
   });
 
   if (typeof module === 'object' && module.exports) module.exports = { seed };

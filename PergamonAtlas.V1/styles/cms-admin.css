@@ -201,6 +201,21 @@
   pointer-events: none;
 }
 
+/* Why visitors don't see a card so (a game that is hidden, or not published yet). */
+.cms-card-note {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 4;
+  padding: 4px 9px;
+  border: 1px solid var(--cms-unsaved);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  color: var(--color-text-primary);
+  font: 700 12px/1.2 var(--font-ui);
+  pointer-events: none;
+}
+
 /* The carousel's "Add card" tile (Admin view only): a card-sized dashed slot. */
 .cms-add-tile {
   display: grid;
@@ -416,6 +431,13 @@ select.cms-field-input { cursor: pointer; }
 }
 .cms-drawer-actions > button { padding: 0 12px; white-space: nowrap; }
 
+/* A card that refers to a game record (scripts/cms/fields.js). */
+.cms-game-ref { display: grid; gap: 6px; }
+.cms-game-note { margin: 0; padding: 8px 10px; border-left: 3px solid var(--cms-unsaved); border-radius: 6px; background: var(--color-background); color: var(--color-text-primary); font-size: 13px; line-height: 1.4; }
+.cms-game-note:empty { display: none; }
+.cms-game-tools { display: flex; flex-wrap: wrap; gap: 2px 16px; }
+.cms-game-tools [hidden] { display: none; }
+
 /* ── Image section (scripts/cms/image-editor.js) ───────────────────────── */
 .cms-image { display: grid; gap: 10px; padding-top: 18px; border-top: 1px solid var(--color-border); }
 .cms-image [hidden] { display: none !important; }
@@ -567,6 +589,8 @@ select.cms-field-input { cursor: pointer; }
 .cms-publish-what { grid-column: 1 / -1; color: var(--color-text-secondary); font-size: 13px; }
 .cms-publish-body .cms-publish-note { color: var(--color-text-primary); font-weight: 600; }
 .cms-publish-warning { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid var(--cms-unsaved); border-radius: 12px; background: color-mix(in srgb, var(--cms-unsaved) 9%, var(--color-surface)); color: var(--color-text-primary); }
+.cms-publish-info { display: grid; gap: 8px; padding: 10px 12px; border-left: 3px solid var(--color-accent); border-radius: 6px; background: var(--color-background); color: var(--color-text-primary); }
+.cms-publish-warning > button, .cms-publish-info > button { justify-self: start; }
 .cms-publish-confirm { display: flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer; }
 .cms-publish-confirm input { width: 18px; height: 18px; margin: 0; accent-color: var(--color-accent); }
 .cms-publish-body .cms-publish-error { color: var(--color-danger); font-weight: 700; }
@@ -598,7 +622,7 @@ select.cms-field-input { cursor: pointer; }
 .cms-manage-grip.is-empty { cursor: default; }
 .cms-manage-row.is-dragging .cms-manage-grip { cursor: grabbing; }
 .cms-manage-thumb { display: grid; place-items: center; width: 80px; height: 45px; overflow: hidden; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-surface); }
-.cms-manage[data-kind="carousel"] .cms-manage-thumb { width: 48px; height: 48px; }
+.cms-manage:is([data-kind="carousel"], [data-kind="card-grid"]) .cms-manage-thumb { width: 48px; height: 48px; }
 .cms-manage-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .cms-manage-thumb[data-fit="height"] img { object-fit: contain; }
 .cms-manage-thumb-empty { color: var(--color-text-secondary); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -684,6 +708,47 @@ select.cms-field-input { cursor: pointer; }
 @media (max-width: 640px) {
   .cms-nav-body { grid-template-columns: minmax(0, 1fr); }
   .cms-nav-col { padding: 12px; }
+}
+
+/* ── Game Library (scripts/cms/library-dialog.js) ──────────────────────── */
+/* Two columns that scroll by themselves; the details are two more (fields,
+   artwork). Narrower, they follow each other and the dialog scrolls. */
+.cms-library-dialog { grid-template-rows: auto auto minmax(0, 1fr); width: min(1180px, 100%); }
+.cms-library-dialog .cms-drawer-status { justify-self: start; }
+.cms-library-body { display: grid; grid-template-columns: minmax(260px, 0.8fr) minmax(0, 2fr); gap: 14px; min-height: 0; }
+.cms-library-body > .cms-nav-col { max-height: min(62vh, 720px); overflow-y: auto; }
+.cms-library-list .cms-nav-list-tools { position: sticky; bottom: -14px; margin: 0 -14px -14px; padding: 10px 14px 12px; border-top: 1px solid var(--color-border); background: var(--color-background); }
+.cms-library-row { grid-template-columns: minmax(0, 1fr); padding: 3px; }
+.cms-library-row .cms-nav-pick { width: 100%; }
+.cms-library-row .cms-manage-thumb { flex-shrink: 0; width: 40px; height: 40px; }
+.cms-library-row .cms-manage-thumb-empty { font-size: 8px; text-align: center; }
+.cms-library-row .cms-nav-pick-text { flex: 1; }
+.cms-library-row.is-hidden .cms-manage-thumb { opacity: 0.5; }
+.cms-library-dot { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; background: var(--color-accent); }
+.cms-library-dot[data-status="unsaved"] { background: var(--cms-unsaved); }
+.cms-library-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.cms-library-head .cms-nav-col-title { margin-right: auto; }
+.cms-library-id { padding: 2px 8px; border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text-primary); font-size: 13px; overflow-wrap: anywhere; }
+.cms-library-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.cms-library-fields, .cms-library-art { display: grid; gap: 16px; min-width: 0; }
+.cms-library-art > .cms-image:first-child { padding-top: 0; border-top: 0; }
+.cms-library-about { display: grid; gap: 12px; padding-top: 14px; border-top: 1px solid var(--color-border); }
+.cms-library-uses .cms-admin-label { margin: 0 0 6px; }
+.cms-library-uses .cms-history-changes { margin: 0; }
+.cms-library-about > .cms-field-hint { margin: 0; }
+.cms-library-new { max-width: 460px; }
+.cms-library-ask p { margin: 0; font-size: 14px; line-height: 1.45; }
+.cms-library-ask[hidden] { display: none; }
+.cms-library-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.cms-library-tools { display: flex; flex-wrap: wrap; gap: 2px; }
+.cms-library-tools .cms-drawer-ghost { padding: 0 10px; min-height: 36px; font-size: 13px; }
+.cms-library-tools .cms-drawer-ghost:disabled { opacity: 0.4; cursor: default; }
+@media (max-width: 1000px) { .cms-library-form { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 760px) {
+  .cms-library-body { grid-template-columns: minmax(0, 1fr); }
+  .cms-library-dialog { grid-template-rows: none; }
+  .cms-library-body > .cms-nav-col { max-height: none; overflow: visible; }
+  .cms-library-body > .cms-library-list { max-height: 38vh; overflow-y: auto; }
 }
 
 .cms-publish-dialog[data-step="done"] .cms-publish-title { color: var(--color-success); }

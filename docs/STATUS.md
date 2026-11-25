@@ -5,7 +5,8 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
 
 ## Now
 
-- **Branches:** `development/v1-admin-infrastructure` and `main` are level.
+- **Branches:** `development/v1-admin-infrastructure` is ahead of `main`: P1 phase 4 (0016's
+  SQL, tests and documents, and the interface).
 - **Production:** `91283c6` (P1 phases 1–3: shared pages, Page Heading and Card Grid,
   the Games page, the fixed-height sidebar; administrator controls in the shared header
   on every page), released 2026-11-24 (Vercel `3iJ8BtNUazx2xb4r2kZxghQehRaa`) and
@@ -21,16 +22,17 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   header's controls, Studio › Connections and Ideas (including the first save or move of
   a browser copy); and, without saving, Environments, Layout Mode, Layout Lab, Handbook.
   P1's local and staging reviews were done by the user.
-- **Migrations, production and staging:** 0001–0006, 0008–0015. 0007 (optional)
-  not confirmed. 0015 was run by the user; all 8 rows of `verify_0015.sql` true in
-  both (user-reported).
+- **Migrations, production and staging:** 0001–0006, 0008–0015; **staging also 0016**
+  (2026-11-24, user-reported: `cms/STAGING-0016.md`). 0007 (optional) not confirmed.
+  0015 was run by the user; all 8 rows of `verify_0015.sql` true in both (user-reported).
 - **Active milestone:** P1, Games catalog on the shared page architecture: phases 1–3
   released (above). Phase 4 (migration 0016, the Game Library, editing the Games page,
-  ads): approved, `cms/ARCHITECTURE.md` §13. Its SQL, scripts and tests are on
-  the development branch for independent review. **0016 is not applied anywhere**;
-  nothing after the SQL is started. Concurrency (`cms/CONCURRENCY-0016.md`): part A run
-  on a private PostgreSQL 17, all passed. Next, with approval: `cms/STAGING-0016.md`
-  (staging, with part B); not approved or run.
+  ads): built as `cms/ARCHITECTURE.md` §13 says; local review
+  approved by the user 2026-11-25. 0016 and its
+  concurrency test (`cms/CONCURRENCY-0016.md`): reviewed, passed, on staging only. No
+  library or Games page content exists in any connected database. Next, each with
+  approval: the user's staging review, then production (0016 first, then the code,
+  then the first library). Phase 5 (the homepage) is not started.
 - **Standing:** Starting the local server at sign-in is not installed
   (`tools\dev-server install`). Other Studio sections are placeholders; S3's
   visual design is provisional (Next).
@@ -41,15 +43,18 @@ Replace outdated lines at the end of each milestone. Last updated 2026-11-24.
   the first one: check there is no leftover draft, close older admin tabs and note
   the live version. If it goes wrong, restore that version before any frontend
   rollback (rollback deployment `DZcxwUDrU2Qkup2aeG63UFLCZxzH`, `41d691b`).
-- **Ads on an edited page.** The Games page loads AdSense; the homepage doesn't. Before
-  it is edited (P1 phase 4): automatic ads may insert themselves into the page being
-  arranged, and ad code would run on a page where administrators publish.
+- **Release order.** Phase 4's code must not reach production before 0016 is applied there:
+  saving the Games page or the Game Library would be refused.
+- **Ads.** Real AdSense behaviour with `scripts/ads.js` is unverified (the local server and
+  the tests block the ad script): check after the release, as a guest and as an
+  administrator. The tag is no longer in the HTML (AdSense's site check: `ads.txt`).
 - Local `main` may be behind `origin/main`; compare with `origin/main`.
 - Untracked and deliberately left: `supabase/proposed/production-h53/` (release
   SQL kit), 0012 diagnostics, `review/`, `PergamonAtlas.Legacy/`, `-w`.
 
 ## Next
 
+- The game catalog's visual refinement is deferred: Studio › Ideas.
 - Deferred design refinement: revisit the visual design of the editing canvases
   (Layout Mode, Layout Lab). S3 is not finished visual polish.
 - Claude Code Analytics, planned for Studio, not started: `design/STUDIO.md` ›

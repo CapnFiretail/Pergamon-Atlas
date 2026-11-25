@@ -40,6 +40,11 @@
     { js: '/scripts/components/atlas-navigation.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.atlasNavigation) },
     { js: '/scripts/components/page-heading.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.pageHeading) },
     { js: '/scripts/components/card-grid.js', ready: () => !!(window.PergamonComponents && window.PergamonComponents.cardGrid) },
+    // The Game Library's names and states, for its entry there.
+    { js: '/scripts/cms/pages.js', ready: () => !!(window.PergamonCMS && window.PergamonCMS.pages) },
+    { js: '/scripts/cms/widgets.js', ready: () => !!(window.PergamonCMS && window.PergamonCMS.widgets) },
+    { js: '/scripts/cms/content.js', ready: () => !!(window.PergamonCMS && window.PergamonCMS.content) },
+    { js: '/scripts/cms/library.js', ready: () => !!(window.PergamonCMS && window.PergamonCMS.library) },
     { js: '/scripts/handbook/component-examples.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.componentExamples) },
     { js: '/scripts/handbook/widgets-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.widgetsPage) },
     { js: '/scripts/handbook/grid-page.js', ready: () => !!(window.PergamonHandbook && window.PergamonHandbook.gridPage) },

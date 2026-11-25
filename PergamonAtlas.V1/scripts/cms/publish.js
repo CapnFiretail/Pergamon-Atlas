@@ -1,4 +1,4 @@
-// Publishing a page's draft (CMS milestone M6). No DOM here: works in
+// Publishing a page's draft, or the Game Library's (CMS milestone M6). No DOM here: works in
 // the browser (window.PergamonCMS.publish) and in Node (module.exports).
 //
 //   summarize(published, draft)   what the saved draft would change, per card
@@ -15,7 +15,7 @@
 (function (root) {
   'use strict';
 
-  const FIELD_LABELS = { title: 'Title', description: 'Description', cta: 'Button label', href: 'Destination link', category: 'Category', subtitle: 'Subtitle', emblem: 'Emblem', count: 'Count', countLabel: 'Count label' };
+  const FIELD_LABELS = { title: 'Title', description: 'Description', cta: 'Button label', href: 'Destination link', category: 'Category', subtitle: 'Subtitle', emblem: 'Emblem', count: 'Count', countLabel: 'Count label', game: 'Game', name: 'Name', destination: 'Destination', availability: 'Availability' };
   const DESKTOP_ART = ['fit', 'focus', 'scale', 'anchor'];
   const PHONE_ART = ['focusNarrow', 'scaleNarrow', 'anchorNarrow'];
 
@@ -53,6 +53,7 @@
   // The ordered list a component is (a list widget's cards, a card widget's
   // saved cards): its label, naming the widget if it isn't a built-in one.
   function listLabel(id, content, docs) {
+    if (content.listLabel) return content.listLabel(id);
     const o = content.ownerOf(id, ...docs);
     if (!o || !(o.part === 'saved' || (o.part === '' && content.widgets.isList(o.type)))) return null;
     return content.widgets.get(o.type).order + (content.ownerOf(id) ? '' : ` (${content.instanceLabel(o.instance, o.type)})`);
@@ -68,10 +69,11 @@
   }
 
   // published / draft: documents (published may be null: nothing live yet);
-  // imgs: scripts/cms/images.js when available.
+  // imgs: scripts/cms/images.js when available; nameOf(game id): a record's name.
   // → { cards: [{ id, type, typeLabel, title, changes: [...] }], newImages: [media ids], other: [...],
   //     layout: [{ label, changes: [...] }] (widgets added, moved, resized, removed), empty }
-  function summarize(published, draft, content, imgs) {
+  function summarize(published, draft, content, imgs, nameOf) {
+    const titleOf = c => (!c ? '' : c.title || c.name || (c.game && ((nameOf && nameOf(c.game)) || c.game)) || '');
     const pub = (published && published.components) || {};
     const next = (draft && draft.components) || {};
     const ids = Object.keys(next).concat(Object.keys(pub).filter(k => !(k in next)));
@@ -84,7 +86,7 @@
       if (!type) { other.push(OTHER_LABELS[id] || id); return; }
       const saved = content.isSaved(id, ...docs);
       const owner = content.ownerOf(id, ...docs);
-      const typeLabel = (saved ? 'Saved ' + content.cardLabel(id, ...docs).toLowerCase() : content.cardLabel(id, ...docs)) + (content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
+      const typeLabel = (saved ? 'Saved ' + content.cardLabel(id, ...docs).toLowerCase() : content.cardLabel(id, ...docs)) + (!owner || content.ownerOf(id) ? '' : `, ${content.instanceLabel(owner.instance, owner.type)}`);
       const a = pub[id], b = next[id];
       let changes;
       if (a === undefined) changes = [saved ? 'Added to saved cards' : 'Added'];
@@ -96,15 +98,19 @@
         const savedHere = k => content.isSaved(k, ...docs) && content.slotOf(k, ...docs) === id;
         const from = slot ? Object.keys(pub).find(k => savedHere(k) && same(pub[k], b)) : null;
         const kept = slot && !from ? Object.keys(next).find(k => savedHere(k) && same(next[k], a)) : null;
-        if (from) changes = ['Now shows a saved card (was “' + String(a.title || '') + '”)'];
-        else if (kept) changes = ['Now shows a new card (“' + String(a.title || '') + '” was saved)'];
+        if (from) changes = ['Now shows a saved card (was “' + titleOf(a) + '”)'];
+        else if (kept) changes = ['Now shows a new card (“' + titleOf(a) + '” was saved)'];
         else {
           changes = Object.keys(FIELD_LABELS).filter(k => !same(a[k], b[k])).map(k => FIELD_LABELS[k]);
-          changes.push(...artChanges(a.art, b.art, imgs, type));
+          // A record has two; each is named.
+          const named = (list, what) => list.map(t => (type === 'game' ? `${what}: ${t.charAt(0).toLowerCase()}${t.slice(1)}` : t));
+          changes.push(...named(artChanges(a.art, b.art, imgs, type === 'game' ? 'tile' : type), 'Square artwork'));
+          changes.push(...named(artChanges(a.wide, b.wide, imgs, 'feature'), 'Wide artwork'));
+          if (!same(a.crop, b.crop) && same(a.game, b.game)) changes.push(!b.crop ? 'Framing (the game’s own again)' : 'Framing');
           ['style'].forEach(k => { if (!same(a[k], b[k])) changes.push('Style'); });
         }
       }
-      cards.push({ id, type, typeLabel, title: String((b && b.title) || (a && a.title) || id), changes });
+      cards.push({ id, type, typeLabel, title: String(titleOf(b) || titleOf(a) || id), changes });
     });
     const live = content.mediaIds(published || {});
     const newImages = content.mediaIds(draft || {}).filter(id => live.indexOf(id) < 0);

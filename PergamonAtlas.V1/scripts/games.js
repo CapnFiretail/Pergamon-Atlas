@@ -1,12 +1,12 @@
 // The Games page: what is its own. An ordinary page drawn by the page renderer
 // (scripts/page.js) from its content document; data/games-content.js is the
-// built-in copy. It isn't edited or published yet, so it loads neither the CMS
-// loader nor Admin Mode.
+// built-in copy, shown until the page is published.
 (function () {
   const content = window.PergamonGamesContent;
   if (!content || !window.PergamonPages) return;
-  // Which games are listed for this visitor: the records' availability, with the
-  // overrides administrators have stored (operation/scripts/auth/atlas-visibility.js).
+  // Which built-in games are listed for this visitor: the records' availability, with
+  // the overrides administrators have stored; once the page is published, the Game
+  // Library's records alone decide (operation/scripts/auth/atlas-visibility.js).
   // That loads after this, so until it answers the records alone decide.
   function visibility() {
     return new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve)).then(() => {

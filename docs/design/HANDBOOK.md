@@ -24,8 +24,9 @@ the roadmap in `ATLAS_VISION.md` §11.
 | Colours, spacing and surfaces, Atlas Grid (H5.2); Layout Lab (H5.4) | Built |
 | Homepage on the grid, Layout Mode (H5.3) | Built |
 | Shared pages: page and widget registries, page renderer, editing for any registered page (P1, phase 1) | Built |
-| Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built; on the Games page, not storable until migration 0016 |
-| Games page: an ordinary page of registered widgets; the floating sidebar as a panel of fixed height on every standard page (P1, phase 3) | Built; not edited or published until migration 0016 |
+| Page Heading and Card Grid widgets, widgets that grow with their content (P1, phase 2) | Built |
+| Games page: an ordinary page of registered widgets; the floating sidebar as a panel of fixed height on every standard page (P1, phase 3) | Built |
+| Game Library, references to its games, editing the Games page, administrator-aware ads (P1, phase 4) | Built; not on production |
 | Node Canvas, with Atlas Studio's Connections (S2) | Built |
 | Unified canvas design: the Connections canvas appearance in Layout Mode and the Layout Lab (S3) | Built: functionally approved, visual design provisional |
 | Atlas Studio's Environments cards: the Panel surface (S4) | Built |
@@ -71,6 +72,10 @@ the roadmap in `ATLAS_VISION.md` §11.
 | `PergamonAtlas.V1/scripts/handbook/canvas-page.js` | Foundations › Node Canvas: a live example, the canvas design, its elements with their source, and the canvas conventions. |
 | `PergamonAtlas.V1/scripts/page.js`, `scripts/page-widgets.js` | **Page renderer**, for every editable page, and how each widget type is drawn from a page's content. |
 | `PergamonAtlas.V1/scripts/cms/pages.js`, `scripts/cms/widgets.js` | **Page registry** and **widget registry**: what is particular to a page, and what kind of content a widget type has and its names. |
+| `PergamonAtlas.V1/scripts/cms/library.js` | **Game records** as received and kept: what a record is, and the library's document (`docs/cms/ARCHITECTURE.md` §13). |
+| `PergamonAtlas.V1/scripts/cms/library-editing.js`, `library-dialog.js` | The Game Library in Admin Mode: its rules, and its dialog. |
+| `PergamonAtlas.V1/scripts/cms/fields.js` | A component's fields as a form: the card editor's and the Game Library's. |
+| `PergamonAtlas.V1/scripts/ads.js` | Advertising, after the administrator check. |
 | `tests/design/page-registry.test.mjs` | Both registries against everything that depends on them, Handbook coverage of widget types, and a page that isn't the homepage. |
 | `PergamonAtlas.V1/scripts/cms/layout-mode.js` | Admin Mode's Layout Mode: the same engine, controller and overlay per page region, with the CMS working copy as the document (`docs/cms/ARCHITECTURE.md` §12). |
 | `tests/design/grid-editor.test.mjs` | The editing engine’s proposals, gestures and history. |
@@ -306,6 +311,7 @@ shown in full.
 
 1. **Registry.** An entry in `scripts/cms/pages.js` (its header says what each field
    is): schema 2 only, `siteNavigation: false`, its own prefix, and a built-in layout.
+   Without `ownCards`, its new cards refer to game records.
 2. **Built-in content.** A document for that layout, as `data/games-content.js` has
    (games are referred to by their record, `data/entries.js`, never described again):
    shown until something is published, and whenever the database can't be read.
@@ -315,10 +321,11 @@ shown in full.
    last (they make the header's Admin Mode control available). No inline scripts or
    styles.
 4. **Page file.** A call to `PergamonPages.mount` (`scripts/games.js` is the example).
-   A page that isn't edited yet leaves out `cms/loader.js`, `admin-access.js` and
-   `cms/admin.js`; it needs nothing from step 5. Its header still has the controls.
+   A page that isn't edited yet leaves out `cms/library.js`, `cms/loader.js`,
+   `admin-access.js` and `cms/admin.js`; it needs nothing from step 5. Its header still has
+   the controls. With ads: `ads.js`, never the ad network's own tag.
 5. **Server.** A migration: a row in `site_pages` whose `schema_version` is the entry's
-   `schemaVersion`, and `validate_content` accepting the page and its prefix. Until it
+   `schemaVersion` (the page validator takes any page since 0016). Until it
    is applied the page shows its built-in content; saving is refused.
 6. **Checks.** `tests/design/page-registry.test.mjs`; `tests/site/second-page.mjs` shows
    what another page must and mustn't share with the homepage.
@@ -396,7 +403,8 @@ them) can make a style that looks equivalent in the CSS render differently.
 - The `.pa-type-*` classes are used by the Handbook's previews only.
 - Game typography is documented (legacy serif, Game title) but not migrated.
 - Nothing can be placed under a growing widget (Widgets that grow).
-- The homepage and the Games page are the registered pages; only the homepage is edited
-  (the database accepts no other page until migration 0016); widgets stay in their region, and extra carousels share the
-  "Explore More Games" heading.
+- The homepage and the Games page are the registered pages; widgets stay in their region,
+  extra carousels share the homepage's "Explore More Games" heading, and Atlas Navigation's
+  links are the same everywhere and set in code.
+- The homepage's cards hold their own details until they are converted (P1, phase 5).
 - The Vision page is read-only; the vision is changed in the repository.

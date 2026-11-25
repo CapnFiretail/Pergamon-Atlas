@@ -14,6 +14,7 @@
 //   starter    what a new one starts with: its card's title ('card') or its fields
 //              ('single')
 //   edit       what Layout Mode calls editing it (default "Edit card")
+//   refs       'only': its cards are references to game records, nothing else
 //   needs      the migration the database must have to store it. Until every
 //              environment has it, the type is drawn wherever a document has it
 //              but Layout Mode offers it on the local server only, where saving
@@ -47,12 +48,12 @@
     },
     'atlas-navigation': { name: 'Atlas Navigation', baseId: 'navigation', content: 'none' },
     'page-heading': {
-      name: 'Page Heading', baseId: 'heading', content: 'single', card: 'heading', needs: '0016', edit: 'Edit heading',
+      name: 'Page Heading', baseId: 'heading', content: 'single', card: 'heading', edit: 'Edit heading',
       starter: { title: 'New heading', subtitle: 'Pergamon Atlas', emblem: 'compass', count: 'none' }
     },
     'card-grid': {
-      name: 'Card Grid', baseId: 'grid', content: 'list', card: 'tile', needs: '0016',
-      label: 'Grid card', linkHint: 'Grid cards link to a game.',
+      name: 'Card Grid', baseId: 'grid', content: 'list', card: 'tile', refs: 'only',
+      label: 'Grid card', linkHint: 'Grid cards show a game.',
       cards: 'Grid cards', one: 'grid card', manage: 'grid cards', order: 'Card grid order',
       intro: 'The cards this grid shows, in this order. Changes are part of the draft until you publish.',
       empty: 'No cards: the grid shows its empty message. Add a card to start.',
@@ -76,6 +77,7 @@
     hasCard: type => kind(type) === 'card' || kind(type) === 'single',      // one set of fields, edited as one
     hasSaved: type => kind(type) === 'card',                                // … with saved cards to switch to
     isList: type => kind(type) === 'list',
+    refsOnly: type => !!get(type) && get(type).refs === 'only',
     hasContent: type => !!kind(type) && kind(type) !== 'none',
     offered: type => !!get(type) && (!get(type).needs || root.PERGAMON_ENV === 'development'),
     cards: CARDS,

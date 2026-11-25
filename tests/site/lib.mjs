@@ -31,13 +31,14 @@ const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 const ARGS = {
   get_published_content: ['p_page'], get_draft: ['p_page'], save_draft: ['p_page', 'p_content', 'p_expected_draft_id', 'p_note'],
   publish: ['p_page', 'p_draft_id', 'p_expected_published_id'], rollback: ['p_page', 'p_version_id', 'p_expected_published_id'],
-  list_published_versions: ['p_page', 'p_limit'], get_media: ['p_ids']
+  list_published_versions: ['p_page', 'p_limit'], get_media: ['p_ids'], discard_draft: ['p_page', 'p_expected_draft_id'], list_game_uses: []
 };
 const plain = v => (v === undefined ? null : v && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : v);
-// The emulated database, with every migration and two administrators.
-export async function database() {
+// The emulated database, with every migration (`without` the newest ones named) and two
+// administrators.
+export async function database({ without = [] } = {}) {
   const { createEnv } = await import('../cms/supabase-env.mjs');
-  const env = await createEnv({ extra: ['0013_site_sidebar', '0014_page_layout', '0015_studio_documents'] });
+  const env = await createEnv({ extra: ['0013_site_sidebar', '0014_page_layout', '0015_studio_documents', '0016_game_library'].filter(f => !without.includes(f.slice(0, 4))) });
   const who = { admin: await env.createUser('a@x.test', { admin: true }), second: await env.createUser('b@x.test', { admin: true }), user: await env.createUser('u@x.test'), guest: env.anon };
   return { env, answer: (role, fn, args) => env.rpc(who[role], fn, ...ARGS[fn].map(n => plain(args[n]))) };
 }

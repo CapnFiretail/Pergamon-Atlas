@@ -5,7 +5,7 @@
 | Changed | Run (from the repository root unless shown) |
 |---|---|
 | CMS code, migrations, functions, build config | `cd tests/cms`, then `npm test` (first time: `npm install`) |
-| Any migration 0013 onward, or schema 2 | Also the same with `CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout,0015_studio_documents` (and with `,0016_game_library`, proposed) |
+| Any migration 0013 onward, or schema 2 | Also the same with `CMS_EXTRA_MIGRATIONS=0013_site_sidebar,0014_page_layout,0015_studio_documents` (and with `,0016_game_library`) |
 | Design registries, styles, grid, the Widgets catalogue, the Studio, the local development server, a page's `<head>`, the vision | `node --test "tests/design/*.test.mjs"` |
 | `scripts/design/typography.js` | `node tools/build-typography.mjs` (`--check` to verify) |
 | `docs/design/ATLAS_VISION.md` | `node tools/build-vision.mjs` (`--check` to verify) |
@@ -24,6 +24,7 @@ suites.
 | `db.test.mjs` | 0008 + 0009 (+ 0011) on an emulated Supabase (roles, default grants, `auth.uid()`, storage RLS) with production's 0001–0006 applied first. Authorization for guest / user / admin / service role, role spoofing, direct table access, draft privacy, validation (34 malformed or unsafe documents), conflicts, atomic publish, concurrent publish, failed-publish recovery, rollback, immutability, upload reservations, draft-bucket and public-bucket policies, prepared-media rules, identical uploads sharing one public copy (0011) without loosening the path/hash rule, write-once fields or service-role-only recording. |
 | `content`, `collections`, `saved-cards`, `site-sidebar`, `page-layout`, `layout-editing` `.test.mjs` | See their headers (0012–0014 and the editor). |
 | `game-library.test.mjs` | 0016 (proposed): the Game Library and the Games page, references, what visitors receive, authorization, that everything valid before is judged and answered as before, and its preflight, verification and recovery scripts. |
+| `library-editing.test.mjs` | The Game Library in the browser (`library.js`, `library-editing.js`) and cards that refer to its games, against 0016: both accept the same, drafts, conflicts, references, crops, what visitors receive, warnings, earlier versions, the homepage unchanged. |
 | `studio-documents.test.mjs` | 0015, and the Studio's storage and store through it. See its header. |
 | `hardening.test.mjs` | Optional 0010: profiles privileges, `homepage_settings` column grant, legacy bucket listing. |
 | `function.test.mjs` | `publish-media` handler and byte checks with in-memory Auth/DB/Storage: real PNG/JPEG/WebP fixtures, SVG/GIF/HTML/EXE/truncated/oversized/huge-dimension rejection, auth, admin check, CORS, request shape, path tampering, type mismatch, failed copy/record and retry. |
@@ -44,7 +45,9 @@ a time.
 | `snapshot.mjs` | What visitors see of the homepage, before and after a change that must not alter it: markup, geometry, styles, pictures, requests (43 views). |
 | `admin.mjs` | Admin Mode end to end, before and after: what an administrator sees and what the database holds at each step. Two transcripts must be the same. |
 | `header.mjs` | The shared header on every page, for guests, members and administrators: the administrator controls, Admin Mode by page, sign-in and sign-out, every width. |
-| `games.mjs` | The Games page: games, destinations, artwork, availability and stored overrides, the shared frame, every width, palette and mode, the sidebar, keyboard, the ad tag. |
+| `games.mjs` | The Games page: games, destinations, artwork, availability and stored overrides, the shared frame, every width, palette and mode, the sidebar, keyboard. |
+| `library.mjs` | The Game Library and editing the Games page end to end on the real migrations: first library, drafts, publishing, the identity warning, history, conflicts, references, crops, missing games, Layout Mode, visitors (cached, offline, tampered), widths, sign-out. |
+| `ads.mjs` | Advertising on its nine pages: guests and members get it, administrators and unanswered checks don't. |
 | `widgets.mjs` | Page Heading and Card Grid, and widgets that grow: drawing at every width, palette and mode, and editing them in both modes on a made-up page. |
 | `second-page.mjs` | A made-up second page on the shared code: its own content, cache, draft and ids; Site Navigation from the homepage. |
 

@@ -33,7 +33,9 @@
 .home.cms-pending .home-feature-art,
 .home.cms-pending .home-feature-copy,
 .home.cms-pending .home-feature-play,
-.home.cms-pending .home-track { opacity: 0; }
+.home.cms-pending .home-track,
+.home.cms-pending .card-grid-list,
+.home.cms-pending .page-heading > * { opacity: 0; }
 
 .home > .pa-sidebar { grid-column: 1; grid-row: 1; }
 /* The floating sidebar is a panel of its own height at the top of the page,

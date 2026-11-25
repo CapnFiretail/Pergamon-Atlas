@@ -7,13 +7,16 @@
 //              them first, or publish the saved draft without them (they
 //              stay here, unsaved)
 //   review     what will change, card by card, and how many images become
-//              public; a draft started before the current live version
-//              needs an extra confirmation
+//              public; a draft started before the current live version, or a notice
+//              that asks for one, needs an extra confirmation
 //   publishing images are prepared, then the draft is published (publish.js)
 //   done / failed / stale   the outcome, with what to do next
 //
 // Created by admin.js: publishDialog.create({ workspace, content, publish,
-//   api: { getDraft, describe, prepare, publish }, cardLabel(id),
+//   api: { getDraft, describe, prepare, publish }, cardLabel(id), nameOf(game id),
+//   notices({ draft, published }) → Promise<[{ lines, confirm?, block?,
+//     action?: { label, run } }]>   what to say in the review: `confirm` must be
+//     ticked to go on, `block` can't be published as it is
 //   onPublished(result), onChanged(), onForbidden(), returnFocus() })
 //   → { open(), isOpen(), destroy() }
 (function () {
@@ -30,7 +33,7 @@
 
   function create(env) {
     const { workspace, content } = env;
-    const PAGE = content.page;
+    const PAGE = content.page, ONE = PAGE.thing || 'card', MANY = PAGE.things || 'cards';
 
     const overlay = el('div', 'cms-publish');
     overlay.hidden = true;
@@ -90,10 +93,23 @@
       const d = res.data || {};
       server = { draft: d.draft || null, published: d.published || null };
       const unsaved = workspace.isLoaded() ? workspace.unsavedCards() : [];
+      if (!server.draft && !server.published && !unsaved.length && workspace.isLoaded() && workspace.unstored()) {
+        const go = button('Save it as a draft', 'primary', async () => {
+          busy = true; go.disabled = true; setStatus('Saving draft…', 'busy');
+          let r;
+          try { r = await workspace.save(); } catch (e) { r = { error: { code: 'network' } }; }
+          busy = false;
+          env.onChanged();
+          if (r.ok) return check();
+          go.disabled = false;
+          setStatus(saveProblem(r), 'error');
+        });
+        return show('unstored', 'Nothing has been saved yet', [para(`Visitors see the built-in ${PAGE.noun}. Saving it as a draft, unchanged, lets you review and publish it.`)], [go, button('Cancel', 'ghost', close)]);
+      }
       if (!server.draft) {
         return show('nothing', 'Nothing to publish', [
           para('There is no saved draft. Publishing makes the saved draft public.'),
-          unsaved.length ? para(`You have unsaved changes on ${plural(unsaved.length, 'card', 'cards')}. Use Save Draft in the card editor first.`) : para('Edit a card and use Save Draft first.')
+          unsaved.length ? para(`You have unsaved changes on ${plural(unsaved.length, ONE, MANY)}. Use Save Draft ${PAGE.thing ? '' : 'in the card editor '}first.`) : para(`Edit a ${ONE} and use Save Draft first.`)
         ], [button('Close', 'secondary', close)]);
       }
       // This browser's edits are based on an older draft: another administrator saved since.
@@ -104,13 +120,15 @@
         } else {
           return show('outdated', 'The saved draft has changed', [
             para(`Another administrator saved a newer draft at ${time(server.draft.created_at)}, after you started editing.`),
-            para('Save your changes from the card editor first (you’ll be asked how to combine them with theirs), then publish.')
+            para(`Save your changes ${PAGE.thing ? '' : 'from the card editor '}first (you’ll be asked how to combine them with theirs), then publish.`)
           ], [button('Close', 'secondary', close)]);
         }
       }
       if (unsaved.length) return unsavedStep(unsaved);
       review(false);
     }
+
+    const saveProblem = r => (r.error && (r.error.code === 'layout' || r.error.code === 'games') ? r.error.message : r.error && r.error.code === 'PT422' ? `The server didn’t accept the draft: ${r.error.message}` : 'Couldn’t save the draft. Your changes are still here; try again.');
 
     function unsavedStep(unsaved) {
       const list = el('ul', 'cms-publish-list');
@@ -126,15 +144,15 @@
         if (r.conflict) {
           return show('outdated', 'The saved draft has changed', [
             para('Not saved: another administrator saved a newer draft. Nothing was published.'),
-            para('Open a card with unsaved changes and use Save Draft there to combine your changes with theirs, then publish.')
+            para(PAGE.thing ? 'Use Save Draft to combine your changes with theirs, then publish.' : 'Open a card with unsaved changes and use Save Draft there to combine your changes with theirs, then publish.')
           ], [button('Close', 'secondary', close)]);
         }
         saveFirst.disabled = without.disabled = false;
-        setStatus(r.error && r.error.code === 'layout' ? r.error.message : r.error && r.error.code === 'PT422' ? `The server didn’t accept the draft: ${r.error.message}` : 'Couldn’t save the draft. Your changes are still here; try again.', 'error');
+        setStatus(saveProblem(r), 'error');
       });
       const without = button('Publish saved draft only', 'secondary', () => review(true));
       show('unsaved', 'You have unsaved changes', [
-        para(`These ${unsaved.every(id => content.cardType(id, ...workspace.docs())) ? plural(unsaved.length, 'card has', 'cards have') : plural(unsaved.length, 'item has', 'items have')} changes that aren’t in the saved draft, so they would not be published:`),
+        para(`These ${unsaved.every(id => content.cardType(id, ...workspace.docs())) ? plural(unsaved.length, `${ONE} has`, `${MANY} have`) : plural(unsaved.length, 'item has', 'items have')} changes that aren’t in the saved draft, so they would not be published:`),
         list,
         para('Save them into the draft first, or publish the saved draft without them (they stay here, unsaved).')
       ], [saveFirst, without, button('Cancel', 'ghost', close)]);
@@ -150,7 +168,7 @@
       return list;
     }
 
-    function review(excluding) {
+    async function review(excluding) {
       // The server checks structure; the sizes widgets need are checked here.
       if (!content.validateDocument(server.draft.content)) {
         return show('invalid', 'This draft can’t be published', [
@@ -158,8 +176,25 @@
           para('Nothing was published. Correct it in Admin Mode, save the draft again, and publish.')
         ], [button('Close', 'secondary', close)]);
       }
-      const summary = env.publish.summarize(server.published && server.published.content, server.draft.content, content, cms.images);
+      let notices = [];
+      if (env.notices) {
+        busy = true;
+        show('checking', 'Publish Changes', [para('Checking the saved draft…')], [button('Cancel', 'ghost', close)]);
+        try { notices = await env.notices(server); } catch (e) { notices = null; }
+        busy = false;
+        if (step !== 'checking') return;
+        if (!notices) return failed('Couldn’t check what this draft uses.', [`The live ${PAGE.noun} hasn’t changed. Check your connection and try again.`]);
+      }
+      const summary = env.publish.summarize(server.published && server.published.content, server.draft.content, content, cms.images, env.nameOf);
       const nodes = [para(`The draft saved at ${time(server.draft.created_at)} will replace the live ${PAGE.noun}${server.published ? ` (version ${server.published.id})` : ''}. Guests and signed-in visitors see it right away.`)];
+      const confirms = [];
+      const confirmBox = text => {
+        const label = el('label', 'cms-publish-confirm'), box = el('input');
+        box.type = 'checkbox';
+        confirms.push(box);
+        label.append(box, el('span', '', text));
+        return label;
+      };
       if (summary.empty) nodes.push(para('The saved draft matches what is live: there is nothing to publish.', 'cms-publish-note'));
       if (summary.cards.length) {
         const list = el('ul', 'cms-publish-list cms-publish-changes');
@@ -173,24 +208,28 @@
       if (summary.layout.length) nodes.push(para('Layout:'), layoutList(summary.layout));
       summary.other.forEach(o => nodes.push(para(o + ' changed.')));
       if (summary.newImages.length) nodes.push(para(`${plural(summary.newImages.length, 'uploaded image', 'uploaded images')} will become public. Images that aren’t in the draft stay private.`, 'cms-publish-note'));
-      if (excluding) nodes.push(para(`Your unsaved changes (${plural(workspace.unsavedCards().length, 'card', 'cards')}) are not included and stay in this browser.`, 'cms-publish-note'));
+      if (excluding) nodes.push(para(`Your unsaved changes (${plural(workspace.unsavedCards().length, ONE, MANY)}) are not included and stay in this browser.`, 'cms-publish-note'));
+      notices.forEach(n => {
+        const box = el('div', n.block || n.confirm ? 'cms-publish-warning' : 'cms-publish-info');
+        n.lines.forEach(t => box.append(para(t)));
+        if (n.confirm) box.append(confirmBox(n.confirm));
+        if (n.action) box.append(button(n.action.label, 'secondary', () => { close(); n.action.run(); }));
+        nodes.push(box);
+      });
       const livePub = server.published ? server.published.id : null;
       const stale = server.draft.based_on_published_id !== livePub && livePub !== null;
-      let confirm = null;
       if (stale) {
         const box = el('div', 'cms-publish-warning');
         box.append(para(`This draft was started from version ${server.draft.based_on_published_id || 'none'}, but version ${livePub} is live now (it was published or restored after the draft was started). Publishing replaces version ${livePub} with this draft, including any changes made in version ${livePub}.`));
-        const label = el('label', 'cms-publish-confirm');
-        confirm = el('input');
-        confirm.type = 'checkbox';
-        label.append(confirm, el('span', '', `Replace version ${livePub} anyway`));
-        box.append(label);
+        box.append(confirmBox(`Replace version ${livePub} anyway`));
         nodes.push(box);
       }
       const go = button('Publish now', 'primary', () => publishNow(summary));
-      go.disabled = summary.empty || !!confirm;
-      if (confirm) confirm.addEventListener('change', () => { go.disabled = !confirm.checked; });
-      show('review', summary.empty ? 'Nothing to publish' : 'Publish these changes?', nodes, [go, button('Cancel', 'ghost', close)], summary.empty ? null : (confirm || go));
+      const blocked = notices.some(n => n.block);
+      const ready = () => { go.disabled = summary.empty || blocked || confirms.some(c => !c.checked); };
+      confirms.forEach(c => c.addEventListener('change', ready));
+      ready();
+      show('review', summary.empty ? 'Nothing to publish' : blocked ? 'Not ready to publish' : 'Publish these changes?', nodes, [go, button('Cancel', 'ghost', close)], summary.empty || blocked ? null : (confirms[0] || go));
     }
 
     async function publishNow(summary) {
@@ -218,7 +257,7 @@
         env.onPublished(result);
         const n = summary.cards.length;
         return show('done', 'Published', [
-          para(`Version ${result.version} is live (${plural(n, 'card', 'cards')} changed${summary.newImages.length ? `, ${plural(summary.newImages.length, 'image', 'images')} made public` : ''}). Visitors see it on their next visit; open pages update when reloaded.`)
+          para(`Version ${result.version} is live (${plural(n, ONE, MANY)} changed${summary.newImages.length ? `, ${plural(summary.newImages.length, 'image', 'images')} made public` : ''}). Visitors see it on their next visit; open pages update when reloaded.`)
         ], [button('Done', 'primary', close)]);
       }
       if (result.stale) {

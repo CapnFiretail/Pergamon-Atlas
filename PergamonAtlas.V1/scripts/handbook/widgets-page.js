@@ -183,7 +183,7 @@
         ['Inputs', ['Sections, each with a title, optional icon, optional filter names, items', { code: '{ key, element, label, facet }' }, 'and empty messages. One section: no section arrows. No filters: no tabs.']],
         ['Owns', ['Layout, gliding and arrows, filters, sections, empty state, screen-reader announcements, its responsive widths.']],
         ['Used on', ['Homepage: “Explore More Games” (sections Games and Tools; the Games cards come from the CMS component', { code: 'home.carousel' }, ').']],
-        ['Widget type', [{ code: 'carousel' }, 'An ordered list of cards.']],
+        ['Widget type', [{ code: 'carousel' }, 'An ordered list of cards: each with its own details (the homepage’s) or a reference to a game record (a new one on any other page).']],
         ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile; the carousel stands still while editing.']],
         ['Type roles', roles('carousel')],
         ['Source', [{ path: 'scripts/components/carousel.js' }, { path: 'styles/components/carousel.css' }, { path: 'scripts/glide.js' }]]
@@ -213,8 +213,8 @@
         ['Owns', ['Columns and gaps, the empty state, screen-reader announcements. Cards are at least 190px wide, 128px when the grid is 640px wide or less.']],
         ['Height', ['Its content’s, or its rectangle’s if that is taller. On the grid, the row it ends on takes the extra height, so nothing can be placed below it for now (Foundations › Atlas Grid › Widgets that grow).']],
         ['Used on', ['The Games page.']],
-        ['Widget type', [{ code: 'card-grid' }, 'An ordered list of cards. Offered in Layout Mode on the local server only until its migration is applied.']],
-        ['Admin Mode', ['Cards are added, edited, deleted and reordered with Manage cards and the Add card tile. Games that are coming soon are shown too; games that are hidden or archived are not.']],
+        ['Widget type', [{ code: 'card-grid' }, 'An ordered list of cards, each a reference to a game record', { code: '{ game, crop? }' }, '.']],
+        ['Admin Mode', ['Cards are added, deleted and reordered with Manage cards and the Add card tile; a card’s editor chooses its game and, if it needs one, a framing of its own. Everything else is the game’s, edited in the Game Library. Games that are coming soon are shown too; games that are hidden or archived are shown to administrators only, marked.']],
         ['Type roles', roles('grid')],
         ['Source', [{ path: 'scripts/components/card-grid.js' }, { path: 'styles/components/card-grid.css' }]]
       ]));
@@ -250,13 +250,13 @@
     featureEntry('hero', 'hero', 'Featured Content — Hero', X.hero || [],
       'The large card that introduces one piece of content: full-bleed artwork, a title between ornament rules, and one action. On the homepage it is the Featured Game.',
       ['Homepage: the Featured slot (CMS component', { code: 'home.featured' }, ').'],
-      ['Widget type', [{ code: 'feature-hero' }, 'One active card, with its own saved cards.']],
-      ['Title, button label, destination, image and its desktop and phone framing; saved cards to switch between.']);
+      ['Widget type', [{ code: 'feature-hero' }, 'One active card, with its own saved cards. On any page but the homepage a new card refers to a game record.']],
+      ['Title, button label, destination, image and its desktop and phone framing; saved cards to switch between. A card that refers to a game: which game, the button label and its framing; a game that isn’t listed leaves its place empty.']);
     featureEntry('banner', 'banner', 'Spotlight — Banner', X.banner || [],
       'The same component as a wide, short banner: the title on the left, the artwork through the middle, the action on the right. On the homepage it is the Spotlight.',
       ['Homepage: the Spotlight slot (CMS component', { code: 'home.spotlight' }, ').'],
-      ['Widget type', [{ code: 'feature-spotlight' }, 'One active card, with its own saved cards.']],
-      ['Title, button label, destination, image with edge colour and framing; saved cards to switch between.']);
+      ['Widget type', [{ code: 'feature-spotlight' }, 'One active card, with its own saved cards. On any page but the homepage a new card refers to a game record.']],
+      ['Title, button label, destination, image with edge colour and framing; saved cards to switch between. A card that refers to a game: which game, the button label and its framing.']);
     {
       const art = entry(contents, 'card', 'Content Card', [chip('Content', 'active'), chip('Live preview', 'muted')],
         'One item as a linked card: square artwork, a title, a line of metadata and an optional action icon. It fills the width it is given, so it works inside a carousel or on its own. On the homepage each carousel card is a content card showing a game.');
@@ -276,8 +276,9 @@
       art.append(facts([
         ['Inputs', [{ code: '{ title, meta, href, art, action }' }, '(action: play, or none).']],
         ['Owns', ['Its artwork (crop, zoom, phone crop when 180px or narrower), title, metadata, link and action icon.']],
-        ['Used on', ['Homepage carousel: one card per game (CMS components', { code: 'home.carousel.<card>' }, '; the page’s widgets turn each game into title, category and link).']],
-        ['Admin Mode', ['Title, category, destination game and image with its framing.']],
+        ['Used on', ['Homepage carousel: one card per game (CMS components', { code: 'home.carousel.<card>' }, '; the page’s widgets turn each game into title, category and link). The Games page’s grid, from game records. The Game Library’s artwork preview.']],
+        ['Admin Mode', ['Title, category, destination game and image with its framing; or, for a card that refers to a game, which game and a framing of its own. Without one it follows the game’s.']],
+        ['Marks', ['Administrators only, never part of the card:', { code: '.cms-card-note' }, '(Hidden, Archived, Not published yet). A card whose game is gone is drawn as “Not in the Game Library” with its id.']],
         ['Type roles', roles('card')],
         ['Source', [{ path: 'scripts/components/content-card.js' }, { path: 'styles/components/content-card.css' }]]
       ]));
@@ -304,10 +305,43 @@
         ['Count', ['Derived, never stored: the widget asks for what to count (the cards this page’s lists show) and the page counts as it draws.']],
         ['Heading level', ['The page decides. The first one on a page without a heading of its own is its <h1>; others are <h2>.']],
         ['Used on', ['The Games page.']],
-        ['Widget type', [{ code: 'page-heading' }, 'One set of fields. Offered in Layout Mode on the local server only until its migration is applied.']],
+        ['Widget type', [{ code: 'page-heading' }, 'One set of fields.']],
         ['Admin Mode', ['Title, subtitle, emblem, what to count and the count’s label.']],
         ['Type roles', roles('heading')],
         ['Source', [{ path: 'scripts/components/page-heading.js' }, { path: 'styles/components/page-heading.css' }]]
+      ]));
+    }
+
+    // ── Game records ────────────────────────────────────────────────────
+    const records = group('Game records', 'What a game is, apart from where it is shown. One record per game; cards refer to it and own only their presentation.');
+    {
+      const library = window.PergamonCMS && window.PergamonCMS.library;
+      const art = entry(records, 'game-library', 'Game Library', [chip('Admin Mode', 'active'), chip('Persistent data', 'muted'), chip('Live states', 'muted')],
+        'Every game’s own details in one versioned document, edited in Admin Mode on any editable page and published by itself. A page’s draft, publishing and history never change it, and changing a record changes every card that refers to it.');
+      if (C.contentCard && library) {
+        const s = stage('Live: one record’s card by availability, as visitors and (the last two) administrators see it.', false);
+        const row = el('div', 'hb-card-row');
+        const sample = (X.cards || [])[0] || { title: 'Chess Forge', meta: 'Strategy' };
+        library.AVAILABILITY.forEach(a => {
+          const slot = el('div', 'hb-card-slot');
+          const card = C.contentCard({ title: sample.title, meta: a.label, href: '#', art: sample.art });
+          card.element.addEventListener('click', e => e.preventDefault());
+          slot.append(card.element);
+          row.append(slot);
+        });
+        s.body.append(row);
+        art.append(s.fig);
+      } else art.append(missing.cloneNode(true));
+      art.append(facts([
+        ['Record', [{ code: '{ id, name, category, destination, availability, description?, art?, wide? }' }, '. The id is chosen once and belongs to that game only. Square artwork for cards, wide artwork for Featured and Spotlight (the square one where there is none), each with its default framing.']],
+        ['Availability', ['Available and coming soon: listed. Hidden and archived: cards that use the game aren’t shown to visitors. It decides listings, not access: the game’s own page stays reachable.']],
+        ['Referring to a game', [{ code: '{ game: id, crop? }' }, '; Featured and Spotlight cards also their button label. A crop replaces the default framing as a whole, never the picture.']],
+        ['Leaving', ['A published game is archived, never removed. A card whose game is gone stays in the draft, in its place, until another is chosen; such a page can’t be published, and says which games.']],
+        ['Drafts and history', ['The library’s own. A page’s draft may use the library’s draft, marked “Not published yet”; publishing a page needs its games in the published library. An earlier library opens as unsaved changes, never straight to visitors, keeping games added since.']],
+        ['Warnings', ['Publishing a game whose name and destination both change names the game, both values and the pages that use it, and may go on. Discarding a draft or removing a game names the pages first.']],
+        ['Delivery', ['A page arrives with the records its cards refer to, of the same moment, and is cached with them. Before a page is published, and when nothing could be read, the built-in records are shown.']],
+        ['Limits', [{ code: '64' }, 'records;', { code: '24' }, 'cards in a list.']],
+        ['Source', [{ path: 'scripts/cms/library.js' }, { path: 'scripts/cms/library-editing.js' }, { path: 'scripts/cms/library-dialog.js' }, { path: 'scripts/cms/fields.js' }, { path: 'data/entries.js' }]]
       ]));
     }
 
@@ -389,7 +423,7 @@
         s.body.append(demo);
       }
       art.append(s.fig, facts([
-        ['Configuration', ['Not editable yet: the homepage’s destinations are set in', { code: 'data/home-content.js' }, '(', { code: 'context' }, '); every instance shows the same links.']],
+        ['Configuration', ['Not editable yet: its destinations are set in', { code: 'data/atlas-navigation.js' }, '; every instance, on any page, shows the same links.']],
         ['Widget type', [{ code: 'atlas-navigation' }, 'No content of its own.']],
         ['Grid', ['At least 242px wide (much narrower and the longest label is cut off).']],
         ['Type roles', roles('atlas')],

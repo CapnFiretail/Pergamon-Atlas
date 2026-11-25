@@ -10,6 +10,9 @@
 //   schemaVersion   what the server reports for it (site_pages.schema_version)
 //   siteNavigation  true for the one page whose document also holds Site
 //                   Navigation (`site.sidebar`, the sidebar on every page)
+//   ownCards        true while its cards hold their own details of a game (the
+//                   homepage, until it is converted); elsewhere a new card refers to
+//                   a game record (docs/cms/ARCHITECTURE.md §13)
 //   regions()       its layout before anyone has published one
 //
 // A page says which one it is in its HTML, on the element it is drawn in:
@@ -32,6 +35,7 @@
       schemas: [1, 2],
       schemaVersion: 1,
       siteNavigation: true,
+      ownCards: true,
       // Beside the sidebar, the 70/30 upper area; below, full width, the
       // carousel. Instance ids are schema 1's slot names, so upgrading a
       // schema-1 document renames nothing.

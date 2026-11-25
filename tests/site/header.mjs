@@ -37,8 +37,8 @@ const SITE_ACTIONS = ['pa-search', 'pa-settings', 'pa-profile'], ADMIN_ACTIONS =
 // Guests and members.
 for (const role of ['guest', 'user']) for (const url of PAGES) {
   const c = await ctx(role), p = await open(c, url, role, 900), h = await head(p);
-  const admin = c.requests.filter(u => /admin-header|cms\/(?!content|loader|pages|widgets|admin\.js)|studio\/(?!gate)|handbook\/(?!gate)/.test(u) && !u.endsWith('/'));
-  const guestAccess = role === 'guest' && c.requests.some(u => u.endsWith('/admin-access.js')) && !['/', '/handbook/', '/studio/'].includes(url);
+  const admin = c.requests.filter(u => /admin-header|cms\/(?!content|library\.js|loader|pages|widgets|admin\.js)|studio\/(?!gate)|handbook\/(?!gate)/.test(u) && !u.endsWith('/'));
+  const guestAccess = role === 'guest' && c.requests.some(u => u.endsWith('/admin-access.js')) && !['/', '/games/', '/handbook/', '/studio/'].includes(url);
   const guestClient = role === 'guest' && NO_CLIENT.includes(url) && c.requests.some(u => /vendor|auth\/auth/.test(u));
   const text = await p.evaluate(() => /\b(Studio|Handbook|Admin Mode)\b/.test(document.body.innerText));
   if (h.actions.join() !== SITE_ACTIONS.join() || admin.length || guestAccess || guestClient || text || errs(c).length) ok(false, `${role} ${url}: ${h.actions} ${admin} ${guestAccess} ${guestClient} ${text} ${errs(c)}`);
@@ -56,15 +56,15 @@ for (const url of PAGES) {
   const admin = h.labels[2] || '';
   const right = h.actions.join() === ADMIN_ACTIONS.join() && same === first && h.labels[0].startsWith('Atlas Studio|Atlas Studio|') && h.labels[0].endsWith('|/studio/') && h.labels[1].startsWith('Atlas Handbook|Atlas Handbook|') && h.labels[1].endsWith('|/handbook/') &&
     [0, 1].every(i => h.labels[i].includes('|page|') === (here === i)) &&
-    (url === '/' ? admin.startsWith('Admin Mode: off|Admin Mode: off||') : admin.startsWith('Admin Mode: not available on this page|Admin Mode: not available on this page|true|'));
+    (['/', '/games/'].includes(url) ? admin.startsWith('Admin Mode: off|Admin Mode: off||') : admin.startsWith('Admin Mode: not available on this page|Admin Mode: not available on this page|true|'));
   if (!right || errs(c).length) ok(false, `${url}: ${JSON.stringify(h.labels)} ${h.actions} ${same === first} ${errs(c)}`);
   if (shots && ['/', '/games/', '/games/pong/', '/settings/'].includes(url)) await p.locator('.pa-header').screenshot({ path: `${shots}/header${url.replace(/\//g, '-')}.png` });
   await c.close();
 }
-ok(true, `administrators: Studio, Handbook, Admin Mode, in that order, place and look, on all ${PAGES.length} pages; Admin Mode is the editor's on the homepage and unavailable elsewhere`);
+ok(true, `administrators: Studio, Handbook, Admin Mode, in that order, place and look, on all ${PAGES.length} pages; Admin Mode is the editor's on the homepage and the Games page, unavailable elsewhere`);
 
 // Unavailable is said, and does nothing.
-let c = await ctx('admin'), p = await open(c, '/games/', 'admin', 1500);
+let c = await ctx('admin'), p = await open(c, '/settings/', 'admin', 1500);
 await p.click('#cms-admin-button', { force: true }); await p.waitForTimeout(150);
 ok(await p.textContent('.pa-admin-note') === 'This page can’t be edited in Admin Mode yet.' && !(await p.locator('#cms-admin-panel').count()), 'pressed where there is no editor: says so, opens nothing');
 await p.keyboard.press('Escape'); ok(await p.locator('.pa-admin-note').count() === 0, 'Escape closes it');

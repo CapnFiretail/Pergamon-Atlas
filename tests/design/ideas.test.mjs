@@ -21,7 +21,7 @@ test('the starting collection: every idea valid, captured, described, with its o
   const { ideas } = p.document;
   assert.deepEqual(D.CATEGORIES.map(c => [c.label, ideas.filter(x => x.category === c.value).length]), [
     ['Long-term vision', 6], ['Atlas Studio', 12], ['Claude Code and development workflow', 9], ['Handbook and design system', 8],
-    ['Admin Mode and content management', 6], ['Public website and games', 9], ['Deferred technical improvements', 4]]);
+    ['Admin Mode and content management', 6], ['Public website and games', 10], ['Deferred technical improvements', 4]]);
   ideas.forEach(x => { assert.equal(x.status, 'captured', x.id); assert.ok(x.title && x.description.endsWith('.') && x.notes === '', x.id); });
   assert.equal(new Set(ideas.map(x => x.title)).size, ideas.length);
   assert.ok(D.same(D.parse(D.serialize(p.document)).document, p.document));

@@ -1,6 +1,7 @@
 // The Page Heading and Card Grid widgets, and widgets that grow, on a page and
 // in Admin Mode. Needs the local development server; the page ("sample") exists
-// in this browser only, and the database and sign-in are stand-ins (lib.mjs).
+// in this browser only, and the database and sign-in are stand-ins (lib.mjs). Its
+// cards refer to games of a small Game Library.
 //
 //   node tests/site/widgets.mjs [folder for pictures]
 //
@@ -20,7 +21,9 @@ const GAMES = [['battleship', 'Battleship', 'Strategy'], ['blackjack', 'Blackjac
 const doc = () => ({ schema: 2, regions: [JSON.parse(JSON.stringify(REGION))], components: Object.assign({
   'sample.heading': { title: 'Games', subtitle: 'Pergamon Catalogs', emblem: 'games', count: 'cards', countLabel: 'Games' },
   'sample.spotlight': { title: 'A spotlight', cta: 'Go', href: '/games/' },
-  'sample.grid': { order: GAMES.map(g => g[0]) } }, Object.fromEntries(GAMES.map(([k, title, category]) => ['sample.grid.' + k, { title, category, href: `/games/${k}/` }]))) });
+  'sample.grid': { order: GAMES.map(g => g[0]) } }, Object.fromEntries(GAMES.map(([k]) => ['sample.grid.' + k, { game: k }]))) });
+const RECORDS = Object.fromEntries(GAMES.map(([k, name, category]) => [k, { name, category, destination: `/games/${k}/`, availability: 'available' }]));
+const LIBRARY = { schema: 1, components: Object.assign({ 'library.games': { order: GAMES.map(g => g[0]) } }, Object.fromEntries(Object.keys(RECORDS).map(k => ['library.games.' + k, RECORDS[k]]))) };
 const html = (await (await fetch(SITE + '/')).text()).replace('data-atlas-page="home"', 'data-atlas-page="sample"').replace('<script src="/scripts/home.js"></script>', '<script src="/sample.js"></script>');
 const registry = (await (await fetch(SITE + '/scripts/cms/pages.js')).text()).replace('const PAGES = {', `const PAGES = { sample: { id: 'sample', name: 'Sample page', noun: 'sample page', prefix: 'sample', schemas: [2], schemaVersion: 2, siteNavigation: false, regions: () => [${JSON.stringify(REGION)}] },`);
 const script = `PergamonPages.mount({ document: ${JSON.stringify(doc())} });`;
@@ -29,9 +32,10 @@ const server = { draft: null, id: 100, saves: [] };
 const answer = (role, fn, a) => {
   if (fn === 'get_published_content') return { data: live[a.p_page] || null };
   if (role !== 'admin') return { error: { code: 'PT403', message: 'forbidden' } };
+  if (fn === 'get_draft' && a.p_page === 'library') return { data: { page: 'library', draft: null, published: { id: 50, content: LIBRARY } } };
   if (fn === 'get_draft') return { data: { page: a.p_page, draft: server.draft, published: live.sample ? { id: 200, content: live.sample.content } : null } };
   if (fn === 'save_draft') { server.saves.push(a); server.draft = { id: ++server.id, content: a.p_content, created_at: new Date().toISOString(), based_on_published_id: null }; return { data: { draft_id: server.id } }; }
-  if (fn === 'publish') { live.sample = { page: 'sample', version: 200, schema: 2, content: server.draft.content, media: {} }; server.draft = null; return { data: { version: 200, previous_version: null } }; }
+  if (fn === 'publish') { live.sample = { page: 'sample', version: 200, schema: 2, content: server.draft.content, media: {}, library: { version: 50, games: RECORDS } }; server.draft = null; return { data: { version: 200, previous_version: null } }; }
   return { data: [] };
 };
 const browser = await chromium.launch();
@@ -99,8 +103,8 @@ ok(await p.locator('.cms-drawer-primary[type="submit"]').isDisabled(), 'a headin
 await p.fill('.cms-drawer [name="title"]', 'All games'); await click('.cms-drawer-primary[type="submit"]', 800);
 ok(server.saves.length === 1 && JSON.stringify(Object.keys(server.saves[0].p_content.components['sample.heading']).sort()) === '["count","countLabel","emblem","title"]', 'saved; the emptied subtitle is left out');
 await click('.cms-drawer-close');
-await click('.cms-edit-pencil[data-cms-edit="sample.grid.snake"]'); await p.fill('.cms-drawer [name="title"]', 'Snake, again'); await p.waitForTimeout(200);
-ok(await p.locator('.home-tile-title', { hasText: 'Snake, again' }).count() === 1, 'a grid card is edited in place');
+await click('.cms-edit-pencil[data-cms-edit="sample.grid.snake"]'); await p.selectOption('.cms-drawer [name="game"]', 'pong'); await p.waitForTimeout(200);
+ok(await p.locator('.card-grid .home-tile-title', { hasText: 'Pong' }).count() === 2, 'a grid card is edited in place');
 await click('.cms-drawer-secondary:text-is("Discard Changes")'); await click('.cms-drawer-close');
 const before = await state(p);
 await click('.cms-manage-button[data-cms-manage="sample.grid"]');
@@ -176,8 +180,8 @@ c = await ctx({ size: [1440, 1000] }); p = await open(c, '/sample/');
 s = await state(p);
 ok(s.h1.join() === 'All games' && s.count === '9' && s.inside, 'a guest sees the published page'); await c.close();
 
-// ── The homepage, with the database as it is now (0014's types) ──
-const db = await database();
+// ── The homepage, with a database that doesn't know them yet (before 0016) ──
+const db = await database({ without: ['0016'] });
 c = await context(browser, { size: [1440, 1000], answer: db.answer, storage: { paSidebarCollapsed: '0' } }); p = await open(c, '/', 'admin', 1800);
 await click('#cms-admin-button'); await click('.cms-admin-switch', 900); await click('button[data-mode="layout"]', 900);
 await p.selectOption('.cms-layout-type', 'card-grid'); await p.selectOption('.cms-layout-region', 'lower'); await click('.cms-layout-bar button:text-is("Add widget")', 500);
@@ -188,10 +192,10 @@ ok((await db.env.db.query('select count(*)::int as n from public.site_content_ve
 await click('.cms-layout-float button', 400);
 ok(await p.locator('.card-grid').count() === 0, 'undo leaves the homepage as it was');
 ok(!c.errs.length, 'no errors ' + c.errs); await c.close();
-// Anywhere but the local server they aren't offered.
+// They are offered everywhere (the code is released after the migration).
 c = await context(browser, { size: [1440, 1000], answer: db.answer }); await c.addInitScript(() => Object.defineProperty(window, 'PERGAMON_ENV', { value: 'preview', writable: false })); p = await open(c, '/', 'admin', 1800);
 await click('#cms-admin-button'); await click('.cms-admin-switch', 900); await click('button[data-mode="layout"]', 900);
-ok(!(await p.locator('.cms-layout-type option').allTextContents()).some(t => /Page Heading|Card Grid/.test(t)), 'staging and production don’t offer them'); await c.close();
+ok((await p.locator('.cms-layout-type option').allTextContents()).filter(t => /Page Heading|Card Grid/.test(t)).length === 2, 'staging and production offer them'); await c.close();
 
 await browser.close();
 console.log(bad ? `${bad} FAILED` : 'ALL OK');

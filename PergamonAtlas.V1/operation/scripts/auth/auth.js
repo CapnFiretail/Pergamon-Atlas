@@ -127,6 +127,18 @@
     });
   }
 
+  // Drops the saved draft (older ones stay in the history table); only if it is still
+  // expectedDraftId, otherwise PT409 and nothing changes.
+  async function discardCmsDraft(page, expectedDraftId) {
+    return client().rpc('discard_draft', { p_page: page, p_expected_draft_id: expectedDraftId });
+  }
+
+  // Where games are used, on every page, live and in drafts (admin only; 0016):
+  // [{ game, page, status, cards }].
+  async function listGameUses() {
+    return client().rpc('list_game_uses');
+  }
+
   // CMS draft images (admin only; see supabase/proposed/0009_site_media.sql).
   // createCmsMediaUpload reserves one upload and resolves { media_id, bucket,
   // path }; the private site-media-drafts bucket accepts a file only at that
@@ -290,6 +302,8 @@
     isCmsAdmin,
     getCmsDraft,
     saveCmsDraft,
+    discardCmsDraft,
+    listGameUses,
     createCmsMediaUpload,
     uploadCmsDraftMedia,
     getCmsMedia,

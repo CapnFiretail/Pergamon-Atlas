@@ -1,4 +1,5 @@
-// The card editor's three states for one page (CMS milestone M4):
+// The editor's three states for one document, a page's or the Game Library's (CMS
+// milestone M4):
 //
 //   published   the live version (what visitors see)          from get_draft
 //   draft       the saved draft, if any (private to admins)   from get_draft / save_draft
@@ -26,7 +27,8 @@
 // Node (module.exports) for tests. `api` wraps the RPCs; `storage` is
 // sessionStorage-like; `content` is scripts/cms/content.js (layout editing
 // needs it); `createHistory` the grid editor's (undo needs it);
-// `starter(type)` the content a new widget of that type starts with.
+// `starter(type)` the content a new widget of that type starts with; `lists` the ids
+// of a document's ordered lists, where `content` doesn't say (the Game Library).
 (function (root) {
   'use strict';
 
@@ -94,7 +96,7 @@
     const TYPING_MS = 1500;
 
     // The lists a document has; its regions (schema 1: the built-in ones, for layout work).
-    const listsOf = doc => (content ? content.listsOf(doc) : LISTS);
+    const listsOf = doc => (content ? content.listsOf(doc) : opts.lists || LISTS);
     const isList = id => listsOf(working).indexOf(id) >= 0;
     const regionsOf = doc => (content ? content.regionsOf(doc) : (doc && doc.regions) || null);
     const page2 = doc => !!(doc && doc.regions);
@@ -155,7 +157,7 @@
       return true;
     }
     function settle(doc, baseDoc) {
-      if (content && page2(doc) && baseDoc && !page2(baseDoc) && same(doc.regions, content.builtInRegions())) { doc.schema = content.SCHEMA; delete doc.regions; }
+      if (page2(doc) && baseDoc && !page2(baseDoc) && same(doc.regions, content.builtInRegions())) { doc.schema = content.SCHEMA; delete doc.regions; }
     }
     // One region's layout as edited on the grid (scripts/grid/editor.js).
     function putRegion(doc, layout) {
@@ -227,12 +229,22 @@
     // Edits. `value` is already cleaned by the caller (trimmed text, or an
     // object such as art); undefined removes the field.
     function setField(cardId, field, value) {
+      setFields(cardId, { [field]: value }, typeof value === 'string' ? cardId + '|' + field : null);
+    }
+    // Several fields of one component, as one step.
+    function setFields(cardId, values, key) {
       const c = comp(working, cardId);
-      if (!c || same(c[field], value) && (value !== undefined || !(field in c))) return;
-      edit(doc => {
-        if (value === undefined) delete doc.components[cardId][field];
-        else doc.components[cardId][field] = clone(value);
-      }, typeof value === 'string' ? cardId + '|' + field : null);
+      const changed = c ? Object.keys(values).filter(f => !same(c[f], values[f]) || (values[f] === undefined && f in c)) : [];
+      if (!changed.length) return;
+      edit(doc => changed.forEach(f => {
+        if (values[f] === undefined) delete doc.components[cardId][f];
+        else doc.components[cardId][f] = clone(values[f]);
+      }), key);
+    }
+    // Another document in its place, as one step (undo brings the edits back).
+    function setDocument(next) {
+      if (!working || !validate(next)) return false;
+      return edit(doc => { Object.keys(doc).forEach(k => delete doc[k]); Object.assign(doc, clone(next)); });
     }
     // A whole component at once (site-wide settings such as site.sidebar,
     // which belong to no list); undefined removes it.
@@ -352,6 +364,10 @@
       return 'published';
     }
 
+    // Nothing of this document was ever saved or published: the built-in copy is shown,
+    // and saving it unchanged is how it becomes a draft.
+    const unstored = () => loaded && !draft && !published;
+
     // Save the whole working copy as the new draft.
     // → { ok } | { conflict } | { error: { code, message } }
     async function save() {
@@ -370,6 +386,9 @@
         if (err.code === 'PT422' && /has an unsupported type/.test(err.message)) {
           return { error: { code: 'layout', message: 'This server can’t store one of the added widgets yet. Nothing was saved; undo adding it (or remove it) to save the rest.' } };
         }
+        // A card may refer to a game of the library's saved draft, not of an unsaved one.
+        const game = err.code === 'PT422' && /^game "([a-z0-9-]+)" isn't in the Game Library$/.exec(err.message);
+        if (game) return { error: { code: 'games', game: game[1], message: `The game “${game[1]}” isn’t in the saved Game Library. Save the Game Library’s draft first, or choose another game. Nothing was saved, and your changes are still here.` } };
         return { error: err };
       }
       const id = res.data && res.data.draft_id;
@@ -487,7 +506,7 @@
     }
 
     return {
-      load, setField, setComponent, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, markPublished, clearLocal,
+      load, setField, setFields, setComponent, setDocument, unstored, discardCard, discardAll, unsavedCards, cardStatus, save, combine, adopt, markPublished, clearLocal,
       addCard, removeCard, moveCard, activate,
       undo, redo,
       canUndo: () => !!history && history.canUndo(),

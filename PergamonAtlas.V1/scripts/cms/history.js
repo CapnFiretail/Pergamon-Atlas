@@ -5,11 +5,14 @@
 // version's content is published again as a NEW version, immediately, for
 // every visitor. History is never rewritten: the version that was live stays
 // in the list and can itself be restored. The saved draft and this browser's
-// unsaved edits are not touched (the dialog says so before restoring).
+// unsaved edits are not touched (the dialog says so before restoring). The Game
+// Library is never restored to visitors: an earlier version opens as unsaved changes
+// (PAGE.restoresAsDraft, env.openVersion).
 //
 // Created by admin.js: history.create({ workspace, content, publish, images,
 //   api: { list(page, limit), restore(page, versionId, expectedLiveId) },
-//   cardLabel(id), onRestored(result), onForbidden(), returnFocus() })
+//   nameOf(game id), openVersion(version) → { problem? }, onRestored(result),
+//   onForbidden(), returnFocus() })
 //   → { open(), isOpen(), busy(), destroy() }
 (function () {
   'use strict';
@@ -77,7 +80,7 @@
       const prev = versions.find(x => x.id === v.previous_version_id);
       if (!v.previous_version_id) return { lines: ['First published version.'] };
       if (!prev) return { lines: ['Changes compared with older versions aren’t shown.'] };
-      const s = env.publish.summarize(prev.content, v.content, env.content, env.images);
+      const s = env.publish.summarize(prev.content, v.content, env.content, env.images, env.nameOf);
       const lines = s.cards.map(c => `${c.typeLabel} “${c.title}”: ${c.changes.join(', ')}`).concat(s.layout.map(c => `Layout, ${c.label}: ${c.changes.join(', ')}`), s.other.map(o => `${o} changed`));
       return { lines: lines.length ? lines : ['No content changes.'] };
     }
@@ -120,18 +123,33 @@
         if (c.lines.length > 5) what.append(el('li', '', `and ${plural(c.lines.length - 5, 'more change', 'more changes')}`));
         li.append(what);
         if (v.status === 'archived') {
-          const b = button('Restore…', 'secondary', () => confirm(v));
-          b.setAttribute('aria-label', `Restore version ${v.id}`);
+          const b = PAGE.restoresAsDraft ? button('Open as draft…', 'secondary', () => confirmDraft(v)) : button('Restore…', 'secondary', () => confirm(v));
+          b.setAttribute('aria-label', PAGE.restoresAsDraft ? `Open version ${v.id} as a draft` : `Restore version ${v.id}`);
           li.append(b);
           if (focusId === v.id) focus = b;
         }
         ul.append(li);
       });
       const live = versions.find(v => v.status === 'published');
-      const intro = para(`Every publish and restore is kept here${live ? `; version ${live.id} is live now` : ''}. Restoring an earlier version publishes it again as a new version. Showing the ${plural(versions.length, 'latest version', 'latest versions')}.`);
+      const intro = para(`Every publish and restore is kept here${live ? `; version ${live.id} is live now` : ''}. ${PAGE.restoresAsDraft ? 'An earlier version opens as unsaved changes, to review, save and publish.' : 'Restoring an earlier version publishes it again as a new version.'} Showing the ${plural(versions.length, 'latest version', 'latest versions')}.`);
       // Start at the top of the list (the dialog itself), or back on the version just reviewed.
       show('list', 'Version History', [intro, ul], [button('Close', 'secondary', close)], focus || dialog);
       if (!focus) dialog.scrollTop = 0;
+    }
+
+    function confirmDraft(v) {
+      asking = v.id;
+      const unsaved = env.workspace.isLoaded() ? env.workspace.unsavedCards() : [];
+      const nodes = [
+        para(`The ${PAGE.things} as they were in version ${v.id} (${when(v.published_at)}) become your unsaved changes; ${PAGE.things} added since are kept. Nothing is saved or published until you do.`)
+      ];
+      if (unsaved.length) { const box = el('div', 'cms-publish-warning'); box.append(para(`You have unsaved changes (${plural(unsaved.length, 'change', 'changes')}). They are replaced; Undo brings them back.`)); nodes.push(box); }
+      const go = button(`Open version ${v.id}`, 'primary', () => {
+        const r = env.openVersion(v);
+        if (r && r.problem) return show('failed', 'Not opened', [para(r.problem, 'cms-publish-error'), para('Nothing changed.')], [button('Back to history', 'primary', () => list(v.id)), button('Close', 'ghost', close)]);
+        close();
+      });
+      show('confirm', `Open version ${v.id} as a draft?`, nodes, [go, button('Cancel', 'ghost', () => list(v.id))], go);
     }
 
     function confirm(v) {
@@ -150,7 +168,7 @@
         para(`It is added as a new version${live ? `, replacing version ${live.id}` : ''}. Nothing is deleted: version ${live ? live.id : v.id} stays in the history and can be restored later.`)
       ];
       if (live) {
-        const s = env.publish.summarize(live.content, v.content, env.content, env.images);
+        const s = env.publish.summarize(live.content, v.content, env.content, env.images, env.nameOf);
         if (!s.empty) {
           const ul = el('ul', 'cms-publish-list cms-publish-changes');
           s.cards.slice(0, 8).forEach(c => {

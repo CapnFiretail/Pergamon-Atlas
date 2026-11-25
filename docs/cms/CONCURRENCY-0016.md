@@ -1,7 +1,7 @@
 # Concurrency test for 0016
 
-Required before 0016 reaches production. **Part A: run 2026-11-24, all passed. Part B: a
-plan, not approved, not run; `STAGING-0016.md` says when.** The rules: the header of `supabase/proposed/0016_game_library.sql`.
+Required before 0016 reaches production. **Part A: run 2026-11-24, all passed (by the
+agent). Part B: run on staging 2026-11-24, all as expected (by the user, reported).** The rules: the header of `supabase/proposed/0016_game_library.sql`.
 
 ## Locks, by write path
 
@@ -94,6 +94,11 @@ about 5 seconds after it.
 **Needs approval:** inside these undone transactions the blocks set the request claims to
 an existing administrator's id, in the project owner's own SQL Editor. No session, token or
 password is used or shown. Staging's version ids will skip some numbers.
+
+**Result (user-reported, staging, PostgreSQL 17.12):** B2 waited 0.0 s, accepted; B4 0.0 s,
+PT422; B1 20.6 s, PT422; B3 19.3 s, accepted; B5 19.3 s, accepted; tab 1 always `RESULT held,
+undone`; `verify_0016.sql` 15/15 again, the 497 stored versions and fingerprints unchanged.
+On production the same blocks need their own approval.
 
 Run them in the order **B2, B4, B1, B3, B5**. B2 and B4 show that the two tabs really run
 at the same time. If either waits for tab 1, the editor is queueing the tabs: stop, because

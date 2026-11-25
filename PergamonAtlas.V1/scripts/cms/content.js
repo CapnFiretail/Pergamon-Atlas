@@ -8,9 +8,10 @@
 //   '<prefix>.<instance>'               a card or fields, or an ordered list ('list')
 //   '<prefix>.<instance>.saved'         a card widget's saved cards, in order
 //   '<prefix>.<instance>.saved.<key>'   one of them
-//   '<prefix>.<instance>.<key>'         a list widget's card: its own details, or
-//                                       { game: id }, a game record (drawn with
-//                                       ctx.games; not editable or storable yet)
+//   '<prefix>.<instance>.<key>'         a list widget's card
+// A card holds its own details, or refers to a game record ({ game: id }, with a
+// framing of its own if it has a `crop`; a Featured or Spotlight card also its
+// button label). Records are drawn from ctx.games, by id (scripts/cms/library.js).
 // What an id means depends on the document's instances, so the functions that
 // answer about an id also take the documents to look in (the first that knows
 // it answers; without any, the page's built-in layout). Which types there are
@@ -109,6 +110,23 @@
     return out;
   }
 
+  // ── References to game records ────────────────────────────────────────────
+  const isRef = c => !!c && typeof c === 'object' && c.game !== undefined;
+  // Every game a document refers to.
+  function gameRefs(doc) {
+    const comps = (doc && doc.components) || {}, out = [];
+    Object.keys(comps).forEach(k => { const id = comps[k] && comps[k].game; if (typeof id === 'string' && out.indexOf(id) < 0) out.push(id); });
+    return out;
+  }
+  // A crop is an image's framing without the image: a card's own, in place of the
+  // record's default as a whole.
+  const CROP = ['fit', 'focus', 'focusNarrow', 'scale', 'scaleNarrow', 'anchor', 'anchorNarrow', 'base'];
+  const pick = (o, keys) => { const out = {}; keys.forEach(k => { if (o[k] !== undefined) out[k] = o[k]; }); return out; };
+  const cropOf = art => (art ? pick(art, CROP) : undefined);
+  const withCrop = (art, crop) => (!art ? null : !crop ? art : Object.assign(pick(art, ['source', 'alt']), pick(crop, CROP)));
+  // The record's artwork a kind of card shows: tiles the square one, the others the wide.
+  const artFor = (record, kind) => (kind === 'tile' ? record.art : record.wide || record.art) || null;
+
   // Keys listed by an ordered component ({ order: [...] }), [] when absent.
   const orderOf = (comps, list) => (comps[list] && Array.isArray(comps[list].order) ? comps[list].order : []);
 
@@ -127,8 +145,19 @@
     if (a.source.static !== undefined) return typeof a.source.static === 'string' && STATIC_IMAGE.test(a.source.static) && a.source.media === undefined;
     return typeof a.source.media === 'string' && UUID.test(a.source.media);
   }
-  function validCard(c, tile) {
+  // opts.delivered: as visitors receive it (a card widget whose game they don't get is
+  // { game: null }); opts.refs: references only.
+  function validRef(c, tile, delivered) {
+    if (c.game === null) return !!delivered && !tile && Object.keys(c).length === 1;
+    const keys = tile ? ['game', 'crop'] : ['game', 'cta', 'crop', 'style'];
+    if (!Object.keys(c).every(k => keys.indexOf(k) >= 0) || typeof c.game !== 'string' || !KEY.test(c.game)) return false;
+    if (!tile && !isText(c.cta, 24)) return false;
+    return c.crop === undefined || (!!c.crop && typeof c.crop === 'object' && !Array.isArray(c.crop) && Object.keys(c.crop).every(k => CROP.indexOf(k) >= 0));
+  }
+  function validCard(c, tile, opts) {
     if (!c || typeof c !== 'object') return false;
+    if (isRef(c)) return validRef(c, tile, opts && opts.delivered);
+    if (opts && opts.refs) return false;
     if (!isText(c.title, tile ? 40 : 60) || typeof c.href !== 'string' || !INTERNAL_PATH.test(c.href)) return false;
     if (tile ? !isText(c.category, 40) : !isText(c.cta, 24)) return false;
     return validArt(c.art);
@@ -170,6 +199,11 @@
   const EDGE = { key: 'base', label: 'Edge colour', type: 'color', fit: 'height',
     hint: 'Fills the card beside the image and blends into its faded edges.' };
   const IMAGE = (recommendedWidth, parts) => ({ key: 'art', label: 'Image', type: 'image', fit: 'cover', recommendedWidth: recommendedWidth, parts: parts });
+  // A card that refers to a game: which one, and how its artwork is framed here. What
+  // the game is called, where it leads and its artwork are the record's.
+  const GAME = { key: 'game', label: 'Game', type: 'game' };
+  const FRAMING = { key: 'crop', label: 'Framing', type: 'crop' };
+  const REF_FIELDS = { feature: 'cta', spotlight: 'cta', tile: null };
   const CARD_FIELDS = {
     feature: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false), IMAGE(1600, [ALT])],
     spotlight: [TITLE(60), DESCRIPTION, { key: 'cta', label: 'Button label', type: 'text', max: 24 }, LINK(false), IMAGE(1200, [EDGE, ALT])],
@@ -200,6 +234,7 @@
   // A field value's problem, as a sentence for the editor, or null if it's fine.
   function checkField(field, value) {
     if (typeof value !== 'string') return 'Enter a value.';
+    if (field.type === 'game') return KEY.test(value) ? null : 'Choose a game.';
     if (field.type === 'link') {
       if (!value) return 'Choose where the card leads.';
       if (!ROUTE_PATH.test(value)) return 'Use a site path such as /games/chess-forge/ (lower-case, starting and ending with “/”).';
@@ -219,8 +254,10 @@
     const ids = [];
     const comps = (doc && doc.components) || {};
     Object.keys(comps).forEach(k => {
-      const a = comps[k] && comps[k].art;
-      if (a && a.source && a.source.media && ids.indexOf(a.source.media) < 0) ids.push(a.source.media);
+      ['art', 'wide'].forEach(f => {
+        const a = comps[k] && comps[k][f];
+        if (a && a.source && a.source.media && ids.indexOf(a.source.media) < 0) ids.push(a.source.media);
+      });
     });
     return ids;
   }
@@ -244,10 +281,10 @@
     Object.keys(o).every(k => allowed.indexOf(k) >= 0) && required.every(k => k in o);
   const isInt = (n, lo, hi) => typeof n === 'number' && Number.isInteger(n) && n >= lo && n <= hi;
   // An ordered list of ids under `listKey`, each with a card under prefix + id.
-  function validList(comps, listKey, prefix, max, tile) {
+  function validList(comps, listKey, prefix, max, tile, opts) {
     const list = comps[listKey];
     if (!list || !Array.isArray(list.order) || list.order.length > max || new Set(list.order).size !== list.order.length) return false;
-    if (!list.order.every(k => typeof k === 'string' && CARD_ID.test(k) && !(tile && k === 'saved') && validCard(comps[prefix + k], tile))) return false;
+    if (!list.order.every(k => typeof k === 'string' && CARD_ID.test(k) && !(tile && k === 'saved') && validCard(comps[prefix + k], tile, opts))) return false;
     return Object.keys(comps).every(k => k.indexOf(prefix) !== 0 || list.order.indexOf(k.slice(prefix.length)) >= 0);
   }
   // The id of a document's layout in lists of changed components (no
@@ -263,11 +300,13 @@
     return /^[0-9]+$/.test(n) ? `${name} ${n}` : `${name} (${id})`;
   }
   const regionLabel = r => (r.frame === 'sidebar' ? 'Upper area, beside the sidebar' : r.id === 'lower' ? 'Lower area, full width' : r.id.charAt(0).toUpperCase() + r.id.slice(1) + ' area');
-  // What a new instance starts with (undefined: it has no content of its own).
+  // What a new instance starts with (undefined: it has no content of its own); `game`:
+  // what its card shows, { path } or, to refer to a record, { game: id }.
   function starterContent(type, game) {
     if (widgets.isList(type)) return { order: [] };
     if (!widgets.hasCard(type)) return undefined;
     if (!widgets.hasSaved(type)) return Object.assign({}, widgets.get(type).starter);
+    if (game && game.game) return { game: game.game, cta: 'Play Now' };
     return { title: widgets.get(type).starter, cta: 'Play Now', href: (game && game.path) || '/games/' };
   }
 
@@ -322,15 +361,30 @@
     const cardLabel = (id, ...docs) => widgets.cardLabel(cardType(id, ...docs), typeOf(id, docs));
     const linkHint = (id, ...docs) => widgets.linkHint(cardType(id, ...docs), typeOf(id, docs));
 
+    // What a card shows, whether it describes a game or refers to one:
+    //   { title, href, art, category?, cta?, note?, game? }
+    //   note   why a reference isn't what visitors would see: 'missing' (no such
+    //          record), 'hidden', 'archived', 'unpublished' (record.unpublished)
+    function shownCard(c, type, games) {
+      if (!isRef(c)) return Object.assign({}, c);
+      const g = games && typeof c.game === 'string' && Object.prototype.hasOwnProperty.call(games, c.game) ? games[c.game] : null;
+      if (!g) return { title: 'Not in the Game Library', href: '', art: null, category: String(c.game || ''), cta: String(c.game || ''), note: 'missing', game: null };
+      const hidden = g.availability !== 'available' && g.availability !== 'coming-soon';
+      return { title: g.name, href: g.destination, art: withCrop(artFor(g, type), c.crop), category: g.category, cta: String(c.cta || ''), game: g, note: hidden ? g.availability : g.unpublished ? 'unpublished' : undefined };
+    }
+
     function cardModel(id, c, ctx, kind) {
       if (!c || typeof c !== 'object') return null;
       const type = kind || cardType(id);
-      // A card that refers to a game record shows what the record says; one whose
-      // record is gone is left out.
-      if (c.game !== undefined) {
-        const games = (ctx && ctx.games) || {};
-        const g = Object.prototype.hasOwnProperty.call(games, c.game) ? games[c.game] : null;
-        return g ? { id: id, type: type, game: g.id, title: g.name, href: g.destination, category: g.category, art: artModel(g.artwork && g.artwork.square, ctx) } : null;
+      if (isRef(c)) {
+        const shown = shownCard(c, type, ctx && ctx.games);
+        // Visitors don't see a card whose game isn't listed. Administrators editing the
+        // page do, in its place, with why (ctx.editing).
+        if (shown.note && shown.note !== 'unpublished' && !(ctx && ctx.editing)) return null;
+        const model = { id: id, type: type, game: c.game, title: shown.title, href: shown.href, art: artModel(shown.art, ctx) };
+        if (shown.note && ctx && ctx.editing) model.note = shown.note;
+        if (type === 'tile') model.category = shown.category; else model.cta = shown.cta;
+        return model;
       }
       if (type === 'heading') return Object.assign({}, c, { id: id, type: type, title: String(c.title || '') });
       const model = { id: id, type: type, title: String(c.title || ''), href: String(c.href || ''), art: artModel(c.art, ctx) };
@@ -378,18 +432,21 @@
 
     // Either schema: schema 2 is checked by validatePageDocument (with the grid
     // rules when scripts/grid is on the page).
-    function validateDocument(doc) {
+    // opts.delivered: a document as visitors receive it.
+    function validateDocument(doc, opts) {
       if (doc && page.schemas.indexOf(doc.schema) < 0) return false;
       if (doc && doc.schema === PAGE_SCHEMA) {
         const G = root.PergamonGrid;
-        return validatePageDocument(doc, G && G.validatePage && G.widgetTypes ? { grid: { validatePage: G.validatePage, types: G.widgetTypes.types } } : null);
+        return validatePageDocument(doc, Object.assign({}, opts, G && G.validatePage && G.widgetTypes ? { grid: { validatePage: G.validatePage, types: G.widgetTypes.types } } : null));
       }
       return validateDocumentV1(doc);
     }
 
     // The fields to edit for one card (component = its current content).
     function cardFields(id, component, ...docs) {
-      const fields = CARD_FIELDS[cardType(id, ...docs)] || [];
+      const kind = cardType(id, ...docs);
+      if (isRef(component)) return [GAME].concat((CARD_FIELDS[kind] || []).filter(f => f.key === REF_FIELDS[kind]), FRAMING);
+      const fields = CARD_FIELDS[kind] || [];
       return fields.filter(f => !f.ifPresent || (component && Object.prototype.hasOwnProperty.call(component, f.key)));
     }
 
@@ -446,12 +503,12 @@
           if (widgets.hasCard(w.type) && !widgets.hasSaved(w.type)) {
             if (!validFields(comps[key], widgets.get(w.type).card)) return false;
           } else if (widgets.hasCard(w.type)) {
-            if (!validCard(comps[key], false)) return false;
+            if (!validCard(comps[key], false, opts)) return false;
             // Saved cards: all listed, or none at all.
-            if (comps[key + '.saved'] !== undefined ? !validList(comps, key + '.saved', key + '.saved.', LIMITS.saved, false)
+            if (comps[key + '.saved'] !== undefined ? !validList(comps, key + '.saved', key + '.saved.', LIMITS.saved, false, opts)
               : Object.keys(comps).some(k => k.indexOf(key + '.saved.') === 0)) return false;
           } else if (widgets.isList(w.type)) {
-            if (!validList(comps, key, key + '.', LIMITS.carousel, true)) return false;
+            if (!validList(comps, key, key + '.', LIMITS.carousel, true, Object.assign({}, opts, { refs: widgets.refsOnly(w.type) }))) return false;
           }
         }
       }
@@ -512,8 +569,9 @@
       builtInRegions: page.regions, upgradeDocument: upgradeDocument, componentOwner: componentOwner, validatePageDocument: validatePageDocument,
       SCHEMA: SCHEMA, CAROUSEL: CAROUSEL, SLOTS: SLOTS, LIMITS: LIMITS, CATEGORIES: CATEGORIES,
       cardType: cardType, cardLabel: cardLabel, linkHint: linkHint, slotOf: slotOf, isSaved: isSaved, listOf: listOf, savedList: savedList, savedId: savedId, newKey: newKey,
+      isRef: isRef, gameRefs: gameRefs, cropOf: cropOf, withCrop: withCrop, artFor: artFor, shownCard: shownCard, validArt: validArt,
       artModel: artModel, cardModel: cardModel, toModel: toModel, mediaIds: mediaIds, validateDocument: validateDocument,
-      cardFields: cardFields, checkField: checkField
+      cardFields: cardFields, checkField: checkField, ART_PARTS: { alt: ALT, edge: EDGE }
     };
   }
 

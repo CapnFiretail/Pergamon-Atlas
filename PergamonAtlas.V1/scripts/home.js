@@ -7,7 +7,7 @@
     heading: 'PergamonAtlas',
     document: content.document,
     staticImages: content.staticImages,
-    settings: { explore: content.explore, navigation: content.context }
+    settings: { explore: content.explore }
   });
   if (!page) return;
 

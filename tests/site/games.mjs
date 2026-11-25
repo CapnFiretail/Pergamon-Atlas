@@ -5,8 +5,8 @@
 //
 // The eight games with their destinations, artwork and availability, the stored
 // visibility overrides, the shared header, sidebar and footer, every width, palette
-// and mode, the floating sidebar's height, keyboard, the ad tag, and that nothing of
-// the old page or of Admin Mode is loaded.
+// and mode, the floating sidebar's height, keyboard, and that nothing of the old page
+// or of the editor is loaded. (Published content and editing: library.mjs; ads: ads.mjs.)
 import { chromium, context, open, SITE } from './lib.mjs';
 
 let bad = 0;
@@ -53,9 +53,8 @@ ok(Math.abs(s.sidebar.y - s.region.y) < 1 && Math.abs(s.sidebar.h - 417.73) < 1 
 ok(s.state === 'grid' && s.last <= s.grid.y + s.grid.h, 'nothing is clipped');
 ok(await p.evaluate(() => getComputedStyle(document.body).fontFamily.includes('Manrope')), 'the site’s type, not the old page’s');
 const own = c.requests.filter(u => u.startsWith(SITE)).map(u => u.slice(SITE.length));
-ok(!own.some(u => /main\.css|legacy-frame|cms\/(admin|loader|workspace)|handbook\/|studio\//.test(u)), 'nothing of the old page or of Admin Mode is loaded');
-ok(c.calls.join() === 'guest get_published_content home', 'one content request: Site Navigation');
-ok(await p.evaluate(() => document.head.querySelector('script[async]').src.includes('adsbygoogle.js?client=ca-pub-4717716734064612')), 'the ad tag is where it was');
+ok(!own.some(u => /main\.css|legacy-frame|cms\/(workspace|fields|drawer|library-)|handbook\/|studio\//.test(u)), 'nothing of the old page or of the editor is loaded');
+ok(c.calls.slice().sort().join() === 'guest get_published_content games,guest get_published_content home', 'two content requests: the page and Site Navigation');
 if (shots) await p.screenshot({ path: shots + '/games-1440.png', fullPage: true });
 for (const [id] of GAMES) { const r = await p.request.get(`${SITE}/games/${id}/`); if (r.status() !== 200) ok(false, id + ' answers ' + r.status()); }
 await p.click('.home-tile[href="/games/snake/"]'); await p.waitForTimeout(500);

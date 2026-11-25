@@ -2,13 +2,13 @@
 // page's content (CMS cards, games) into the inputs of the reusable components
 // in scripts/components/, which know nothing of either.
 //
-//   PergamonPageWidgets.create({ liveGame(path), listedGame(path), settings })
+//   PergamonPageWidgets.create({ gameOf(item, playable), settings })
 //     → { [type]: adapter }
-//     liveGame   a game that can be played now, or null; listedGame: one that may be
-//                shown, coming soon or not
+//     gameOf     the game a card shows, { path, name }, or null when it isn't listed
+//                here; playable: games that are coming soon aren't either
 //     settings   the page's own configuration of a type (what isn't CMS content):
-//                { explore: the carousel's sections, navigation: the panel's
-//                title and links, signedIn() }
+//                { explore: the carousel's sections, if it has several, signedIn() }
+//                Atlas Navigation is the same everywhere (data/atlas-navigation.js)
 //   adapter = {
 //     container?           a named size container the component's CSS expects
 //     create(placement, content)   → widget, or null when it can't be drawn
@@ -19,6 +19,7 @@
 //   widget = {
 //     element
 //     setCard(item), art(model)        a 'card' widget's card and its artwork
+//     clear()                          … which has none to show
 //     setCards(items)                  a 'list' widget's cards
 //     list(), setTail(node), reveal(key), category()   a 'list' widget's, for
 //                          Admin Mode: the element its controls sit on, a tile
@@ -30,7 +31,8 @@
 //     setSignedIn(on)
 //   }                      (each only where it applies)
 //
-// Items are content.toModel's cards: { id, title, href, art, cta | category }.
+// Items are content.toModel's cards: { id, title, href, art, cta | category, game?,
+// note? }.
 // Which of these a type has follows from scripts/cms/widgets.js.
 (function () {
   'use strict';
@@ -45,7 +47,10 @@
     return {
       element: b.element,
       art: model => b.applyArt(model),
+      // Its game isn't listed: the place stays, empty.
+      clear() { b.element.style.visibility = 'hidden'; },
       setCard(item) {
+        b.element.style.visibility = '';
         b.element.dataset.cmsId = item.id;
         b.apply({ title: item.title, actionLabel: item.cta, href: item.href, art: item.art });
       }
@@ -60,26 +65,30 @@
   // A game as a content card: its live page, its catalogue name when the card
   // has no title, its category as the card's line of metadata.
   function gameCard(item, entry) {
-    const card = C.contentCard({ title: item.title || entry.name, meta: item.category, href: norm(entry.path) + '/', art: item.art, action: 'play' });
+    const missing = item.note === 'missing';
+    const card = C.contentCard({ title: item.title || entry.name, meta: item.category, href: norm(entry.path) + '/', art: item.art, action: missing ? null : 'play' });
+    if (missing) card.element.removeAttribute('href');
     if (item.id) card.element.dataset.cmsId = item.id;
     return card.element;
   }
-  function sampleGameCard(liveGame, item) {
-    const card = gameCard(item, liveGame(item.href) || { path: item.href, name: item.title });
+  function sampleGameCard(item, entry) {
+    const card = gameCard(item, entry || { path: item.href, name: item.title });
     return { element: card, art: model => C.contentCard.setArt(card, model) };
   }
 
+  // A card visitors see counts; one an administrator sees in its place doesn't.
+  const counts = item => !item.note || item.note === 'unpublished';
+
   // The explore strip: sections (switched with the top-right arrows), each
   // filtered by category (the tabs). A section with `component` takes its
-  // cards from the instance's own cards; only cards that link to a live game
-  // are shown.
-  function gamesCarousel(data, cards, liveGame) {
+  // cards from the instance's own cards; only cards whose game can be shown are.
+  function gamesCarousel(data, cards, gameOf) {
     const items = list => (list || []).map(item => {
       const target = item.href || item.path;
-      if (!target) return null;
-      const entry = liveGame(target);
+      if (!target && !item.note) return null;
+      const entry = gameOf({ href: target, game: item.game, title: item.title, note: item.note }, true);
       if (!entry) { console.warn('Carousel item is not a live page:', target); return null; }
-      return { key: item.id || norm(entry.path), element: gameCard(item, entry), label: item.title || entry.name, facet: item.category };
+      return { key: item.id || norm(entry.path), counts: counts(item), element: gameCard(item, entry), label: item.title || entry.name, facet: item.category };
     }).filter(Boolean);
     const docSection = (data.sections.find(sec => sec.component) || {}).id;
     const c = C.carousel({
@@ -94,10 +103,10 @@
         emptyFilterMessage: sec.emptyCategory
       }))
     });
-    let shown = data.sections.some(sec => sec.component) ? items(cards).length : 0;
+    let shown = data.sections.some(sec => sec.component) ? items(cards).filter(i => i.counts).length : 0;
     return {
       element: c.element,
-      setCards: next => data.sections.forEach(sec => { if (sec.component) { const list = items(next); shown = list.length; c.setItems(sec.id, list); } }),
+      setCards: next => data.sections.forEach(sec => { if (sec.component) { const list = items(next); shown = list.filter(i => i.counts).length; c.setItems(sec.id, list); } }),
       shown: () => shown,
       list: () => (c.element.matches('.home-carousel') ? c.element : c.element.querySelector('.home-carousel')),
       // Admin Mode's "Add card" tile follows the document's cards only.
@@ -110,15 +119,20 @@
   }
   // Games as cards, all at once. Unlike the carousel it also shows games that are
   // coming soon: it is a list of what there is.
-  function gamesGrid(listedGame) {
+  function gamesGrid(gameOf) {
+    let shown = 0;
     const g = C.cardGrid({ label: 'Games', emptyMessage: 'No games here yet.' });
     return {
       element: g.element,
-      setCards: cards => g.setItems((cards || []).map(item => {
-        const entry = listedGame(item.href);
-        return entry ? { key: item.id, element: gameCard(item, entry), label: item.title || entry.name } : null;
-      }).filter(Boolean)),
-      shown: g.count,
+      setCards(cards) {
+        shown = 0;
+        g.setItems((cards || []).map(item => {
+          const entry = gameOf(item, false);
+          if (entry && counts(item)) shown++;
+          return entry ? { key: item.id, element: gameCard(item, entry), label: item.title || entry.name } : null;
+        }).filter(Boolean));
+      },
+      shown: () => shown,
       list: () => g.section,
       setTail: g.setTail,
       reveal: g.has
@@ -138,10 +152,13 @@
     };
   }
 
-  // The page's explore sections for its own carousel (the one it starts with);
-  // any other carousel shows its cards as the document section alone.
+  // The page's explore sections for its own carousel (the one it starts with); any
+  // other carousel shows its cards as the document section alone, and a page without
+  // sections as one of its own.
+  const ONE_SECTION = { sections: [{ id: 'games', title: 'Explore Games', icon: 'games', categories: ['All Games', 'Strategy', 'Arcade', 'Classic', 'Card'], emptyCategory: 'No games in this category yet.', emptyMessage: 'No games here yet.', component: 'own' }] };
   function carouselConfig(explore, id) {
-    if (!explore || id === 'carousel') return explore;
+    if (!explore) return ONE_SECTION;
+    if (id === 'carousel') return explore;
     const sec = explore.sections.find(s => s.component);
     return sec ? { sections: [sec] } : explore;
   }
@@ -154,21 +171,21 @@
       'carousel': {
         create(p, m) {
           const config = carouselConfig(settings.explore, p.id);
-          return config && window.PergamonGlide ? gamesCarousel(config, m ? m.cards : [], env.liveGame) : null;
+          return config && window.PergamonGlide ? gamesCarousel(config, m ? m.cards : [], env.gameOf) : null;
         },
-        sampleCard: item => sampleGameCard(env.liveGame, item)
+        sampleCard: item => sampleGameCard(item, env.gameOf(item, true))
       },
       'page-heading': {
         create: headingWidget,
         sampleCard(item) { const copy = headingWidget(); copy.setCard(item); return { element: copy.element, art() {} }; }
       },
       'card-grid': {
-        create(p, m) { const g = gamesGrid(env.listedGame); g.setCards(m ? m.cards : []); return g; },
-        sampleCard: item => sampleGameCard(env.listedGame, item)
+        create(p, m) { const g = gamesGrid(env.gameOf); g.setCards(m ? m.cards : []); return g; },
+        sampleCard: item => sampleGameCard(item, env.gameOf(item, false))
       },
       'atlas-navigation': {
         create() {
-          const nav = C.atlasNavigation(settings.navigation || { title: 'Atlas Navigation', links: [] });
+          const nav = C.atlasNavigation(window.PergamonAtlasNavigation || { title: 'Atlas Navigation', links: [] });
           nav.setSignedIn(!!(settings.signedIn && settings.signedIn()));
           return { element: nav.element, setSignedIn: on => nav.setSignedIn(on) };
         }

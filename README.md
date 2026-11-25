@@ -30,7 +30,7 @@ PergamonAtlas.V1/          the site Vercel serves (static HTML/CSS/JS, no page b
 │   ├── handbook/          Handbook pages
 │   └── studio/            Studio shell and sections (connections/, ideas/, …)
 ├── styles/                theme.css (tokens), typography.css (generated), …
-├── data/                  entries.js (game records), home-content.js and games-content.js
+├── data/                  entries.js (game records), atlas-navigation.js, home-content.js and games-content.js
 │                          (built-in page content)
 ├── operation/             shared legacy layer: Supabase auth, footer, main.css
 ├── images/                logo; featured/ holds web copies of featured artwork

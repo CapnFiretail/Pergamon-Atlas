@@ -1,17 +1,22 @@
 // A page's published content from the CMS (Supabase). Which page is the one
 // this document is (data-atlas-page, scripts/cms/pages.js).
 //
-// Loaded after supabase-config.js and scripts/cms/content.js and before
+// Loaded after supabase-config.js, scripts/cms/content.js and library.js, and before
 // scripts/page.js, so the request is already in flight while the page parses.
 // Only the public get_published_content is ever called: drafts and working
 // copies never reach this code.
 //
+// A page's answer carries the game records its cards refer to, of the same moment
+// (scripts/cms/library.js). They are checked, kept and drawn together: a version is
+// `stamp`, the page's and the library's, and an answer that lacks a game its cards
+// refer to isn't used.
+//
 //   pageId               the page whose content this is ('home'), or null
 //   initial()            the last published version this browser received
 //                        (re-validated), for the first render; or null.
-//   attach(view, root, v, fallback)
+//   attach(view, root, stamp, fallback)
 //                        apply the fresh published version once it arrives,
-//                        unless it's the version already shown (v); if nothing
+//                        unless it's the one already shown; if nothing
 //                        is published, return to the fallback document.
 //
 // First visit (nothing cached): the card frames keep their sizes and only
@@ -24,6 +29,7 @@
   'use strict';
   const cms = window.PergamonCMS || {};
   const content = cms.content;
+  const library = cms.library;
   const URL_BASE = window.PERGAMON_SUPABASE_URL;
   const KEY = window.PERGAMON_SUPABASE_ANON_KEY;
   const ENV = window.PERGAMON_ENV || 'development';
@@ -58,26 +64,28 @@
     return out;
   }
 
-  // get_published_content payload -> { version, doc, media } | { none: true } | null (invalid).
+  // A document with its images and game records → { version, stamp, doc, media, games }, or null.
+  function usable(version, doc, mediaRaw, libraryRaw) {
+    if (!Number.isInteger(version) || !content.validateDocument(doc, { delivered: true })) return null;
+    const media = mediaMap(mediaRaw), lib = library.received(libraryRaw, content.gameRefs(doc));
+    return media && lib ? { version: version, stamp: version + '.' + (lib.version || 0), doc: doc, media: media, games: lib.games } : null;
+  }
+
+  // get_published_content payload -> usable() | { none: true } | null (invalid).
   function normalize(p) {
     if (p === null) return { none: true };
-    if (!p || typeof p !== 'object' || p.page !== page.id || !Number.isInteger(p.version) || p.schema !== page.schemaVersion) return null;
-    if (!content.validateDocument(p.content)) return null;
-    const media = mediaMap(p.media);
-    if (!media) return null;
-    return { version: p.version, doc: p.content, media: media };
+    if (!p || typeof p !== 'object' || p.page !== page.id || p.schema !== page.schemaVersion) return null;
+    return usable(p.version, p.content, p.media, p.library);
   }
 
   function readCache() {
     try {
       const c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-      if (!c || !Number.isInteger(c.version) || !content.validateDocument(c.doc)) return null;
-      const media = mediaMap(c.mediaRaw);
-      return media ? { version: c.version, doc: c.doc, media: media } : null;
+      return c ? usable(c.version, c.doc, c.mediaRaw, c.libraryRaw) : null;
     } catch (e) { return null; }
   }
   function writeCache(p) {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ version: p.version, doc: p.content, mediaRaw: p.media || {} })); } catch (e) {}
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(Object.assign({ version: p.version, doc: p.content, mediaRaw: p.media || {} }, p.library ? { libraryRaw: p.library } : {}))); } catch (e) {}
   }
   function clearCache() { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
 
@@ -110,7 +118,8 @@
   // Admin Mode draws an administrator's working copy over the page; while it
   // holds the page, a fresh published version is recorded but not drawn.
   let held = false;
-  let latest = null;            // { version, doc, media } last published version received, or { none: true }
+  let latest = null;            // the last published version received (usable()), or { none: true }
+  const known = result => (result.none ? { none: true } : { version: result.version, stamp: result.stamp, doc: result.doc, media: result.media, games: result.games });
 
   cms.loader = {
     enabled: enabled,
@@ -128,16 +137,16 @@
     refresh() {
       if (!enabled) return Promise.resolve(null);
       return fetchPublished().then(result => {
-        latest = result.none ? { none: true } : { version: result.version, doc: result.doc, media: result.media };
+        latest = known(result);
         if (result.none) clearCache(); else writeCache(result.raw);
         return latest.none ? null : latest;
       });
     },
     // Resolves once the request has settled (whatever its outcome).
     settled: () => (request ? request.then(() => {}, () => {}) : Promise.resolve()),
-    attach(view, root, shownVersion, fallbackDoc) {
+    attach(view, root, shownStamp, fallbackDoc) {
       if (!enabled || !request || !view) return;
-      let shown = shownVersion || null;
+      let shown = shownStamp || null;
       let revealTimer = null;
       if (!shown && root) {
         root.classList.add('cms-pending');
@@ -145,14 +154,14 @@
       }
       request
         .then(result => {
-          latest = result.none ? { none: true } : { version: result.version, doc: result.doc, media: result.media };
+          latest = known(result);
           if (result.none) {                                    // nothing published: back to the static copy
             clearCache();
             if (!held && shown && fallbackDoc && view.render(fallbackDoc)) shown = null;
             return;
           }
-          if (!held && result.version !== shown && view.render(result.doc, { media: result.media })) {
-            shown = result.version;
+          if (!held && result.stamp !== shown && view.render(result.doc, { media: result.media, games: result.games })) {
+            shown = result.stamp;
           }
           writeCache(result.raw);
         })

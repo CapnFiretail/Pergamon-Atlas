@@ -19,7 +19,7 @@ test('every page with a site header uses the shared one, and none adds the contr
   assert.equal(pages.length, files.filter(p => p.endsWith('index.html')).length, 'every page');
   assert.deepEqual(having(pages, /admin-header\.(js|css)|pa-(studio|handbook)-link|cms-admin-button/), []);
   // Only the pages that decide what to show by the check load it themselves; the header does on the others.
-  assert.deepEqual(having(pages, /admin-access\.js/).sort(), ['handbook/index.html', 'index.html', 'studio/index.html']);
+  assert.deepEqual(having(pages, /admin-access\.js/).sort(), ['games/index.html', 'handbook/index.html', 'index.html', 'studio/index.html']);
   having(pages, /admin-access\.js/).forEach(p => { const s = read(p); assert.ok(s.indexOf('auth/auth.js') < s.indexOf('admin-access.js') && s.indexOf('admin-access.js') < s.search(/src="[^"]*(?:cms\/admin|\/gate)\.js/), p); });
 });
 

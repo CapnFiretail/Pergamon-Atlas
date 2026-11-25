@@ -709,18 +709,44 @@ resized, added and removed on the page.
   instances, conflicts, draft → publish → rollback against 0014 in PGlite, and
   without it), `tests/design/grid-editor.test.mjs`, `page-layout.test.mjs`.
 
-## 13. Game library (agreed direction; built-in records only)
+## 13. Game Library (0016)
 
-**Built so far (P1, phase 3):** built-in records in that shape (`data/entries.js`,
-`PergamonGameLibrary`), from which the older `atlasEntries` is derived, and drawing a
-list card that refers to one (`{ game: id }`, `content.toModel` with `ctx.games`). The
-Games page's cards are such references; a reference whose record is gone is left out.
-Nothing validates, edits or stores references yet, the homepage's cards still hold their
-own details, and stored visibility overrides still apply to the Games page.
+**As built (P1, phase 4).** 0016 is on staging, not on production.
+
+- **Records** (`scripts/cms/library.js`): the same shape built in (`data/entries.js`, from
+  which the older `atlasEntries` is derived), stored (`library.games.<id>`, without the
+  id) and delivered. `content.shownCard` is what a card shows: a reference, its record with
+  its `crop` or the record's framing; a list takes the square artwork, Featured and
+  Spotlight the wide one (the square where there is none).
+- **Delivery** (`loader.js`): the page's answer and its records are checked together
+  (records valid and listed; every reference has its record), cached together and drawn
+  together; a version is the page's and the library's (`stamp`). An answer that fails keeps
+  the last good one. Published content is never drawn with the built-in records. They, and
+  the stored visibility overrides, are what is shown until the page itself is published:
+  the library reaches visitors only with a published page.
+- **Which cards refer:** every card in a Card Grid (`refs: 'only'`); elsewhere, new cards on
+  pages without `ownCards`. The homepage has it, so nothing there changes before its
+  conversion, though its documents may already hold references.
+- **Editing** (`library-dialog.js`; `library-editing.js` answers for the library what
+  `content.js` does for a page): the shared workspace, publish dialog, history and image
+  editor, and `fields.js`, the card editor's form. Opened from the panel and from the editor
+  of a card that refers to a game. Admin view draws cards from the library's **working
+  copy**; saving a page needs its games in the library's **saved** draft (said, with the
+  game, when refused). The first library starts from the built-in records by an explicit
+  button, as unsaved changes.
+- **Never stored pages:** with nothing saved or published, Publish Changes offers to save
+  the built-in page unchanged as a draft.
+- **Leaving:** Remove only for games never published; Discard draft and Remove name the
+  pages first (`list_game_uses`, and this page's unsaved cards).
+- **Not yet:** the description isn't shown anywhere; a destination that isn't one of the
+  build's game pages needs its page and a `site_content_routes` row first.
+- **Ads** (`scripts/ads.js`, `PergamonAdmin.status()`): as approved below. Ads already on a
+  page stay until it is left. The tag is no longer in the HTML: AdSense's site check then
+  relies on `ads.txt`.
 
 Games get canonical records in one more versioned CMS document, `library`, in the
 existing tables (drafts, publishing, history and image checks as for a page). Agreed
-2026-11-24; the migration (0016) is under review.
+2026-11-24.
 
 - A game owns: stable id, name, description, category, destination, availability
   (available, coming soon, hidden, archived), square artwork and optional wide
@@ -735,8 +761,8 @@ existing tables (drafts, publishing, history and image checks as for a page). Ag
   then an explicit conversion in the draft.
 - 0016 also checks on the server that nothing is placed below a growing widget.
 
-**Approved for phase 4** (2026-11-24). The SQL is written and tested, provisionally
-approved subject to independent review, and not applied anywhere: `supabase/proposed/0016_game_library.sql` (its header
+**Approved for phase 4** (2026-11-24). The SQL, reviewed and applied on staging
+(`STAGING-0016.md`): `supabase/proposed/0016_game_library.sql` (its header
 is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
 `tests/cms/game-library.test.mjs`. As decided:
 
@@ -752,7 +778,7 @@ is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
   images by id (tested: `CONCURRENCY-0016.md`).
 - **A published id stays the same game.** The database keeps ids (archived, never removed)
   and doesn't judge what changes: a new name and a new destination at once are allowed.
-  Before publishing the library, the dialog (a later step) warns when a published game's
+  Before publishing the library, the dialog warns when a published game's
   name **and** destination both differ from what is live: it names the game, both old and
   new values and the pages that use it, says another game needs an id of its own, and
   lets the administrator go on.
@@ -760,15 +786,15 @@ is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
   game out). Intended: the two drafts are separate. The page's draft keeps the reference,
   with its place and crop, and everything else in it can still be saved; adding another
   unknown game is refused. Publishing is refused until the game is in the live library.
-  The editor (a later step) must therefore:
-  - draw such a card as "not in the Game Library" with its id, in place, never from the
-    built-in records and never left out; offer to choose another game or remove it;
-  - say so before Publish, naming the games, and keep the draft when the server refuses;
-  - before discarding a library draft or leaving out an unpublished game, name the pages
+  The editor therefore:
+  - draws such a card as "not in the Game Library" with its id, in place, never from the
+    built-in records and never left out; offers to choose another game or remove it;
+  - says so before Publish, naming the games, and keeps the draft when the server refuses;
+  - before discarding a library draft or leaving out an unpublished game, names the pages
     that use it (`list_game_uses` includes drafts);
-  - mark cards drawn from the library's draft as unpublished, so a preview doesn't read
+  - marks cards drawn from the library's draft as unpublished, so a preview doesn't read
     as what publishing the page would show;
-  - keep unsaved work when a save is refused, and say why.
+  - keeps unsaved work when a save is refused, and says why.
 - The library is only ever restored as a draft: direct `rollback` of it is refused.
 - **Current limits, not architectural ones:** 64 records in the library, 24 cards in a
   grid. Raising one changes a number in the SQL and in the browser's checks, no document.

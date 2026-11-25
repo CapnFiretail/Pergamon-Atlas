@@ -13,7 +13,8 @@
 //                   opened in the card editor; limits from content.LIMITS
 //
 // Created by admin.js: manage.create({ workspace, content, view, games,
-//   cardLabel(id), openEditor(id), onChanged(), returnFocus() })
+//   records(), openLibrary(), cardLabel(id), openEditor(id), onChanged(),
+//   returnFocus() })      records: the game records a card may refer to, by id
 //   → { open(widget), addListCard(widget), isOpen(), refresh(), destroy() }
 //   widget: its content id ('home.featured', 'home.carousel-2', …)
 (function () {
@@ -37,6 +38,11 @@
   function create(env) {
     const { workspace, content } = env;
     const WIDGETS = content.widgets, PAGE = content.page;
+    // What a card shows (its own details, or its game's), and whether a new one refers to
+    // a game record.
+    const shown = id => content.shownCard(workspace.component(id) || {}, content.cardType(id, ...workspace.docs()), env.records());
+    const refers = type => WIDGETS.refsOnly(type) || !PAGE.ownCards;
+    const NOTES = { missing: 'Not in the Game Library', hidden: 'Hidden', archived: 'Archived', unpublished: 'Not published yet' };
     const ownerOf = which => { const o = content.ownerOf(which, workspace.working()); return o && o.part === '' && (WIDGETS.hasSaved(o.type) || WIDGETS.isList(o.type)) ? o : null; };
 
     const overlay = el('div', 'cms-publish cms-manage');
@@ -113,7 +119,7 @@
     }
 
     function row(id, opts) {
-      const c = workspace.component(id) || {};
+      const c = shown(id);
       const li = el('li', 'cms-manage-row');
       li.dataset.id = id;
       if (opts.active) li.dataset.active = 'true';
@@ -126,10 +132,11 @@
         meta.append(chip, ` Shown on the ${PAGE.noun}`);
       } else if (isList()) {
         const game = env.games.find(g => g.path === c.href);
-        meta.append(`${c.category || ''}${game ? ` · ${game.name}` : ''}`);
+        meta.append(c.game !== undefined ? String(c.category || '') : `${c.category || ''}${game ? ` · ${game.name}` : ''}`);
       } else {
         meta.append('Saved');
       }
+      if (c.note) { const n = el('span', 'cms-manage-state', NOTES[c.note]); n.dataset.status = 'unsaved'; meta.append(n); }
       const s = workspace.cardStatus(id);
       if (STATUS[s]) { const st = el('span', 'cms-manage-state', STATUS[s]); st.dataset.status = s; meta.append(st); }
       text.append(meta);
@@ -233,7 +240,7 @@
       return [li.dataset.id, a.dataset.move || a.dataset.action || (a.classList.contains('cms-manage-danger') ? 'confirm' : null)];
     }
     function activate(id) {
-      const live = workspace.component(target) || {};
+      const live = shown(target);
       const others = keys().filter(k => k !== id.split('.').pop());
       const outKey = content.newKey(live.title, others);
       const label = env.cardLabel(id);
@@ -271,12 +278,28 @@
       else {
         const live = workspace.component(target) || {};
         const name = WIDGETS.get(kind).starter;
-        id = workspace.addCard(content.savedList(target), content.newKey(name, taken), { title: name, cta: live.cta || 'Play Now', href: live.href || (env.games[0] && env.games[0].path) });
+        const game = refers(kind) ? nextGame([target].concat(taken.map(idOf))) : null;
+        id = game ? workspace.addCard(content.savedList(target), content.newKey(game.id, taken), { game: game.id, cta: live.cta || 'Play Now' }) : workspace.addCard(content.savedList(target), content.newKey(name, taken), { title: name, cta: live.cta || 'Play Now', href: live.href || (env.games[0] && env.games[0].path) });
       }
+      if (!id && needsGames()) return;
       if (!id) { setStatus('Couldn’t add a card. Try again.'); return; }
       env.onChanged();
       close(false);
       env.openEditor(id);
+    }
+    // The first listed game not among `ids`' cards yet (or, if all are, the first).
+    function nextGame(ids) {
+      const all = env.records(), listed = Object.keys(all).map(k => all[k]).filter(g => g.availability === 'available' || g.availability === 'coming-soon');
+      const used = ids.map(i => (workspace.component(i) || {}).game);
+      return listed.find(g => used.indexOf(g.id) < 0) || listed[0] || null;
+    }
+    // A list of references needs records to refer to.
+    function needsGames() {
+      const o = ownerOf(target);
+      if (!o || !WIDGETS.refsOnly(o.type) || nextGame([])) return false;
+      const open = button('Open Game Library', 'cms-drawer-ghost cms-manage-undo', () => { close(false); env.openLibrary(); });
+      setStatus('The Game Library has no games to choose from yet.', open);
+      return true;
     }
     // A new card at the end of a list: its current category (or Arcade),
     // and the first live game not in that list yet.
@@ -284,6 +307,11 @@
       const o = ownerOf(which);
       const taken = workspace.order(which);
       if (!o || taken.length >= content.LIMITS.carousel) return null;
+      if (refers(o.type)) {
+        const g = nextGame(taken.map(k => which + '.' + k));
+        if (g) return workspace.addCard(which, content.newKey(g.id, taken), { game: g.id });
+        if (WIDGETS.refsOnly(o.type)) return null;
+      }
       const used = taken.map(k => (workspace.component(which + '.' + k) || {}).href);
       const game = env.games.find(g => used.indexOf(g.path) < 0) || env.games[0];
       if (!game) return null;
@@ -376,6 +404,7 @@
       addListCard(which) {
         const id = newListCard(which);
         if (id) { env.onChanged(); env.openEditor(id); }
+        else { this.open(which); needsGames(); }
         return id;
       },
       isOpen: () => !overlay.hidden,

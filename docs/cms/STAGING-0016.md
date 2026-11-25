@@ -1,6 +1,12 @@
 # 0016 on staging: instructions
 
-**Not approved, not run.** Each step is the user's, in the Supabase dashboard. Use the
+**Done on staging, 2026-11-24.** Reported by the user: PostgreSQL 17.12; GitHub integration
+checked; preflight 7/7; migration applied; verification 15/15; part B as expected
+(`CONCURRENCY-0016.md`) and verification 15/15 again, with all 497 stored versions and the
+fingerprints preserved; the site review, with a homepage draft saved and discarded; window
+closed. Production: the same steps, each with its own approval, not started.
+
+Each step is the user's, in the Supabase dashboard. Use the
 files of the approved commit, copied whole from GitHub (Raw). What is tested and why:
 `CONCURRENCY-0016.md`.
 

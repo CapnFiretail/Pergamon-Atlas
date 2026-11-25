@@ -4,8 +4,8 @@
 //
 // Its cards refer to game records ({ game: id }, data/entries.js) and hold
 // nothing of a game's own: name, artwork, category, destination and
-// availability come from the record. The database doesn't know this kind of
-// card, or this page, until migration 0016.
+// availability come from the record. Until the page is published the records are the
+// built-in ones.
 window.PergamonGamesContent = (function () {
   var order = ['tic-tac-toe', 'connect-four', 'chess-forge', 'battleship', 'blackjack', 'snake', 'breakout', 'pong'];
   var components = {

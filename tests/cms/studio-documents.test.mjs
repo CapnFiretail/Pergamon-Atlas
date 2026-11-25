@@ -89,7 +89,7 @@ test('a save based on an older revision writes nothing', async () => {
   ok(await save(second, 'ideas', collection(), 1));
   for (const r of [1, 3, 0, -1, null]) refused(await save(admin, 'ideas', ideas([]), r), 'PT409', String(r));
   const now = ok(await get(admin, 'ideas'));
-  assert.ok(now.revision === 2 && now.document.ideas.length === 54);
+  assert.ok(now.revision === 2 && now.document.ideas.length === 55);
   refused(await save(admin, 'connections', map(), 1), 'PT409', 'a revision of something never saved');
 });
 

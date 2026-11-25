@@ -9,8 +9,9 @@
 //     document      its built-in content: shown until something is published,
 //                   and whenever the published content can't be read
 //     staticImages  details of the images under /images/featured/ it may use
-//     visibility()  a promise of listed(entry): which games may be listed for this
-//                   visitor, when that isn't the records' say alone
+//     visibility()  a promise of listed(entry): which built-in games may be listed
+//                   for this visitor, when that isn't the records' say alone (records
+//                   that came with published content decide by themselves)
 //     settings      configuration of its widgets that isn't CMS content
 //                   (scripts/page-widgets.js)
 //   })  → window.PergamonPage, or null where the page can't be drawn
@@ -54,11 +55,19 @@
     const entries = (window.atlasEntries && window.atlasEntries.games) || [];
     const norm = path => String(path || '').replace(/\/+$/, '');
     let listed = e => !e.archived && e.visibility === 'public';
-    const listedGame = path => entries.find(e => norm(e.path) === norm(path) && listed(e)) || null;
+    const entryAt = path => entries.find(e => norm(e.path) === norm(path)) || null;
+    const listedGame = path => { const e = entryAt(path); return e && listed(e) ? e : null; };
     const liveGame = path => { const e = listedGame(path); return e && e.status !== 'coming-soon' ? e : null; };
+    // The game a card shows here, { path, name }, or null when it isn't listed. A card
+    // that refers to a record follows the record (content.toModel has left out those
+    // that aren't listed); one with its own details, the entry it links to.
+    function gameOf(item, playable) {
+      if (item.game === undefined) return playable ? liveGame(item.href) : listedGame(item.href);
+      const e = artCtx.games === builtInGames && !item.note ? entryAt(item.href) : null;
+      return e && !listed(e) ? null : { path: item.href, name: item.title };
+    }
     const adapters = window.PergamonPageWidgets.create({
-      liveGame,
-      listedGame,
+      gameOf,
       settings: Object.assign({ signedIn: () => !!(theme && theme.get().signedIn) }, opts.settings)
     });
 
@@ -70,13 +79,15 @@
     // whole, never half-drawn.
     const usable = m => (m && Array.isArray(m.regions) && !G.validatePage({ regions: m.regions }, TYPES).length ? m : null);
     const loader = cms.loader;
-    const library = window.PergamonGameLibrary;
-    const staticCtx = { staticImages: opts.staticImages || {}, games: library && library.games };
+    const builtInGames = (window.PergamonGameLibrary || {}).games || {};
+    const staticCtx = { staticImages: opts.staticImages || {}, games: builtInGames };
+    // Published content is drawn with the records that came with it, never the built-in ones.
+    const ctxOf = from => Object.assign({}, staticCtx, { media: from.media, games: from.games });
     const cached = loader && loader.initial();
-    const cachedModel = cached ? usable(content.toModel(cached.doc, Object.assign({}, staticCtx, { media: cached.media }))) : null;
+    const cachedModel = cached ? usable(content.toModel(cached.doc, ctxOf(cached))) : null;
     let model = cachedModel || usable(content.toModel(opts.document, staticCtx));
     if (!model) return null;
-    let artCtx = cachedModel ? Object.assign({}, staticCtx, { media: cached.media }) : staticCtx;
+    let artCtx = cachedModel ? ctxOf(cached) : staticCtx;
 
     // ── Widget instances ─────────────────────────────────────
     // id → { type, widget, started }
@@ -103,6 +114,7 @@
       if (!inst || !inst.widget || !WIDGETS.hasCard(inst.type) || !m) return;
       const shown = (previewing && previewing.instance === id && savedModel(previewing.id)) || m.card;
       if (shown) inst.widget.setCard(shown);
+      else if (inst.widget.clear) inst.widget.clear();
     }
     function drawWidget(p) {
       const widget = adapters[p.type].create(p, model.instances[p.id]);
@@ -181,8 +193,10 @@
     const COMPACT = 560;                  // feature-banner.css: the compact card's widest slot
 
     // ── Public API ───────────────────────────────────────────
-    // render(doc, { media }) redraws the page from another document in place
-    // (published content, or an admin's working copy). Returns false, and
+    // render(doc, { media, games, editing }) redraws the page from another document in
+    // place (published content, or an admin's working copy: `editing` keeps the cards
+    // visitors wouldn't see). games: the records its cards refer to; without any, the
+    // built-in ones. Returns false, and
     // leaves the page as it is, if the document can't be read or its layout
     // isn't valid. Cards are addressed by component id ('<prefix>.<instance>',
     // saved cards '<prefix>.<instance>.saved.<key>', a list's cards
@@ -206,6 +220,7 @@
       builtIn: opts.document,
       render(doc, extra) {
         const nextCtx = Object.assign({}, staticCtx, extra || {});
+        if (!nextCtx.games) nextCtx.games = builtInGames;
         const next = usable(content.toModel(doc, nextCtx));
         if (!next) return false;
         model = next;
@@ -227,6 +242,11 @@
       element: key => {
         const id = showing(key);
         return id ? instances[id].widget.element : listCard(key);
+      },
+      // Why a card isn't what visitors would see (content.shownCard), or undefined.
+      note: key => {
+        const id = showing(key), c = id ? (previewing && previewing.id === key ? savedModel(key) : model.instances[id].card) : null;
+        return (c || [].concat(...listWidgets().map(cardsOf)).find(x => x.id === key) || {}).note;
       },
       // Make sure a card is drawn (a list's cards may be out of view or filtered out).
       reveal: key => {
@@ -312,7 +332,7 @@
     window.PergamonPage = page;
     if (opts.visibility) opts.visibility().then(fn => { if (fn) { listed = fn; drawLists(); } }, () => {});
 
-    if (loader) loader.attach(page, root, cachedModel ? cached.version : null, opts.document);
+    if (loader) loader.attach(page, root, cachedModel ? cached.stamp : null, opts.document);
     // Widgets with an account row follow the sign-in state theme.js shows.
     if (theme) theme.onChange(s => Object.values(instances).forEach(i => { if (i.widget.setSignedIn) i.widget.setSignedIn(s.signedIn); }));
     return page;
