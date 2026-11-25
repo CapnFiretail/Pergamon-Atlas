@@ -750,6 +750,10 @@ is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
   library's draft. Library and page writes take their locks in one order, so neither can
   pass a check the other is about to undo: the page's, then the library's, shared, then
   images by id (tested: `CONCURRENCY-0016.md`).
+- **A published id stays the same game.** From what is live, a record's name or its
+  destination may change in one publish, not both, unless it had that destination before
+  (so restoring works). Renames and route changes stay free, one at a time. It stops an
+  accident, not an administrator set on it in two publishes.
 - **A page draft can outlive the library draft it used** (discarded, or changed to leave a
   game out). Intended: the two drafts are separate. The page's draft keeps the reference,
   with its place and crop, and everything else in it can still be saved; adding another

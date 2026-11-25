@@ -204,6 +204,29 @@ test('library checks refuse a stricter isolation level; pages without references
   await e.db.exec('alter role authenticated set default_transaction_isolation = \'repeatable read\'');
   assert.ok((await rows(e, 'verify_0016.sql')).some(r => r.ok === false && /READ COMMITTED/.test(r.check_name)), 'verification notices such a setting');
 });
+test('a published id stays the same game: its name or its address may change, not both at once', async () => {
+  const { e, a, save, publish, at } = await fresh();
+  const lib = (snake, more) => library({ snake: record('snake', snake), ...more });
+  const PONG = { name: 'Pong', destination: '/games/pong/' };
+  // Never published: anything may change.
+  ok(await save('library', lib())); ok(await save('library', lib(PONG))); ok(await publish('library', lib()));
+  // Another game under its id; and two games swapped.
+  refused(await save('library', lib(PONG)), 'PT422', /library\.games\.snake: name and address/);
+  refused(await save('library', lib({ ...PONG, availability: 'archived' })), 'PT422', /name and address/);
+  ok(await publish('library', lib({}, { pong: record('pong') })));
+  refused(await save('library', library({ snake: record('snake', PONG), pong: record('pong', { name: 'Snake', destination: '/games/snake/' }) })), 'PT422', /name and address/);
+  // A rename, a new route, new details: free, with anything else about the game.
+  ok(await publish('library', lib({ name: 'Serpent', category: 'Classic', description: 'New.' }, { pong: record('pong') })));
+  ok(await publish('library', lib({ name: 'Serpent', destination: '/games/breakout/' }, { pong: record('pong') })));
+  // In two drafts of one publish it is still both at once.
+  ok(await save('library', lib({ name: 'Other', destination: '/games/breakout/' }, { pong: record('pong') })));
+  refused(await save('library', lib({ name: 'Other', destination: '/games/battleship/' }, { pong: record('pong') })), 'PT422', /name and address/);
+  // Restoring an earlier version may change both back: the address was its own.
+  const first = ok(await e.rpc(a, 'list_published_versions', 'library', 20)).pop().content;
+  const back = clone(first); back.components['library.games'].order = ['snake', 'pong']; back.components['library.games.pong'] = record('pong');
+  ok(await publish('library', back));
+  assert.equal((await at('library')).doc.published.content.components['library.games.snake'].name, 'Snake');
+});
 test('a published game is archived, never removed; its id stays in every later library', async () => {
   const { e, a, save, publish, at } = await fresh();
   ok(await publish('library', library(GAMES())));
