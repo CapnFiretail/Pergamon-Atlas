@@ -749,7 +749,20 @@ is the contract), `preflight_0016.sql`, `verify_0016.sql`, `recovery_0016.sql`;
 - Publishing and restoring a page need its games live; saving a draft may use the
   library's draft. Library and page writes take their locks in one order, so neither can
   pass a check the other is about to undo: the page's, then the library's, shared, then
-  images by id (provisionally accepted; to be tested as `CONCURRENCY-0016.md` says).
+  images by id (tested: `CONCURRENCY-0016.md`).
+- **A page draft can outlive the library draft it used** (discarded, or changed to leave a
+  game out). Intended: the two drafts are separate. The page's draft keeps the reference,
+  with its place and crop, and everything else in it can still be saved; adding another
+  unknown game is refused. Publishing is refused until the game is in the live library.
+  The editor (a later step) must therefore:
+  - draw such a card as "not in the Game Library" with its id, in place, never from the
+    built-in records and never left out; offer to choose another game or remove it;
+  - say so before Publish, naming the games, and keep the draft when the server refuses;
+  - before discarding a library draft or leaving out an unpublished game, name the pages
+    that use it (`list_game_uses` includes drafts);
+  - mark cards drawn from the library's draft as unpublished, so a preview doesn't read
+    as what publishing the page would show;
+  - keep unsaved work when a save is refused, and say why.
 - The library is only ever restored as a draft: direct `rollback` of it is refused.
 - **Current limits, not architectural ones:** 64 records in the library, 24 cards in a
   grid. Raising one changes a number in the SQL and in the browser's checks, no document.

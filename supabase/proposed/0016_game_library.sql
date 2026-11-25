@@ -37,12 +37,15 @@
 --     library (archive it instead): checked when the library is saved or
 --     published. The set of published ids therefore only ever grows.
 --   * An earlier library is restored as a draft, never straight to visitors.
---   * Saving a page's draft needs its games in the live library or its draft;
---     publishing or restoring a page needs them in the live library.
+--   * Saving a page's draft needs each game it adds in the live library or its draft.
+--     A draft may outlive the library draft it used (discarded or changed): what it
+--     already refers to is kept, so nothing else in it is ever held back. Publishing or
+--     restoring a page needs every game in the live library, without exception.
 --   * Page writes take the page's lock, then (if it has references) the library's,
 --     shared; library writes take the library's, exclusive; a publish then locks its
 --     images, by id. Always in that order, so no write can wait in a circle; and no
---     page is checked against a library that is being changed at that moment.
+--     page is checked against a library that is being changed at that moment. That
+--     needs READ COMMITTED (PostgREST's default): any other level is refused.
 --   * get_published_content reads the page and its records in one snapshot.
 --
 -- The sizes (64 records, 24 cards in a grid) are this implementation's limits, not
@@ -62,7 +65,8 @@
 -- production, each before the code that uses it. Until a library is published,
 -- nothing visible changes. Undo: recovery_0016.sql, only while nothing has been
 -- saved for 'games' or 'library'; afterwards leave 0016 in place (older code
--- ignores it, and version rows are permanent).
+-- ignores it, and version rows are permanent). Apply and recover in a maintenance
+-- window: no open editors, no saves or publishes (docs/cms/CONCURRENCY-0016.md).
 
 begin;
 
@@ -505,6 +509,13 @@ declare
   refs text[];
   missing text;
 begin
+  refs := case when p_page = 'library' then array[]::text[] else public.cms_game_refs(doc) end;
+  if p_page <> 'library' and cardinality(refs) = 0 then return; end if;
+  -- After the lock, this must see what its last holder committed.
+  if current_setting('transaction_isolation') not in ('read committed', 'read uncommitted') then
+    raise exception 'library checks need READ COMMITTED' using errcode = 'PT500';
+  end if;
+
   if p_page = 'library' then
     select substr(live.key, length('library.games.') + 1) into missing
     from public.site_content_versions v
@@ -519,8 +530,6 @@ begin
     return;
   end if;
 
-  refs := public.cms_game_refs(doc);
-  if cardinality(refs) = 0 then return; end if;
   perform pg_advisory_xact_lock_shared(hashtext('pergamon.site_content:library'));
   select r into missing
   from unnest(refs) r
@@ -528,6 +537,10 @@ begin
     select 1 from public.site_content_versions v
     where v.page = 'library' and (v.status = 'published' or (v.status = 'draft' and not p_live))
       and (v.content -> 'components') ? ('library.games.' || r))
+    -- Already in this page's draft: kept, so the rest of the draft can be saved.
+    and (p_live or not exists (
+      select 1 from public.site_content_versions d
+      where d.page = p_page and d.status = 'draft' and r = any (public.cms_game_refs(d.content))))
   order by 1 limit 1;
   if missing is not null then
     if p_live then

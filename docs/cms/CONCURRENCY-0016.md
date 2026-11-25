@@ -1,7 +1,7 @@
 # Concurrency test for 0016
 
-**A plan. Not approved, not run.** Required before 0016 reaches production. The rules it
-tests: the header of `supabase/proposed/0016_game_library.sql`.
+Required before 0016 reaches production. **Part A: run 2026-11-24, all passed. Part B: a
+plan, not approved, not run.** The rules: the header of `supabase/proposed/0016_game_library.sql`.
 
 ## Locks, by write path
 
@@ -20,15 +20,18 @@ Each request is one transaction (READ COMMITTED) and takes locks only in this or
 | `discard_draft(any)` (0008, unchanged) | exclusive | — | its own draft |
 | `cms_record_prepared_media` (0011, unchanged) | — | — | one image |
 | `create_media_upload` (0009, unchanged) | — | — | inserts one image |
-| `recovery_0016.sql` | home, games | library, all exclusive | its check, then functions and page rows |
+| `recovery_0016.sql` | every page, exclusive | exclusive, last | its check, then functions and page rows |
 
 - Nothing takes a page's lock while holding the library's, so nobody can wait in a circle.
   Nothing takes two pages' locks but recovery, which takes the library's last.
 - Published ids only grow and versions are never deleted, so a reference that was valid
   when a page was published stays valid.
 - The library is read by a new statement after the lock is granted, so under READ
-  COMMITTED it sees what the previous holder committed. These functions must not be given
-  a stricter isolation level.
+  COMMITTED it sees what the previous holder committed. PostgREST uses that level unless a
+  role or function sets `default_transaction_isolation`
+  ([its documentation](https://docs.postgrest.org/en/stable/references/transactions.html));
+  `preflight_0016.sql` and `verify_0016.sql` check that no server, database, role or
+  function setting does, and the check itself refuses any stricter level (PT500).
 - Reading takes no lock. `get_published_content` is `stable`: one snapshot.
 - **Found in review:** 0008's `cms_activate` updates image rows in no fixed order. Harmless
   with one page; two pages sharing images could have deadlocked (one is aborted, nothing
@@ -40,9 +43,9 @@ Each request is one transaction (READ COMMITTED) and takes locks only in this or
 real commits. Committing on staging would leave permanent versions and ids there and make
 recovery impossible, so the cases that must commit run here.
 
-**Needs approval:** PostgreSQL server programs of staging's major version (step 0 below).
-The installed copy here has only the client tools. Either complete that installation or
-unpack the official binaries into a temporary folder; nothing is installed as a service.
+Run with the official PostgreSQL 17 Windows binaries, unpacked into a temporary folder and
+removed afterwards; no service, no system setting. Staging's major version must be 17 too
+(step 0 of part B): if it isn't, run this again with that version.
 
 | Case | Expected |
 |---|---|
@@ -54,8 +57,27 @@ unpack the official binaries into a temporary folder; nothing is installed as a 
 | A7 homepage and library publish the same new images | both succeed |
 | A8 24 writers, 240 reads | each write succeeds or PT409; no read lacks a record or shows a hidden one |
 | Afterwards | every live reference resolves; no id lost; one live version each; server's deadlock count 0; recovery refuses |
+| A9 0016 applied among 20 homepage writers and 4 readers | each write succeeds or PT409; every read answered; verification true |
+| A10 recovery during a homepage save | waits, both succeed, 0015's database again |
+| A11 recovery during the first library save | waits, the save is kept, recovery refuses |
+| A12 writes started during recovery | library and Games page refused (PT422), homepage save succeeds, visitors answered |
+| A13 recovery among 20 homepage writers and 4 readers | as A9; 0015's database again |
+| A14 controls: without the library's lock, without the image order | A1 and the image case fail, so they test something |
+
+**Result** (PostgreSQL 17.6, READ COMMITTED): all as expected, in every run; no deadlock,
+no unexpected error, no unresolved reference. A8 and A9's conflicts are writers that began
+from the same version: one wins each time, which is the rule.
+
+**Found and corrected:** recovery dropped its helpers in the same transaction, and a
+homepage read running at that moment failed. It now restores, waits 10 seconds, then drops.
 
 Cleanup: it stops the server and deletes the folder itself, and prints `(cluster removed)`.
+
+## Applying and recovering
+
+Both in a **maintenance window**: no open editors, no saves or publishes. A9–A13 show what
+happens if someone writes anyway, as a safety net and not as the procedure: nothing is
+corrupted, and the worst outcome is a refused write.
 
 ## Part B: staging, two sessions, nothing committed
 
@@ -83,7 +105,7 @@ password is used or shown. Staging's version ids will skip some numbers.
 Tab 1 always ends with `RESULT held, undone`. **Stop** and report if a result differs, if
 anything mentions `deadlock` or `40P01`, or if a tab runs past 60 seconds.
 
-Step 0, for the record: `show server_version;` and keep `verify_0016.sql`'s result.
+Step 0, for the record: `show server_version;` (17.x) and keep `verify_0016.sql`'s result.
 
 Afterwards: run `verify_0016.sql` again. Every check true, and its record rows (live
 version, fingerprints, stored versions) exactly as before. There is nothing else to clean

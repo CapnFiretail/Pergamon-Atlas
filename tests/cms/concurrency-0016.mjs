@@ -82,11 +82,17 @@ try {
     'proposed/0008_site_content', 'proposed/0009_site_media', 'proposed/0011_shared_public_media', 'proposed/0012_saved_cards', 'proposed/0013_site_sidebar', 'proposed/0014_page_layout', 'proposed/0015_studio_documents'].forEach(f => psql(sql(f + '.sql')));
   psql(`insert into auth.users (id, email) values ('${A}', 'a@example.test'), ('${B}', 'b@example.test'); update public.profiles set role = 'admin' where id in ('${A}', '${B}');`);
   save('home', home()); publish('home');
-  const pre = psql(sql('proposed/preflight_0016.sql'));
-  ok(!/\|f\|/.test(pre) && (pre.match(/\|t\|/g) || []).length === 6, 'preflight: every check true');
-  psql(sql('proposed/0016_game_library.sql'));
-  const post = psql(sql('proposed/verify_0016.sql'));
-  ok(!/\|f\|/.test(post) && (post.match(/\|t\|/g) || []).length === 14, 'verification: every check true');
+  // A situation of its own: a copy of this database, as 0015 leaves it.
+  const database = name => { env.PGDATABASE = 'template1'; psql(`create database ${name} template postgres`); env.PGDATABASE = name; };
+  const allTrue = (f, n) => { const x = psql(sql('proposed/' + f)); return !/\|f\|/.test(x) && (x.match(/\|t\|/g) || []).length === n; };
+  const preflight = () => allTrue('preflight_0016.sql', 7), verified = () => allTrue('verify_0016.sql', 15);
+  const apply = () => psql(sql('proposed/0016_game_library.sql'));
+  const recovery = sql('proposed/recovery_0016.sql').replace(/\r\n/g, '\n');
+
+  database('main_case');
+  ok(preflight(), 'preflight: every check true');
+  apply();
+  ok(verified(), 'verification: every check true');
 
   save('library', of('snake')); publish('library');
   let a, b;
@@ -138,12 +144,13 @@ try {
 
   // A7. Homepage and library publish the same new images, in opposite orders, while a
   // third connection holds the last one: neither may wait for the other in a circle.
-  const media = [1, 2].map(n => {
+  const images = () => [1, 2].map(n => {
     const id = psql(as(A, "select public.create_media_upload('image/webp', 1000) ->> 'media_id';\n"));
     const sha = String(n).repeat(64);
     psql(as(A, call(`public.cms_record_prepared_media('${id}', 'media/${sha}.webp', 'image/webp', 1000, 600, 600, '${sha}')`), 'commit', 'service_role'));
     return id;
   }).sort();
+  let media = images();
   const art = i => ({ source: { media: media[i] }, alt: '' });
   save('home', home(art(0), art(1)));
   save('library', library({ snake: record('snake', { art: art(1), wide: art(0) }), pong: record('pong'), breakout: record('breakout') }));
@@ -181,10 +188,112 @@ try {
   ok(psql("select count(*) from public.site_content_versions v, unnest(public.cms_game_refs(v.content)) r where v.page <> 'library' and v.status = 'published' and not exists (select 1 from public.site_content_versions l where l.page = 'library' and l.status = 'published' and (l.content -> 'components') ? ('library.games.' || r))") === '0', 'every live reference resolves');
   ok(psql("select count(*) from (select lag(content -> 'components') over (order by id) p, content -> 'components' c from public.site_content_versions where page = 'library' and status in ('published', 'archived')) x, jsonb_object_keys(p) k where not c ? k") === '0', 'no published id was ever lost');
   ok(psql("select string_agg(page || ':' || c, ',' order by page) from (select page, count(*) c from public.site_content_versions where status = 'published' group by page) x") === 'games:1,home:1,library:1', 'one live version of each');
-  ok(psql('select deadlocks from pg_stat_database where datname = current_database()') === '0', 'the server counted no deadlock');
+  ok(psql('select sum(deadlocks) from pg_stat_database') === '0', 'the server counted no deadlock');
   let refusal = '';
   try { psql(sql('proposed/recovery_0016.sql')); } catch (e) { refusal = String(e.stderr); }
-  ok(/leave 0016 in place/.test(refusal), 'recovery refuses once something was saved');
+  ok(/leave 0016 in place/.test(refusal) && psql("select to_regprocedure('public.cms_validate_library(jsonb)') is not null") === 't', 'recovery refuses once something was saved, and changes nothing');
+
+  // A9. 0016 is applied while administrators save and publish the homepage.
+  const homeWriter = i => session(as(i % 2 ? A : B, `do $$ declare v jsonb; dr bigint; begin
+      v := public.get_draft('home');
+      dr := (public.save_draft('home', ${J(home())}, (v -> 'draft' ->> 'id')::bigint) ->> 'draft_id')::bigint;
+      perform pg_sleep(random() * 0.1);
+      perform public.publish('home', dr, (v -> 'published' ->> 'id')::bigint);
+    end $$;\n`));
+  const homeReader = () => session(Array.from({ length: 60 }, () => "select public.get_published_content('home') -> 'content' ->> 'schema' from pg_sleep(0.01);").join('\n'));
+  const tally = list => { const t = {}; list.forEach(x => { const k = x.err ? (x.err.match(/ERROR:\s+(\w{5})/) || [, x.err.slice(0, 80)])[1] : 'done'; t[k] = (t[k] || 0) + 1; }); return t; };
+  const storm = async middle => {
+    const first = Array.from({ length: 10 }, (_, i) => homeWriter(i)), readers = [1, 2, 3, 4].map(homeReader);
+    await wait(60);
+    const change = session(middle);
+    const second = Array.from({ length: 10 }, (_, i) => homeWriter(i));
+    const c = await change, writers = await Promise.all([...first, ...second]), reads = (await Promise.all(readers)).flatMap(x => (x.err ? ['error ' + x.err] : x.out.split(/\r?\n/)));
+    return { c, t: tally(writers), reads: reads.length === 240 && reads.every(y => y === '1') ? '' : `reads ${reads.length}: ${[...new Set(reads)].slice(0, 3)}` };
+  };
+  const onlyHome = () => psql("select count(*) from public.site_content_versions where page <> 'home'") === '0' && psql("select count(*) from public.site_content_versions where page = 'home' and status = 'published'") === '1';
+  database('apply_case');
+  let x = await storm(sql('proposed/0016_game_library.sql'));
+  ok(!x.c.err && !x.reads && Object.keys(x.t).every(k => ['done', 'PT409'].includes(k)), `A9 applied among 20 homepage writers: ${JSON.stringify(x.t)} ${x.c.err}${x.reads}`);
+  ok(verified() && onlyHome(), 'A9 verification: every check true');
+
+  // A10. Recovery while a homepage save is open: waits for it, then succeeds.
+  database('recover_open'); apply();
+  a = session(as(A, saving('home', home(), 'null') + hold(2)));
+  await locked('home', true, 'ExclusiveLock');
+  b = session(recovery);
+  ok(await locked('home', false, 'ExclusiveLock'), 'A10 recovery waits for an open homepage save');
+  [a, b] = [await a, await b];
+  ok(!a.err && !b.err && preflight(), 'A10 both succeed, and it is 0015’s database again ' + a.err + b.err);
+
+  // A11. Recovery while the first library save is open: waits, then refuses.
+  database('recover_library'); apply();
+  a = session(as(A, saving('library', of('snake'), 'null') + hold(2)));
+  await locked('library', true, 'ExclusiveLock');
+  b = session(recovery);
+  ok(await locked('library', false, 'ExclusiveLock'), 'A11 recovery waits for an open library save');
+  [a, b] = [await a, await b];
+  ok(!a.err && /leave 0016 in place/.test(b.err) && draftOf('library') !== 'null', 'A11 the save is kept, recovery refuses');
+  psql(as(A, saving('library', of('snake', 'pong'), draftOf('library'))));
+  ok(true, 'A11 and 0016 still works');
+
+  // A12. Writes that start while recovery is open (about to commit).
+  database('recover_writes'); apply();
+  const homeLive = liveOf('home');
+  b = session(recovery.replace('\ncommit;\n', `\nselect pg_sleep(3) ${quiet}commit;\n`));
+  await locked('library', true, 'ExclusiveLock');
+  const during = { library: session(as(A, saving('library', of('snake'), 'null'))), games: session(as(B, saving('games', page([]), 'null'))), home: session(as(A, saving('home', home(), 'null'))), read: session("select public.get_published_content('home') ->> 'version';") };
+  for (const k of Object.keys(during)) during[k] = await during[k];
+  b = await b;
+  console.log('     A12 outcomes:', Object.entries(during).map(([k, v]) => k + ' ' + (v.err ? (v.err.match(/ERROR:\s+(.*)/) || [, v.err])[1].slice(0, 90) : 'done')).join(' | '));
+  ok(!b.err && code(during.library, 'PT422') && code(during.games, 'PT422'), 'A12 library and Games writes are refused ' + b.err);
+  ok(!during.home.err && during.read.out === homeLive, 'A12 the homepage save succeeds, visitors are answered ' + during.home.err);
+  ok(onlyHome() && preflight(), 'A12 nothing of 0016 is left');
+  publish('home');
+  ok(liveOf('home') !== homeLive, 'A12 and can be published');
+
+  // A13. Recovery among many homepage writers.
+  database('recover_storm'); apply();
+  x = await storm(recovery);
+  ok(!x.c.err && !x.reads && onlyHome() && preflight(), `A13 recovered among 20 homepage writers: ${JSON.stringify(x.t)} ${x.c.err}${x.reads}`);
+  ok(Object.keys(x.t).every(k => ['done', 'PT409'].includes(k)), 'A13 every write happened or was told of a conflict');
+  ok(psql('select sum(deadlocks) from pg_stat_database') === '0', 'still no deadlock');
+
+  // A14. The test can fail: without 0016's image order and without its library lock.
+  database('control'); apply();
+  const weak = psql("select pg_get_functiondef('public.cms_require_games(text,jsonb,boolean)'::regprocedure)").replace(/perform pg_advisory_xact_lock_shared[^;]*;/, '');
+  psql(weak + ';');
+  save('library', of('snake')); publish('library');
+  save('library', of('snake', 'pong')); save('games', page(['snake', 'pong']));
+  a = session(as(A, publishing('library') + hold(2)));
+  await locked('library', true, 'ExclusiveLock');
+  b = await session(as(B, publishing('games')));
+  await a;
+  ok(code(b, 'PT422'), 'A14 without the library lock, A1 fails (so A1 tests it)');
+  // Images: stored highest id first and read in that order, the lowest held by someone
+  // else. A publish waiting for it must not hold the highest yet.
+  psql('alter database control set enable_indexscan = off; alter database control set enable_bitmapscan = off;');
+  const highestFree = async () => {
+    media = images();
+    psql(`update public.site_media set published_at = null where id = '${media[0]}'`);
+    save('home', home(art(0), art(1)));
+    const job = publishing('home'), holder = session(`begin;\nselect 1 from public.site_media where id = '${media[0]}' for update ${quiet}${hold(2)}commit;\n`);
+    await wait(600);
+    const p = session(as(A, job));
+    await wait(700);
+    const free = await session(`begin;\nselect 1 from public.site_media where id = '${media[1]}' for update nowait ${quiet}rollback;\n`);
+    const first = psql(`select id = '${media[1]}' from public.site_media where id in ('${media[0]}', '${media[1]}') order by ctid limit 1`);
+    await holder;
+    return { order: first === 't', done: !(await p).err, free: !free.err };
+  };
+  let h = await highestFree();
+  ok(h.order && h.done && h.free, 'A14 0016: a publish waiting for its first image holds none of the others ' + JSON.stringify(h));
+  const activate = psql("select pg_get_functiondef('public.cms_activate(text,jsonb,bigint,bigint,uuid)'::regprocedure)").replace(/\r/g, '');
+  const weaker = activate.replace(/perform 1 from public\.site_media[^;]*;/, '');
+  if (weaker === activate) throw new Error('the image order is not where it was');
+  psql(weaker + ';');
+  psql('alter table public.site_media disable trigger all; delete from public.site_media; alter table public.site_media enable trigger all;');
+  h = await highestFree();
+  ok(h.order && !h.free, 'A14 without the image order it holds them (so the case above tests it) ' + JSON.stringify(h));
 } catch (e) {
   failed++; console.error('STOPPED', e.stderr || e);
 } finally {

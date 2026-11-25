@@ -3,6 +3,10 @@
 -- allows: it refuses otherwise and changes nothing. After that leave 0016 in place
 -- (older site code ignores it) and go forward.
 --
+-- MAINTENANCE WINDOW: no open editors, no saves or publishes until it has finished. It
+-- waits for writes that have started; library and Games page writes that start during it
+-- are refused. Takes about 10 seconds: it restores, waits, then drops.
+--
 -- Functions and the two site_pages rows only: no content, override or media changes.
 -- The five functions are the repository's of 0008 and 0014, exactly.
 
@@ -11,9 +15,11 @@ begin;
 do $guard$ begin
   -- Every writer's locks, in their order (pages, then the library): nothing is saved
   -- between this check and the end.
-  perform pg_advisory_xact_lock(hashtext('pergamon.site_content:home'));
-  perform pg_advisory_xact_lock(hashtext('pergamon.site_content:games'));
+  perform pg_advisory_xact_lock(hashtext('pergamon.site_content:' || p.page)) from (select page from public.site_pages where page <> 'library' order by page) p;
   perform pg_advisory_xact_lock(hashtext('pergamon.site_content:library'));
+  if exists (select 1 from public.site_pages where page not in ('home', 'games', 'library')) then
+    raise exception 'A later page is registered: leave 0016 in place.';
+  end if;
   if exists (select 1 from public.site_content_versions where page in ('games', 'library')) then
     raise exception 'The Games page or the Game Library has saved versions, which are permanent: leave 0016 in place.';
   end if;
@@ -172,16 +178,6 @@ begin
 end;
 $$;
 
-drop function public.cms_game_refs(jsonb);
-drop function public.cms_check_crop(jsonb,text);
-drop function public.cms_check_game_ref(jsonb,text,boolean);
-drop function public.cms_check_feature(jsonb,text,uuid[]);
-drop function public.cms_check_list_card(jsonb,text,uuid[]);
-drop function public.cms_check_heading(jsonb,text);
-drop function public.cms_validate_page(text,jsonb);
-drop function public.cms_validate_library(jsonb);
-drop function public.cms_require_games(text,jsonb,boolean);
-drop function public.list_game_uses();
 delete from public.site_pages where page in ('games', 'library');
 
 -- Privileges as 0008 and 0014 set them.
@@ -194,4 +190,21 @@ grant execute on function public.save_draft(text, jsonb, bigint, text) to authen
 revoke all on function public.rollback(text, bigint, bigint) from public, anon, authenticated;
 grant execute on function public.rollback(text, bigint, bigint) to authenticated;
 
+commit;
+
+-- Requests already running may still be in 0016's functions: let them finish, then drop
+-- what only those called. (If only this part fails, run it again: nothing uses them.)
+select pg_sleep(10);
+
+begin;
+drop function public.cms_game_refs(jsonb);
+drop function public.cms_check_crop(jsonb,text);
+drop function public.cms_check_game_ref(jsonb,text,boolean);
+drop function public.cms_check_feature(jsonb,text,uuid[]);
+drop function public.cms_check_list_card(jsonb,text,uuid[]);
+drop function public.cms_check_heading(jsonb,text);
+drop function public.cms_validate_page(text,jsonb);
+drop function public.cms_validate_library(jsonb);
+drop function public.cms_require_games(text,jsonb,boolean);
+drop function public.list_game_uses();
 commit;

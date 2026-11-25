@@ -156,6 +156,54 @@ test('a page draft may use the library’s draft; publishing needs the live libr
   const home = content.upgradeDocument(homeDoc()); home.components['home.featured.saved'] = { order: ['x'] }; home.components['home.featured.saved.x'] = { game: 'tetris', cta: 'Go' };
   refused(await save('home', home), 'PT422', /tetris/);
 });
+test('a page draft outlives the library draft it used: kept whole, savable, never publishable', async () => {
+  const { e, a, save, publish, at, see } = await fresh();
+  ok(await publish('library', library({ snake: record('snake') })));
+  const extra = library({ snake: record('snake'), pong: record('pong') });
+  const l = ok(await save('library', extra));
+  const doc = gamesPage(['snake', 'pong']);
+  doc.components['games.grid.pong'].crop = { scale: 1.4 };
+  ok(await save('games', doc));
+  ok(await e.rpc(a, 'discard_draft', 'library', l.draft_id));
+  // Nothing of the page's draft is lost, and the rest of it can still be saved.
+  assert.deepEqual((await at('games')).doc.draft.content, doc);
+  const edited = clone(doc); edited.components['games.heading'].title = 'All games';
+  ok(await save('games', edited));
+  assert.deepEqual((await at('games')).doc.draft.content, edited);
+  assert.ok(ok(await e.rpc(a, 'list_game_uses')).some(u => u.game === 'pong' && u.status === 'draft'), 'the editor can tell which');
+  // It can't go live, and a refused publish loses nothing.
+  refused(await e.rpc(a, 'publish', 'games', (await at('games')).draft, null), 'PT422', /game "pong" isn't in the published Game Library/);
+  assert.deepEqual((await at('games')).doc.draft.content, edited);
+  assert.equal(await see('games'), null);
+  // Only what the draft already had: another unknown game is refused.
+  const more = clone(edited); more.components['games.grid'].order.push('tetris'); more.components['games.grid.tetris'] = { game: 'tetris' };
+  refused(await save('games', more), 'PT422', /tetris/);
+  // Once it has gone from the draft it is a new reference again.
+  ok(await save('games', gamesPage(['snake'])));
+  refused(await save('games', edited), 'PT422', /pong/);
+  // Either way out works: the game comes back, or its card goes.
+  ok(await save('library', extra)); ok(await save('games', edited));
+  ok(await e.rpc(a, 'publish', 'library', (await at('library')).draft, (await at('library')).live));
+  ok(await e.rpc(a, 'publish', 'games', (await at('games')).draft, null));
+  assert.deepEqual((await see('games')).content.components['games.grid'].order, ['snake', 'pong']);
+});
+test('library checks refuse a stricter isolation level; pages without references don’t need it', async () => {
+  const { e, a, publish } = await fresh();
+  ok(await publish('library', library(GAMES())));
+  const at = (level, p, doc) => e.as(e.superuser, async tx => {
+    await tx.exec('set transaction isolation level ' + level);
+    await tx.query("select set_config('request.jwt.claims', $1, true)", [J({ role: 'authenticated', sub: a.id })]);
+    return (await tx.query('select public.save_draft($1, $2, null) as v', [p, J(doc)])).rows[0].v;
+  });
+  for (const level of ['repeatable read', 'serializable']) {
+    refused(await at(level, 'games', gamesPage()), 'PT500', /READ COMMITTED/);
+    refused(await at(level, 'library', library(GAMES())), 'PT500', /READ COMMITTED/);
+  }
+  ok(await at('repeatable read', 'home', homeDoc()));
+  ok(await at('read committed', 'games', gamesPage()));
+  await e.db.exec('alter role authenticated set default_transaction_isolation = \'repeatable read\'');
+  assert.ok((await rows(e, 'verify_0016.sql')).some(r => r.ok === false && /READ COMMITTED/.test(r.check_name)), 'verification notices such a setting');
+});
 test('a published game is archived, never removed; its id stays in every later library', async () => {
   const { e, a, save, publish, at } = await fresh();
   ok(await publish('library', library(GAMES())));
@@ -422,7 +470,7 @@ test('preflight, apply, verify, recover: as they say, and recovery leaves 0015�
   allTrue(post, 'verify');
   ['homepage answer fingerprint', 'fingerprint of every stored version', 'stored versions', 'fingerprint of all visibility overrides', 'live homepage version'].forEach(n => assert.equal(note(post, n), note(pre, n), n));
   assert.ok((await rows(e, 'preflight_0016.sql')).some(r => r.ok === false), 'preflight notices it is already there');
-  await e.db.exec(sql('recovery_0016.sql'));
+  await e.db.exec(sql('recovery_0016.sql').replace('pg_sleep(10)', 'pg_sleep(0)'));
   assert.equal(await functions(), before, 'every function and its privileges are as they were');
   assert.deepEqual((await e.db.query('select page from public.site_pages')).rows, [{ page: 'home' }]);
   allTrue(await rows(e, 'preflight_0016.sql'), 'preflight after recovery');
@@ -444,7 +492,7 @@ test('recovery refuses once anything of 0016 has been saved, and changes nothing
   for (const setup of [async t => ok(await t.save('library', library({}))), async t => ok(await t.save('games', { schema: 2, regions: [{ id: 'm', widgets: [] }], components: {} })), async t => ok(await t.save('home', heading))]) {
     const t = await fresh();
     await setup(t);
-    const r = await t.e.as(t.e.superuser, tx => tx.exec(sql('recovery_0016.sql').replace(/^begin;$/m, '').replace(/^commit;$/m, '')));
+    const r = await t.e.as(t.e.superuser, tx => tx.exec(sql('recovery_0016.sql').replace('pg_sleep(10)', 'pg_sleep(0)').replace(/^(begin|commit);\r?$/gm, '')));
     assert.match(r.error.message, /leave 0016 in place/);
     ok(await t.e.rpc(t.a, 'list_game_uses'));
     ok(await check('library', library(GAMES()), t.e));

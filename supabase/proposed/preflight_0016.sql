@@ -46,6 +46,12 @@ select 'the only page is the homepage, schema_version 1' as check_name,
        (select array_agg(page || ' ' || schema_version) from public.site_pages) = array['home 1'] as ok,
        null::text as value
 union all
+select 'requests run READ COMMITTED (no server, database, role or function setting says otherwise)' as check_name,
+       not exists (select 1 from pg_db_role_setting s, unnest(s.setconfig) c where s.setdatabase in (0, (select oid from pg_database where datname = current_database())) and c ~ '^default_transaction_isolation=' and c !~ '="?read (un)?committed')
+       and current_setting('default_transaction_isolation') = 'read committed'
+       and not exists (select 1 from pg_proc p, unnest(p.proconfig) c where p.pronamespace = 'public'::regnamespace and c ~ '^default_transaction_isolation=') as ok,
+       null::text as value
+union all
 select 'every game page is an allowed destination' as check_name,
        (select count(*) from public.site_content_routes where path ~ '^/games/[a-z0-9-]+/$') >= 8 as ok,
        null::text as value

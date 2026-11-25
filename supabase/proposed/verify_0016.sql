@@ -10,7 +10,7 @@ select 'every function is the repository’s' as check_name,
        and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.cms_check_heading(jsonb,text)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = '5cdb083113e0f2c20b5a2f6d76bd0df1', false)
        and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.cms_validate_page(text,jsonb)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = '8caa3f3455491d456016c90b0b3256a9', false)
        and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.cms_validate_library(jsonb)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = '7a42956750c5a368c9fb652ce95eec26', false)
-       and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.cms_require_games(text,jsonb,boolean)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = '1fca5c3141c90d620c3eb1980821a663', false)
+       and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.cms_require_games(text,jsonb,boolean)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = 'e66223c62be7f248e759c80d55a38e11', false)
        and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.list_game_uses()')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = '584d342f4d192161d49e19768eb3a5d0', false)
        and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.validate_content(text,jsonb)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = 'e56b34515075c32f4a84d4420086c68e', false)
        and coalesce(md5(btrim(regexp_replace(translate((select prosrc from pg_proc where oid = to_regprocedure('public.get_published_content(text)')), chr(13) || chr(10) || chr(9), '   '), ' {2,}', ' ', 'g'))) = '233317347edc7b779eea05c869f65f20', false)
@@ -95,6 +95,12 @@ select 'tables are still closed to the API, with no policies' as check_name,
        (select bool_and(relrowsecurity) from pg_class where oid in ('public.site_content_versions'::regclass, 'public.site_pages'::regclass, 'public.site_media'::regclass, 'public.site_content_routes'::regclass))
        and not exists (select 1 from pg_policies where schemaname = 'public' and tablename in ('site_content_versions', 'site_pages', 'site_media', 'site_content_routes'))
        and not exists (select 1 from unnest(array['anon', 'authenticated']) r, unnest(array['public.site_content_versions', 'public.site_pages', 'public.site_media', 'public.site_content_routes']) t, unnest(array['select', 'insert', 'update', 'delete']) p where has_table_privilege(r, t, p)) as ok,
+       null::text as value
+union all
+select 'requests run READ COMMITTED (no server, database, role or function setting says otherwise)' as check_name,
+       not exists (select 1 from pg_db_role_setting s, unnest(s.setconfig) c where s.setdatabase in (0, (select oid from pg_database where datname = current_database())) and c ~ '^default_transaction_isolation=' and c !~ '="?read (un)?committed')
+       and current_setting('default_transaction_isolation') = 'read committed'
+       and not exists (select 1 from pg_proc p, unnest(p.proconfig) c where p.pronamespace = 'public'::regnamespace and c ~ '^default_transaction_isolation=') as ok,
        null::text as value
 union all
 select 'the three pages' as check_name,
